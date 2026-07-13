@@ -7,10 +7,12 @@ import { GlassSurface } from "@/components/shared/glass-surface";
 import type { PriceListSort } from "@/config/price-list";
 import { CMS_FLEX_CHILD, CMS_SCROLL_REGION } from "@/config/spacing";
 import type { Price } from "@/types/price";
+import type { PriceCategory } from "@/types/price-category";
 import { cn } from "@/lib/utils";
 
 interface PricesListWorkspaceProps {
   prices: Price[];
+  categories: PriceCategory[];
   selectedPrice: Price | null;
   selectedId: string | null;
   page: number;
@@ -30,6 +32,7 @@ interface PricesListWorkspaceProps {
 
 export function PricesListWorkspace({
   prices,
+  categories,
   selectedPrice,
   selectedId,
   page,
@@ -60,6 +63,7 @@ export function PricesListWorkspace({
             <div className={CMS_SCROLL_REGION}>
               <PriceListTable
                 prices={prices}
+                categories={categories}
                 selectedId={selectedId}
                 sort={sort}
                 onSelect={onSelect}
@@ -90,7 +94,11 @@ export function PricesListWorkspace({
 
       {selectedPrice ? (
         <GlassSurface className="hidden min-h-0 w-[24rem] shrink-0 flex-col overflow-hidden lg:flex">
-          <PriceDetailPanel price={selectedPrice} onClose={onClosePanel} />
+          <PriceDetailPanel
+            price={selectedPrice}
+            categories={categories}
+            onClose={onClosePanel}
+          />
         </GlassSurface>
       ) : null}
     </div>

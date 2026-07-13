@@ -1,5 +1,6 @@
 import { emptyLocalizedText } from "@/lib/locale";
-import type { PriceFeature, PriceInput } from "@/types/price";
+import type { PriceFeature } from "@/types/price";
+import type { PriceFormValues } from "@/lib/validations/price";
 
 function createFeature(): PriceFeature {
   return {
@@ -8,48 +9,45 @@ function createFeature(): PriceFeature {
   };
 }
 
-export function createEmptyPriceInput(): PriceInput {
+export function createEmptyPriceInput(): PriceFormValues {
   return {
-    slug: "",
     serviceSlug: "",
-    category: "",
     highlighted: false,
     description: emptyLocalizedText(),
     service: emptyLocalizedText(),
     packageName: emptyLocalizedText(),
     price: 0,
     strikethroughPrice: 0,
-    whatsappLink: emptyLocalizedText(),
+    whatsappPhone: "",
+    whatsappMessage: emptyLocalizedText(),
     isActive: true,
     features: [createFeature()],
   };
 }
 
 export function priceToFormInput(price: {
-  slug: string;
   serviceSlug: string;
-  category: string;
   highlighted: boolean;
-  description: PriceInput["description"];
-  service: PriceInput["service"];
-  packageName: PriceInput["packageName"];
+  description: PriceFormValues["description"];
+  service: PriceFormValues["service"];
+  packageName: PriceFormValues["packageName"];
   price: number;
   strikethroughPrice: number;
-  whatsappLink: PriceInput["whatsappLink"];
+  whatsappPhone: string;
+  whatsappMessage: PriceFormValues["whatsappMessage"];
   isActive: boolean;
   features: PriceFeature[];
-}): PriceInput {
+}): PriceFormValues {
   return {
-    slug: price.slug,
     serviceSlug: price.serviceSlug,
-    category: price.category,
     highlighted: price.highlighted,
     description: price.description,
     service: price.service,
     packageName: price.packageName,
     price: price.price,
     strikethroughPrice: price.strikethroughPrice,
-    whatsappLink: price.whatsappLink,
+    whatsappPhone: price.whatsappPhone,
+    whatsappMessage: price.whatsappMessage,
     isActive: price.isActive,
     features: price.features.length > 0 ? price.features : [createFeature()],
   };

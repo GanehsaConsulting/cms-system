@@ -2,12 +2,25 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { getPriceCategoryById } from "@/lib/db/price-categories";
 import { createPrice, deletePrice, updatePrice } from "@/lib/db/prices";
 import {
   parsePriceForm,
   priceFormSchema,
   priceFormToInput,
 } from "@/lib/validations/price";
+
+async function assertValidPriceCategory(serviceSlug: string) {
+  const category = await getPriceCategoryById(serviceSlug);
+  if (!category) {
+    return {
+      success: false as const,
+      error: "Selected price category is invalid",
+    };
+  }
+
+  return null;
+}
 
 export async function createPriceAction(formData: FormData) {
   const parsed = priceFormSchema.safeParse(parsePriceForm(formData));
@@ -17,6 +30,11 @@ export async function createPriceAction(formData: FormData) {
       success: false as const,
       error: parsed.error.issues[0]?.message ?? "Invalid price data",
     };
+  }
+
+  const categoryError = await assertValidPriceCategory(parsed.data.serviceSlug);
+  if (categoryError) {
+    return categoryError;
   }
 
   try {
@@ -40,6 +58,11 @@ export async function updatePriceAction(id: string, formData: FormData) {
       success: false as const,
       error: parsed.error.issues[0]?.message ?? "Invalid price data",
     };
+  }
+
+  const categoryError = await assertValidPriceCategory(parsed.data.serviceSlug);
+  if (categoryError) {
+    return categoryError;
   }
 
   try {

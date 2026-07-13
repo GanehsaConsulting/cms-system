@@ -3,6 +3,7 @@ export const PRICE_FORM_LIMITS = {
   serviceSlug: 80,
   category: 80,
   localizedField: 200,
+  whatsappMessage: 500,
   feature: 200,
   minFeatures: 1,
   maxFeatures: 30,

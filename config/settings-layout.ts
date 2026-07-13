@@ -1,8 +1,8 @@
-import { GLASS_SURFACE } from "@/config/glass";
+import { MODAL_PANEL_SURFACE } from "@/config/glass";
 import {
+  IOS_SEGMENTED_ITEM_ACTIVE,
   IOS_SEGMENTED_ITEM_STACKED,
   IOS_SEGMENTED_TRACK,
-  IOS_SEGMENTED_ITEM_ACTIVE,
 } from "@/config/ios-segmented";
 import { RADIUS_OUTER } from "@/config/shape";
 
@@ -49,15 +49,14 @@ export const SETTINGS_SEGMENTED_ITEM_ACTIVE = IOS_SEGMENTED_ITEM_ACTIVE;
 
 export const SETTINGS_ROW_DIVIDER = "border-b border-[color:var(--separator)]";
 
-/** Floating appearance drawer — positioning via globals.css `.appearance-drawer`. */
+/** Floating appearance panel — same frosted surface as Dialog. */
 export const APPEARANCE_DRAWER_SURFACE = [
   "appearance-drawer",
   RADIUS_OUTER,
-  GLASS_SURFACE,
-  "!bg-[var(--glass-fill)]",
-  "flex min-h-0 flex-col gap-0 overflow-hidden border-0 p-0 shadow-2xl",
+  MODAL_PANEL_SURFACE,
+  "inset-y-3! left-3! right-auto! h-auto! w-[min(28rem,calc(100vw-1.5rem))]! max-w-none! sm:max-w-none!",
+  "flex flex-col gap-0 overflow-hidden border-0! p-0",
 ].join(" ");
-
 /** Wallpaper grid padding inside settings group. */
 export const WALLPAPER_GRID_WRAPPER = [
   SETTINGS_INSET_BLOCK,

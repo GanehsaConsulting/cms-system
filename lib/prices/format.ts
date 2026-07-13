@@ -7,6 +7,17 @@ export function formatPriceCurrency(amount: number) {
   }).format(amount);
 }
 
+/** Public pricing card display — Indonesian thousand separators. */
+export function formatPriceDisplayIdr(amount: number) {
+  if (!amount) {
+    return "Rp —";
+  }
+
+  return `Rp ${new Intl.NumberFormat("id-ID", {
+    maximumFractionDigits: 0,
+  }).format(amount)}`;
+}
+
 export function calculateDiscountPercent(
   price: number,
   strikethroughPrice: number,
@@ -23,4 +34,15 @@ export function calculateDiscountPercent(
 export function parsePriceAmount(raw: string) {
   const parsed = Number.parseInt(raw.replace(/\D/g, ""), 10);
   return Number.isNaN(parsed) ? 0 : parsed;
+}
+
+/** Thousand separators for price inputs — display only. */
+export function formatPriceAmountInput(amount: number) {
+  if (!amount) {
+    return "";
+  }
+
+  return new Intl.NumberFormat("en-US", {
+    maximumFractionDigits: 0,
+  }).format(amount);
 }

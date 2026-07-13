@@ -1,6 +1,7 @@
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { slugify } from "@/lib/articles/slug";
+import { slugify, slugifyArticleTitle } from "@/lib/articles/slug";
+import { PRICE_FORM_LIMITS } from "@/config/price-form";
 import {
   isLocalizedTextComplete,
   trimLocalized,
@@ -45,7 +46,12 @@ function normalizeInput(input: PriceInput): PriceInput {
   const service = trimLocalized(input.service);
 
   return {
-    slug: input.slug.trim() || slugify(packageName.id),
+    slug:
+      input.slug.trim() ||
+      slugifyArticleTitle(
+        packageName.en.trim() || packageName.id.trim(),
+        PRICE_FORM_LIMITS.slug,
+      ),
     serviceSlug: input.serviceSlug.trim() || slugify(service.id),
     category: input.category.trim(),
     highlighted: input.highlighted,
@@ -54,7 +60,8 @@ function normalizeInput(input: PriceInput): PriceInput {
     packageName,
     price: Math.max(0, Math.trunc(input.price)),
     strikethroughPrice: Math.max(0, Math.trunc(input.strikethroughPrice)),
-    whatsappLink: trimLocalized(input.whatsappLink),
+    whatsappPhone: input.whatsappPhone.trim(),
+    whatsappMessage: trimLocalized(input.whatsappMessage),
     isActive: input.isActive,
     features: normalizeFeatures(input.features),
   };

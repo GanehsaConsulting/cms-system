@@ -1,14 +1,15 @@
 "use client";
 
 import { SidebarIcon } from "@/lib/icons";
+import { useAppearance } from "@/components/shared/appearance-provider";
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/components/ui/sidebar";
 import { GLASS_HOVER, GLASS_SURFACE } from "@/config/glass";
 import {
-  SEPARATED_MENU_ITEM,
-  SIDEBAR_APP_ICON_GLYPH,
-  SIDEBAR_APP_ICON_GRADIENTS,
-  SIDEBAR_APP_ICON_SHELL,
+  getSidebarAppIconTone,
+  SIDEBAR_APP_ICON_GLYPH_SHADOW_COLORED,
+  SIDEBAR_DOCK_APP_ICON_GLYPH_SIZE,
+  SIDEBAR_DOCK_APP_ICON_SHELL,
 } from "@/config/sidebar";
 import { SEPARATED_CONTROL } from "@/config/shape";
 import { cn } from "@/lib/utils";
@@ -21,21 +22,23 @@ export function SidebarCollapseTrigger({
   className,
 }: SidebarCollapseTriggerProps) {
   const { toggleSidebar, state } = useSidebar();
+  const { appIconStyle } = useAppearance();
   const isCollapsed = state === "collapsed";
+  const collapseTone = getSidebarAppIconTone("collapse", appIconStyle);
 
   return (
     <Button
       type="button"
       variant="ghost"
       size="icon-sm"
-      aria-label={isCollapsed ? "Buka sidebar" : "Minimalkan sidebar"}
+      aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
       onClick={toggleSidebar}
       className={cn(
         isCollapsed
           ? cn(
-              SIDEBAR_APP_ICON_SHELL,
+              SIDEBAR_DOCK_APP_ICON_SHELL,
               "bg-linear-to-b",
-              SIDEBAR_APP_ICON_GRADIENTS.collapse,
+              collapseTone.shell,
               "size-9 p-0 hover:opacity-90",
             )
           : cn(
@@ -49,7 +52,16 @@ export function SidebarCollapseTrigger({
       )}
     >
       <SidebarIcon
-        className={cn(isCollapsed ? SIDEBAR_APP_ICON_GLYPH : "size-4")}
+        className={cn(
+          isCollapsed
+            ? cn(
+                SIDEBAR_DOCK_APP_ICON_GLYPH_SIZE,
+                collapseTone.glyph,
+                appIconStyle === "colored" &&
+                  SIDEBAR_APP_ICON_GLYPH_SHADOW_COLORED,
+              )
+            : "size-4",
+        )}
       />
     </Button>
   );

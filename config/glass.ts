@@ -17,6 +17,17 @@ export const GLASS_HIGHLIGHT =
 
 export const GLASS_SURFACE = `${GLASS_BACKDROP} ${GLASS_BORDER} ${GLASS_FILL} ${GLASS_HIGHLIGHT}`;
 
+/**
+ * Modal / drawer panel — same frosted look (blur-3xl).
+ * Prefer this over GLASS_SURFACE for overlays that should match Dialog.
+ */
+export const MODAL_PANEL_SURFACE = [
+  "backdrop-blur-3xl",
+  GLASS_FILL,
+  "shadow-[0_4px_16px_rgb(0_0_0/0.08),0_1px_4px_rgb(0_0_0/0.03)] ring-1 ring-white/50",
+  "dark:shadow-[0_8px_28px_rgb(0_0_0/0.36),0_1px_5px_rgb(0_0_0/0.16)] dark:ring-white/10",
+].join(" ");
+
 /** Hover/active overlay on glass controls — tinted from glass base, not pure white. */
 export const GLASS_HOVER =
   "hover:bg-[rgb(var(--glass-fill-rgb)/0.85)] dark:hover:bg-[rgb(var(--glass-fill-rgb)/0.72)] dark:active:bg-[rgb(var(--glass-fill-rgb)/0.8)]";

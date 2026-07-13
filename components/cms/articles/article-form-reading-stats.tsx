@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import { GlassSurface } from "@/components/shared/glass-surface";
+import { CmsFormSectionHeading } from "@/components/shared/cms-form-section-heading";
+import { SolidSurface } from "@/components/shared/solid-surface";
 import { ARTICLE_READING_WPM } from "@/config/article-form";
 import {
   formatReadingTime,
@@ -43,14 +44,14 @@ export function ArticleFormReadingStats({
   const stats = useMemo(() => getArticleFormWordStats(values), [values]);
 
   return (
-    <GlassSurface className="p-4">
-      <h2 className="font-semibold text-sm">Reading Time</h2>
-      <p className="mt-1 text-muted-foreground text-xs leading-relaxed">
-        Estimated from title, excerpt, and article content at{" "}
-        {ARTICLE_READING_WPM} WPM.
-      </p>
+    <SolidSurface className="space-y-4 p-4">
+      <CmsFormSectionHeading
+        title="Reading Time"
+        description={`Estimated from title, excerpt, and article content at ${ARTICLE_READING_WPM} WPM.`}
+        accent="stats"
+      />
 
-      <div className="mt-4 rounded-lg border border-input bg-muted/15 px-3 py-3">
+      <div className="rounded-lg bg-muted/50 px-3 py-3">
         <p className="font-medium text-2xl tracking-tight">
           {formatReadingTime(stats.readingMinutes)}
         </p>
@@ -60,7 +61,7 @@ export function ArticleFormReadingStats({
         </p>
       </div>
 
-      <div className="mt-4 space-y-2 border-[color:var(--separator)] border-t pt-4">
+      <div className="space-y-2 border-(--separator) border-t pt-4">
         <p className="font-medium text-sm">Word Count</p>
         <div className="space-y-2">
           <StatRow label="Title" words={stats.title} />
@@ -70,13 +71,13 @@ export function ArticleFormReadingStats({
           <StatRow label="Meta description" words={stats.metaDescription} />
           <StatRow label="Tags" words={stats.tags} />
         </div>
-        <div className="flex items-center justify-between gap-3 border-[color:var(--separator)] border-t pt-3 font-medium text-sm">
+        <div className="flex items-center justify-between gap-3 border-(--separator) border-t pt-3 font-medium text-sm">
           <span>Total</span>
           <span className="tabular-nums">
             {stats.total} {stats.total === 1 ? "word" : "words"}
           </span>
         </div>
       </div>
-    </GlassSurface>
+    </SolidSurface>
   );
 }

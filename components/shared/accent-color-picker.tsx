@@ -11,7 +11,7 @@ export function AccentColorPicker() {
   return (
     <div className={SETTINGS_INSET_BLOCK}>
       <fieldset className="grid grid-cols-4 gap-x-1 gap-y-3 border-0 p-0">
-        <legend className="sr-only">Warna aksen</legend>
+        <legend className="sr-only">Accent color</legend>
         {ACCENT_COLORS.map((accent) => {
           const selected = accentId === accent.id;
           const swatch = resolvedDark ? accent.dark : accent.light;

@@ -1,5 +1,8 @@
 import { PriceForm } from "@/components/cms/price-form";
+import { getPriceCategories } from "@/lib/db/price-categories";
 
-export default function NewPricePage() {
-  return <PriceForm />;
+export default async function NewPricePage() {
+  const categories = await getPriceCategories();
+
+  return <PriceForm categories={categories} />;
 }

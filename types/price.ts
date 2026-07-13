@@ -16,7 +16,8 @@ export interface Price {
   packageName: LocalizedText;
   price: number;
   strikethroughPrice: number;
-  whatsappLink: LocalizedText;
+  whatsappPhone: string;
+  whatsappMessage: LocalizedText;
   isActive: boolean;
   features: PriceFeature[];
   createdAt: string;
@@ -33,7 +34,8 @@ export interface PriceInput {
   packageName: LocalizedText;
   price: number;
   strikethroughPrice: number;
-  whatsappLink: LocalizedText;
+  whatsappPhone: string;
+  whatsappMessage: LocalizedText;
   isActive: boolean;
   features: PriceFeature[];
 }

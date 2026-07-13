@@ -6,6 +6,8 @@ import {
   ArticleFormCharCounter,
   ArticleFormField,
 } from "@/components/cms/articles/article-form-field";
+import { CmsFormSectionHeading } from "@/components/shared/cms-form-section-heading";
+import { SolidSurface } from "@/components/shared/solid-surface";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -13,7 +15,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { GlassSurface } from "@/components/shared/glass-surface";
 import { ARTICLE_FORM_LIMITS } from "@/config/article-form";
 
 interface ArticleFormSeoPanelProps {
@@ -34,11 +35,16 @@ export function ArticleFormSeoPanel({
   metaDescriptionError,
 }: ArticleFormSeoPanelProps) {
   return (
-    <GlassSurface className="p-4">
+    <SolidSurface className="p-4">
       <Collapsible defaultOpen>
-        <CollapsibleTrigger className="flex w-full items-center justify-between gap-2 text-left">
-          <h2 className="font-semibold text-sm">SEO (Optional)</h2>
-          <CaretUpIcon className="size-3.5 text-muted-foreground" />
+        <CollapsibleTrigger className="flex w-full items-start justify-between gap-2 text-left">
+          <CmsFormSectionHeading
+            title="SEO"
+            description="Optional search metadata for search engines."
+            accent="seo"
+            className="flex-1"
+          />
+          <CaretUpIcon className="mt-0.5 size-3.5 shrink-0 text-muted-foreground" />
         </CollapsibleTrigger>
         <CollapsibleContent className="mt-4 space-y-4">
           <ArticleFormField
@@ -77,6 +83,6 @@ export function ArticleFormSeoPanel({
           </ArticleFormField>
         </CollapsibleContent>
       </Collapsible>
-    </GlassSurface>
+    </SolidSurface>
   );
 }

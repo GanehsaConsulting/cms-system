@@ -4,12 +4,12 @@ import Image from "next/image";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  CmsDialog,
+  CmsDialogContent,
+  CmsDialogDescription,
+  CmsDialogHeader,
+  CmsDialogTitle,
+} from "@/components/shared/cms-dialog";
 import { CaretLeftIcon, CaretRightIcon } from "@/lib/icons";
 import { RADIUS_INNER } from "@/config/shape";
 import { cn } from "@/lib/utils";
@@ -72,19 +72,20 @@ export function ArticleFormGalleryPreviewDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
+    <CmsDialog open={open} onOpenChange={onOpenChange}>
+      <CmsDialogContent
         showCloseButton
-        className="flex max-h-[min(92svh,48rem)] w-[min(100vw-1.5rem,48rem)] max-w-none flex-col gap-0 overflow-hidden p-0 sm:max-w-none"
+        size="xl"
+        className="flex max-h-[min(92svh,48rem)] flex-col"
       >
-        <DialogHeader className="shrink-0 border-[color:var(--separator)] border-b px-5 py-4">
-          <DialogTitle>
+        <CmsDialogHeader>
+          <CmsDialogTitle>
             Gallery preview {index + 1} / {images.length}
-          </DialogTitle>
-          <DialogDescription>
+          </CmsDialogTitle>
+          <CmsDialogDescription>
             Preview gallery image before publishing.
-          </DialogDescription>
-        </DialogHeader>
+          </CmsDialogDescription>
+        </CmsDialogHeader>
 
         <div className="relative flex min-h-[min(60svh,28rem)] items-center justify-center bg-muted/20 p-4">
           <Image
@@ -127,7 +128,7 @@ export function ArticleFormGalleryPreviewDialog({
         </div>
 
         {hasMultiple ? (
-          <div className="flex justify-center gap-1.5 border-[color:var(--separator)] border-t px-4 py-3">
+          <div className="flex justify-center gap-1.5 border-(--separator) border-t px-4 py-3">
             {images.map((src, imageIndex) => (
               <button
                 key={`${src.slice(0, 48)}-${imageIndex}`}
@@ -145,7 +146,7 @@ export function ArticleFormGalleryPreviewDialog({
             ))}
           </div>
         ) : null}
-      </DialogContent>
-    </Dialog>
+      </CmsDialogContent>
+    </CmsDialog>
   );
 }

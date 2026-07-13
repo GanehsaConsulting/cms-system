@@ -1,6 +1,11 @@
 import { z } from "zod";
 import { PRICE_FORM_LIMITS } from "@/config/price-form";
+import { WHATSAPP_PHONE_LIMITS } from "@/config/whatsapp";
 import { slugifyArticleTitle } from "@/lib/articles/slug";
+import {
+  isValidWhatsAppPhone,
+  normalizeWhatsAppPhone,
+} from "@/lib/prices/whatsapp";
 import type { PriceInput } from "@/types/price";
 
 const localizedTextSchema = z.object({
@@ -15,15 +20,26 @@ const requiredLocalizedTextSchema = localizedTextSchema.refine(
   "All languages are required",
 );
 
+const whatsappMessageSchema = z
+  .object({
+    id: z.string().trim().max(PRICE_FORM_LIMITS.whatsappMessage),
+    en: z.string().trim().max(PRICE_FORM_LIMITS.whatsappMessage),
+    zh: z.string().trim().max(PRICE_FORM_LIMITS.whatsappMessage),
+  })
+  .refine(
+    (value) =>
+      value.id.length > 0 && value.en.length > 0 && value.zh.length > 0,
+    "WhatsApp message is required in all languages",
+  );
+
 const priceFeatureSchema = z.object({
   id: z.string().optional(),
   name: requiredLocalizedTextSchema,
 });
 
+/** Form fields — slug is derived from package name; category mirrors serviceSlug. */
 export const priceFormSchema = z.object({
-  slug: z.string().trim().max(PRICE_FORM_LIMITS.slug),
-  serviceSlug: z.string().trim().max(PRICE_FORM_LIMITS.serviceSlug),
-  category: z.string().trim().max(PRICE_FORM_LIMITS.category),
+  serviceSlug: z.string().trim().min(1, "Select a price category"),
   highlighted: z.boolean(),
   description: localizedTextSchema,
   service: requiredLocalizedTextSchema,
@@ -33,7 +49,14 @@ export const priceFormSchema = z.object({
     .number()
     .int()
     .min(0, "Original price must be zero or greater"),
-  whatsappLink: requiredLocalizedTextSchema,
+  whatsappPhone: z
+    .string()
+    .trim()
+    .refine(
+      (value) => isValidWhatsAppPhone(normalizeWhatsAppPhone(value)),
+      `Enter a valid WhatsApp number (${WHATSAPP_PHONE_LIMITS.minDigits}–${WHATSAPP_PHONE_LIMITS.maxDigits} digits)`,
+    ),
+  whatsappMessage: whatsappMessageSchema,
   isActive: z.boolean(),
   features: z
     .array(priceFeatureSchema)
@@ -49,12 +72,19 @@ export const priceFormSchema = z.object({
 
 export type PriceFormValues = z.infer<typeof priceFormSchema>;
 
+function packageNameForSlug(packageName: PriceFormValues["packageName"]) {
+  return packageName.en.trim() || packageName.id.trim();
+}
+
 export function priceFormToInput(values: PriceFormValues): PriceInput {
   return {
     ...values,
-    slug:
-      values.slug.trim() ||
-      slugifyArticleTitle(values.packageName.id, PRICE_FORM_LIMITS.slug),
+    category: values.serviceSlug,
+    whatsappPhone: normalizeWhatsAppPhone(values.whatsappPhone),
+    slug: slugifyArticleTitle(
+      packageNameForSlug(values.packageName),
+      PRICE_FORM_LIMITS.slug,
+    ),
     features: values.features.map((feature, index) => ({
       id: feature.id || `feature-${index + 1}`,
       name: feature.name,
@@ -99,9 +129,7 @@ function parseFeatures(value: FormDataEntryValue | null) {
 
 export function parsePriceForm(formData: FormData) {
   return {
-    slug: String(formData.get("slug") ?? ""),
     serviceSlug: String(formData.get("serviceSlug") ?? ""),
-    category: String(formData.get("category") ?? ""),
     highlighted: formData.get("highlighted") === "true",
     description: parseLocalizedText(formData.get("description")),
     service: parseLocalizedText(formData.get("service")),
@@ -109,7 +137,10 @@ export function parsePriceForm(formData: FormData) {
     price: Number.parseInt(String(formData.get("price") ?? "0"), 10) || 0,
     strikethroughPrice:
       Number.parseInt(String(formData.get("strikethroughPrice") ?? "0"), 10) || 0,
-    whatsappLink: parseLocalizedText(formData.get("whatsappLink")),
+    whatsappPhone: normalizeWhatsAppPhone(
+      String(formData.get("whatsappPhone") ?? ""),
+    ),
+    whatsappMessage: parseLocalizedText(formData.get("whatsappMessage")),
     isActive: formData.get("isActive") === "true",
     features: parseFeatures(formData.get("features")),
   };

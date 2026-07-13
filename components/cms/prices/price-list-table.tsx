@@ -10,9 +10,11 @@ import {
 } from "@/config/price-list";
 import { LIST_TABLE_HEAD_CLASS } from "@/config/list-table";
 import type { Price } from "@/types/price";
+import type { PriceCategory } from "@/types/price-category";
 
 interface PriceListTableProps {
   prices: Price[];
+  categories: PriceCategory[];
   selectedId: string | null;
   sort: PriceListSort;
   onSelect: (id: string) => void;
@@ -21,6 +23,7 @@ interface PriceListTableProps {
 
 export function PriceListTable({
   prices,
+  categories,
   selectedId,
   sort,
   onSelect,
@@ -76,6 +79,7 @@ export function PriceListTable({
         <PriceListTableRow
           key={price.id}
           price={price}
+          categories={categories}
           isSelected={selectedId === price.id}
           onSelect={onSelect}
         />

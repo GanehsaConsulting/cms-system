@@ -7,7 +7,7 @@ export function ArticlesListCreateButton() {
     <Button
       nativeButton={false}
       render={<Link href="/articles/new" />}
-      className="h-9 gap-1.5"
+      className="h-8 gap-1.5"
     >
       <PlusIcon className="size-3.5" />
       Create Article

@@ -1,5 +1,6 @@
 import { GLASS_SURFACE } from "@/config/glass";
 import { RADIUS_OUTER, SEPARATED_CONTROL } from "@/config/shape";
+import type { AppIconStyle } from "@/types/appearance";
 
 export const SIDEBAR_OPEN_STORAGE_KEY = "cms:sidebar-open";
 
@@ -13,7 +14,8 @@ export const SEPARATED_SIDEBAR_GUTTER = "";
 
 export const SEPARATED_SIDEBAR_RADIUS = RADIUS_OUTER;
 
-export const SEPARATED_MENU_ITEM = SEPARATED_CONTROL;
+/** Expanded menu row — System Settings density (~22px icons). */
+export const SEPARATED_MENU_ITEM = `${SEPARATED_CONTROL} h-8! gap-2 px-2!`;
 
 /** Applied to `[data-slot="sidebar-inner"]` via globals.css — keep in sync with GLASS_SURFACE. */
 export const SEPARATED_SIDEBAR_GLASS = GLASS_SURFACE;
@@ -37,21 +39,137 @@ export const SIDEBAR_COLLAPSED_RADIUS = "1.35rem";
 /** Wrapper around SidebarCollapsedDock — centers icon column in glass pill. */
 export const SIDEBAR_COLLAPSED_DOCK_WRAPPER = "flex w-full justify-center";
 
-/** Apple-style app icon shell (collapsed sidebar). */
+/**
+ * System Settings–scale squircle (~22px) for expanded sidebar menu items.
+ */
 export const SIDEBAR_APP_ICON_SHELL =
-  "flex size-9 shrink-0 items-center justify-center rounded-[0.7rem] bg-linear-to-b shadow-[inset_0_1px_0_0_rgba(255,255,255,0.4),0_1px_2px_rgba(0,0,0,0.14)]";
+  "sidebar-app-icon flex size-[1.375rem] shrink-0 items-center justify-center rounded-[0.35rem] bg-linear-to-b shadow-[inset_0_0.5px_0_0_rgba(255,255,255,0.55),0_0.5px_1px_rgba(0,0,0,0.12)] dark:shadow-[inset_0_0.5px_0_0_rgba(255,255,255,0.12),0_1px_2px_rgba(0,0,0,0.45)]";
 
-export const SIDEBAR_APP_ICON_GLYPH = "size-4 text-white drop-shadow-sm";
+export const SIDEBAR_APP_ICON_GLYPH_SIZE = "size-[0.875rem]!";
 
-/** Soft gradients for collapsed app icons. */
+/** Larger icons — sidebar header brand + collapsed dock (size-9 = 36). */
+export const SIDEBAR_DOCK_APP_ICON_SHELL =
+  "sidebar-app-icon flex size-9 shrink-0 items-center justify-center rounded-[0.7rem] bg-linear-to-b shadow-[inset_0_1px_0_0_rgba(255,255,255,0.4),0_1px_2px_rgba(0,0,0,0.14)] dark:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.12),0_1px_3px_rgba(0,0,0,0.5)]";
+
+export const SIDEBAR_DOCK_APP_ICON_GLYPH_SIZE = "size-4!";
+
+export const SIDEBAR_APP_ICON_GLYPH_SHADOW_COLORED =
+  "drop-shadow-[0_0.5px_0.5px_rgba(0,0,0,0.25)]";
+
+const APP_ICON_SHELL_LIGHT = "from-white via-white to-[#F5F5F7]";
+const APP_ICON_SHELL_DARK = "from-[#3A3A3C] via-[#2C2C2E] to-[#1C1C1E]";
+
+const APP_ICON_COLORED_SHELLS = {
+  brand: "from-[#8B9AFF] via-[#5B6CFF] to-[#3B4FE0]",
+  overview: "from-[#64D2FF] via-[#32ADE6] to-[#007AFF]",
+  articles: "from-[#FF7AB8] via-[#FF2D55] to-[#D91A45]",
+  prices: "from-[#30D158] via-[#28C840] to-[#248A3D]",
+  clients: "from-[#FF9F0A] via-[#FF9500] to-[#C93400]",
+  banners: "from-[#BF5AF2] via-[#AF52DE] to-[#8944AB]",
+  appearance: "from-[#64D2FF] via-[#32ADE6] to-[#007AFF]",
+  notifications: "from-[#FF9F0A] via-[#FF9500] to-[#C93400]",
+  settings: "from-[#AEAEB2] via-[#8E8E93] to-[#636366]",
+  collapse: "from-[#E5E5EA] via-[#C7C7CC] to-[#8E8E93]",
+} as const;
+
+const APP_ICON_GLYPHS = {
+  brand: {
+    colored: "text-white",
+    light: "text-[#5B6CFF]",
+    dark: "text-[#7C8CFF]",
+  },
+  overview: {
+    colored: "text-white",
+    light: "text-[#007AFF]",
+    dark: "text-[#64D2FF]",
+  },
+  articles: {
+    colored: "text-white",
+    light: "text-[#FF2D55]",
+    dark: "text-[#FF375F]",
+  },
+  prices: {
+    colored: "text-white",
+    light: "text-[#28C840]",
+    dark: "text-[#30D158]",
+  },
+  clients: {
+    colored: "text-white",
+    light: "text-[#FF9500]",
+    dark: "text-[#FF9F0A]",
+  },
+  banners: {
+    colored: "text-white",
+    light: "text-[#AF52DE]",
+    dark: "text-[#BF5AF2]",
+  },
+  appearance: {
+    colored: "text-white",
+    light: "text-[#007AFF]",
+    dark: "text-[#64D2FF]",
+  },
+  notifications: {
+    colored: "text-white",
+    light: "text-[#FF9500]",
+    dark: "text-[#FF9F0A]",
+  },
+  settings: {
+    colored: "text-white",
+    light: "text-[#636366]",
+    dark: "text-[#C7C7CC]",
+  },
+  collapse: {
+    colored: "text-white",
+    light: "text-[#8E8E93]",
+    dark: "text-[#AEAEB2]",
+  },
+} as const;
+
+export type SidebarAppIconTone = keyof typeof APP_ICON_COLORED_SHELLS;
+
+export function getSidebarAppIconTone(
+  tone: SidebarAppIconTone,
+  style: AppIconStyle,
+): { shell: string; glyph: string } {
+  const shell =
+    style === "colored"
+      ? APP_ICON_COLORED_SHELLS[tone]
+      : style === "light"
+        ? APP_ICON_SHELL_LIGHT
+        : APP_ICON_SHELL_DARK;
+
+  return {
+    shell,
+    glyph: APP_ICON_GLYPHS[tone][style],
+  };
+}
+
+/** @deprecated Use getSidebarAppIconTone(tone, style) */
+export const SIDEBAR_APP_ICON_TONES = {
+  brand: getSidebarAppIconTone("brand", "colored"),
+  overview: getSidebarAppIconTone("overview", "colored"),
+  articles: getSidebarAppIconTone("articles", "colored"),
+  prices: getSidebarAppIconTone("prices", "colored"),
+  clients: getSidebarAppIconTone("clients", "colored"),
+  banners: getSidebarAppIconTone("banners", "colored"),
+  appearance: getSidebarAppIconTone("appearance", "colored"),
+  notifications: getSidebarAppIconTone("notifications", "colored"),
+  settings: getSidebarAppIconTone("settings", "colored"),
+  collapse: getSidebarAppIconTone("collapse", "colored"),
+} as const;
+
+/** @deprecated Use getSidebarAppIconTone(tone, style).shell */
 export const SIDEBAR_APP_ICON_GRADIENTS = {
-  brand: "from-[#7C8CFF] via-[#5B6CFF] to-[#3B4FE0]",
-  overview: "from-[#5AC8FA] via-[#32ADE6] to-[#007AFF]",
-  articles: "from-[#FF70C1] via-[#FF2D55] to-[#D91A45]",
-  prices: "from-[#34C759] via-[#30B350] to-[#248A3D]",
-  appearance: "from-[#5AC8FA] via-[#32ADE6] to-[#007AFF]",
-  settings: "from-[#C7C7CC] via-[#8E8E93] to-[#636366]",
-  collapse: "from-[#E5E5EA] via-[#AEAEB2] to-[#8E8E93]",
+  brand: SIDEBAR_APP_ICON_TONES.brand.shell,
+  overview: SIDEBAR_APP_ICON_TONES.overview.shell,
+  articles: SIDEBAR_APP_ICON_TONES.articles.shell,
+  prices: SIDEBAR_APP_ICON_TONES.prices.shell,
+  clients: SIDEBAR_APP_ICON_TONES.clients.shell,
+  banners: SIDEBAR_APP_ICON_TONES.banners.shell,
+  appearance: SIDEBAR_APP_ICON_TONES.appearance.shell,
+  notifications: SIDEBAR_APP_ICON_TONES.notifications.shell,
+  settings: SIDEBAR_APP_ICON_TONES.settings.shell,
+  collapse: SIDEBAR_APP_ICON_TONES.collapse.shell,
 } as const;
 
 export type SidebarAppIconGradient =
@@ -63,14 +181,14 @@ export const SIDEBAR_DOCK_MAX_SCALE = 1.75;
 /** Distance (px) from cursor where magnification falls to 1. */
 export const SIDEBAR_DOCK_INFLUENCE = 70;
 
-/** Base icon size in px (size-9 = 36). */
+/** Base dock icon size in px (size-9 = 36). */
 export const SIDEBAR_DOCK_ICON_SIZE = 36;
 
 export const SIDEBAR_DOCK_TRIGGER_CLASS =
-  "flex size-9 items-center justify-center rounded-[0.7rem] outline-none transition-opacity  focus-visible:ring-2 focus-visible:ring-white/70";
+  "flex size-9 items-center justify-center rounded-[0.7rem] outline-none transition-opacity focus-visible:ring-2 focus-visible:ring-white/70";
 
 export const SIDEBAR_DOCK_LABEL_CLASS =
   "pointer-events-none absolute top-1/2 left-[calc(100%+0.625rem)] z-50 -translate-y-1/2 whitespace-nowrap rounded-lg bg-foreground px-2.5 py-1 text-xs font-medium text-background shadow-md transition-opacity duration-100";
 
 export const SIDEBAR_DOCK_ACTIVE_DOT_CLASS =
-  "pointer-events-none absolute top-1/2 -right-1.75 size-1 -translate-y-1/2 rounded-full bg-white";
+  "pointer-events-none absolute top-1/2 -right-1.75 size-1 -translate-y-1/2 rounded-full bg-white dark:bg-white";

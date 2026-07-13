@@ -26,7 +26,7 @@ export function ThemeModePicker() {
       <div
         className={SETTINGS_SEGMENTED_TRACK}
         role="group"
-        aria-label="Mode tema"
+        aria-label="Theme mode"
       >
         {THEME_MODES.map((mode) => {
           const IconComponent = MODE_ICONS[mode.id];

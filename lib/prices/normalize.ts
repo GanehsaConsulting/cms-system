@@ -2,6 +2,11 @@ import { PRICE_LIST_DISPLAY_LOCALE } from "@/config/price-form";
 import type { Price, PriceFeature } from "@/types/price";
 import type { LocalizedText } from "@/types/locale";
 import { emptyLocalizedText } from "@/lib/locale";
+import {
+  extractWhatsAppMessage,
+  extractWhatsAppPhone,
+  normalizeWhatsAppPhone,
+} from "@/lib/prices/whatsapp";
 
 function normalizeLocalizedText(value: unknown): LocalizedText {
   if (
@@ -30,7 +35,34 @@ function normalizeFeature(feature: PriceFeature, index: number): PriceFeature {
   };
 }
 
+function migrateWhatsAppFields(price: Price & {
+  whatsappLink?: LocalizedText | string;
+}) {
+  if (typeof price.whatsappPhone === "string") {
+    return {
+      whatsappPhone: normalizeWhatsAppPhone(price.whatsappPhone),
+      whatsappMessage: normalizeLocalizedText(price.whatsappMessage),
+    };
+  }
+
+  const legacyLink = normalizeLocalizedText(price.whatsappLink);
+  const source = legacyLink.en || legacyLink.id || legacyLink.zh;
+  const phone = extractWhatsAppPhone(source);
+  const message = extractWhatsAppMessage(source);
+
+  return {
+    whatsappPhone: phone,
+    whatsappMessage: message
+      ? emptyLocalizedText(message)
+      : emptyLocalizedText(),
+  };
+}
+
 export function normalizePrice(price: Price): Price {
+  const whatsapp = migrateWhatsAppFields(
+    price as Price & { whatsappLink?: LocalizedText | string },
+  );
+
   return {
     ...price,
     slug: price.slug ?? "",
@@ -42,7 +74,8 @@ export function normalizePrice(price: Price): Price {
     packageName: normalizeLocalizedText(price.packageName),
     price: Number(price.price) || 0,
     strikethroughPrice: Number(price.strikethroughPrice) || 0,
-    whatsappLink: normalizeLocalizedText(price.whatsappLink),
+    whatsappPhone: whatsapp.whatsappPhone,
+    whatsappMessage: whatsapp.whatsappMessage,
     isActive: price.isActive ?? true,
     features: (price.features ?? []).map(normalizeFeature),
     createdAt: price.createdAt ?? new Date().toISOString(),

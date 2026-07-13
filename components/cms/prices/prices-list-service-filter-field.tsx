@@ -4,20 +4,23 @@ import { useMemo, useState } from "react";
 import { MagnifyingGlassIcon } from "@/lib/icons";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { getPriceServiceLabel } from "@/config/price-services";
 import { LIST_FILTER_FIELD_CLASS } from "@/config/list-toolbar";
 import { RADIUS_DEEP } from "@/config/shape";
+import { getPriceCategoryLabel } from "@/lib/prices/categories";
+import type { PriceCategory } from "@/types/price-category";
 import { cn } from "@/lib/utils";
 
 interface PricesListServiceFilterFieldProps {
   value: string;
   services: string[];
+  categories: PriceCategory[];
   onChange: (value: string) => void;
 }
 
 export function PricesListServiceFilterField({
   value,
   services,
+  categories,
   onChange,
 }: PricesListServiceFilterFieldProps) {
   const [query, setQuery] = useState("");
@@ -30,13 +33,13 @@ export function PricesListServiceFilterField({
     }
 
     return services.filter((serviceSlug) => {
-      const label = getPriceServiceLabel(serviceSlug).toLowerCase();
+      const label = getPriceCategoryLabel(serviceSlug, categories).toLowerCase();
       return (
         serviceSlug.toLowerCase().includes(normalizedQuery) ||
         label.includes(normalizedQuery)
       );
     });
-  }, [query, services]);
+  }, [categories, query, services]);
 
   function handleSelect(serviceSlug: string) {
     onChange(serviceSlug);
@@ -45,7 +48,7 @@ export function PricesListServiceFilterField({
 
   return (
     <div className={LIST_FILTER_FIELD_CLASS}>
-      <Label htmlFor="price-service-filter-search">Service</Label>
+      <Label htmlFor="price-service-filter-search">Price category</Label>
       <div className={cn(RADIUS_DEEP, "overflow-hidden border border-input")}>
         <div className="relative border-input border-b px-2 py-1.5">
           <MagnifyingGlassIcon className="pointer-events-none absolute top-1/2 left-4 size-3.5 -translate-y-1/2 text-muted-foreground" />
@@ -53,7 +56,7 @@ export function PricesListServiceFilterField({
             id="price-service-filter-search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search services..."
+            placeholder="Search categories..."
             className="h-8 border-0 bg-transparent pl-7 shadow-none focus-visible:ring-0"
           />
         </div>
@@ -68,7 +71,7 @@ export function PricesListServiceFilterField({
               value === "all" && "bg-muted font-medium",
             )}
           >
-            All services
+            All categories
           </button>
 
           {filteredServices.length > 0 ? (
@@ -83,13 +86,15 @@ export function PricesListServiceFilterField({
                   value === serviceSlug && "bg-muted font-medium",
                 )}
               >
-                <span>{getPriceServiceLabel(serviceSlug)}</span>
-                <span className="text-muted-foreground text-xs">{serviceSlug}</span>
+                <span>{getPriceCategoryLabel(serviceSlug, categories)}</span>
+                <span className="text-muted-foreground text-xs">
+                  {serviceSlug}
+                </span>
               </button>
             ))
           ) : (
             <p className="px-2.5 py-2 text-muted-foreground text-sm">
-              No services found.
+              No categories found.
             </p>
           )}
         </div>

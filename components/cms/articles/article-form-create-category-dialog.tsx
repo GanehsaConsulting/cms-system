@@ -3,13 +3,14 @@
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  CmsDialog,
+  CmsDialogBody,
+  CmsDialogContent,
+  CmsDialogDescription,
+  CmsDialogFooter,
+  CmsDialogHeader,
+  CmsDialogTitle,
+} from "@/components/shared/cms-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ARTICLE_FORM_LIMITS } from "@/config/article-form";
@@ -73,38 +74,40 @@ export function ArticleFormCreateCategoryDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent showCloseButton={!isPending} className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Create New Category</DialogTitle>
-          <DialogDescription>
+    <CmsDialog open={open} onOpenChange={handleOpenChange}>
+      <CmsDialogContent showCloseButton={!isPending} size="sm">
+        <CmsDialogHeader>
+          <CmsDialogTitle>Create New Category</CmsDialogTitle>
+          <CmsDialogDescription>
             Add a category for organizing articles on your company profile site.
-          </DialogDescription>
-        </DialogHeader>
+          </CmsDialogDescription>
+        </CmsDialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="category-label">Category name</Label>
-            <Input
-              id="category-label"
-              value={label}
-              onChange={(event) => setLabel(event.target.value)}
-              placeholder="e.g. Product Updates"
-              maxLength={ARTICLE_FORM_LIMITS.categoryLabel}
-              disabled={isPending}
-              autoFocus
-            />
-            {previewId ? (
-              <p className="text-muted-foreground text-xs">
-                ID: <span className="font-mono">{previewId}</span>
-              </p>
-            ) : null}
-            {error ? (
-              <p className="text-destructive text-xs">{error}</p>
-            ) : null}
-          </div>
+        <form onSubmit={handleSubmit}>
+          <CmsDialogBody className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="category-label">Category name</Label>
+              <Input
+                id="category-label"
+                value={label}
+                onChange={(event) => setLabel(event.target.value)}
+                placeholder="e.g. Product Updates"
+                maxLength={ARTICLE_FORM_LIMITS.categoryLabel}
+                disabled={isPending}
+                autoFocus
+              />
+              {previewId ? (
+                <p className="text-muted-foreground text-xs">
+                  ID: <span className="font-mono">{previewId}</span>
+                </p>
+              ) : null}
+              {error ? (
+                <p className="text-destructive text-xs">{error}</p>
+              ) : null}
+            </div>
+          </CmsDialogBody>
 
-          <DialogFooter>
+          <CmsDialogFooter>
             <Button
               type="button"
               variant="outline"
@@ -113,12 +116,15 @@ export function ArticleFormCreateCategoryDialog({
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isPending || label.trim().length < 2}>
+            <Button
+              type="submit"
+              disabled={isPending || label.trim().length < 2}
+            >
               {isPending ? "Creating..." : "Create Category"}
             </Button>
-          </DialogFooter>
+          </CmsDialogFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+      </CmsDialogContent>
+    </CmsDialog>
   );
 }

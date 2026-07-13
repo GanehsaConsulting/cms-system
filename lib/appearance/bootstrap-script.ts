@@ -6,6 +6,7 @@ import {
 
 const THEME_STORAGE_KEY = "cms:theme";
 const ACCENT_STORAGE_KEY = "cms:accent";
+const APP_ICON_STYLE_STORAGE_KEY = "cms:app-icon-style";
 
 export function createRootAppearanceBootstrapScript(): string {
   return `
@@ -34,6 +35,11 @@ export function createRootAppearanceBootstrapScript(): string {
   var accent =
     readCookie("${ACCENT_COOKIE_KEY}") || readStorage("${ACCENT_STORAGE_KEY}") || "blue";
 
+  var appIcon = readStorage("${APP_ICON_STYLE_STORAGE_KEY}") || "colored";
+  if (appIcon !== "colored" && appIcon !== "light" && appIcon !== "dark") {
+    appIcon = "colored";
+  }
+
   var dark = false;
   if (theme === "dark") {
     dark = true;
@@ -52,6 +58,7 @@ export function createRootAppearanceBootstrapScript(): string {
 
   var root = document.documentElement;
   root.dataset.accent = accent;
+  root.dataset.appIcon = appIcon;
   root.classList.toggle("dark", dark);
 })();
 `.trim();

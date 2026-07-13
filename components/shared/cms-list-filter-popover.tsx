@@ -12,8 +12,7 @@ import {
 } from "@/components/ui/popover";
 import {
   LIST_FILTER_POPOVER_CLASS,
-  LIST_TOOLBAR_CONTROL_HEIGHT,
-  LIST_TOOLBAR_CONTROL_SURFACE,
+  LIST_TOOLBAR_BUTTON_CLASS,
 } from "@/config/list-toolbar";
 import { cn } from "@/lib/utils";
 
@@ -36,18 +35,17 @@ export function CmsListFilterPopover({
         render={
           <Button
             type="button"
-            variant="outline"
-            size="sm"
+            variant="ghost"
+            size="default"
             className={cn(
-              LIST_TOOLBAR_CONTROL_HEIGHT,
-              LIST_TOOLBAR_CONTROL_SURFACE,
-              "gap-1.5",
-              hasActiveFilters && "border-primary/40",
+              LIST_TOOLBAR_BUTTON_CLASS,
+              hasActiveFilters && "bg-black/8 dark:bg-white/12",
             )}
+
           />
         }
       >
-        <FilterIcon className="size-3.5" />
+        <FilterIcon className="size-3.5 opacity-70" />
         Filter
         {hasActiveFilters ? (
           <span className="size-1.5 rounded-full bg-primary" aria-hidden />

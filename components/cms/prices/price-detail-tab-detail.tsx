@@ -1,106 +1,130 @@
-import { PriceDetailPanelActions } from "@/components/cms/prices/price-detail-panel-actions";
 import { PriceStatusBadge } from "@/components/cms/prices/price-status-badge";
+import { CmsDetailMetaGroup } from "@/components/shared/cms-detail-meta-group";
+import { CmsDetailMetaRow } from "@/components/shared/cms-detail-meta-row";
 import { RADIUS_DEEP } from "@/config/shape";
 import {
   calculateDiscountPercent,
   formatPriceCurrency,
 } from "@/lib/prices/format";
+import { getPriceCategoryLabel } from "@/lib/prices/categories";
 import { formatPriceDate } from "@/lib/prices/list";
 import { getPriceDisplayText } from "@/lib/prices/normalize";
 import type { Price } from "@/types/price";
+import type { PriceCategory } from "@/types/price-category";
 import { cn } from "@/lib/utils";
 
 interface PriceDetailTabDetailProps {
   price: Price;
+  categories: PriceCategory[];
 }
 
-export function PriceDetailTabDetail({ price }: PriceDetailTabDetailProps) {
+export function PriceDetailTabDetail({
+  price,
+  categories,
+}: PriceDetailTabDetailProps) {
   const discount = calculateDiscountPercent(
     price.price,
     price.strikethroughPrice,
   );
+  const description = getPriceDisplayText(price.description);
+  const whatsappMessage = getPriceDisplayText(price.whatsappMessage);
 
   return (
-    <dl className="mt-4 space-y-4 text-sm">
-      <div className="space-y-1">
-        <dt className="text-muted-foreground">Service</dt>
-        <dd>{getPriceDisplayText(price.service)}</dd>
-      </div>
+    <div className="space-y-4">
+      <CmsDetailMetaGroup label="Overview">
+        <CmsDetailMetaRow label="Service">
+          {getPriceDisplayText(price.service)}
+        </CmsDetailMetaRow>
+        <CmsDetailMetaRow label="Category">
+          {getPriceCategoryLabel(price.serviceSlug, categories)}
+        </CmsDetailMetaRow>
+        <CmsDetailMetaRow label="Status">
+          <span className="inline-flex justify-end">
+            <PriceStatusBadge isActive={price.isActive} />
+          </span>
+        </CmsDetailMetaRow>
+        <CmsDetailMetaRow label="Highlighted" showDivider={false}>
+          {price.highlighted ? "Yes" : "No"}
+        </CmsDetailMetaRow>
+      </CmsDetailMetaGroup>
 
-      <div className="space-y-1">
-        <dt className="text-muted-foreground">Service slug</dt>
-        <dd className="font-mono text-xs">{price.serviceSlug}</dd>
-      </div>
+      <CmsDetailMetaGroup label="Pricing">
+        <CmsDetailMetaRow label="Display">
+          <span className="tabular-nums">
+            {formatPriceCurrency(price.price)}
+          </span>
+        </CmsDetailMetaRow>
+        <CmsDetailMetaRow label="Gimmick">
+          <span className="text-muted-foreground tabular-nums line-through">
+            {formatPriceCurrency(price.strikethroughPrice)}
+          </span>
+        </CmsDetailMetaRow>
+        <CmsDetailMetaRow label="Discount" showDivider={false}>
+          {discount > 0 ? (
+            <span className="text-chart-3">{discount}% off</span>
+          ) : (
+            "—"
+          )}
+        </CmsDetailMetaRow>
+      </CmsDetailMetaGroup>
 
-      <div className="space-y-1">
-        <dt className="text-muted-foreground">Category</dt>
-        <dd>{price.category || "—"}</dd>
-      </div>
+      <CmsDetailMetaGroup label="WhatsApp">
+        <CmsDetailMetaRow label="Phone">
+          <span className="font-mono text-xs">
+            {price.whatsappPhone || "—"}
+          </span>
+        </CmsDetailMetaRow>
+        <CmsDetailMetaRow
+          label="Message"
+          stacked
+          showDivider={false}
+        >
+          <span className="text-muted-foreground">
+            {whatsappMessage || "—"}
+          </span>
+        </CmsDetailMetaRow>
+      </CmsDetailMetaGroup>
 
-      <div className="space-y-1">
-        <dt className="text-muted-foreground">Price</dt>
-        <dd className="font-medium tabular-nums">{formatPriceCurrency(price.price)}</dd>
-      </div>
+      <CmsDetailMetaGroup label="Features">
+        <CmsDetailMetaRow label="Count">
+          {price.features.length}
+        </CmsDetailMetaRow>
+        {price.features.length > 0 ? (
+          <CmsDetailMetaRow label="Preview" stacked showDivider={false}>
+            <ul className="space-y-1.5">
+              {price.features.slice(0, 5).map((feature) => (
+                <li
+                  key={feature.id}
+                  className={cn(
+                    RADIUS_DEEP,
+                    "bg-white/45 px-2.5 py-1.5 text-muted-foreground text-xs dark:bg-white/8",
+                  )}
+                >
+                  {getPriceDisplayText(feature.name)}
+                </li>
+              ))}
+            </ul>
+          </CmsDetailMetaRow>
+        ) : (
+          <CmsDetailMetaRow label="Preview" showDivider={false}>
+            —
+          </CmsDetailMetaRow>
+        )}
+      </CmsDetailMetaGroup>
 
-      <div className="space-y-1">
-        <dt className="text-muted-foreground">Original price</dt>
-        <dd className="text-muted-foreground tabular-nums line-through">
-          {formatPriceCurrency(price.strikethroughPrice)}
-        </dd>
-        {discount > 0 ? (
-          <dd className="text-muted-foreground text-xs">{discount}% discount</dd>
-        ) : null}
-      </div>
-
-      <div className="space-y-1">
-        <dt className="text-muted-foreground">Status</dt>
-        <dd>
-          <PriceStatusBadge isActive={price.isActive} />
-        </dd>
-      </div>
-
-      <div className="space-y-1">
-        <dt className="text-muted-foreground">Highlighted</dt>
-        <dd>{price.highlighted ? "Yes" : "No"}</dd>
-      </div>
-
-      <div className="space-y-1">
-        <dt className="text-muted-foreground">Features</dt>
-        <dd>{price.features.length}</dd>
-      </div>
-
-      {getPriceDisplayText(price.description) ? (
-        <div className="space-y-1">
-          <dt className="text-muted-foreground">Description</dt>
-          <dd className="text-muted-foreground leading-relaxed">
-            {getPriceDisplayText(price.description)}
-          </dd>
-        </div>
+      {description ? (
+        <CmsDetailMetaGroup label="Description">
+          <CmsDetailMetaRow label="Copy" stacked showDivider={false}>
+            <span className="text-muted-foreground">{description}</span>
+          </CmsDetailMetaRow>
+        </CmsDetailMetaGroup>
       ) : null}
 
-      <div className="space-y-2 border-[color:var(--separator)] border-t pt-4">
-        <p className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
-          Features preview
-        </p>
-        <ul className="space-y-1.5">
-          {price.features.slice(0, 5).map((feature) => (
-            <li
-              key={feature.id}
-              className={cn(
-                RADIUS_DEEP,
-                "bg-muted/30 px-2.5 py-1.5 text-muted-foreground text-xs",
-              )}
-            >
-              {getPriceDisplayText(feature.name)}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="space-y-1 border-[color:var(--separator)] border-t pt-4">
-        <dt className="text-muted-foreground">Updated</dt>
-        <dd>{formatPriceDate(price.updatedAt)}</dd>
-      </div>
-    </dl>
+      <CmsDetailMetaGroup>
+        <CmsDetailMetaRow label="Updated" showDivider={false}>
+          {formatPriceDate(price.updatedAt)}
+        </CmsDetailMetaRow>
+      </CmsDetailMetaGroup>
+    </div>
   );
 }

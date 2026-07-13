@@ -1,31 +1,36 @@
 "use client";
 
-import { Building2Icon, SidebarIcon } from "@/lib/icons";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { SidebarAppIcon } from "@/components/shared/sidebar-app-icon";
+import { SidebarProfileAvatar } from "@/components/cms/sidebar-profile-avatar";
 import { useAppearanceDrawer } from "@/components/shared/appearance-drawer-provider";
+import { useNotificationCenter } from "@/components/shared/notification-center-provider";
+import { SidebarAppIcon } from "@/components/shared/sidebar-app-icon";
 import {
   SidebarDock,
   SidebarDockItem,
   useSidebarDockTooltipVisible,
 } from "@/components/shared/sidebar-dock";
 import { useSidebar } from "@/components/ui/sidebar";
-import {
-  CMS_NAME,
-  appearanceNavItem,
-  collapsedDockNavItems,
-} from "@/config/nav";
 import { isArticleSectionActive } from "@/config/article-tabs";
+import { isBannerSectionActive } from "@/config/banner-tabs";
+import { isClientSectionActive } from "@/config/client-tabs";
+import { type CmsUser, CURRENT_CMS_USER } from "@/config/cms-user";
+import {
+  appearanceNavItem,
+  CMS_NAME,
+  contentNavLinks,
+  mainNavLinks,
+  notificationsNavItem,
+  utilityNavLinks,
+} from "@/config/nav";
 import { isPriceSectionActive } from "@/config/price-tabs";
 import {
-  SIDEBAR_APP_ICON_GLYPH,
-  SIDEBAR_APP_ICON_GRADIENTS,
-  SIDEBAR_APP_ICON_SHELL,
   SIDEBAR_DOCK_ACTIVE_DOT_CLASS,
   SIDEBAR_DOCK_LABEL_CLASS,
   SIDEBAR_DOCK_TRIGGER_CLASS,
 } from "@/config/sidebar";
+import { Building2Icon, SidebarIcon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 
 function DockLabel({ label }: { label: string }) {
@@ -33,7 +38,10 @@ function DockLabel({ label }: { label: string }) {
 
   return (
     <span
-      className={cn(SIDEBAR_DOCK_LABEL_CLASS, visible ? "opacity-100" : "opacity-0")}
+      className={cn(
+        SIDEBAR_DOCK_LABEL_CLASS,
+        visible ? "opacity-100" : "opacity-0",
+      )}
       aria-hidden={!visible}
     >
       {label}
@@ -46,41 +54,24 @@ function DockActiveDot({ active }: { active: boolean }) {
     return null;
   }
 
-  return (
-    <span
-      aria-hidden
-      className={SIDEBAR_DOCK_ACTIVE_DOT_CLASS}
-    />
-  );
+  return <span aria-hidden className={SIDEBAR_DOCK_ACTIVE_DOT_CLASS} />;
 }
 
 interface DockAppButtonProps {
   href?: string;
   label: string;
-  gradient?: string;
   isActive?: boolean;
   onClick?: () => void;
-  bare?: boolean;
   children: React.ReactNode;
 }
 
 function DockAppButton({
   href,
   label,
-  gradient,
   isActive = false,
   onClick,
-  bare = false,
   children,
 }: DockAppButtonProps) {
-  const icon = bare ? (
-    children
-  ) : (
-    <span className={cn(SIDEBAR_APP_ICON_SHELL, "bg-linear-to-b", gradient)}>
-      {children}
-    </span>
-  );
-
   return (
     <div className="relative flex items-center justify-center">
       {href ? (
@@ -90,7 +81,7 @@ function DockAppButton({
           aria-current={isActive ? "page" : undefined}
           className={SIDEBAR_DOCK_TRIGGER_CLASS}
         >
-          {icon}
+          {children}
         </Link>
       ) : (
         <button
@@ -99,7 +90,7 @@ function DockAppButton({
           className={SIDEBAR_DOCK_TRIGGER_CLASS}
           onClick={onClick}
         >
-          {icon}
+          {children}
         </button>
       )}
       <DockLabel label={label} />
@@ -117,50 +108,52 @@ function isDockItemActive(href: string, pathname: string) {
     return isPriceSectionActive(pathname);
   }
 
+  if (href === "/clients") {
+    return isClientSectionActive(pathname);
+  }
+
+  if (href === "/banners") {
+    return isBannerSectionActive(pathname);
+  }
+
   return pathname === href;
 }
 
-export function SidebarCollapsedDock() {
+interface SidebarCollapsedDockProps {
+  user?: CmsUser;
+  onOpenProfile?: () => void;
+  isProfileOpen?: boolean;
+}
+
+export function SidebarCollapsedDock({
+  user = CURRENT_CMS_USER,
+  onOpenProfile,
+  isProfileOpen = false,
+}: SidebarCollapsedDockProps) {
   const pathname = usePathname();
   const { toggleSidebar } = useSidebar();
   const { open, openAppearance } = useAppearanceDrawer();
+  const { open: notificationsOpen, openNotificationCenter } =
+    useNotificationCenter();
 
   let index = 0;
 
   return (
     <SidebarDock>
+      {/* Matches expanded: brand + collapse, then Menu → Content → System → profile */}
       <SidebarDockItem index={index++}>
-        <DockAppButton href="/" label={CMS_NAME} bare>
-          <SidebarAppIcon
-            icon={Building2Icon}
-            gradient={SIDEBAR_APP_ICON_GRADIENTS.brand}
-            forceAppStyle
-          />
+        <DockAppButton href="/" label={CMS_NAME}>
+          <SidebarAppIcon icon={Building2Icon} tone="brand" size="dock" />
         </DockAppButton>
       </SidebarDockItem>
 
       <SidebarDockItem index={index++}>
-        <DockAppButton
-          label="Perluas sidebar"
-          gradient={SIDEBAR_APP_ICON_GRADIENTS.collapse}
-          onClick={toggleSidebar}
-        >
-          <SidebarIcon className={SIDEBAR_APP_ICON_GLYPH} />
+        <DockAppButton label="Expand sidebar" onClick={toggleSidebar}>
+          <SidebarAppIcon icon={SidebarIcon} tone="collapse" size="dock" />
         </DockAppButton>
       </SidebarDockItem>
 
-      <SidebarDockItem index={index++}>
-        <DockAppButton
-          label={appearanceNavItem.title}
-          gradient={appearanceNavItem.gradient}
-          isActive={open}
-          onClick={openAppearance}
-        >
-          <appearanceNavItem.icon className={SIDEBAR_APP_ICON_GLYPH} />
-        </DockAppButton>
-      </SidebarDockItem>
-
-      {collapsedDockNavItems.map((item) => {
+      {mainNavLinks.map((item) => {
         const itemIndex = index++;
         const isActive = isDockItemActive(item.href, pathname);
 
@@ -169,14 +162,89 @@ export function SidebarCollapsedDock() {
             <DockAppButton
               href={item.href}
               label={item.title}
-              gradient={item.gradient}
               isActive={isActive}
             >
-              <item.icon className={SIDEBAR_APP_ICON_GLYPH} />
+              <SidebarAppIcon icon={item.icon} tone={item.tone} size="dock" />
             </DockAppButton>
           </SidebarDockItem>
         );
       })}
+
+      {contentNavLinks.map((item) => {
+        const itemIndex = index++;
+        const isActive = isDockItemActive(item.href, pathname);
+
+        return (
+          <SidebarDockItem key={item.href} index={itemIndex}>
+            <DockAppButton
+              href={item.href}
+              label={item.title}
+              isActive={isActive}
+            >
+              <SidebarAppIcon icon={item.icon} tone={item.tone} size="dock" />
+            </DockAppButton>
+          </SidebarDockItem>
+        );
+      })}
+
+      <SidebarDockItem index={index++}>
+        <DockAppButton
+          label={notificationsNavItem.title}
+          isActive={notificationsOpen}
+          onClick={openNotificationCenter}
+        >
+          <SidebarAppIcon
+            icon={notificationsNavItem.icon}
+            tone={notificationsNavItem.tone}
+            size="dock"
+          />
+        </DockAppButton>
+      </SidebarDockItem>
+
+      <SidebarDockItem index={index++}>
+        <DockAppButton
+          label={appearanceNavItem.title}
+          isActive={open}
+          onClick={openAppearance}
+        >
+          <SidebarAppIcon
+            icon={appearanceNavItem.icon}
+            tone={appearanceNavItem.tone}
+            size="dock"
+          />
+        </DockAppButton>
+      </SidebarDockItem>
+
+      {utilityNavLinks.map((item) => {
+        const itemIndex = index++;
+        const isActive = isDockItemActive(item.href, pathname);
+
+        return (
+          <SidebarDockItem key={item.href} index={itemIndex}>
+            <DockAppButton
+              href={item.href}
+              label={item.title}
+              isActive={isActive}
+            >
+              <SidebarAppIcon icon={item.icon} tone={item.tone} size="dock" />
+            </DockAppButton>
+          </SidebarDockItem>
+        );
+      })}
+
+      <SidebarDockItem index={index++}>
+        <DockAppButton
+          label={user.name}
+          isActive={isProfileOpen}
+          onClick={onOpenProfile}
+        >
+          <SidebarProfileAvatar
+            name={user.name}
+            avatarUrl={user.avatarUrl}
+            size="dock"
+          />
+        </DockAppButton>
+      </SidebarDockItem>
     </SidebarDock>
   );
 }

@@ -6,8 +6,9 @@ import { ArticleFormPublishButton } from "@/components/cms/articles/article-form
 import { Button } from "@/components/ui/button";
 import type { ArticleStatus } from "@/types/article";
 
-interface ArticleFormHeaderProps { 
+interface ArticleFormHeaderProps {
   mode: "create" | "edit";
+  articleTitle?: string;
   isPending: boolean;
   onPreview: () => void;
   onSaveDraft: () => void;
@@ -17,12 +18,15 @@ interface ArticleFormHeaderProps {
 
 export function ArticleFormHeader({
   mode,
+  articleTitle,
   isPending,
   onPreview,
   onSaveDraft,
   onPublish,
   onSetStatus,
 }: ArticleFormHeaderProps) {
+  const displayTitle = articleTitle?.trim();
+
   return (
     <div className="space-y-3">
       <Link
@@ -35,9 +39,20 @@ export function ArticleFormHeader({
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
-          <h1 className="font-semibold text-xl tracking-tight">
-            {mode === "create" ? "Create New Article" : "Edit Article"}
-          </h1>
+          {mode === "edit" && displayTitle ? (
+            <div className="flex flex-row flex-wrap gap-1">
+              <h1 className="font-semibold text-xl tracking-tight text-muted-foreground">
+                Edit Article
+              </h1>
+              <h1 className="truncate font-semibold text-xl tracking-tight">
+                {displayTitle}
+              </h1>
+            </div>
+          ) : (
+            <h1 className="font-semibold text-xl tracking-tight">
+              Create New Article
+            </h1>
+          )}
           <p className="mt-1 text-muted-foreground text-sm">
             Write informative and high-quality articles for your audience.
           </p>

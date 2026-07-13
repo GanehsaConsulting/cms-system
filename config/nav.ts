@@ -1,27 +1,27 @@
+import type { SidebarAppIconTone } from "@/config/sidebar";
 import {
+  BellIcon,
   DollarSignIcon,
   FileTextIcon,
   GearSixIcon,
-  PaintpaletteIcon,
-  SquaresFourIcon,
   type Icon,
+  PaintpaletteIcon,
+  Person2Icon,
+  PhotoIcon,
+  SquaresFourIcon,
 } from "@/lib/icons";
-import {
-  SIDEBAR_APP_ICON_GRADIENTS,
-  type SidebarAppIconGradient,
-} from "@/config/sidebar";
 
 export interface NavLink {
   title: string;
   href: string;
   icon: Icon;
-  gradient: SidebarAppIconGradient;
+  tone: SidebarAppIconTone;
 }
 
 export interface NavActionItem {
   title: string;
   icon: Icon;
-  gradient: SidebarAppIconGradient;
+  tone: SidebarAppIconTone;
 }
 
 export const CMS_NAME = "CMS System";
@@ -32,42 +32,54 @@ export const mainNavLinks: NavLink[] = [
     title: "Dashboard",
     href: "/",
     icon: SquaresFourIcon,
-    gradient: SIDEBAR_APP_ICON_GRADIENTS.overview,
+    tone: "overview",
   },
 ];
 
 export const contentNavLinks: NavLink[] = [
   {
-    title: "Artikel",
+    title: "Articles",
     href: "/articles",
     icon: FileTextIcon,
-    gradient: SIDEBAR_APP_ICON_GRADIENTS.articles,
+    tone: "articles",
   },
   {
-    title: "Prices",
+    title: "Prices Management",
     href: "/prices",
     icon: DollarSignIcon,
-    gradient: SIDEBAR_APP_ICON_GRADIENTS.prices,
+    tone: "prices",
+  },
+  {
+    title: "Clients",
+    href: "/clients",
+    icon: Person2Icon,
+    tone: "clients",
+  },
+  {
+    title: "Banners",
+    href: "/banners",
+    icon: PhotoIcon,
+    tone: "banners",
   },
 ];
 
 export const appearanceNavItem: NavActionItem = {
   title: "Appearance",
   icon: PaintpaletteIcon,
-  gradient: SIDEBAR_APP_ICON_GRADIENTS.appearance,
+  tone: "appearance",
+};
+
+export const notificationsNavItem: NavActionItem = {
+  title: "Notifications",
+  icon: BellIcon,
+  tone: "notifications",
 };
 
 export const utilityNavLinks: NavLink[] = [
   {
-    title: "Pengaturan",
+    title: "Settings",
     href: "/settings",
     icon: GearSixIcon,
-    gradient: SIDEBAR_APP_ICON_GRADIENTS.settings,
+    tone: "settings",
   },
-];
-
-/** Flat nav for collapsed dock — excludes home (brand tile covers `/`). */
-export const collapsedDockNavItems: NavLink[] = [
-  ...contentNavLinks,
-  ...utilityNavLinks,
 ];

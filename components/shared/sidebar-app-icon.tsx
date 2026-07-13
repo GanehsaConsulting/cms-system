@@ -1,47 +1,55 @@
 "use client";
 
 import type { Icon } from "@/lib/icons";
-import { useSidebar } from "@/components/ui/sidebar";
+import { useAppearance } from "@/components/shared/appearance-provider";
 import {
-  SIDEBAR_APP_ICON_GLYPH,
+  getSidebarAppIconTone,
+  SIDEBAR_APP_ICON_GLYPH_SHADOW_COLORED,
+  SIDEBAR_APP_ICON_GLYPH_SIZE,
   SIDEBAR_APP_ICON_SHELL,
-  type SidebarAppIconGradient,
+  SIDEBAR_DOCK_APP_ICON_GLYPH_SIZE,
+  SIDEBAR_DOCK_APP_ICON_SHELL,
+  type SidebarAppIconTone,
 } from "@/config/sidebar";
 import { cn } from "@/lib/utils";
 
 interface SidebarAppIconProps {
   icon: Icon;
-  gradient: SidebarAppIconGradient;
+  tone: SidebarAppIconTone;
   className?: string;
-  isActive?: boolean;
+  /** `menu` = System Settings scale; `dock` = header / collapsed rail. */
+  size?: "menu" | "dock";
+  /** @deprecated Use `size="dock"` instead. */
   forceAppStyle?: boolean;
 }
 
 export function SidebarAppIcon({
   icon: IconComponent,
-  gradient,
+  tone,
   className,
-  isActive = false,
+  size = "menu",
   forceAppStyle = false,
 }: SidebarAppIconProps) {
-  const { state } = useSidebar();
-  const isAppStyle = forceAppStyle || state === "collapsed";
-
-  if (!isAppStyle) {
-    return <IconComponent className={cn("size-4 shrink-0", className)} />;
-  }
+  const isDock = size === "dock" || forceAppStyle;
+  const { appIconStyle } = useAppearance();
+  const { shell, glyph } = getSidebarAppIconTone(tone, appIconStyle);
 
   return (
     <span
       className={cn(
-        SIDEBAR_APP_ICON_SHELL,
+        isDock ? SIDEBAR_DOCK_APP_ICON_SHELL : SIDEBAR_APP_ICON_SHELL,
         "bg-linear-to-b",
-        gradient,
-        isActive && "ring-2 ring-white/80 ring-offset-2 ring-offset-black/10",
+        shell,
         className,
       )}
     >
-      <IconComponent className={SIDEBAR_APP_ICON_GLYPH} />
+      <IconComponent
+        className={cn(
+          isDock ? SIDEBAR_DOCK_APP_ICON_GLYPH_SIZE : SIDEBAR_APP_ICON_GLYPH_SIZE,
+          glyph,
+          appIconStyle === "colored" && SIDEBAR_APP_ICON_GLYPH_SHADOW_COLORED,
+        )}
+      />
     </span>
   );
 }

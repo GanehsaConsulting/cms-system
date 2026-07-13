@@ -7,7 +7,8 @@ import { ArticleFormCategoryField } from "@/components/cms/articles/article-form
 import { ArticleFormHighlightedField } from "@/components/cms/articles/article-form-highlighted-field";
 import { ArticleFormTagsField } from "@/components/cms/articles/article-form-tags-field";
 import { ArticleStatusBadge } from "@/components/cms/articles/article-status-badge";
-import { Input } from "@/components/ui/input";
+import { CmsFormSectionHeading } from "@/components/shared/cms-form-section-heading";
+import { SolidSurface } from "@/components/shared/solid-surface";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -15,17 +16,13 @@ import {
   SelectItem,
   SelectTrigger,
 } from "@/components/ui/select";
-import { GlassSurface } from "@/components/shared/glass-surface";
 import type { ArticleCategoryStyle } from "@/config/article-categories";
-import { formatArticleDate } from "@/lib/articles/list";
 import type { ArticleFormValues } from "@/lib/validations/article";
-import type { Article } from "@/types/article";
 import type { CustomArticleCategory } from "@/types/category";
 
 interface ArticleFormPublicationPanelProps {
   control: Control<ArticleFormValues>;
   tagsError?: string;
-  article?: Article;
   categories: ArticleCategoryStyle[];
   allowCreateCategory?: boolean;
   onCategoriesChange: (categories: ArticleCategoryStyle[]) => void;
@@ -35,17 +32,20 @@ interface ArticleFormPublicationPanelProps {
 export function ArticleFormPublicationPanel({
   control,
   tagsError,
-  article,
   categories,
   allowCreateCategory = false,
   onCategoriesChange,
   onCategoryCreated,
 }: ArticleFormPublicationPanelProps) {
   return (
-    <GlassSurface className="p-4">
-      <h2 className="font-semibold text-sm">Publication</h2>
+    <SolidSurface className="space-y-4 p-4">
+      <CmsFormSectionHeading
+        title="Publication"
+        description="Status, taxonomy, and author for the public article."
+        accent="publication"
+      />
 
-      <div className="mt-4 space-y-4">
+      <div className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="status">Status</Label>
           <Controller
@@ -95,30 +95,7 @@ export function ArticleFormPublicationPanel({
         />
 
         <ArticleFormAuthorField control={control} />
-
-        {article ? (
-          <>
-            <div className="space-y-2">
-              <Label htmlFor="updated-at">Updated</Label>
-              <Input
-                id="updated-at"
-                readOnly
-                value={formatArticleDate(article.updatedAt)}
-                className="bg-muted/20"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="created-at">Created</Label>
-              <Input
-                id="created-at"
-                readOnly
-                value={formatArticleDate(article.createdAt)}
-                className="bg-muted/20"
-              />
-            </div>
-          </>
-        ) : null}
       </div>
-    </GlassSurface>
+    </SolidSurface>
   );
 }

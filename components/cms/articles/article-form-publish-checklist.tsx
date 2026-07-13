@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo } from "react";
-import { GlassSurface } from "@/components/shared/glass-surface";
+import { CmsFormSectionHeading } from "@/components/shared/cms-form-section-heading";
+import { SolidSurface } from "@/components/shared/solid-surface";
 import { CheckIcon } from "@/lib/icons";
 import { getArticlePublishChecklist } from "@/lib/articles/publish-checklist";
 import type { PublishChecklistValues } from "@/lib/articles/publish-checklist";
@@ -85,28 +86,27 @@ export function ArticleFormPublishChecklist({
   );
 
   return (
-    <GlassSurface className="p-4">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <h2 className="font-semibold text-sm">Publish Checklist</h2>
-          <p className="mt-1 text-muted-foreground text-xs leading-relaxed">
-            {checklist.completedCount} of {checklist.totalCount} complete
-          </p>
-        </div>
-        <div className="text-right">
-          <p
-            className={cn(
-              "font-semibold text-2xl tabular-nums tracking-tight",
-              getScoreTone(checklist.score),
-            )}
-          >
-            {checklist.score}
-          </p>
-          <p className="text-muted-foreground text-xs">Score</p>
-        </div>
-      </div>
+    <SolidSurface className="space-y-4 p-4">
+      <CmsFormSectionHeading
+        title="Publish Checklist"
+        description={`${checklist.completedCount} of ${checklist.totalCount} complete`}
+        accent="checklist"
+        trailing={
+          <div className="text-right">
+            <p
+              className={cn(
+                "font-semibold text-2xl tabular-nums tracking-tight",
+                getScoreTone(checklist.score),
+              )}
+            >
+              {checklist.score}
+            </p>
+            <p className="text-muted-foreground text-xs">Score</p>
+          </div>
+        }
+      />
 
-      <div className="mt-4 space-y-2">
+      <div className="space-y-2">
         <div
           className="h-2 overflow-hidden rounded-full bg-muted/50"
           role="progressbar"
@@ -129,7 +129,7 @@ export function ArticleFormPublishChecklist({
         </p>
       </div>
 
-      <ul className="mt-4 space-y-3 border-[color:var(--separator)] border-t pt-4">
+      <ul className="space-y-3 border-(--separator) border-t pt-4">
         {checklist.items.map((item) => (
           <ChecklistRow
             key={item.id}
@@ -140,6 +140,6 @@ export function ArticleFormPublishChecklist({
           />
         ))}
       </ul>
-    </GlassSurface>
+    </SolidSurface>
   );
 }

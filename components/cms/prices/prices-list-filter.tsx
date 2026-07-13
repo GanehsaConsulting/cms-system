@@ -20,11 +20,13 @@ import {
   LIST_FILTER_FIELD_CLASS,
   LIST_FILTER_FIELDS_CLASS,
 } from "@/config/list-toolbar";
+import type { PriceCategory } from "@/types/price-category";
 
 interface PricesListFilterProps {
   statusFilter: PriceStatusFilter;
   serviceFilter: string;
   services: string[];
+  categories: PriceCategory[];
   sort: PriceListSort;
   hasActiveFilters: boolean;
   onStatusFilterChange: (filter: PriceStatusFilter) => void;
@@ -37,6 +39,7 @@ export function PricesListFilter({
   statusFilter,
   serviceFilter,
   services,
+  categories,
   sort,
   hasActiveFilters,
   onStatusFilterChange,
@@ -71,6 +74,7 @@ export function PricesListFilter({
         <PricesListServiceFilterField
           value={serviceFilter}
           services={services}
+          categories={categories}
           onChange={onServiceFilterChange}
         />
 

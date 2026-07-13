@@ -62,7 +62,8 @@ export function getPriceSearchText(price: Price) {
     getLocalizedSearchText(price.service),
     getLocalizedSearchText(price.packageName),
     getLocalizedSearchText(price.description),
-    getLocalizedSearchText(price.whatsappLink),
+    price.whatsappPhone,
+    getLocalizedSearchText(price.whatsappMessage),
     ...price.features.flatMap((feature) => getLocalizedSearchText(feature.name)),
   ]
     .join(" ")

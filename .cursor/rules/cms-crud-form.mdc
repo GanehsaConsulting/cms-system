@@ -1,0 +1,48 @@
+---
+description: CMS CRUD create/edit form UI pattern (solid cards, section headings, info panel, danger zone)
+globs: components/cms/**/*-form*.tsx,components/shared/cms-form-*.tsx,config/form-ui.ts,lib/**/form-changes.ts
+alwaysApply: false
+---
+
+# CMS CRUD Form UI Pattern
+
+Use this layout for **create/edit** pages (Articles and Prices are the reference). Future CRUD modules must follow the same pattern.
+
+## Layout
+
+- Page shell: `CmsPageShell` (glass) with sticky header actions
+- Nested cards: **`SolidSurface`** — never nest `GlassSurface` inside the page shell for form sections
+- Grid: main column + sticky-friendly aside (`xl:grid-cols-[minmax(0,1fr)_18rem|20rem]`)
+
+## Shared primitives (`components/shared/`)
+
+| Component | Use |
+|-----------|-----|
+| `CmsFormSectionHeading` | Section title + SF icon + accent color |
+| `CmsFormFieldGroup` | Nested group inside a card (`bg-muted/50`, **no border**) |
+| `CmsFormInfoPanel` | Created / updated / slug + unsaved-changes notice |
+| `CmsFormDangerZone` | Destructive delete card (edit only) |
+| Accents / icons | `config/form-ui.ts` + `cms-form-section-icons.tsx` |
+
+Domain wrappers (e.g. `ArticleFormInfoPanel`, `PriceFormDangerZone`) only supply copy and dates — do not duplicate the visual pattern.
+
+## Required sections
+
+1. **Header** — Back link; create: plain title; edit: muted mode label + **entity name** accent
+2. **Main** — One or more `SolidSurface` cards with section headings (content / media / etc.)
+3. **Aside — Information** — metadata + dirty sections (amber) via `get*FormChangedSections` in `lib/{domain}/form-changes.ts`
+4. **Aside — Publication / domain panels** — status and related fields
+5. **Aside — Danger zone** — edit mode only
+
+## Dirty tracking
+
+- `useForm` `isDirty` + `get*FormChangedSections(baseline, watched)`
+- After successful **update**, call `reset(values)` so the info panel clears
+- Business logic stays in `lib/` — not in components
+
+## Do / Don't
+
+- ✅ `SolidSurface` for form cards; English UI copy
+- ✅ One file = one component; share primitives instead of copying price/article markup
+- ❌ Nested glass cards, colored left borders on field groups, or reinventing section headings
+- ❌ Put created/updated only in Publication — prefer the Information panel

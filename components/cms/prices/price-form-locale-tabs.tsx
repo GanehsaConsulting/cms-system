@@ -23,7 +23,7 @@ export function PriceFormLocaleTabs({
 }: PriceFormLocaleTabsProps) {
   return (
     <div className="space-y-2">
-      <p className="font-medium text-sm">Languages</p>
+      <p className="font-medium text-chart-1 text-sm">Languages</p>
       <nav
         className={cn(IOS_SEGMENTED_TRACK, "max-w-md")}
         role="tablist"
@@ -54,8 +54,8 @@ export function PriceFormLocaleTabs({
         })}
       </nav>
       <p className="text-muted-foreground text-xs">
-        Service, package name, WhatsApp link, and features are required in all
-        languages.
+        Service, package name, WhatsApp message, and features are required in
+        all languages. The WhatsApp number is shared.
       </p>
     </div>
   );

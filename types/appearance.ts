@@ -1,5 +1,7 @@
 export type ThemeMode = "light" | "dark" | "system";
 
+export type AppIconStyle = "colored" | "light" | "dark";
+
 export type AccentColorId =
   | "blue"
   | "purple"
@@ -13,4 +15,5 @@ export type AccentColorId =
 export interface AppearanceSettings {
   themeMode: ThemeMode;
   accentId: AccentColorId;
+  appIconStyle: AppIconStyle;
 }

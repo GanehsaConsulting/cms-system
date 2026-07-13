@@ -20,7 +20,7 @@
 }
 
 .article-editor-wrapper .tiptap.ProseMirror p.is-editor-empty:first-child::before {
-  color: var(--muted-foreground);
+  color: var(--placeholder);
   content: attr(data-placeholder);
   float: left;
   height: 0;

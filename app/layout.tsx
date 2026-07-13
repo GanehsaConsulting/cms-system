@@ -4,6 +4,7 @@ import "./globals.css";
 import { RootBootstrapScript } from "@/components/shared/root-bootstrap-script";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { DEFAULT_ACCENT_ID } from "@/config/accent-colors";
+import { DEFAULT_APP_ICON_STYLE } from "@/config/app-icon-styles";
 import { DEFAULT_WALLPAPER_ID } from "@/config/wallpapers";
 import { cn } from "@/lib/utils";
 
@@ -32,6 +33,7 @@ export default function RootLayout({
       lang="id"
       className={cn("h-full antialiased", geistSans.variable, geistMono.variable)}
       data-accent={DEFAULT_ACCENT_ID}
+      data-app-icon={DEFAULT_APP_ICON_STYLE}
       data-wallpaper={DEFAULT_WALLPAPER_ID}
       suppressHydrationWarning
     >

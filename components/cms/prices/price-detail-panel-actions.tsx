@@ -4,15 +4,10 @@ import { PencilSimpleIcon, TrashIcon } from "@/lib/icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
-import { PriceStatusBadge } from "@/components/cms/prices/price-status-badge";
 import { Button } from "@/components/ui/button";
 import { PRICE_ACTION_CONFIRMATIONS } from "@/config/price-actions";
 import { useConfirmDialog } from "@/hooks/use-confirm-dialog";
 import { deletePriceAction } from "@/lib/actions/prices";
-import {
-  calculateDiscountPercent,
-  formatPriceCurrency,
-} from "@/lib/prices/format";
 import { getPriceDisplayText } from "@/lib/prices/normalize";
 import type { Price } from "@/types/price";
 
@@ -43,11 +38,11 @@ export function PriceDetailPanelActions({ price }: PriceDetailPanelActionsProps)
 
   return (
     <>
-      <div className="flex items-center gap-1.5 border-[color:var(--separator)] border-t p-3">
+      <div className="flex items-center gap-1.5 border-(--separator) border-t p-3">
         <Button
-          variant="outline"
+          variant="secondary"
           size="sm"
-          className="gap-1"
+          className="gap-1 bg-white/45 dark:bg-secondary"
           nativeButton={false}
           render={<Link href={`/prices/${price.id}/edit`} />}
         >
@@ -57,9 +52,9 @@ export function PriceDetailPanelActions({ price }: PriceDetailPanelActionsProps)
 
         <Button
           type="button"
-          variant="ghost"
+          variant="secondary"
           size="sm"
-          className="ml-auto gap-1 text-destructive hover:bg-destructive/10 hover:text-destructive"
+          className="ml-auto gap-1 bg-white/45 text-destructive hover:bg-destructive/15 hover:text-destructive dark:bg-secondary"
           disabled={isPending}
           onClick={handleDelete}
         >

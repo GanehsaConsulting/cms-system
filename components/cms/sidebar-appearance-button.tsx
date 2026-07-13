@@ -19,8 +19,7 @@ export function SidebarAppearanceButton() {
     >
       <SidebarAppIcon
         icon={appearanceNavItem.icon}
-        gradient={appearanceNavItem.gradient}
-        isActive={open}
+        tone={appearanceNavItem.tone}
       />
       <span>{appearanceNavItem.title}</span>
     </SidebarMenuButton>

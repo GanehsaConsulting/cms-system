@@ -24,11 +24,13 @@ export function resolveDarkMode(themeMode: ThemeMode): boolean {
 export function applyAppearance({
   themeMode,
   accentId,
+  appIconStyle,
 }: AppearanceSettings): void {
   const root = document.documentElement;
   const resolvedDark = resolveDarkMode(themeMode);
 
   root.dataset.accent = accentId;
+  root.dataset.appIcon = appIconStyle;
   root.classList.toggle("dark", resolvedDark);
   writeClientResolvedDarkCookie(resolvedDark);
 }

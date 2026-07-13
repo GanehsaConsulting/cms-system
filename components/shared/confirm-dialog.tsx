@@ -2,13 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  CmsDialog,
+  CmsDialogContent,
+  CmsDialogDescription,
+  CmsDialogFooter,
+  CmsDialogHeader,
+  CmsDialogTitle,
+} from "@/components/shared/cms-dialog";
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -42,14 +42,14 @@ export function ConfirmDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent showCloseButton={!isPending} className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
-        </DialogHeader>
+    <CmsDialog open={open} onOpenChange={handleOpenChange}>
+      <CmsDialogContent showCloseButton={!isPending} size="sm">
+        <CmsDialogHeader>
+          <CmsDialogTitle>{title}</CmsDialogTitle>
+          <CmsDialogDescription>{description}</CmsDialogDescription>
+        </CmsDialogHeader>
 
-        <DialogFooter>
+        <CmsDialogFooter>
           <Button
             type="button"
             variant="outline"
@@ -66,8 +66,8 @@ export function ConfirmDialog({
           >
             {isPending ? "Working..." : confirmLabel}
           </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </CmsDialogFooter>
+      </CmsDialogContent>
+    </CmsDialog>
   );
 }

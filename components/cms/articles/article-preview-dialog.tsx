@@ -2,12 +2,12 @@
 
 import { ArticlePreviewPage } from "@/components/cms/articles/article-preview-page";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  CmsDialog,
+  CmsDialogContent,
+  CmsDialogDescription,
+  CmsDialogHeader,
+  CmsDialogTitle,
+} from "@/components/shared/cms-dialog";
 import type { ArticlePreviewData } from "@/types/article-preview";
 
 interface ArticlePreviewDialogProps {
@@ -24,23 +24,24 @@ export function ArticlePreviewDialog({
   publishedAt,
 }: ArticlePreviewDialogProps) {
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
+    <CmsDialog open={open} onOpenChange={onOpenChange}>
+      <CmsDialogContent
         showCloseButton
-        className="flex max-h-[min(92svh,56rem)] w-[min(100vw-1.5rem,56rem)] max-w-none flex-col gap-0 overflow-hidden p-0 sm:max-w-none"
+        size="2xl"
+        className="flex max-h-[min(92svh,56rem)] flex-col"
       >
-        <DialogHeader className="shrink-0 border-[color:var(--separator)] border-b px-5 py-4">
-          <DialogTitle>Article Preview</DialogTitle>
-          <DialogDescription>
+        <CmsDialogHeader>
+          <CmsDialogTitle>Article Preview</CmsDialogTitle>
+          <CmsDialogDescription>
             How this article will appear on your company profile site after
             publishing.
-          </DialogDescription>
-        </DialogHeader>
+          </CmsDialogDescription>
+        </CmsDialogHeader>
 
         <div className="min-h-0 flex-1 overflow-y-auto">
           <ArticlePreviewPage article={article} publishedAt={publishedAt} />
         </div>
-      </DialogContent>
-    </Dialog>
+      </CmsDialogContent>
+    </CmsDialog>
   );
 }

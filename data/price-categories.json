@@ -1,0 +1,38 @@
+[
+  {
+    "id": "virtual-office",
+    "label": "Virtual Office",
+    "createdAt": "2026-01-01T08:00:00.000Z",
+    "updatedAt": "2026-01-01T08:00:00.000Z"
+  },
+  {
+    "id": "pendirian-pt",
+    "label": "Company Formation (PT)",
+    "createdAt": "2026-01-01T08:00:00.000Z",
+    "updatedAt": "2026-01-01T08:00:00.000Z"
+  },
+  {
+    "id": "pendirian-pt-pma",
+    "label": "Foreign Investment (PT PMA)",
+    "createdAt": "2026-01-01T08:00:00.000Z",
+    "updatedAt": "2026-01-01T08:00:00.000Z"
+  },
+  {
+    "id": "pendirian-cv",
+    "label": "Company Formation (CV)",
+    "createdAt": "2026-01-01T08:00:00.000Z",
+    "updatedAt": "2026-01-01T08:00:00.000Z"
+  },
+  {
+    "id": "website-development",
+    "label": "Website Development",
+    "createdAt": "2026-01-01T08:00:00.000Z",
+    "updatedAt": "2026-01-01T08:00:00.000Z"
+  },
+  {
+    "id": "ikan",
+    "label": "ikan",
+    "createdAt": "2026-07-13T08:08:12.520Z",
+    "updatedAt": "2026-07-13T08:08:12.520Z"
+  }
+]

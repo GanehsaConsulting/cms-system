@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { PriceForm } from "@/components/cms/price-form";
+import { getPriceCategories } from "@/lib/db/price-categories";
 import { getPriceById } from "@/lib/db/prices";
 
 interface EditPricePageProps {
@@ -8,11 +9,14 @@ interface EditPricePageProps {
 
 export default async function EditPricePage({ params }: EditPricePageProps) {
   const { id } = await params;
-  const price = await getPriceById(id);
+  const [price, categories] = await Promise.all([
+    getPriceById(id),
+    getPriceCategories(),
+  ]);
 
   if (!price) {
     notFound();
   }
 
-  return <PriceForm price={price} />;
+  return <PriceForm price={price} categories={categories} />;
 }

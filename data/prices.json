@@ -22,10 +22,11 @@
     },
     "price": 1900000,
     "strikethroughPrice": 2836000,
-    "whatsappLink": {
-      "id": "https://wa.me/6281234567890",
-      "en": "https://wa.me/6281234567890",
-      "zh": "https://wa.me/6281234567890"
+    "whatsappPhone": "628887127000",
+    "whatsappMessage": {
+      "id": "Halo, saya tertarik untuk menggunakan layanan dari Ganesha Consulting",
+      "en": "Hi, I'm interested in using services from Ganesha Consulting",
+      "zh": "您好，我对 Ganesha Consulting 的服务感兴趣"
     },
     "isActive": true,
     "features": [
