@@ -1,0 +1,60 @@
+---
+description: UI copy and system strings must be English
+alwaysApply: true
+---
+
+# UI Language — English Only
+
+All **user-facing system text** must be **English** for consistency across the CMS.
+
+## Applies to
+
+- Page titles, subtitles, descriptions
+- Navigation labels (`config/nav.ts`, sidebar, tabs)
+- Buttons, links, placeholders, tooltips
+- Table headers, filter labels, pagination text
+- Empty states, success/error messages, confirmations
+- Form labels, validation messages (`lib/validations/`)
+- `aria-label`, `aria-description`, `title` attributes
+- Status/badge labels and enum display text
+- Settings / Appearance drawer copy
+
+## Does NOT apply to
+
+- **Article content** (title, excerpt, body) — author-controlled
+- **Git commits, PRs, code comments** — follow team preference
+- **User chat** with the agent — respond in the user's language
+
+## Locale
+
+- UI strings: English
+- Date/time display: `en-US` (e.g. `Intl.DateTimeFormat("en-US", …)`)
+- Keep copy short, neutral, product-tone — like macOS System Settings
+
+## Examples
+
+```tsx
+// ❌ BAD
+<Button>Buat Artikel</Button>
+<p>Belum ada artikel</p>
+aria-label="Cari artikel"
+
+// ✅ GOOD
+<Button>Create Article</Button>
+<p>No articles yet</p>
+aria-label="Search articles"
+```
+
+```ts
+// ❌ BAD
+{ id: "draft", label: "Draft" } // mixed — nav in Indonesian elsewhere
+export const statusLabels = { draft: "Draf", published: "Terbit" }
+
+// ✅ GOOD
+{ title: "Articles", href: "/articles" }
+export const statusLabels = { draft: "Draft", published: "Published" }
+```
+
+## When editing existing UI
+
+Replace Indonesian (or mixed) strings with English in the same change — do not add new non-English system copy.

@@ -1,0 +1,48 @@
+---
+description: TypeScript strict standards for CMS System
+globs: **/*.{ts,tsx}
+alwaysApply: false
+---
+
+# TypeScript Rules
+
+Strict mode ON — `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`.
+
+## Domain Types
+
+```ts
+type ArticleStatus = "draft" | "published" | "archived"
+type ArticleId = string & { readonly brand: "ArticleId" }
+
+interface Article {
+  id: ArticleId
+  title: string
+  slug: string
+  excerpt: string
+  content: string
+  status: ArticleStatus
+  publishedAt: Date | null
+  createdAt: Date
+  updatedAt: Date
+}
+
+// ✅ Props eksplisit
+interface ArticleFormProps {
+  article?: Article
+  onSuccess?: () => void
+}
+
+// ✅ unknown + validate, bukan any — terutama input form & API response
+function parseArticleInput(raw: unknown): ArticleInput { ... }
+```
+
+## Naming
+- Components → PascalCase file · Hooks → `useXxx.ts` · Utils → camelCase
+- Constants → `SCREAMING_SNAKE` · Types → PascalCase
+- Server Actions → verb + noun: `createArticle`, `updateArticle`, `deleteArticle`
+
+## Validasi & Forms
+- Zod schema di `lib/validations/` — validasi input artikel & form CMS
+- React Hook Form + Zod untuk form CRUD
+- Server state → TanStack Query (jika perlu client refetch), bukan Zustand
+- Slug generation & sanitasi di `lib/` — bukan scattered di component

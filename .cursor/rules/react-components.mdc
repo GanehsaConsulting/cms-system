@@ -1,0 +1,45 @@
+---
+description: React & Next.js component patterns for CMS System admin UI
+globs: **/*.tsx
+alwaysApply: false
+---
+
+# React Component Rules
+
+## Server vs Client
+
+```tsx
+// ✅ Server — fetch artikel, list page, static layout
+export default async function ArticlesPage() {
+  const articles = await getArticles()
+  return <ArticleList articles={articles} />
+}
+
+// ✅ Client — form submit, table actions, rich editor
+"use client"
+export function ArticleForm({ article }: ArticleFormProps) { ... }
+```
+
+**`"use client"` hanya jika:** useState, event handlers, browser APIs, rich text editor, animasi interaktif.
+
+**Jangan di:** layout, page yang fetch data, static UI, komponen pure presentational.
+
+## shadcn/ui — Wajib
+Install dulu via CLI. Wrap, jangan edit `components/ui/`. Pakai `cn()` untuk conditional classes.
+
+Contoh komponen CMS yang umum dipakai: `button`, `input`, `textarea`, `table`, `card`, `dialog`, `form`, `badge`, `skeleton`, `dropdown-menu`.
+
+Custom component **hanya** jika tidak ada di shadcn/ui.
+
+## CMS Admin UI
+- Pisah: `ArticleList` · `ArticleForm` · `ArticleTableRow` · `DeleteArticleDialog`
+- Server fetch data artikel; client handle form & aksi (edit, delete, publish)
+- Mutasi data → Server Actions, bukan API route
+- Loading state pakai `Skeleton` dari shadcn — bukan spinner custom
+- Pola CRUD yang sama bisa dipakai ulang untuk modul future (porto, project, produk, client) — tapi jangan buat abstraksi generic dulu
+
+## Performance
+- `next/font` dengan `display: "swap"`
+- Dynamic import hanya untuk komponen berat (rich text editor, image uploader)
+- `import { format } from "date-fns/format"` — bukan `import * as dateFns`
+- Pagination server-side untuk list artikel — jangan load semua data sekaligus

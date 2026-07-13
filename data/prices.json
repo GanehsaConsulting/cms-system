@@ -1,0 +1,52 @@
+[
+  {
+    "id": "1",
+    "slug": "vo-space-lite",
+    "serviceSlug": "virtual-office",
+    "category": "virtual-office",
+    "highlighted": false,
+    "description": {
+      "id": "Paket virtual office affordable dengan alamat prestisius dan fasilitas meeting room dasar.",
+      "en": "An affordable virtual office package with a prestigious address and basic meeting room facilities.",
+      "zh": "实惠的虚拟办公室套餐，含优质地址和基础会议室设施。"
+    },
+    "service": {
+      "id": "Virtual Office",
+      "en": "Virtual Office",
+      "zh": "虚拟办公室"
+    },
+    "packageName": {
+      "id": "Virtual Office Space Lite",
+      "en": "Virtual Office Space Lite",
+      "zh": "虚拟办公室 Lite 套餐"
+    },
+    "price": 1900000,
+    "strikethroughPrice": 2836000,
+    "whatsappLink": {
+      "id": "https://wa.me/6281234567890",
+      "en": "https://wa.me/6281234567890",
+      "zh": "https://wa.me/6281234567890"
+    },
+    "isActive": true,
+    "features": [
+      {
+        "id": "feature-1",
+        "name": {
+          "id": "Free Wifi",
+          "en": "Free Wi-Fi",
+          "zh": "免费 Wi-Fi"
+        }
+      },
+      {
+        "id": "feature-2",
+        "name": {
+          "id": "Alamat Domisili Prestisius",
+          "en": "Prestigious domicile address",
+          "zh": "优质住所地址"
+        }
+      }
+    ],
+    "createdAt": "2026-01-01T08:00:00.000Z",
+    "updatedAt": "2026-01-01T08:00:00.000Z"
+  }
+]
