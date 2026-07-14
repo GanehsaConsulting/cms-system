@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { MediaLibraryFolderActions } from "@/components/cms/media/media-library-folder-actions";
 import { MediaLibraryFolderBreadcrumb } from "@/components/cms/media/media-library-folder-breadcrumb";
@@ -74,10 +74,11 @@ export function MediaLibraryLibraryView({
   const fileSelection = useMediaLibraryFileSelection(visibleFileIds);
   const folderSelection = useMediaLibraryFileSelection(visibleFolderIds);
 
-  useEffect(() => {
+  function handleSelectFolder(folderId: string) {
     fileSelection.clear();
     folderSelection.clear();
-  }, [activeFolderId, fileSelection.clear, folderSelection.clear]);
+    setActiveFolderId(folderId);
+  }
 
   const folderFiles = initialFiles.filter(
     (file) => file.folderId === activeFolderId,
@@ -178,7 +179,7 @@ export function MediaLibraryLibraryView({
           allFolders={folders}
           files={initialFiles}
           viewMode={viewMode}
-          onOpen={setActiveFolderId}
+          onOpen={handleSelectFolder}
           isSelected={folderSelection.isSelected}
           hasSelection={folderSelection.hasSelection}
           onToggleSelect={handleToggleFolderSelect}
@@ -196,7 +197,7 @@ export function MediaLibraryLibraryView({
       <MediaLibraryFolderSidebar
         folders={folders}
         activeFolderId={activeFolderId}
-        onSelect={setActiveFolderId}
+        onSelect={handleSelectFolder}
       />
 
       <GlassSurface className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
@@ -243,7 +244,7 @@ export function MediaLibraryLibraryView({
           <MediaLibraryFolderBreadcrumb
             folders={folders}
             activeFolderId={activeFolderId}
-            onSelect={setActiveFolderId}
+            onSelect={handleSelectFolder}
           />
         ) : null}
 

@@ -25,12 +25,11 @@ export function MediaLibraryLibraryFileSelectCheckbox({
         visible ? "opacity-100" : "pointer-events-none opacity-0",
         className,
       )}
-      onClick={(event) => event.stopPropagation()}
-      onKeyDown={(event) => event.stopPropagation()}
     >
       <Checkbox
         checked={checked}
         onCheckedChange={(value) => onCheckedChange(value === true)}
+        onClick={(event) => event.stopPropagation()}
         aria-label={label}
         className="size-4 bg-background/80 backdrop-blur-sm data-checked:bg-primary"
       />

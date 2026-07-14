@@ -22,7 +22,7 @@ export function DashboardDigitalClock() {
   const secondsLabel = now ? formatDashboardSeconds(now) : "--";
 
   return (
-    <div
+    <output
       className="flex shrink-0 items-baseline gap-1 tabular-nums"
       aria-live="polite"
       aria-label={now ? `Current time ${timeLabel}` : "Loading time"}
@@ -33,6 +33,6 @@ export function DashboardDigitalClock() {
       <span className="font-medium text-muted-foreground text-xs sm:text-sm">
         {secondsLabel}
       </span>
-    </div>
+    </output>
   );
 }

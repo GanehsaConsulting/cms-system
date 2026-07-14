@@ -42,8 +42,6 @@ export function MediaLibraryFolderGridItem({
             ? "opacity-100"
             : "pointer-events-none opacity-0 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100",
         )}
-        onClick={(event) => event.stopPropagation()}
-        onKeyDown={(event) => event.stopPropagation()}
       >
         <MediaLibraryLibraryFileSelectCheckbox
           checked={isChecked}

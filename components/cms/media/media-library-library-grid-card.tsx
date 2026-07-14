@@ -30,6 +30,8 @@ export function MediaLibraryLibraryGridCard({
   const showSelectControl = hasSelection || isSelected;
 
   return (
+    // Card contains nested checkbox/menu controls; a native <button> would nest buttons.
+    // biome-ignore lint/a11y/useSemanticElements: nested interactive controls
     <div
       role="button"
       tabIndex={0}
@@ -51,71 +53,66 @@ export function MediaLibraryLibraryGridCard({
           isSelected && "bg-primary/5",
         )}
       >
-      <div
-        className={cn(
-          RADIUS_DEEP,
-          "relative aspect-[4/3] overflow-hidden bg-muted",
-        )}
-      >
         <div
           className={cn(
-            "absolute top-1.5 left-1.5 z-10 transition-opacity",
-            showSelectControl
-              ? "opacity-100"
-              : "pointer-events-none opacity-0 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100",
+            RADIUS_DEEP,
+            "relative aspect-[4/3] overflow-hidden bg-muted",
           )}
-          onClick={(event) => event.stopPropagation()}
-          onKeyDown={(event) => event.stopPropagation()}
         >
-          <MediaLibraryLibraryFileSelectCheckbox
-            checked={isSelected}
-            visible
-            onCheckedChange={() => onToggleSelect(file.id)}
-            className="opacity-100"
-          />
-        </div>
-
-        <div
-          className="absolute top-1.5 right-1.5 z-10 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100"
-          onClick={(event) => event.stopPropagation()}
-          onKeyDown={(event) => event.stopPropagation()}
-        >
-          <MediaLibraryLibraryFileActionsMenu
-            file={file}
-            triggerClassName="size-7 bg-background/80 backdrop-blur-sm hover:bg-background"
-          />
-        </div>
-
-        {canPreview ? (
-          <Image
-            src={file.url}
-            alt=""
-            fill
-            unoptimized
-            className="object-cover"
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center text-muted-foreground">
-            <MediaLibraryKindIcon
-              kind={file.kind}
-              className="size-8 opacity-60"
+          <div
+            className={cn(
+              "absolute top-1.5 left-1.5 z-10 transition-opacity",
+              showSelectControl
+                ? "opacity-100"
+                : "pointer-events-none opacity-0 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100",
+            )}
+          >
+            <MediaLibraryLibraryFileSelectCheckbox
+              checked={isSelected}
+              visible
+              onCheckedChange={() => onToggleSelect(file.id)}
+              className="opacity-100"
             />
           </div>
-        )}
-      </div>
 
-      <div className="flex flex-1 flex-col gap-2">
-        <div className="flex items-start justify-between gap-2">
-          <p className="line-clamp-2 min-w-0 font-medium text-sm leading-snug">
-            {file.filename}
-          </p>
-          <MediaLibraryKindBadge kind={file.kind} className="shrink-0" />
+          <div className="absolute top-1.5 right-1.5 z-10 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
+            <MediaLibraryLibraryFileActionsMenu
+              file={file}
+              triggerClassName="size-7 bg-background/80 backdrop-blur-sm hover:bg-background"
+              onTriggerClick={(event) => event.stopPropagation()}
+            />
+          </div>
+
+          {canPreview ? (
+            <Image
+              src={file.url}
+              alt=""
+              fill
+              unoptimized
+              className="object-cover"
+            />
+          ) : (
+            <div className="flex h-full items-center justify-center text-muted-foreground">
+              <MediaLibraryKindIcon
+                kind={file.kind}
+                className="size-8 opacity-60"
+              />
+            </div>
+          )}
         </div>
 
-        <p className="text-muted-foreground text-xs">
-          Uploaded {uploaded.date}
-        </p>
-      </div>
+        <div className="flex flex-1 flex-col gap-2">
+          <div className="flex items-start justify-between gap-2">
+            <p className="line-clamp-2 min-w-0 font-medium text-sm leading-snug">
+              {file.filename}
+            </p>
+            <MediaLibraryKindBadge kind={file.kind} className="shrink-0" />
+          </div>
+
+          <p className="text-muted-foreground text-xs">
+            Uploaded {uploaded.date}
+          </p>
+        </div>
       </SolidSurface>
     </div>
   );

@@ -54,10 +54,20 @@ export function DashboardScrollableBody({
     });
     resizeObserver.observe(element);
 
+    const mutationObserver = new MutationObserver(() => {
+      updateFade();
+    });
+    mutationObserver.observe(element, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    });
+
     return () => {
       resizeObserver.disconnect();
+      mutationObserver.disconnect();
     };
-  }, [children, empty, updateFade]);
+  }, [empty, updateFade]);
 
   if (empty) {
     return (
