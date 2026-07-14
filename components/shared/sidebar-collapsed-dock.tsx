@@ -1,9 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { SidebarProfileAvatar } from "@/components/cms/sidebar-profile-avatar";
 import { useAppearanceDrawer } from "@/components/shared/appearance-drawer-provider";
+import { useBrand } from "@/components/shared/brand-provider";
 import { useNotificationCenter } from "@/components/shared/notification-center-provider";
 import { SidebarAppIcon } from "@/components/shared/sidebar-app-icon";
 import {
@@ -19,12 +21,11 @@ import { type CmsUser, CURRENT_CMS_USER } from "@/config/cms-user";
 import {
   appearanceNavItem,
   CMS_NAME,
-  contentNavLinks,
-  mainNavLinks,
   notificationsNavItem,
   utilityNavLinks,
 } from "@/config/nav";
 import { isPriceSectionActive } from "@/config/price-tabs";
+import { RADIUS_DEEP } from "@/config/shape";
 import {
   SIDEBAR_DOCK_ACTIVE_DOT_CLASS,
   SIDEBAR_DOCK_LABEL_CLASS,
@@ -132,9 +133,12 @@ export function SidebarCollapsedDock({
 }: SidebarCollapsedDockProps) {
   const pathname = usePathname();
   const { toggleSidebar } = useSidebar();
+  const { activeBrand, mainNavLinks, contentNavLinks, openSwitcher } =
+    useBrand();
   const { open, openAppearance } = useAppearanceDrawer();
   const { open: notificationsOpen, openNotificationCenter } =
     useNotificationCenter();
+  const brandLabel = activeBrand?.name ?? CMS_NAME;
 
   let index = 0;
 
@@ -142,8 +146,25 @@ export function SidebarCollapsedDock({
     <SidebarDock>
       {/* Matches expanded: brand + collapse, then Menu → Content → System → profile */}
       <SidebarDockItem index={index++}>
-        <DockAppButton href="/" label={CMS_NAME}>
-          <SidebarAppIcon icon={Building2Icon} tone="brand" size="dock" />
+        <DockAppButton label={brandLabel} onClick={openSwitcher}>
+          {activeBrand?.logo ? (
+            <span
+              className={cn(
+                RADIUS_DEEP,
+                "relative flex size-9 items-center justify-center overflow-hidden bg-muted",
+              )}
+            >
+              <Image
+                src={activeBrand.logo}
+                alt=""
+                fill
+                unoptimized
+                className="object-contain p-1"
+              />
+            </span>
+          ) : (
+            <SidebarAppIcon icon={Building2Icon} tone="brand" size="dock" />
+          )}
         </DockAppButton>
       </SidebarDockItem>
 

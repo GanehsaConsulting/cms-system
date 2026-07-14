@@ -7,7 +7,8 @@ import { SidebarProfileButton } from "@/components/cms/sidebar-profile-button";
 import { SidebarProfileDialog } from "@/components/cms/sidebar-profile-dialog";
 import { SidebarSearchDialog } from "@/components/cms/sidebar-search-dialog";
 import { SidebarSearchTrigger } from "@/components/cms/sidebar-search-trigger";
-import { SidebarBrandButton } from "@/components/shared/sidebar-brand-button";
+import { SidebarBrandSwitchDialog } from "@/components/cms/sidebar-brand-switch-dialog";
+import { SidebarBrandSwitcherButton } from "@/components/cms/sidebar-brand-switcher-button";
 import { SidebarCollapseTrigger } from "@/components/shared/sidebar-collapse-trigger";
 import { SidebarCollapsedDock } from "@/components/shared/sidebar-collapsed-dock";
 import { CURRENT_CMS_USER, type CmsUser } from "@/config/cms-user";
@@ -66,14 +67,11 @@ export function CmsSidebar() {
         ) : (
           <>
             <SidebarHeader className="gap-2 p-0">
-              <div className="flex w-full items-center gap-1.5">
-                <SidebarMenu className="min-w-0 flex-1">
-                  <SidebarMenuItem>
-                    <SidebarBrandButton />
-                  </SidebarMenuItem>
-                </SidebarMenu>
-                <SidebarCollapseTrigger />
-              </div>
+              <SidebarMenu className="w-full">
+                <SidebarMenuItem>
+                  <SidebarBrandSwitcherButton />
+                </SidebarMenuItem>
+              </SidebarMenu>
             </SidebarHeader>
 
             <div className="px-0 py-2">
@@ -95,6 +93,8 @@ export function CmsSidebar() {
         )}
       </Sidebar>
 
+      <SidebarCollapseTrigger />
+      <SidebarBrandSwitchDialog />
       <SidebarSearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
       <SidebarProfileDialog
         user={user}

@@ -1,0 +1,41 @@
+[
+  {
+    "id": "nusantara-labs",
+    "name": "Nusantara Labs",
+    "slug": "nusantara-labs",
+    "logo": "",
+    "description": "Primary company profile brand with full CMS access.",
+    "status": "active",
+    "features": [
+      "dashboard",
+      "articles",
+      "prices",
+      "clients-works",
+      "banners"
+    ],
+    "createdAt": "2026-01-10T08:00:00.000Z",
+    "updatedAt": "2026-03-01T10:30:00.000Z"
+  },
+  {
+    "id": "studio-creative",
+    "name": "Studio Creative",
+    "slug": "studio-creative",
+    "logo": "",
+    "description": "Creative agency focused on articles and portfolio works.",
+    "status": "active",
+    "features": ["dashboard", "articles", "clients-works"],
+    "createdAt": "2026-02-05T09:15:00.000Z",
+    "updatedAt": "2026-02-28T14:20:00.000Z"
+  },
+  {
+    "id": "retail-partners",
+    "name": "Retail Partners",
+    "slug": "retail-partners",
+    "logo": "",
+    "description": "Retail brand with pricing and banner campaigns only.",
+    "status": "inactive",
+    "features": ["dashboard", "prices", "banners"],
+    "createdAt": "2026-02-18T11:00:00.000Z",
+    "updatedAt": "2026-02-18T11:00:00.000Z"
+  }
+]

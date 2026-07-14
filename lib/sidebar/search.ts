@@ -32,19 +32,27 @@ function toSearchItem(link: NavLink): SidebarSearchItem {
   };
 }
 
-export const SIDEBAR_SEARCH_ITEMS: SidebarSearchItem[] = [
-  ...mainNavLinks.map(toSearchItem),
-  ...contentNavLinks.map(toSearchItem),
-  {
-    id: "appearance",
-    title: appearanceNavItem.title,
-    keywords: [appearanceNavItem.title, "theme", "wallpaper", "accent"],
-    icon: appearanceNavItem.icon,
-    tone: appearanceNavItem.tone,
-    action: "appearance",
-  },
-  ...utilityNavLinks.map(toSearchItem),
-];
+export function buildSidebarSearchItems(
+  mainLinks: NavLink[] = mainNavLinks,
+  contentLinks: NavLink[] = contentNavLinks,
+): SidebarSearchItem[] {
+  return [
+    ...mainLinks.map(toSearchItem),
+    ...contentLinks.map(toSearchItem),
+    {
+      id: "appearance",
+      title: appearanceNavItem.title,
+      keywords: [appearanceNavItem.title, "theme", "wallpaper", "accent"],
+      icon: appearanceNavItem.icon,
+      tone: appearanceNavItem.tone,
+      action: "appearance",
+    },
+    ...utilityNavLinks.map(toSearchItem),
+  ];
+}
+
+export const SIDEBAR_SEARCH_ITEMS: SidebarSearchItem[] =
+  buildSidebarSearchItems();
 
 export function filterSidebarSearchItems(
   query: string,

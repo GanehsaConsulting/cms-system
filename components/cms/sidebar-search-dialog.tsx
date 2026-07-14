@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { SidebarSearchResultItem } from "@/components/cms/sidebar-search-result-item";
 import { useAppearanceDrawer } from "@/components/shared/appearance-drawer-provider";
+import { useBrand } from "@/components/shared/brand-provider";
 import {
   CmsDialog,
   CmsDialogContent,
@@ -14,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { MagnifyingGlassIcon } from "@/lib/icons";
 import {
+  buildSidebarSearchItems,
   filterSidebarSearchItems,
   type SidebarSearchItem,
 } from "@/lib/sidebar/search";
@@ -30,12 +32,21 @@ export function SidebarSearchDialog({
 }: SidebarSearchDialogProps) {
   const router = useRouter();
   const { openAppearance } = useAppearanceDrawer();
+  const { mainNavLinks, contentNavLinks } = useBrand();
   const inputRef = useRef<HTMLInputElement>(null);
   const listId = useId();
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const results = useMemo(() => filterSidebarSearchItems(query), [query]);
+  const searchItems = useMemo(
+    () => buildSidebarSearchItems(mainNavLinks, contentNavLinks),
+    [contentNavLinks, mainNavLinks],
+  );
+
+  const results = useMemo(
+    () => filterSidebarSearchItems(query, searchItems),
+    [query, searchItems],
+  );
 
   useEffect(() => {
     if (!open) {
