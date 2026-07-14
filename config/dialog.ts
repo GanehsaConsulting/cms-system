@@ -11,4 +11,7 @@ export type DialogSize = keyof typeof DIALOG_SIZE;
 
 export const DIALOG_DEFAULT_SIZE: DialogSize = "md";
 
-export const DIALOG_BODY_CLASS = "min-h-0 flex-1 overflow-y-auto px-5 py-4";
+export const DIALOG_BODY_CLASS = "min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-4";
+
+/** Form wrapper inside CmsDialogContent — keeps body scrollable under header/footer. */
+export const DIALOG_FORM_CLASS = "flex min-h-0 flex-1 flex-col overflow-hidden";

@@ -14,6 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ARTICLE_FORM_LIMITS } from "@/config/article-form";
+import { DIALOG_FORM_CLASS } from "@/config/dialog";
 import { createCategoryAction } from "@/lib/actions/categories";
 import { slugify } from "@/lib/articles/slug";
 import type { CustomArticleCategory } from "@/types/category";
@@ -83,7 +84,7 @@ export function ArticleFormCreateCategoryDialog({
           </CmsDialogDescription>
         </CmsDialogHeader>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className={DIALOG_FORM_CLASS}>
           <CmsDialogBody className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="category-label">Category name</Label>

@@ -17,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { CmsUser } from "@/config/cms-user";
+import { DIALOG_FORM_CLASS } from "@/config/dialog";
 import {
   type CmsProfileFormValues,
   cmsProfileFormSchema,
@@ -75,7 +76,7 @@ export function SidebarProfileEditDialog({
           </CmsDialogDescription>
         </CmsDialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit)} className={DIALOG_FORM_CLASS}>
           <CmsDialogBody className="space-y-4">
             <SidebarProfilePhotoField
               control={control}

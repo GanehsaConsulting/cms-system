@@ -15,6 +15,7 @@ import {
 } from "@/components/shared/cms-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { DIALOG_FORM_CLASS } from "@/config/dialog";
 import {
   type CmsPasswordFormValues,
   cmsPasswordFormSchema,
@@ -70,7 +71,7 @@ export function SidebarProfilePasswordDialog({
           </CmsDialogDescription>
         </CmsDialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit)} className={DIALOG_FORM_CLASS}>
           <CmsDialogBody className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="current-password">Current password</Label>

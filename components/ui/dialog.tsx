@@ -56,7 +56,7 @@ function DialogContent({
         data-slot="dialog-content"
         className={cn(
           MODAL_PANEL_SURFACE,
-          "fixed top-1/2 left-1/2 z-50 grid max-h-[min(92svh,40rem)] w-full max-w-none -translate-x-1/2 -translate-y-1/2 gap-0 overflow-hidden rounded-[1.75rem] p-0 text-popover-foreground text-sm outline-none duration-100 sm:max-w-none",
+          "fixed top-1/2 left-1/2 z-50 flex max-h-[min(92svh,40rem)] w-full max-w-none -translate-x-1/2 -translate-y-1/2 flex-col gap-0 overflow-hidden rounded-[1.75rem] p-0 text-popover-foreground text-sm outline-none duration-100 sm:max-w-none",
           "data-open:fade-in-0 data-open:zoom-in-95 data-open:animate-in data-closed:fade-out-0 data-closed:zoom-out-95 data-closed:animate-out",
           className,
         )}

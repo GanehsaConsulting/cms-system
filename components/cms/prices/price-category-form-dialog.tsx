@@ -14,6 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PRICE_CATEGORY_LIMITS } from "@/config/price-category";
+import { DIALOG_FORM_CLASS } from "@/config/dialog";
 import {
   createPriceCategoryAction,
   updatePriceCategoryAction,
@@ -98,7 +99,7 @@ export function PriceCategoryFormDialog({
           </CmsDialogDescription>
         </CmsDialogHeader>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className={DIALOG_FORM_CLASS}>
           <CmsDialogBody className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="price-category-label">Category name</Label>
