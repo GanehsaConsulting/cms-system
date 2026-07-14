@@ -2,6 +2,10 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { BannerFormImageField } from "@/components/cms/banners/banner-form-image-field";
+import {
+  BannerFormRedirectField,
+  type BannerRedirectMode,
+} from "@/components/cms/banners/banner-form-redirect-field";
 import { BannerFormStatusField } from "@/components/cms/banners/banner-form-status-field";
 import {
   CmsDialog,
@@ -16,59 +20,110 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { BANNER_LIMITS } from "@/config/banner";
+import { DIALOG_FORM_CLASS } from "@/config/dialog";
 import {
   createBannerAction,
   updateBannerAction,
 } from "@/lib/actions/banners";
-import { slugify } from "@/lib/articles/slug";
+import { getBannerImages } from "@/lib/banners/images";
+import { bannerKeyFromImageFileName } from "@/lib/banners/key-from-image";
+import {
+  buildWhatsAppUrl,
+  extractWhatsAppMessage,
+  extractWhatsAppPhone,
+  isValidWhatsAppPhone,
+} from "@/lib/prices/whatsapp";
 import type { Banner } from "@/types/banner";
 
 interface BannerFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   banner?: Banner | null;
+  /** Prefill unique key when creating from a website placement. */
+  defaultKey?: string;
+  /** Prevent editing the key when creating for a fixed placement. */
+  lockKey?: boolean;
   onSaved: (banner: Banner) => void;
 }
 
 interface BannerFormState {
   name: string;
   key: string;
-  image: string;
+  images: string[];
+  redirectMode: BannerRedirectMode;
   redirectUrl: string;
+  whatsappPhone: string;
+  whatsappMessage: string;
   isActive: boolean;
 }
 
-function createEmptyForm(): BannerFormState {
+function isWhatsAppRedirectUrl(value: string) {
+  try {
+    const url = new URL(value.trim());
+    return (
+      url.hostname === "wa.me" ||
+      url.hostname === "api.whatsapp.com" ||
+      url.hostname.endsWith(".whatsapp.com")
+    );
+  } catch {
+    return value.trim().startsWith("whatsapp://");
+  }
+}
+
+function createEmptyForm(defaultKey = ""): BannerFormState {
   return {
     name: "",
-    key: "",
-    image: "",
+    key: defaultKey,
+    images: [],
+    redirectMode: "url",
     redirectUrl: "",
+    whatsappPhone: "",
+    whatsappMessage: "",
     isActive: true,
   };
 }
 
 function createFormFromBanner(banner: Banner): BannerFormState {
+  const redirectUrl = banner.redirectUrl;
+  const whatsappMode = isWhatsAppRedirectUrl(redirectUrl);
+  const whatsappPhone = whatsappMode ? extractWhatsAppPhone(redirectUrl) : "";
+
   return {
     name: banner.name,
     key: banner.key,
-    image: banner.image,
-    redirectUrl: banner.redirectUrl,
+    images: getBannerImages(banner),
+    redirectMode: whatsappMode && whatsappPhone ? "whatsapp" : "url",
+    redirectUrl: whatsappMode ? "" : redirectUrl,
+    whatsappPhone,
+    whatsappMessage: whatsappMode ? extractWhatsAppMessage(redirectUrl) : "",
     isActive: banner.isActive,
   };
+}
+
+function resolveRedirectUrl(form: BannerFormState) {
+  if (form.redirectMode === "whatsapp") {
+    return buildWhatsAppUrl(form.whatsappPhone, form.whatsappMessage);
+  }
+
+  return form.redirectUrl.trim();
 }
 
 export function BannerFormDialog({
   open,
   onOpenChange,
   banner,
+  defaultKey = "",
+  lockKey = false,
   onSaved,
 }: BannerFormDialogProps) {
   const isEdit = Boolean(banner);
-  const [form, setForm] = useState<BannerFormState>(createEmptyForm);
+  const [form, setForm] = useState<BannerFormState>(() =>
+    createEmptyForm(defaultKey),
+  );
   const [keyTouched, setKeyTouched] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const keyLocked = lockKey && !isEdit;
 
   useEffect(() => {
     if (!open) {
@@ -76,9 +131,11 @@ export function BannerFormDialog({
     }
 
     setError(null);
-    setKeyTouched(isEdit);
-    setForm(banner ? createFormFromBanner(banner) : createEmptyForm());
-  }, [banner, isEdit, open]);
+    setKeyTouched(isEdit || Boolean(defaultKey));
+    setForm(
+      banner ? createFormFromBanner(banner) : createEmptyForm(defaultKey),
+    );
+  }, [banner, defaultKey, isEdit, open]);
 
   function handleOpenChange(nextOpen: boolean) {
     if (isPending) {
@@ -92,26 +149,65 @@ export function BannerFormDialog({
     field: K,
     value: BannerFormState[K],
   ) {
-    setForm((current) => {
-      const next = { ...current, [field]: value };
+    setForm((current) => ({ ...current, [field]: value }));
+  }
 
-      if (field === "name" && !isEdit && !keyTouched) {
-        next.key = slugify(String(value));
-      }
+  function handleImagesChange(
+    images: string[],
+    meta?: { addedFileNames: string[] },
+  ) {
+    const firstFileName = meta?.addedFileNames[0];
+    const shouldAutoKey =
+      Boolean(firstFileName) &&
+      !isEdit &&
+      !keyTouched &&
+      !keyLocked &&
+      form.key.trim().length === 0;
 
-      return next;
-    });
+    if (shouldAutoKey && firstFileName) {
+      setKeyTouched(true);
+      setForm((current) => ({
+        ...current,
+        images,
+        key: bannerKeyFromImageFileName(firstFileName),
+      }));
+      return;
+    }
+
+    setForm((current) => ({ ...current, images }));
   }
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
 
+    if (form.redirectMode === "whatsapp") {
+      if (!isValidWhatsAppPhone(form.whatsappPhone)) {
+        setError("Enter a valid WhatsApp number");
+        return;
+      }
+    }
+
+    const redirectUrl = resolveRedirectUrl(form);
+    if (!redirectUrl) {
+      setError(
+        form.redirectMode === "whatsapp"
+          ? "Enter a valid WhatsApp number"
+          : "Redirect link is required",
+      );
+      return;
+    }
+
+    const key =
+      form.key.trim().length >= 2
+        ? form.key.trim()
+        : bannerKeyFromImageFileName(`banner-${Date.now()}`);
+
     const formData = new FormData();
     formData.set("name", form.name);
-    formData.set("key", form.key);
-    formData.set("image", form.image);
-    formData.set("redirectUrl", form.redirectUrl);
+    formData.set("key", key);
+    formData.set("images", JSON.stringify(form.images));
+    formData.set("redirectUrl", redirectUrl);
     formData.set("isActive", form.isActive ? "true" : "false");
 
     startTransition(async () => {
@@ -131,9 +227,10 @@ export function BannerFormDialog({
 
   const canSubmit =
     form.name.trim().length >= 2 &&
-    form.key.trim().length >= 2 &&
-    form.image.trim().length > 0 &&
-    form.redirectUrl.trim().length > 0;
+    form.images.length > 0 &&
+    (form.redirectMode === "whatsapp"
+      ? isValidWhatsAppPhone(form.whatsappPhone)
+      : form.redirectUrl.trim().length > 0);
 
   return (
     <CmsDialog open={open} onOpenChange={handleOpenChange}>
@@ -143,70 +240,57 @@ export function BannerFormDialog({
             {isEdit ? "Edit banner" : "Create banner"}
           </CmsDialogTitle>
           <CmsDialogDescription>
-            Place banners on the public site by unique key — not by page path.
+            {keyLocked
+              ? `This banner will be shown in the “${defaultKey}” placement.`
+              : "Add images and a redirect link. A unique key is created automatically from the first image."}
           </CmsDialogDescription>
         </CmsDialogHeader>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className={DIALOG_FORM_CLASS}>
           <CmsDialogBody className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="banner-name">Name</Label>
-              <Input
-                id="banner-name"
-                value={form.name}
-                onChange={(event) => updateField("name", event.target.value)}
-                placeholder="Homepage hero"
-                maxLength={BANNER_LIMITS.name}
-                disabled={isPending}
-                autoFocus
-              />
-            </div>
+            <div className="flex items-start gap-3">
+              <div className="min-w-0 flex-1 space-y-2">
+                <Label htmlFor="banner-name">Name</Label>
+                <Input
+                  id="banner-name"
+                  value={form.name}
+                  onChange={(event) => updateField("name", event.target.value)}
+                  placeholder="Homepage hero"
+                  maxLength={BANNER_LIMITS.name}
+                  disabled={isPending}
+                  autoFocus
+                />
+              </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="banner-key">Unique key</Label>
-              <Input
-                id="banner-key"
-                value={form.key}
-                onChange={(event) => {
-                  setKeyTouched(true);
-                  updateField("key", slugify(event.target.value));
-                }}
-                placeholder="homepage"
-                maxLength={BANNER_LIMITS.key}
+              <BannerFormStatusField
+                value={form.isActive}
                 disabled={isPending}
-                className="font-mono text-sm"
+                onChange={(value) => updateField("isActive", value)}
               />
-              <p className="text-muted-foreground text-xs">
-                Used by the frontend to fetch this banner (e.g.{" "}
-                <span className="font-mono">popup</span>,{" "}
-                <span className="font-mono">mega-menu</span>).
-              </p>
             </div>
 
             <BannerFormImageField
-              value={form.image}
+              value={form.images}
               disabled={isPending}
-              onChange={(value) => updateField("image", value)}
+              onChange={handleImagesChange}
             />
 
-            <div className="space-y-2">
-              <Label htmlFor="banner-redirect-url">Redirect link</Label>
-              <Input
-                id="banner-redirect-url"
-                value={form.redirectUrl}
-                onChange={(event) =>
-                  updateField("redirectUrl", event.target.value)
-                }
-                placeholder="https://wa.me/6281234567890 or /contact"
-                maxLength={BANNER_LIMITS.redirectUrl}
-                disabled={isPending}
-              />
-            </div>
-
-            <BannerFormStatusField
-              value={form.isActive}
+            <BannerFormRedirectField
+              mode={form.redirectMode}
+              redirectUrl={form.redirectUrl}
+              whatsappPhone={form.whatsappPhone}
+              whatsappMessage={form.whatsappMessage}
               disabled={isPending}
-              onChange={(value) => updateField("isActive", value)}
+              onModeChange={(mode) => updateField("redirectMode", mode)}
+              onRedirectUrlChange={(value) =>
+                updateField("redirectUrl", value)
+              }
+              onWhatsappPhoneChange={(value) =>
+                updateField("whatsappPhone", value)
+              }
+              onWhatsappMessageChange={(value) =>
+                updateField("whatsappMessage", value)
+              }
             />
 
             {error ? (

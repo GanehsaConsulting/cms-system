@@ -1,14 +1,26 @@
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { slugify } from "@/lib/articles/slug";
+import { getBannerImages } from "@/lib/banners/images";
 import type { Banner, BannerInput } from "@/types/banner";
 
 const DATA_PATH = path.join(process.cwd(), "data/banners.json");
 
+type LegacyBanner = Banner & { image?: string };
+
+function normalizeBanner(raw: LegacyBanner): Banner {
+  const { image: _legacyImage, ...rest } = raw;
+  return {
+    ...rest,
+    images: getBannerImages(raw),
+  };
+}
+
 async function readBanners(): Promise<Banner[]> {
   try {
     const raw = await readFile(DATA_PATH, "utf-8");
-    return JSON.parse(raw) as Banner[];
+    const banners = JSON.parse(raw) as LegacyBanner[];
+    return banners.map(normalizeBanner);
   } catch (error) {
     if (
       error &&
@@ -30,7 +42,7 @@ function normalizeInput(input: BannerInput): BannerInput {
   return {
     name: input.name.trim(),
     key: slugify(input.key.trim()),
-    image: input.image.trim(),
+    images: input.images.map((item) => item.trim()).filter(Boolean),
     redirectUrl: input.redirectUrl.trim(),
     isActive: input.isActive,
   };
@@ -74,6 +86,10 @@ export async function createBanner(input: BannerInput): Promise<Banner> {
     throw new Error("Key is invalid");
   }
 
+  if (normalized.images.length === 0) {
+    throw new Error("At least one image is required");
+  }
+
   const duplicate = banners.find((banner) => banner.key === normalized.key);
   if (duplicate) {
     throw new Error("A banner with this key already exists");
@@ -107,6 +123,10 @@ export async function updateBanner(
 
   if (!normalized.key) {
     throw new Error("Key is invalid");
+  }
+
+  if (normalized.images.length === 0) {
+    throw new Error("At least one image is required");
   }
 
   const duplicate = banners.find(

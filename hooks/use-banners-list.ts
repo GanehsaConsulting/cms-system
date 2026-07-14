@@ -57,6 +57,7 @@ export function useBannersList(banners: Banner[]) {
     setPage,
     pageSize,
     setPageSize,
+    filteredBanners,
     pagination,
     hasActiveFilters,
     resetFilters,

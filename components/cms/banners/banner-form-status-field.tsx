@@ -1,14 +1,7 @@
 "use client";
 
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { BannerStatusBadge } from "@/components/cms/banners/banner-status-badge";
+import { Switch } from "@/components/ui/switch";
 
 interface BannerFormStatusFieldProps {
   value: boolean;
@@ -22,27 +15,22 @@ export function BannerFormStatusField({
   onChange,
 }: BannerFormStatusFieldProps) {
   return (
-    <div className="space-y-2">
-      <Label htmlFor="banner-is-active">Status</Label>
-      <Select
-        value={value ? "active" : "inactive"}
-        disabled={disabled}
-        onValueChange={(next) => onChange(next === "active")}
-      >
-        <SelectTrigger id="banner-is-active" className="w-full">
-          <SelectValue>
-            <BannerStatusBadge isActive={value} />
-          </SelectValue>
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="active">
-            <BannerStatusBadge isActive />
-          </SelectItem>
-          <SelectItem value="inactive">
-            <BannerStatusBadge isActive={false} />
-          </SelectItem>
-        </SelectContent>
-      </Select>
+    <div className="flex flex-col items-end gap-2">
+      <Label htmlFor="banner-is-active" className="text-muted-foreground">
+        Active
+      </Label>
+      <div className="flex h-8 items-center gap-2">
+        <Switch
+          id="banner-is-active"
+          checked={value}
+          disabled={disabled}
+          onCheckedChange={onChange}
+          size="sm"
+        />
+        <span className="min-w-6 text-muted-foreground text-xs tabular-nums">
+          {value ? "On" : "Off"}
+        </span>
+      </div>
     </div>
   );
 }

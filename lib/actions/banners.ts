@@ -12,11 +12,29 @@ function revalidateBannerPaths() {
   revalidatePath("/banners");
 }
 
+function parseImages(formData: FormData): string[] {
+  const raw = String(formData.get("images") ?? "");
+  if (!raw) {
+    return [];
+  }
+
+  try {
+    const parsed = JSON.parse(raw) as unknown;
+    if (!Array.isArray(parsed)) {
+      return [];
+    }
+
+    return parsed.filter((item): item is string => typeof item === "string");
+  } catch {
+    return [];
+  }
+}
+
 function parseBannerFormData(formData: FormData) {
   return bannerSchema.safeParse({
     name: String(formData.get("name") ?? ""),
     key: String(formData.get("key") ?? ""),
-    image: String(formData.get("image") ?? ""),
+    images: parseImages(formData),
     redirectUrl: String(formData.get("redirectUrl") ?? ""),
     isActive: String(formData.get("isActive") ?? "false") === "true",
   });

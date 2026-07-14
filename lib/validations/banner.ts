@@ -21,7 +21,13 @@ export const bannerSchema = z.object({
       `Name must be at most ${BANNER_LIMITS.name} characters`,
     ),
   key: bannerKeySchema,
-  image: z.string().trim().min(1, "Image is required"),
+  images: z
+    .array(z.string().trim().min(1))
+    .min(1, "At least one image is required")
+    .max(
+      BANNER_LIMITS.maxImages,
+      `You can upload at most ${BANNER_LIMITS.maxImages} images`,
+    ),
   redirectUrl: z
     .string()
     .trim()

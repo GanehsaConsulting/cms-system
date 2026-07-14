@@ -5,7 +5,7 @@ interface BannersListHeaderProps {
 
 export function BannersListHeader({
   title = "Banners",
-  description = "Reusable keyed banners for popups, menus, and homepage placements.",
+  description = "Manage where your banners appear across the website.",
 }: BannersListHeaderProps) {
   return (
     <div className="min-w-0">

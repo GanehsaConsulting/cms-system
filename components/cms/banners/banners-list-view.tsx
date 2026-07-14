@@ -1,15 +1,15 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { BannerFormDialog } from "@/components/cms/banners/banner-form-dialog";
-import { BannersListCreateButton } from "@/components/cms/banners/banners-list-create-button";
-import { BannersListEmptyState } from "@/components/cms/banners/banners-list-empty-state";
+import { BannersGlobalPanel } from "@/components/cms/banners/banners-global-panel";
 import { BannersListHeader } from "@/components/cms/banners/banners-list-header";
 import { BannersListToolbar } from "@/components/cms/banners/banners-list-toolbar";
-import { BannersListWorkspace } from "@/components/cms/banners/banners-list-workspace";
-import { useBannersList } from "@/hooks/use-banners-list";
+import { BannersPlacementsSection } from "@/components/cms/banners/banners-placements-section";
+import type { BannerPlacement } from "@/config/banner-placements";
 import { CMS_FLEX_CHILD, SHELL_PADDING } from "@/config/spacing";
+import { useBannersList } from "@/hooks/use-banners-list";
 import type { Banner } from "@/types/banner";
 import { cn } from "@/lib/utils";
 
@@ -21,6 +21,8 @@ export function BannersListView({ banners }: BannersListViewProps) {
   const router = useRouter();
   const [formOpen, setFormOpen] = useState(false);
   const [editingBanner, setEditingBanner] = useState<Banner | null>(null);
+  const [defaultKey, setDefaultKey] = useState("");
+  const [lockKey, setLockKey] = useState(false);
 
   const {
     statusFilter,
@@ -29,59 +31,56 @@ export function BannersListView({ banners }: BannersListViewProps) {
     setSearch,
     sort,
     setSort,
-    page,
-    setPage,
-    pageSize,
-    setPageSize,
-    pagination,
+    filteredBanners,
     hasActiveFilters,
     resetFilters,
   } = useBannersList(banners);
 
-  function openCreate() {
+  const bannersByKey = useMemo(() => {
+    const map = new Map<string, Banner>();
+    for (const banner of banners) {
+      map.set(banner.key, banner);
+    }
+    return map;
+  }, [banners]);
+
+  function openCreate(options?: { key?: string; lockKey?: boolean }) {
     setEditingBanner(null);
+    setDefaultKey(options?.key ?? "");
+    setLockKey(Boolean(options?.lockKey));
     setFormOpen(true);
   }
 
   function openEdit(banner: Banner) {
     setEditingBanner(banner);
+    setDefaultKey("");
+    setLockKey(false);
     setFormOpen(true);
+  }
+
+  function handleSelectPlacement(
+    placement: BannerPlacement,
+    banner: Banner | null,
+  ) {
+    if (banner) {
+      openEdit(banner);
+      return;
+    }
+
+    openCreate({ key: placement.key, lockKey: true });
   }
 
   function handleFormOpenChange(open: boolean) {
     setFormOpen(open);
     if (!open) {
       setEditingBanner(null);
+      setDefaultKey("");
+      setLockKey(false);
     }
   }
 
   function handleSaved() {
     router.refresh();
-  }
-
-  if (banners.length === 0) {
-    return (
-      <div
-        className={cn(
-          "flex min-h-0 flex-1 flex-col overflow-hidden",
-          SHELL_PADDING,
-        )}
-      >
-        <header className="mb-4 shrink-0">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <BannersListHeader />
-            <BannersListCreateButton onClick={openCreate} />
-          </div>
-        </header>
-        <BannersListEmptyState />
-        <BannerFormDialog
-          open={formOpen}
-          onOpenChange={handleFormOpenChange}
-          banner={editingBanner}
-          onSaved={handleSaved}
-        />
-      </div>
-    );
   }
 
   return (
@@ -103,31 +102,35 @@ export function BannersListView({ banners }: BannersListViewProps) {
             onStatusFilterChange={setStatusFilter}
             onSortChange={setSort}
             onResetFilters={resetFilters}
-            onCreate={openCreate}
+            onCreate={() => openCreate()}
           />
         </div>
       </header>
 
-      <BannersListWorkspace
-        className={CMS_FLEX_CHILD}
-        banners={pagination.items}
-        page={pagination.page}
-        pageSize={pagination.pageSize}
-        total={pagination.total}
-        totalPages={pagination.totalPages}
-        rangeStart={pagination.rangeStart}
-        rangeEnd={pagination.rangeEnd}
-        sort={sort}
-        onPageChange={setPage}
-        onPageSizeChange={setPageSize}
-        onSortChange={setSort}
-        onEdit={openEdit}
-      />
+      <div
+        className={cn(
+          "flex min-h-0 flex-1 flex-col gap-3 overflow-hidden lg:flex-row",
+          CMS_FLEX_CHILD,
+        )}
+      >
+        <BannersPlacementsSection
+          bannersByKey={bannersByKey}
+          onSelectPlacement={handleSelectPlacement}
+        />
+
+        <BannersGlobalPanel
+          banners={filteredBanners}
+          onEdit={openEdit}
+          onAddPlacement={() => openCreate()}
+        />
+      </div>
 
       <BannerFormDialog
         open={formOpen}
         onOpenChange={handleFormOpenChange}
         banner={editingBanner}
+        defaultKey={defaultKey}
+        lockKey={lockKey}
         onSaved={handleSaved}
       />
     </div>
