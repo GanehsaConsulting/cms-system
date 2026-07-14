@@ -1,0 +1,38 @@
+[
+  {
+    "id": "user-rafly",
+    "name": "Rafly Pratama",
+    "email": "rafly@company.com",
+    "position": "CMS Administrator",
+    "role": "super-admin",
+    "status": "active",
+    "brandAccess": ["nusantara-labs", "studio-creative"],
+    "avatarUrl": "",
+    "createdAt": "2026-01-05T08:00:00.000Z",
+    "updatedAt": "2026-03-01T09:30:00.000Z"
+  },
+  {
+    "id": "user-sarah",
+    "name": "Sarah Chen",
+    "email": "sarah@company.com",
+    "position": "Content Manager",
+    "role": "admin",
+    "status": "active",
+    "brandAccess": ["nusantara-labs"],
+    "avatarUrl": "",
+    "createdAt": "2026-01-20T10:15:00.000Z",
+    "updatedAt": "2026-02-28T14:00:00.000Z"
+  },
+  {
+    "id": "user-david",
+    "name": "David Kumar",
+    "email": "david@company.com",
+    "position": "Marketing Analyst",
+    "role": "viewer",
+    "status": "inactive",
+    "brandAccess": ["studio-creative"],
+    "avatarUrl": "",
+    "createdAt": "2026-02-10T11:45:00.000Z",
+    "updatedAt": "2026-02-10T11:45:00.000Z"
+  }
+]
