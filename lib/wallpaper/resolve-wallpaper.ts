@@ -14,13 +14,33 @@ export function resolveWallpaper(id: WallpaperId): Wallpaper {
   return WALLPAPERS.find((wallpaper) => wallpaper.id === id) ?? WALLPAPERS[0];
 }
 
+/** Apply light/dark image variants when the wallpaper defines them. */
+export function applyWallpaperTheme(
+  wallpaper: Wallpaper,
+  isDark: boolean,
+): Wallpaper {
+  if (!wallpaper.themeVariants) {
+    return wallpaper;
+  }
+
+  const variant = isDark
+    ? wallpaper.themeVariants.dark
+    : wallpaper.themeVariants.light;
+
+  return {
+    ...wallpaper,
+    preview: variant.preview,
+    background: variant.background,
+  };
+}
+
 export function resolveCustomWallpaper(
   imageUrl: string,
   slot: number,
 ): Wallpaper {
   return {
     id: customWallpaperIdForSlot(slot),
-    label: `Kustom ${slot + 1}`,
+    label: `Custom ${slot + 1}`,
     preview: imageUrl,
     background: imageUrl,
     kind: "image",
@@ -30,6 +50,7 @@ export function resolveCustomWallpaper(
 export function resolveActiveWallpaper(
   id: WallpaperId,
   customWallpaperSlots: CustomWallpaperSlots,
+  isDark = false,
 ): Wallpaper {
   const normalizedId = normalizeStoredWallpaperId(id) as WallpaperId;
   const slot = slotForCustomWallpaperId(normalizedId);
@@ -40,10 +61,10 @@ export function resolveActiveWallpaper(
       return resolveCustomWallpaper(imageUrl, slot);
     }
 
-    return resolveWallpaper(DEFAULT_WALLPAPER_ID);
+    return applyWallpaperTheme(resolveWallpaper(DEFAULT_WALLPAPER_ID), isDark);
   }
 
-  return resolveWallpaper(normalizedId);
+  return applyWallpaperTheme(resolveWallpaper(normalizedId), isDark);
 }
 
 export function isActiveCustomWallpaper(
@@ -87,6 +108,10 @@ function getGradientWallpaperStyle(background: string): CSSProperties {
 export function getWallpaperBackgroundStyle(
   wallpaper: Wallpaper,
 ): CSSProperties {
+  if (wallpaper.kind === "solid") {
+    return { backgroundColor: wallpaper.background };
+  }
+
   if (wallpaper.kind === "image") {
     return {
       backgroundColor: "var(--background)",
@@ -105,6 +130,10 @@ export function getWallpaperLayerStyle(wallpaper: Wallpaper): CSSProperties {
 export function getWallpaperPreviewStyle(
   wallpaper: Pick<Wallpaper, "kind" | "preview">,
 ): CSSProperties {
+  if (wallpaper.kind === "solid") {
+    return { backgroundColor: wallpaper.preview };
+  }
+
   if (wallpaper.kind === "image") {
     return {
       backgroundImage: `url("${wallpaper.preview}")`,

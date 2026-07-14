@@ -136,6 +136,12 @@ export function AppearanceProvider({
   const setThemeMode = useCallback((mode: ThemeMode) => {
     setThemeModeState(mode);
     writeStoredThemeMode(mode);
+
+    // Manual Light/Dark also updates icon style; user can override via App Icon picker.
+    if (mode === "light" || mode === "dark") {
+      setAppIconStyleState(mode);
+      writeStoredAppIconStyle(mode);
+    }
   }, []);
 
   const setAccentId = useCallback((id: AccentColorId) => {

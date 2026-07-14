@@ -8,6 +8,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { useAppearance } from "@/components/shared/appearance-provider";
 import { DEFAULT_WALLPAPER_MASK } from "@/config/wallpaper-mask";
 import {
   DEFAULT_WALLPAPER_ID,
@@ -110,6 +111,7 @@ async function loadInitialWallpaperState(): Promise<{
 }
 
 export function WallpaperProvider({ children }: WallpaperProviderProps) {
+  const { resolvedDark } = useAppearance();
   const [wallpaperId, setWallpaperIdState] =
     useState<WallpaperId>(DEFAULT_WALLPAPER_ID);
   const [customWallpaperSlots, setCustomWallpaperSlots] =
@@ -237,8 +239,13 @@ export function WallpaperProvider({ children }: WallpaperProviderProps) {
   );
 
   const wallpaper = useMemo(
-    () => resolveActiveWallpaper(wallpaperId, customWallpaperSlots),
-    [customWallpaperSlots, wallpaperId],
+    () =>
+      resolveActiveWallpaper(
+        wallpaperId,
+        customWallpaperSlots,
+        resolvedDark,
+      ),
+    [customWallpaperSlots, resolvedDark, wallpaperId],
   );
 
   const value = useMemo<WallpaperContextValue>(

@@ -20,8 +20,7 @@ import {
 import { cn } from "@/lib/utils";
 
 export function WallpaperMaskSlider() {
-  const { maskOpacity, setMaskOpacity, wallpaperId } = useWallpaper();
-  const isDefaultWallpaper = wallpaperId === "default";
+  const { maskOpacity, setMaskOpacity } = useWallpaper();
 
   return (
     <div
@@ -30,7 +29,6 @@ export function WallpaperMaskSlider() {
         SETTINGS_ROW_DIVIDER,
         SETTINGS_CONTROL_STACK,
         "border-t",
-        isDefaultWallpaper && "opacity-70",
       )}
     >
       <div className={SETTINGS_FIELD}>
@@ -39,7 +37,7 @@ export function WallpaperMaskSlider() {
             htmlFor="wallpaper-mask-slider"
             className={SETTINGS_FIELD_LABEL}
           >
-            Mask aksesibilitas
+            Accessibility mask
           </label>
           <span className="text-muted-foreground text-xs tabular-nums">
             {maskOpacity}%
@@ -55,19 +53,16 @@ export function WallpaperMaskSlider() {
           min={WALLPAPER_MASK_MIN}
           max={WALLPAPER_MASK_MAX}
           step={WALLPAPER_MASK_STEP}
-          disabled={isDefaultWallpaper}
-          aria-label="Tingkat mask wallpaper untuk keterbacaan"
+          aria-label="Wallpaper mask strength for readability"
         />
         <p className={SETTINGS_FIELD_HINT}>
-          {isDefaultWallpaper
-            ? "Pilih wallpaper selain Default untuk menyesuaikan overlay."
-            : "Naikkan jika teks atau UI sulit dibaca di atas wallpaper."}
+          Raise if text or UI is hard to read over the wallpaper.
         </p>
       </div>
 
       <div className={SETTINGS_FIELD}>
-        <span className={SETTINGS_SUBFIELD_LABEL}>Warna mask</span>
-        <WallpaperMaskColorPicker disabled={isDefaultWallpaper} />
+        <span className={SETTINGS_SUBFIELD_LABEL}>Mask color</span>
+        <WallpaperMaskColorPicker />
       </div>
     </div>
   );

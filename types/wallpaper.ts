@@ -1,5 +1,6 @@
 export type WallpaperId =
   | "default"
+  | "solid"
   | "aurora"
   | "sunset"
   | "ocean"
@@ -11,9 +12,14 @@ export type WallpaperId =
   | "custom-3"
   | "custom";
 
-export type WallpaperKind = "gradient" | "image";
+export type WallpaperKind = "gradient" | "image" | "solid";
 
 export type WallpaperMaskColor = "black" | "white";
+
+export interface WallpaperThemeVariant {
+  preview: string;
+  background: string;
+}
 
 export interface Wallpaper {
   id: WallpaperId;
@@ -21,4 +27,9 @@ export interface Wallpaper {
   preview: string;
   background: string;
   kind: WallpaperKind;
+  /** When set, preview/background swap with light/dark theme. */
+  themeVariants?: {
+    light: WallpaperThemeVariant;
+    dark: WallpaperThemeVariant;
+  };
 }

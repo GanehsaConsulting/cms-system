@@ -2,6 +2,9 @@ import type { Wallpaper, WallpaperId } from "@/types/wallpaper";
 
 export const DEFAULT_WALLPAPER_ID: WallpaperId = "default";
 
+export const SYSTEM_WALLPAPER_LIGHT = "/wallpapers/aurora-light.png";
+export const SYSTEM_WALLPAPER_DARK = "/wallpapers/aurora-dark.png";
+
 export const MAX_CUSTOM_WALLPAPERS = 3;
 
 export const CUSTOM_WALLPAPER_SLOT_IDS = [
@@ -14,68 +17,119 @@ export const LEGACY_CUSTOM_WALLPAPER_ID = "custom" as const;
 
 export type CustomWallpaperSlotId = (typeof CUSTOM_WALLPAPER_SLOT_IDS)[number];
 
+const AURORA_GLOW =
+  "radial-gradient(ellipse 90% 70% at 8% 12%, color-mix(in oklch, #8e5af7 28%, transparent), transparent 58%), radial-gradient(ellipse 80% 60% at 92% 88%, color-mix(in oklch, #34c759 22%, transparent), transparent 55%), var(--background)";
+
+const SUNSET =
+  "radial-gradient(ellipse 85% 65% at 88% 8%, color-mix(in oklch, #ff9500 26%, transparent), transparent 55%), radial-gradient(ellipse 75% 55% at 10% 92%, color-mix(in oklch, #ff6b6b 22%, transparent), transparent 52%), var(--background)";
+
+const OCEAN =
+  "radial-gradient(ellipse 80% 60% at 12% 18%, color-mix(in oklch, #5ac8fa 26%, transparent), transparent 55%), radial-gradient(ellipse 70% 55% at 90% 85%, color-mix(in oklch, #007aff 20%, transparent), transparent 52%), var(--background)";
+
+const FOREST =
+  "radial-gradient(ellipse 75% 60% at 18% 78%, color-mix(in oklch, #34c759 22%, transparent), transparent 55%), radial-gradient(ellipse 65% 50% at 82% 15%, color-mix(in oklch, #a89478 18%, transparent), transparent 50%), var(--background)";
+
+const MIDNIGHT_LIGHT =
+  "radial-gradient(ellipse 85% 65% at 75% 12%, color-mix(in oklch, #8e5af7 24%, transparent), transparent 58%), radial-gradient(ellipse 70% 55% at 15% 88%, color-mix(in oklch, #007aff 18%, transparent), transparent 52%), var(--background)";
+
+const MIDNIGHT_DARK =
+  "radial-gradient(ellipse 85% 65% at 75% 12%, color-mix(in oklch, #8e5af7 30%, transparent), transparent 58%), radial-gradient(ellipse 70% 55% at 15% 88%, color-mix(in oklch, #007aff 22%, transparent), transparent 52%), var(--background)";
+
+const ROSE =
+  "radial-gradient(ellipse 80% 60% at 82% 10%, color-mix(in oklch, #ff70c1 24%, transparent), transparent 55%), radial-gradient(ellipse 70% 55% at 12% 90%, color-mix(in oklch, #ff6b6b 18%, transparent), transparent 52%), var(--background)";
+
+function themedGradient(
+  light: string,
+  dark: string = light,
+): Wallpaper["themeVariants"] {
+  return {
+    light: { preview: light, background: light },
+    dark: { preview: dark, background: dark },
+  };
+}
+
 export const WALLPAPERS: Wallpaper[] = [
   {
     id: "default",
-    label: "Default",
-    preview:
-      "linear-gradient(145deg, var(--background) 0%, var(--card) 100%)",
-    background: "var(--background)",
-    kind: "gradient",
+    label: "Surfaces",
+    kind: "image",
+    preview: SYSTEM_WALLPAPER_LIGHT,
+    background: SYSTEM_WALLPAPER_LIGHT,
+    themeVariants: {
+      light: {
+        preview: SYSTEM_WALLPAPER_LIGHT,
+        background: SYSTEM_WALLPAPER_LIGHT,
+      },
+      dark: {
+        preview: SYSTEM_WALLPAPER_DARK,
+        background: SYSTEM_WALLPAPER_DARK,
+      },
+    },
+  },
+  {
+    id: "solid",
+    label: "Solid",
+    kind: "solid",
+    preview: "#F5F5F7",
+    background: "#F5F5F7",
+    themeVariants: {
+      light: {
+        preview: "#F5F5F7",
+        background: "#F5F5F7",
+      },
+      dark: {
+        preview: "#1C1C1E",
+        background: "#1C1C1E",
+      },
+    },
   },
   {
     id: "aurora",
-    label: "Aurora",
-    preview:
-      "radial-gradient(circle at 15% 20%, #8e5af766, transparent 55%), radial-gradient(circle at 85% 75%, #34c75955, transparent 50%), linear-gradient(145deg, #f4f4f5, #ffffff)",
-    background:
-      "radial-gradient(ellipse 90% 70% at 8% 12%, color-mix(in oklch, #8e5af7 28%, transparent), transparent 58%), radial-gradient(ellipse 80% 60% at 92% 88%, color-mix(in oklch, #34c759 22%, transparent), transparent 55%), var(--background)",
+    label: "Aurora Glow",
     kind: "gradient",
+    preview: AURORA_GLOW,
+    background: AURORA_GLOW,
+    themeVariants: themedGradient(AURORA_GLOW),
   },
   {
     id: "sunset",
     label: "Sunset",
-    preview:
-      "radial-gradient(circle at 80% 15%, #ff950066, transparent 50%), radial-gradient(circle at 20% 85%, #ff6b6b55, transparent 52%), linear-gradient(145deg, #fff7f2, #ffffff)",
-    background:
-      "radial-gradient(ellipse 85% 65% at 88% 8%, color-mix(in oklch, #ff9500 26%, transparent), transparent 55%), radial-gradient(ellipse 75% 55% at 10% 92%, color-mix(in oklch, #ff6b6b 22%, transparent), transparent 52%), var(--background)",
     kind: "gradient",
+    preview: SUNSET,
+    background: SUNSET,
+    themeVariants: themedGradient(SUNSET),
   },
   {
     id: "ocean",
     label: "Ocean",
-    preview:
-      "radial-gradient(circle at 20% 25%, #5ac8fa66, transparent 52%), radial-gradient(circle at 85% 80%, #007aff44, transparent 50%), linear-gradient(145deg, #f2f8ff, #ffffff)",
-    background:
-      "radial-gradient(ellipse 80% 60% at 12% 18%, color-mix(in oklch, #5ac8fa 26%, transparent), transparent 55%), radial-gradient(ellipse 70% 55% at 90% 85%, color-mix(in oklch, #007aff 20%, transparent), transparent 52%), var(--background)",
     kind: "gradient",
+    preview: OCEAN,
+    background: OCEAN,
+    themeVariants: themedGradient(OCEAN),
   },
   {
     id: "forest",
     label: "Forest",
-    preview:
-      "radial-gradient(circle at 25% 70%, #34c75955, transparent 52%), radial-gradient(circle at 80% 20%, #a8947844, transparent 50%), linear-gradient(145deg, #f4faf5, #ffffff)",
-    background:
-      "radial-gradient(ellipse 75% 60% at 18% 78%, color-mix(in oklch, #34c759 22%, transparent), transparent 55%), radial-gradient(ellipse 65% 50% at 82% 15%, color-mix(in oklch, #a89478 18%, transparent), transparent 50%), var(--background)",
     kind: "gradient",
+    preview: FOREST,
+    background: FOREST,
+    themeVariants: themedGradient(FOREST),
   },
   {
     id: "midnight",
     label: "Midnight",
-    preview:
-      "radial-gradient(circle at 70% 25%, #8e5af788, transparent 52%), radial-gradient(circle at 25% 80%, #007aff55, transparent 50%), linear-gradient(145deg, #1a1a2e, #0f0f14)",
-    background:
-      "radial-gradient(ellipse 85% 65% at 75% 12%, color-mix(in oklch, #8e5af7 35%, transparent), transparent 58%), radial-gradient(ellipse 70% 55% at 15% 88%, color-mix(in oklch, #007aff 24%, transparent), transparent 52%), var(--background)",
     kind: "gradient",
+    preview: MIDNIGHT_LIGHT,
+    background: MIDNIGHT_LIGHT,
+    themeVariants: themedGradient(MIDNIGHT_LIGHT, MIDNIGHT_DARK),
   },
   {
     id: "rose",
     label: "Rose",
-    preview:
-      "radial-gradient(circle at 75% 20%, #ff70c166, transparent 52%), radial-gradient(circle at 20% 80%, #ff6b6b44, transparent 50%), linear-gradient(145deg, #fff5f8, #ffffff)",
-    background:
-      "radial-gradient(ellipse 80% 60% at 82% 10%, color-mix(in oklch, #ff70c1 24%, transparent), transparent 55%), radial-gradient(ellipse 70% 55% at 12% 90%, color-mix(in oklch, #ff6b6b 18%, transparent), transparent 52%), var(--background)",
     kind: "gradient",
+    preview: ROSE,
+    background: ROSE,
+    themeVariants: themedGradient(ROSE),
   },
 ];
 

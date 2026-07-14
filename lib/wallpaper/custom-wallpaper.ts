@@ -62,6 +62,10 @@ export function normalizeStoredWallpaperId(id: string): string {
     return CUSTOM_WALLPAPER_SLOT_IDS[0];
   }
 
+  if (id === "solid-light" || id === "solid-dark") {
+    return "solid";
+  }
+
   return id;
 }
 

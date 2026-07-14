@@ -1,14 +1,19 @@
 "use client";
 
 import { WallpaperOption } from "@/components/shared/wallpaper-option";
+import { useAppearance } from "@/components/shared/appearance-provider";
 import { useWallpaper } from "@/components/shared/wallpaper-provider";
 import { WALLPAPER_GRID_GAP } from "@/config/settings-layout";
 import { WALLPAPERS } from "@/config/wallpapers";
 import { listFilledCustomWallpaperSlots } from "@/lib/wallpaper/custom-wallpaper";
-import { resolveCustomWallpaper } from "@/lib/wallpaper/resolve-wallpaper";
+import {
+  applyWallpaperTheme,
+  resolveCustomWallpaper,
+} from "@/lib/wallpaper/resolve-wallpaper";
 import { cn } from "@/lib/utils";
 
 export function WallpaperGrid() {
+  const { resolvedDark } = useAppearance();
   const {
     wallpaperId,
     customWallpaperSlots,
@@ -32,14 +37,18 @@ export function WallpaperGrid() {
           />
         );
       })}
-      {WALLPAPERS.map((wallpaper) => (
-        <WallpaperOption
-          key={wallpaper.id}
-          wallpaper={wallpaper}
-          selected={wallpaperId === wallpaper.id}
-          onSelect={setWallpaperId}
-        />
-      ))}
+      {WALLPAPERS.map((wallpaper) => {
+        const themed = applyWallpaperTheme(wallpaper, resolvedDark);
+
+        return (
+          <WallpaperOption
+            key={wallpaper.id}
+            wallpaper={themed}
+            selected={wallpaperId === wallpaper.id}
+            onSelect={setWallpaperId}
+          />
+        );
+      })}
     </div>
   );
 }
