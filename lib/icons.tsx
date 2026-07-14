@@ -14,10 +14,12 @@ import {
   sfClockFill,
   sfCloudSunFill,
   sfDesktopcomputer,
+  sfDocumentFill,
   sfDollarsignCircleFill,
   sfEllipsis,
   sfExclamationmarkTriangleFill,
   sfEyeFill,
+  sfFolder,
   sfGearshapeFill,
   sfGlobeFill,
   sfInfoCircleFill,
@@ -33,6 +35,7 @@ import {
   sfPerson2Fill,
   sfPersonCropCircleFill,
   sfPhotoFill,
+  sfPlayRectangleFill,
   sfPlus,
   sfRectanglePortraitAndArrowRightFill,
   sfSidebarLeft,
@@ -97,6 +100,7 @@ export const ChecklistIcon = createSFIcon(sfChecklist, "ChecklistIcon");
 export const ClockIcon = createSFIcon(sfClockFill, "ClockIcon");
 export const CloudSunIcon = createSFIcon(sfCloudSunFill, "CloudSunIcon");
 export const DesktopIcon = createSFIcon(sfDesktopcomputer, "DesktopIcon");
+export const DocumentIcon = createSFIcon(sfDocumentFill, "DocumentIcon");
 export const DollarSignIcon = createSFIcon(
   sfDollarsignCircleFill,
   "DollarSignIcon",
@@ -108,6 +112,7 @@ export const FilterIcon = createSFIcon(
   sfLine3HorizontalDecreaseCircle,
   "FilterIcon",
 );
+export const FolderOpenIcon = createSFIcon(sfFolder, "FolderOpenIcon");
 export const GearSixIcon = createSFIcon(sfGearshapeFill, "GearSixIcon");
 export const GlobeIcon = createSFIcon(sfGlobeFill, "GlobeIcon");
 export const InfoIcon = createSFIcon(sfInfoCircleFill, "InfoIcon");
@@ -128,6 +133,10 @@ export const PencilSimpleIcon = createSFIcon(sfPencil, "PencilSimpleIcon");
 export const Person2Icon = createSFIcon(sfPerson2Fill, "Person2Icon");
 export const PersonIcon = createSFIcon(sfPersonCropCircleFill, "PersonIcon");
 export const PhotoIcon = createSFIcon(sfPhotoFill, "PhotoIcon");
+export const PlayRectangleIcon = createSFIcon(
+  sfPlayRectangleFill,
+  "PlayRectangleIcon",
+);
 export const PlusIcon = createSFIcon(sfPlus, "PlusIcon");
 export const LogoutIcon = createSFIcon(
   sfRectanglePortraitAndArrowRightFill,

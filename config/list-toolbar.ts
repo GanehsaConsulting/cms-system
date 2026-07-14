@@ -48,8 +48,25 @@ export const LIST_FILTER_FIELD_CLASS = "space-y-2";
 
 export const LIST_SEARCH_WRAP_CLASS = [
   "relative min-w-[12rem] flex-1 sm:w-60 sm:flex-none",
+  LIST_TOOLBAR_CONTROL_HEIGHT,
   LIST_TOOLBAR_CONTROL_SURFACE,
 ].join(" ");
+
+/** Compact segmented control — matches toolbar button height (h-8). */
+export const LIST_TOOLBAR_SEGMENTED_TRACK = [
+  LIST_TOOLBAR_CONTROL_SURFACE,
+  LIST_TOOLBAR_CONTROL_HEIGHT,
+  "flex w-auto shrink-0 items-center p-0.5",
+].join(" ");
+
+export const LIST_TOOLBAR_SEGMENTED_ITEM =
+  "flex h-7 min-w-16 items-center justify-center gap-1.5 rounded-[calc(var(--radius-deep)-0.125rem)] px-2 text-xs font-medium whitespace-nowrap transition-all";
+
+export const LIST_TOOLBAR_SEGMENTED_ITEM_ACTIVE =
+  "bg-background text-foreground shadow-sm ring-1 ring-black/[0.06] dark:bg-white/14 dark:text-foreground dark:shadow-none dark:ring-0";
+
+export const LIST_TOOLBAR_SEGMENTED_ITEM_INACTIVE =
+  "text-muted-foreground hover:text-foreground";
 
 export const LIST_SEARCH_INPUT_CLASS = [
   LIST_TOOLBAR_CONTROL_HEIGHT,

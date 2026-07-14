@@ -3,6 +3,7 @@ import {
   BellIcon,
   DollarSignIcon,
   FileTextIcon,
+  FolderOpenIcon,
   GearSixIcon,
   type Icon,
   PaintpaletteIcon,
@@ -60,6 +61,12 @@ export const contentNavLinks: NavLink[] = [
     href: "/banners",
     icon: PhotoIcon,
     tone: "banners",
+  },
+  {
+    title: "Media Library",
+    href: "/media",
+    icon: FolderOpenIcon,
+    tone: "media",
   },
 ];
 
