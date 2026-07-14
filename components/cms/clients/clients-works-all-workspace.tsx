@@ -5,18 +5,21 @@ import { ClientsWorksAllTable } from "@/components/cms/clients/clients-works-all
 import { GlassSurface } from "@/components/shared/glass-surface";
 import { CMS_FLEX_CHILD, CMS_SCROLL_REGION } from "@/config/spacing";
 import type { ClientWithWorks } from "@/lib/clients/group-with-works";
+import type { ClientsWorksAllListSort } from "@/config/clients-works-all";
 import { cn } from "@/lib/utils";
 
 interface ClientsWorksAllWorkspaceProps {
   groups: ClientWithWorks[];
   selectedId: string | null;
   selectedGroup: ClientWithWorks | null;
+  sort: ClientsWorksAllListSort;
   clientCount: number;
   withWorksCount: number;
   portfolioCount: number;
   hasActiveFilters?: boolean;
   onSelect: (id: string) => void;
   onClosePanel: () => void;
+  onSortChange: (sort: ClientsWorksAllListSort) => void;
   onResetFilters?: () => void;
   className?: string;
 }
@@ -25,12 +28,14 @@ export function ClientsWorksAllWorkspace({
   groups,
   selectedId,
   selectedGroup,
+  sort,
   clientCount,
   withWorksCount,
   portfolioCount,
   hasActiveFilters = false,
   onSelect,
   onClosePanel,
+  onSortChange,
   onResetFilters,
   className,
 }: ClientsWorksAllWorkspaceProps) {
@@ -57,7 +62,9 @@ export function ClientsWorksAllWorkspace({
             <ClientsWorksAllTable
               groups={groups}
               selectedId={selectedId}
+              sort={sort}
               onSelect={onSelect}
+              onSortChange={onSortChange}
             />
           ) : (
             <div className="flex flex-col items-center justify-center px-6 py-16 text-center">

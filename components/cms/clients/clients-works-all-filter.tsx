@@ -11,10 +11,10 @@ import {
 } from "@/components/ui/select";
 import {
   CLIENT_FEATURED_FILTERS,
-  CLIENT_LIST_SORT_OPTIONS,
   CLIENTS_WORKS_ALL_PORTFOLIO_FILTERS,
+  CLIENTS_WORKS_ALL_SORT_OPTIONS,
   type ClientFeaturedFilter,
-  type ClientListSort,
+  type ClientsWorksAllListSort,
   type ClientsWorksAllPortfolioFilter,
 } from "@/config/clients-works-all";
 import {
@@ -25,11 +25,11 @@ import {
 interface ClientsWorksAllFilterProps {
   featuredFilter: ClientFeaturedFilter;
   portfolioFilter: ClientsWorksAllPortfolioFilter;
-  sort: ClientListSort;
+  sort: ClientsWorksAllListSort;
   hasActiveFilters: boolean;
   onFeaturedFilterChange: (filter: ClientFeaturedFilter) => void;
   onPortfolioFilterChange: (filter: ClientsWorksAllPortfolioFilter) => void;
-  onSortChange: (sort: ClientListSort) => void;
+  onSortChange: (sort: ClientsWorksAllListSort) => void;
   onReset: () => void;
 }
 
@@ -92,13 +92,15 @@ export function ClientsWorksAllFilter({
           <Label htmlFor="all-sort">Sort by</Label>
           <Select
             value={sort}
-            onValueChange={(value) => onSortChange(value as ClientListSort)}
+            onValueChange={(value) =>
+              onSortChange(value as ClientsWorksAllListSort)
+            }
           >
             <SelectTrigger id="all-sort" className="w-full">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {CLIENT_LIST_SORT_OPTIONS.map((option) => (
+              {CLIENTS_WORKS_ALL_SORT_OPTIONS.map((option) => (
                 <SelectItem key={option.id} value={option.id}>
                   {option.label}
                 </SelectItem>

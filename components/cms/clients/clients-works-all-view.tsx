@@ -98,12 +98,14 @@ export function ClientsWorksAllView({
         groups={groups}
         selectedId={selectedId}
         selectedGroup={selectedGroup}
+        sort={sort}
         clientCount={clientCount}
         withWorksCount={withWorksCount}
         portfolioCount={portfolioCount}
         hasActiveFilters={hasActiveFilters}
         onSelect={selectClient}
         onClosePanel={closePanel}
+        onSortChange={setSort}
         onResetFilters={resetFilters}
       />
     </div>

@@ -6,7 +6,7 @@ import { ClientsWorksNewDataButton } from "@/components/cms/clients/clients-work
 import { LIST_TOOLBAR_CLASS } from "@/config/list-toolbar";
 import type {
   ClientFeaturedFilter,
-  ClientListSort,
+  ClientsWorksAllListSort,
   ClientsWorksAllPortfolioFilter,
 } from "@/config/clients-works-all";
 
@@ -14,12 +14,12 @@ interface ClientsWorksAllToolbarProps {
   search: string;
   featuredFilter: ClientFeaturedFilter;
   portfolioFilter: ClientsWorksAllPortfolioFilter;
-  sort: ClientListSort;
+  sort: ClientsWorksAllListSort;
   hasActiveFilters: boolean;
   onSearchChange: (value: string) => void;
   onFeaturedFilterChange: (filter: ClientFeaturedFilter) => void;
   onPortfolioFilterChange: (filter: ClientsWorksAllPortfolioFilter) => void;
-  onSortChange: (sort: ClientListSort) => void;
+  onSortChange: (sort: ClientsWorksAllListSort) => void;
   onResetFilters: () => void;
 }
 

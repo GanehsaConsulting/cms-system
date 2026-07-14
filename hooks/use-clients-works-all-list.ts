@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type {
   ClientFeaturedFilter,
-  ClientListSort,
+  ClientsWorksAllListSort,
   ClientsWorksAllPortfolioFilter,
 } from "@/config/clients-works-all";
 import {
@@ -25,7 +25,7 @@ export function useClientsWorksAllList(
   const [portfolioFilter, setPortfolioFilter] =
     useState<ClientsWorksAllPortfolioFilter>("all");
   const [search, setSearch] = useState("");
-  const [sort, setSort] = useState<ClientListSort>("updated-desc");
+  const [sort, setSort] = useState<ClientsWorksAllListSort>("updated-desc");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [panelDismissed, setPanelDismissed] = useState(false);
 

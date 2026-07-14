@@ -1,6 +1,6 @@
 import type {
   ClientFeaturedFilter,
-  ClientListSort,
+  ClientsWorksAllListSort,
   ClientsWorksAllPortfolioFilter,
 } from "@/config/clients-works-all";
 import type { ClientWithWorks } from "@/lib/clients/group-with-works";
@@ -57,7 +57,7 @@ export function filterClientsWorksAllGroups(
 
 export function sortClientsWorksAllGroups(
   groups: ClientWithWorks[],
-  sort: ClientListSort,
+  sort: ClientsWorksAllListSort,
 ) {
   const items = [...groups];
 
@@ -70,6 +70,10 @@ export function sortClientsWorksAllGroups(
         return leftClient.name.localeCompare(rightClient.name);
       case "name-desc":
         return rightClient.name.localeCompare(leftClient.name);
+      case "portfolio-asc":
+        return left.works.length - right.works.length;
+      case "portfolio-desc":
+        return right.works.length - left.works.length;
       case "featured-asc":
         return Number(leftClient.featured) - Number(rightClient.featured);
       case "featured-desc":
