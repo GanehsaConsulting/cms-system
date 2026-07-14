@@ -1,23 +1,34 @@
 "use client";
 
-import { ClientsListEmptyState } from "@/components/cms/clients/clients-list-empty-state";
-import { ClientsListToolbar } from "@/components/cms/clients/clients-list-toolbar";
-import { ClientsListWorkspace } from "@/components/cms/clients/clients-list-workspace";
+import { useMemo } from "react";
 import { ClientsWorksNewDataButton } from "@/components/cms/clients/clients-works-new-data-button";
 import { ClientsWorksPageHeader } from "@/components/cms/clients/clients-works-page-header";
-import { useClientsList } from "@/hooks/use-clients-list";
+import { PortfolioListEmptyState } from "@/components/cms/portfolio/portfolio-list-empty-state";
+import { PortfolioListToolbar } from "@/components/cms/portfolio/portfolio-list-toolbar";
+import { PortfolioListWorkspace } from "@/components/cms/portfolio/portfolio-list-workspace";
 import { CMS_FLEX_CHILD, SHELL_PADDING } from "@/config/spacing";
+import { usePortfolioList } from "@/hooks/use-portfolio-list";
 import type { Client } from "@/types/client";
+import type { Portfolio } from "@/types/portfolio";
 import { cn } from "@/lib/utils";
 
-interface ClientsListViewProps {
+interface PortfolioListViewProps {
+  items: Portfolio[];
   clients: Client[];
 }
 
-export function ClientsListView({ clients }: ClientsListViewProps) {
+export function PortfolioListView({ items, clients }: PortfolioListViewProps) {
+  const clientNameById = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const client of clients) {
+      map.set(client.id, client.name);
+    }
+    return map;
+  }, [clients]);
+
   const {
-    featuredFilter,
-    setFeaturedFilter,
+    workTypeFilter,
+    setWorkTypeFilter,
     search,
     setSearch,
     sort,
@@ -27,15 +38,15 @@ export function ClientsListView({ clients }: ClientsListViewProps) {
     pageSize,
     setPageSize,
     selectedId,
-    selectClient,
+    selectItem,
     closePanel,
     pagination,
-    selectedClient,
+    selectedItem,
     hasActiveFilters,
     resetFilters,
-  } = useClientsList(clients);
+  } = usePortfolioList(items, clientNameById);
 
-  if (clients.length === 0) {
+  if (items.length === 0) {
     return (
       <div
         className={cn(
@@ -44,10 +55,10 @@ export function ClientsListView({ clients }: ClientsListViewProps) {
         )}
       >
         <ClientsWorksPageHeader
-          description="Central source of truth for client logos, testimonials, and gallery assets."
+          description="Social media and website works linked to each client."
           actions={<ClientsWorksNewDataButton />}
         />
-        <ClientsListEmptyState />
+        <PortfolioListEmptyState />
       </div>
     );
   }
@@ -60,25 +71,26 @@ export function ClientsListView({ clients }: ClientsListViewProps) {
       )}
     >
       <ClientsWorksPageHeader
-        description="Central source of truth for client logos, testimonials, and gallery assets."
+        description="Social media and website works linked to each client."
         actions={
-          <ClientsListToolbar
+          <PortfolioListToolbar
             search={search}
-            featuredFilter={featuredFilter}
+            workTypeFilter={workTypeFilter}
             sort={sort}
             hasActiveFilters={hasActiveFilters}
             onSearchChange={setSearch}
-            onFeaturedFilterChange={setFeaturedFilter}
+            onWorkTypeFilterChange={setWorkTypeFilter}
             onSortChange={setSort}
             onResetFilters={resetFilters}
           />
         }
       />
 
-      <ClientsListWorkspace
+      <PortfolioListWorkspace
         className={CMS_FLEX_CHILD}
-        clients={pagination.items}
-        selectedClient={selectedClient}
+        items={pagination.items}
+        clientNameById={clientNameById}
+        selectedItem={selectedItem}
         selectedId={selectedId}
         page={pagination.page}
         pageSize={pagination.pageSize}
@@ -87,7 +99,7 @@ export function ClientsListView({ clients }: ClientsListViewProps) {
         rangeStart={pagination.rangeStart}
         rangeEnd={pagination.rangeEnd}
         sort={sort}
-        onSelect={selectClient}
+        onSelect={selectItem}
         onClosePanel={closePanel}
         onPageChange={setPage}
         onPageSizeChange={setPageSize}

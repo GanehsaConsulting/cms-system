@@ -1,0 +1,26 @@
+[
+  {
+    "id": "portfolio-ganesha-website",
+    "title": "Ganesha Consulting Website",
+    "clientId": "client-ganesha-demo",
+    "workType": "website",
+    "coverImage": "",
+    "description": "Company profile website redesign and launch.",
+    "url": "https://ganeshaconsulting.co.id",
+    "featured": true,
+    "createdAt": "2026-05-01T08:00:00.000Z",
+    "updatedAt": "2026-05-01T08:00:00.000Z"
+  },
+  {
+    "id": "portfolio-ganesha-social",
+    "title": "Ganesha LinkedIn Campaign",
+    "clientId": "client-ganesha-demo",
+    "workType": "social-media",
+    "coverImage": "",
+    "description": "Thought-leadership and hiring campaign assets.",
+    "url": "",
+    "featured": false,
+    "createdAt": "2026-06-10T10:00:00.000Z",
+    "updatedAt": "2026-06-10T10:00:00.000Z"
+  }
+]

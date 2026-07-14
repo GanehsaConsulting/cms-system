@@ -1,46 +1,53 @@
 "use client";
 
-import { ClientsListFilter } from "@/components/cms/clients/clients-list-filter";
-import { ClientsListSearch } from "@/components/cms/clients/clients-list-search";
+import { ClientsWorksAllFilter } from "@/components/cms/clients/clients-works-all-filter";
+import { ClientsWorksAllSearch } from "@/components/cms/clients/clients-works-all-search";
 import { ClientsWorksNewDataButton } from "@/components/cms/clients/clients-works-new-data-button";
 import { LIST_TOOLBAR_CLASS } from "@/config/list-toolbar";
 import type {
   ClientFeaturedFilter,
   ClientListSort,
-} from "@/config/client-list";
+  ClientsWorksAllPortfolioFilter,
+} from "@/config/clients-works-all";
 
-interface ClientsListToolbarProps {
+interface ClientsWorksAllToolbarProps {
   search: string;
   featuredFilter: ClientFeaturedFilter;
+  portfolioFilter: ClientsWorksAllPortfolioFilter;
   sort: ClientListSort;
   hasActiveFilters: boolean;
   onSearchChange: (value: string) => void;
   onFeaturedFilterChange: (filter: ClientFeaturedFilter) => void;
+  onPortfolioFilterChange: (filter: ClientsWorksAllPortfolioFilter) => void;
   onSortChange: (sort: ClientListSort) => void;
   onResetFilters: () => void;
 }
 
-export function ClientsListToolbar({
+export function ClientsWorksAllToolbar({
   search,
   featuredFilter,
+  portfolioFilter,
   sort,
   hasActiveFilters,
   onSearchChange,
   onFeaturedFilterChange,
+  onPortfolioFilterChange,
   onSortChange,
   onResetFilters,
-}: ClientsListToolbarProps) {
+}: ClientsWorksAllToolbarProps) {
   return (
     <div className={LIST_TOOLBAR_CLASS}>
-      <ClientsListFilter
+      <ClientsWorksAllFilter
         featuredFilter={featuredFilter}
+        portfolioFilter={portfolioFilter}
         sort={sort}
         hasActiveFilters={hasActiveFilters}
         onFeaturedFilterChange={onFeaturedFilterChange}
+        onPortfolioFilterChange={onPortfolioFilterChange}
         onSortChange={onSortChange}
         onReset={onResetFilters}
       />
-      <ClientsListSearch value={search} onChange={onSearchChange} />
+      <ClientsWorksAllSearch value={search} onChange={onSearchChange} />
       <ClientsWorksNewDataButton />
     </div>
   );

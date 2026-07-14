@@ -50,7 +50,7 @@ export const contentNavLinks: NavLink[] = [
     tone: "prices",
   },
   {
-    title: "Clients",
+    title: "Clients & Works",
     href: "/clients",
     icon: Person2Icon,
     tone: "clients",

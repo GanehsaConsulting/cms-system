@@ -2,49 +2,49 @@ import Link from "next/link";
 import { CaretLeftIcon } from "@/lib/icons";
 import { Button } from "@/components/ui/button";
 
-interface ClientFormHeaderProps {
+interface PortfolioFormHeaderProps {
   mode: "create" | "edit";
-  clientName?: string;
+  title?: string;
   isPending: boolean;
   onSave: () => void;
 }
 
-export function ClientFormHeader({
+export function PortfolioFormHeader({
   mode,
-  clientName,
+  title,
   isPending,
   onSave,
-}: ClientFormHeaderProps) {
-  const displayName = clientName?.trim();
+}: PortfolioFormHeaderProps) {
+  const displayTitle = title?.trim();
 
   return (
     <div className="space-y-3">
       <Link
-        href="/clients/clients"
+        href="/clients/portfolio"
         className="inline-flex items-center gap-1.5 text-muted-foreground text-sm transition-colors hover:text-foreground"
       >
         <CaretLeftIcon className="size-3.5" />
-        Back to Clients
+        Back to Portfolio
       </Link>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
-          {mode === "edit" && displayName ? (
+          {mode === "edit" && displayTitle ? (
             <div className="flex flex-row flex-wrap gap-1">
               <h1 className="font-semibold text-muted-foreground text-xl tracking-tight">
-                Edit Client
+                Edit Work
               </h1>
               <h1 className="truncate font-semibold text-xl tracking-tight">
-                {displayName}
+                {displayTitle}
               </h1>
             </div>
           ) : (
             <h1 className="font-semibold text-xl tracking-tight">
-              Create Client
+              Create Work
             </h1>
           )}
           <p className="mt-1 text-muted-foreground text-sm">
-            Manage general info, testimonials, and gallery assets independently.
+            Link social media or website work to a client.
           </p>
         </div>
 
@@ -55,7 +55,7 @@ export function ClientFormHeader({
             className="h-9"
             disabled={isPending}
             nativeButton={false}
-            render={<Link href="/clients/clients" />}
+            render={<Link href="/clients/portfolio" />}
           >
             Cancel
           </Button>
@@ -65,7 +65,7 @@ export function ClientFormHeader({
             disabled={isPending}
             onClick={onSave}
           >
-            {isPending ? "Saving..." : "Save Client"}
+            {isPending ? "Saving..." : "Save work"}
           </Button>
         </div>
       </div>

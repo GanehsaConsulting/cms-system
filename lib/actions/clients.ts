@@ -7,6 +7,7 @@ import {
   deleteClient,
   updateClient,
 } from "@/lib/db/clients";
+import { deletePortfolioByClientId } from "@/lib/db/portfolio";
 import {
   clientFormSchema,
   clientFormToInput,
@@ -27,6 +28,8 @@ export async function createClientAction(formData: FormData) {
     const client = await createClient(clientFormToInput(parsed.data));
     revalidatePath("/");
     revalidatePath("/clients");
+    revalidatePath("/clients/clients");
+    revalidatePath("/clients/portfolio");
     redirect(`/clients/${client.id}/edit`);
   } catch (error) {
     return {
@@ -50,6 +53,7 @@ export async function updateClientAction(id: string, formData: FormData) {
     await updateClient(id, clientFormToInput(parsed.data));
     revalidatePath("/");
     revalidatePath("/clients");
+    revalidatePath("/clients/clients");
     revalidatePath(`/clients/${id}/edit`);
     return { success: true as const };
   } catch (error) {
@@ -63,10 +67,13 @@ export async function updateClientAction(id: string, formData: FormData) {
 
 export async function deleteClientAction(id: string) {
   try {
+    await deletePortfolioByClientId(id);
     await deleteClient(id);
     revalidatePath("/");
     revalidatePath("/clients");
-    redirect("/clients");
+    revalidatePath("/clients/clients");
+    revalidatePath("/clients/portfolio");
+    redirect("/clients/clients");
   } catch (error) {
     return {
       success: false as const,
