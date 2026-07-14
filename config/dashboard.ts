@@ -82,7 +82,7 @@ export const DASHBOARD_WIDGET_RADIUS = "rounded-[1.25rem]";
  *  Inset must exceed widget shadow blur so shadows aren't clipped by
  *  the sidebar / scroll overflow edge. */
 export const DASHBOARD_WIDGET_GAP = "gap-2.5";
-export const DASHBOARD_WIDGET_INSET = "p-4";
+export const DASHBOARD_WIDGET_INSET = "pl-4! p-3";
 
 export const DASHBOARD_WIDGET_IDS = [
   "greeting",

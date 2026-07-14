@@ -1,5 +1,6 @@
 "use client";
 
+import { useBrand } from "@/components/shared/brand-provider";
 import {
   CmsDialog,
   CmsDialogBody,
@@ -15,6 +16,7 @@ import {
   DASHBOARD_WIDGET_OPTIONS,
   type DashboardWidgetId,
 } from "@/config/dashboard";
+import { isDashboardWidgetAvailableForBrand } from "@/lib/dashboard/brand-access";
 import type { DashboardWidgetVisibility } from "@/lib/dashboard/storage";
 
 interface DashboardEditWidgetsDialogProps {
@@ -32,20 +34,25 @@ export function DashboardEditWidgetsDialog({
   onToggle,
   onReset,
 }: DashboardEditWidgetsDialogProps) {
+  const { activeBrand } = useBrand();
+  const options = DASHBOARD_WIDGET_OPTIONS.filter((option) =>
+    isDashboardWidgetAvailableForBrand(option.id, activeBrand),
+  );
+
   return (
     <CmsDialog open={open} onOpenChange={onOpenChange}>
       <CmsDialogContent size="sm">
         <CmsDialogHeader>
           <CmsDialogTitle>Edit widgets</CmsDialogTitle>
           <CmsDialogDescription>
-            Choose which widgets appear on your dashboard. All are shown by
-            default.
+            Choose which widgets appear on your dashboard for this brand. All
+            available widgets are shown by default.
           </CmsDialogDescription>
         </CmsDialogHeader>
 
         <CmsDialogBody>
           <ul className="space-y-1">
-            {DASHBOARD_WIDGET_OPTIONS.map((option) => {
+            {options.map((option) => {
               const checked = visibility[option.id] !== false;
 
               return (

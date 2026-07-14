@@ -1,5 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import { DashboardWidget } from "@/components/cms/dashboard/dashboard-widget";
+import { useBrand } from "@/components/shared/brand-provider";
+import { brandSupportsHrefFeature } from "@/lib/dashboard/brand-access";
 import type { Icon } from "@/lib/icons";
 import {
   DollarSignIcon,
@@ -37,6 +41,8 @@ export function DashboardContentHealthWidget({
   mediaFilesCount,
   className,
 }: DashboardContentHealthWidgetProps) {
+  const { activeBrand } = useBrand();
+
   const items: ContentHealthItem[] = [
     {
       id: "clients",
@@ -76,14 +82,24 @@ export function DashboardContentHealthWidget({
       href: "/media",
       icon: FolderOpenIcon,
     },
-  ];
+  ].filter((item) => brandSupportsHrefFeature(activeBrand, item.href, true));
+
+  if (items.length === 0) {
+    return null;
+  }
+
+  const columns =
+    items.length >= 4
+      ? "grid-cols-2 sm:grid-cols-4"
+      : items.length === 3
+        ? "grid-cols-3"
+        : items.length === 2
+          ? "grid-cols-2"
+          : "grid-cols-1";
 
   return (
-    <DashboardWidget
-      variant="glass"
-      className={cn("p-2 sm:p-2.5", className)}
-    >
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+    <DashboardWidget variant="glass" className={cn("p-2 sm:p-2.5", className)}>
+      <div className={cn("grid gap-2", columns)}>
         {items.map((item) => {
           const Icon = item.icon;
 
@@ -102,7 +118,10 @@ export function DashboardContentHealthWidget({
                 </span>
                 <span className="mt-0.5 block truncate text-[11px] text-muted-foreground leading-tight">
                   {item.label}
-                  <span className="text-muted-foreground/60"> · {item.hint}</span>
+                  <span className="text-muted-foreground/60">
+                    {" "}
+                    · {item.hint}
+                  </span>
                 </span>
               </span>
             </Link>

@@ -11,23 +11,31 @@ import { DashboardRecentArticlesWidget } from "@/components/cms/dashboard/dashbo
 import { DashboardRecentWidget } from "@/components/cms/dashboard/dashboard-recent-widget";
 import { DashboardShortcutsWidget } from "@/components/cms/dashboard/dashboard-shortcuts-widget";
 import { DashboardStatWidget } from "@/components/cms/dashboard/dashboard-stat-widget";
+import { useBrand } from "@/components/shared/brand-provider";
 import {
   DASHBOARD_DRAFTS_ATTENTION_LIMIT,
   DASHBOARD_RECENT_ACTIVITY_LIMIT,
   DASHBOARD_RECENT_ARTICLES_LIMIT,
   DASHBOARD_WIDGET_GAP,
   DASHBOARD_WIDGET_INSET,
+  type DashboardWidgetId,
 } from "@/config/dashboard";
 import { CMS_FLEX_CHILD } from "@/config/spacing";
 import { useDashboardWidgets } from "@/hooks/use-dashboard-widgets";
+import {
+  brandSupportsFeature,
+  brandSupportsHrefFeature,
+  filterDashboardQuickActionsForBrand,
+  isDashboardWidgetAvailableForBrand,
+} from "@/lib/dashboard/brand-access";
 import { getDraftsNeedingAttention } from "@/lib/dashboard/drafts";
 import { buildDashboardRecentItems } from "@/lib/dashboard/recent";
 import { FileTextIcon } from "@/lib/icons";
+import { cn } from "@/lib/utils";
 import type { Article } from "@/types/article";
 import type { Banner } from "@/types/banner";
 import type { Client } from "@/types/client";
 import type { Price } from "@/types/price";
-import { cn } from "@/lib/utils";
 
 interface DashboardViewProps {
   articles: Article[];
@@ -44,6 +52,7 @@ export function DashboardView({
   banners,
   mediaFilesCount,
 }: DashboardViewProps) {
+  const { activeBrand } = useBrand();
   const {
     visibility,
     editOpen,
@@ -52,6 +61,10 @@ export function DashboardView({
     setWidgetVisible,
     resetWidgets,
   } = useDashboardWidgets();
+
+  function canShow(id: DashboardWidgetId) {
+    return isDashboardWidgetAvailableForBrand(id, activeBrand) && isVisible(id);
+  }
 
   const publishedCount = articles.filter(
     (article) => article.status === "published",
@@ -69,22 +82,24 @@ export function DashboardView({
     DASHBOARD_DRAFTS_ATTENTION_LIMIT,
   );
   const recentItems = buildDashboardRecentItems({
-    articles,
-    clients,
-    prices,
-    banners,
+    articles: brandSupportsFeature(activeBrand, "articles") ? articles : [],
+    clients: brandSupportsHrefFeature(activeBrand, "/clients") ? clients : [],
+    prices: brandSupportsHrefFeature(activeBrand, "/prices") ? prices : [],
+    banners: brandSupportsHrefFeature(activeBrand, "/banners") ? banners : [],
     limit: DASHBOARD_RECENT_ACTIVITY_LIMIT,
   });
 
-  const showGreeting = isVisible("greeting");
-  const showQuickActions = isVisible("quick-actions");
-  const showContentHealth = isVisible("content-health");
-  const showArticleStats = isVisible("article-stats");
-  const showRecentArticles = isVisible("recent-articles");
-  const showDraftsAttention = isVisible("drafts-attention");
-  const showRecentActivity = isVisible("recent-activity");
-  const showArticlesFocus = isVisible("articles-focus");
-  const showBrowse = isVisible("browse");
+  const showGreeting = canShow("greeting");
+  const showQuickActions =
+    canShow("quick-actions") &&
+    filterDashboardQuickActionsForBrand(activeBrand).length > 0;
+  const showContentHealth = canShow("content-health");
+  const showArticleStats = canShow("article-stats");
+  const showRecentArticles = canShow("recent-articles");
+  const showDraftsAttention = canShow("drafts-attention");
+  const showRecentActivity = canShow("recent-activity");
+  const showArticlesFocus = canShow("articles-focus");
+  const showBrowse = canShow("browse");
 
   const hasBentoGrid =
     showArticleStats ||

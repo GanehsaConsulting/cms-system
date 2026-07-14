@@ -1,6 +1,10 @@
+"use client";
+
 import Link from "next/link";
 import { DashboardWidget } from "@/components/cms/dashboard/dashboard-widget";
+import { useBrand } from "@/components/shared/brand-provider";
 import { DASHBOARD_BENTO_MEDIUM_HEIGHT } from "@/config/dashboard";
+import { brandSupportsHrefFeature } from "@/lib/dashboard/brand-access";
 import {
   DollarSignIcon,
   FolderOpenIcon,
@@ -50,14 +54,28 @@ interface DashboardShortcutsWidgetProps {
 export function DashboardShortcutsWidget({
   className,
 }: DashboardShortcutsWidgetProps) {
+  const { activeBrand } = useBrand();
+  const shortcuts = SHORTCUTS.filter((item) =>
+    brandSupportsHrefFeature(activeBrand, item.href, true),
+  );
+
+  if (shortcuts.length === 0) {
+    return null;
+  }
+
   return (
     <DashboardWidget
       variant="solid"
       className={cn(DASHBOARD_BENTO_MEDIUM_HEIGHT, "p-2.5 sm:p-3", className)}
     >
       <p className="px-1 font-semibold text-sm">Browse</p>
-      <div className="mt-1.5 grid min-h-0 flex-1 grid-cols-2 gap-1.5">
-        {SHORTCUTS.map((item) => {
+      <div
+        className={cn(
+          "mt-1.5 grid min-h-0 flex-1 gap-1.5",
+          shortcuts.length === 1 ? "grid-cols-1" : "grid-cols-2",
+        )}
+      >
+        {shortcuts.map((item) => {
           const Icon = item.icon;
 
           return (
