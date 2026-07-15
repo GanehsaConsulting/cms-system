@@ -9,8 +9,8 @@ import { CmsListTableRow } from "@/components/shared/cms-list-table-row";
 import { TableCell } from "@/components/ui/table";
 import { LIST_TABLE_CELL_CLASS } from "@/config/list-table";
 import { formatArticleDateParts } from "@/lib/articles/list";
-import type { Article } from "@/types/article";
 import { cn } from "@/lib/utils";
+import type { Article } from "@/types/article";
 
 interface ArticleListTableRowProps {
   article: Article;
@@ -24,6 +24,10 @@ export function ArticleListTableRow({
   onSelect,
 }: ArticleListTableRowProps) {
   const updated = formatArticleDateParts(article.updatedAt);
+  const scheduled =
+    article.status === "scheduled" && article.publishedAt
+      ? formatArticleDateParts(article.publishedAt)
+      : null;
 
   return (
     <CmsListTableRow
@@ -48,7 +52,14 @@ export function ArticleListTableRow({
         <ArticleCategoryBadge categoryId={article.category} />
       </TableCell>
       <TableCell className={LIST_TABLE_CELL_CLASS}>
-        <ArticleStatusBadge status={article.status} />
+        <div className="space-y-1">
+          <ArticleStatusBadge status={article.status} />
+          {scheduled ? (
+            <p className="text-muted-foreground text-xs">
+              {scheduled.date} {scheduled.time}
+            </p>
+          ) : null}
+        </div>
       </TableCell>
       <TableCell className={LIST_TABLE_CELL_CLASS}>
         <div className="text-sm leading-tight">

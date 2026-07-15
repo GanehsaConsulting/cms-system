@@ -1,9 +1,10 @@
 import { statusLabels } from "@/lib/articles/list";
-import type { ArticleStatus } from "@/types/article";
 import { cn } from "@/lib/utils";
+import type { ArticleStatus } from "@/types/article";
 
 const statusDotClass: Record<ArticleStatus, string> = {
   published: "bg-emerald-500",
+  scheduled: "bg-sky-500",
   draft: "bg-amber-500",
   archived: "bg-muted-foreground",
 };

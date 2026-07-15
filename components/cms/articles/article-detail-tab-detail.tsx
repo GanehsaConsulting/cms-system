@@ -8,7 +8,9 @@ interface ArticleDetailTabDetailProps {
   article: Article;
 }
 
-export function ArticleDetailTabDetail({ article }: ArticleDetailTabDetailProps) {
+export function ArticleDetailTabDetail({
+  article,
+}: ArticleDetailTabDetailProps) {
   return (
     <dl className="mt-4 space-y-4 text-sm">
       <div className="space-y-1.5">
@@ -37,6 +39,20 @@ export function ArticleDetailTabDetail({ article }: ArticleDetailTabDetailProps)
         <dt className="text-muted-foreground">Updated</dt>
         <dd>{formatArticleDate(article.updatedAt)}</dd>
       </div>
+
+      {article.status === "scheduled" && article.publishedAt ? (
+        <div className="space-y-1.5">
+          <dt className="text-muted-foreground">Scheduled for</dt>
+          <dd>{formatArticleDate(article.publishedAt)}</dd>
+        </div>
+      ) : null}
+
+      {article.status === "published" && article.publishedAt ? (
+        <div className="space-y-1.5">
+          <dt className="text-muted-foreground">Published</dt>
+          <dd>{formatArticleDate(article.publishedAt)}</dd>
+        </div>
+      ) : null}
 
       <div className="space-y-1.5">
         <dt className="text-muted-foreground">Created</dt>

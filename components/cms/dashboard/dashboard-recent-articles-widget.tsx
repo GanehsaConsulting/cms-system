@@ -2,20 +2,15 @@ import Link from "next/link";
 import { DashboardScrollableBody } from "@/components/cms/dashboard/dashboard-scrollable-body";
 import { DashboardWidget } from "@/components/cms/dashboard/dashboard-widget";
 import { DASHBOARD_RECENT_WIDGET_HEIGHT } from "@/config/dashboard";
+import { statusLabels } from "@/lib/articles/list";
 import { formatClientDateParts } from "@/lib/clients/list";
-import type { Article } from "@/types/article";
 import { cn } from "@/lib/utils";
+import type { Article } from "@/types/article";
 
 interface DashboardRecentArticlesWidgetProps {
   articles: Article[];
   className?: string;
 }
-
-const STATUS_LABEL: Record<Article["status"], string> = {
-  draft: "Draft",
-  published: "Published",
-  archived: "Archived",
-};
 
 export function DashboardRecentArticlesWidget({
   articles,
@@ -26,11 +21,7 @@ export function DashboardRecentArticlesWidget({
   return (
     <DashboardWidget
       variant="glass"
-      className={cn(
-        DASHBOARD_RECENT_WIDGET_HEIGHT,
-        "p-3 sm:p-3.5",
-        className,
-      )}
+      className={cn(DASHBOARD_RECENT_WIDGET_HEIGHT, "p-3 sm:p-3.5", className)}
     >
       <div className="flex shrink-0 items-center justify-between gap-3">
         <div>
@@ -77,7 +68,7 @@ export function DashboardRecentArticlesWidget({
                         {article.title || "Untitled"}
                       </p>
                       <p className="truncate text-muted-foreground text-xs">
-                        {STATUS_LABEL[article.status]} · {updated.date}
+                        {statusLabels[article.status]} · {updated.date}
                       </p>
                     </div>
                   </Link>

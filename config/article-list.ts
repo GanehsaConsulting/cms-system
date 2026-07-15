@@ -1,5 +1,5 @@
-import type { ArticleStatus } from "@/types/article";
 import { LIST_DEFAULT_PAGE_SIZE } from "@/config/list-table";
+import type { ArticleStatus } from "@/types/article";
 
 export const ARTICLE_LIST_PAGE_SIZE = LIST_DEFAULT_PAGE_SIZE;
 
@@ -57,6 +57,7 @@ export interface ArticleListSortOption {
 export const ARTICLE_STATUS_FILTERS: ArticleStatusFilterOption[] = [
   { id: "all", label: "All" },
   { id: "published", label: "Published" },
+  { id: "scheduled", label: "Scheduled" },
   { id: "draft", label: "Draft" },
   { id: "archived", label: "Archived" },
 ];

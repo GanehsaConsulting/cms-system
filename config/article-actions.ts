@@ -12,6 +12,13 @@ export const ARTICLE_ACTION_CONFIRMATIONS = {
     confirmLabel: "Publish",
     variant: "default" as const,
   },
+  schedule: {
+    title: "Schedule article?",
+    description:
+      "This article will stay unpublished until the scheduled date and time.",
+    confirmLabel: "Schedule",
+    variant: "default" as const,
+  },
   archive: {
     title: "Archive article?",
     description: "This article will be hidden from the public website.",

@@ -1,6 +1,6 @@
 "use client";
 
-import { CaretDownIcon } from "@/lib/icons";
+import { useState } from "react";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,14 +10,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ARTICLE_ACTION_CONFIRMATIONS } from "@/config/article-actions";
-import type { ArticleStatus } from "@/types/article";
+import { CaretDownIcon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import type { ArticleStatus } from "@/types/article";
 
 const splitButtonClass =
   "h-9 rounded-none border-0 shadow-none focus-visible:border-transparent focus-visible:ring-0";
 
-type PublishConfirmAction = "publish" | "archive";
+type PublishConfirmAction = "publish" | "schedule" | "archive";
 
 interface ArticleFormPublishButtonProps {
   isPending: boolean;
@@ -36,13 +36,17 @@ export function ArticleFormPublishButton({
   const confirmation =
     confirmAction === "publish"
       ? ARTICLE_ACTION_CONFIRMATIONS.publish
-      : confirmAction === "archive"
-        ? ARTICLE_ACTION_CONFIRMATIONS.archive
-        : null;
+      : confirmAction === "schedule"
+        ? ARTICLE_ACTION_CONFIRMATIONS.schedule
+        : confirmAction === "archive"
+          ? ARTICLE_ACTION_CONFIRMATIONS.archive
+          : null;
 
   function handleConfirm() {
     if (confirmAction === "publish") {
       onPublish();
+    } else if (confirmAction === "schedule") {
+      onSetStatus("scheduled");
     } else if (confirmAction === "archive") {
       onSetStatus("archived");
     }
@@ -84,6 +88,9 @@ export function ArticleFormPublishButton({
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => setConfirmAction("publish")}>
               Publish now
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setConfirmAction("schedule")}>
+              Schedule for later
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onSetStatus("draft")}>
               Save as draft

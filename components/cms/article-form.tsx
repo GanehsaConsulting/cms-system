@@ -10,46 +10,50 @@ import {
   ArticleFormCharCounter,
   ArticleFormField,
 } from "@/components/cms/articles/article-form-field";
+import { ArticleFormGalleryField } from "@/components/cms/articles/article-form-gallery-field";
 import { ArticleFormHeader } from "@/components/cms/articles/article-form-header";
 import { ArticleFormInfoPanel } from "@/components/cms/articles/article-form-info-panel";
-import { ArticlePreviewDialog } from "@/components/cms/articles/article-preview-dialog";
-import { ArticleFormPublishChecklist } from "@/components/cms/articles/article-form-publish-checklist";
 import { ArticleFormPublicationPanel } from "@/components/cms/articles/article-form-publication-panel";
+import { ArticleFormPublishChecklist } from "@/components/cms/articles/article-form-publish-checklist";
 import { ArticleFormReadingStats } from "@/components/cms/articles/article-form-reading-stats";
 import { ArticleFormSeoPanel } from "@/components/cms/articles/article-form-seo-panel";
 import { ArticleFormSlugField } from "@/components/cms/articles/article-form-slug-field";
-import { ArticleFormGalleryField } from "@/components/cms/articles/article-form-gallery-field";
 import { ArticleFormThumbnailField } from "@/components/cms/articles/article-form-thumbnail-field";
+import { ArticlePreviewDialog } from "@/components/cms/articles/article-preview-dialog";
 import { CmsFormFieldGroup } from "@/components/shared/cms-form-field-group";
 import { CmsFormSectionHeading } from "@/components/shared/cms-form-section-heading";
 import { CmsPageShell } from "@/components/shared/cms-page-shell";
 import { SolidSurface } from "@/components/shared/solid-surface";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ARTICLE_FORM_LIMITS } from "@/config/article-form";
 import { ARTICLE_ACTION_CONFIRMATIONS } from "@/config/article-actions";
-import type { ArticleCategoryStyle } from "@/config/article-categories";
 import {
   DEFAULT_ARTICLE_AUTHOR,
   resolveArticleAuthorName,
 } from "@/config/article-authors";
+import type { ArticleCategoryStyle } from "@/config/article-categories";
+import { ARTICLE_FORM_LIMITS } from "@/config/article-form";
 import { RADIUS_DEEP } from "@/config/shape";
 import { STACK_GAP } from "@/config/spacing";
+import { useConfirmDialog } from "@/hooks/use-confirm-dialog";
 import {
   createArticleAction,
   deleteArticleAction,
   updateArticleAction,
 } from "@/lib/actions/articles";
 import { getArticleFormChangedSections } from "@/lib/articles/form-changes";
+import {
+  getDefaultScheduleDatetimeLocal,
+  toDatetimeLocalValue,
+} from "@/lib/articles/schedule";
 import { slugifyArticleTitle } from "@/lib/articles/slug";
+import { cn } from "@/lib/utils";
 import {
   type ArticleFormValues,
   articleFormSchema,
 } from "@/lib/validations/article";
-import type { ArticlePreviewData } from "@/types/article-preview";
 import type { Article, ArticleStatus } from "@/types/article";
-import { cn } from "@/lib/utils";
-import { useConfirmDialog } from "@/hooks/use-confirm-dialog";
+import type { ArticlePreviewData } from "@/types/article-preview";
 
 interface ArticleFormProps {
   article?: Article;
@@ -61,6 +65,7 @@ const defaultValues: ArticleFormValues = {
   excerpt: "",
   content: "<p></p>",
   status: "draft",
+  scheduledAt: "",
   authorName: DEFAULT_ARTICLE_AUTHOR,
   category: "general",
   tags: [],
@@ -77,6 +82,10 @@ function articleToFormValues(article: Article): ArticleFormValues {
     excerpt: article.excerpt,
     content: article.content,
     status: article.status,
+    scheduledAt:
+      article.status === "scheduled"
+        ? toDatetimeLocalValue(article.publishedAt)
+        : "",
     authorName: resolveArticleAuthorName(article.authorName),
     category: article.category,
     tags: article.tags,
@@ -109,6 +118,7 @@ export function ArticleForm({ article, categories }: ArticleFormProps) {
     register,
     reset,
     setValue,
+    getValues,
     watch,
     formState: { errors, isDirty },
   } = form;
@@ -195,6 +205,7 @@ export function ArticleForm({ article, categories }: ArticleFormProps) {
     formData.set("excerpt", values.excerpt);
     formData.set("content", values.content);
     formData.set("status", values.status);
+    formData.set("scheduledAt", values.scheduledAt);
     formData.set("authorName", values.authorName);
     formData.set("category", values.category);
     formData.set("tags", JSON.stringify(values.tags));
@@ -229,6 +240,13 @@ export function ArticleForm({ article, categories }: ArticleFormProps) {
   }
 
   function submitWithStatus(status: ArticleStatus) {
+    if (status === "scheduled" && !getValues("scheduledAt").trim()) {
+      setValue("scheduledAt", getDefaultScheduleDatetimeLocal(), {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+    }
+
     setValue("status", status, { shouldValidate: true, shouldDirty: true });
     void handleSubmit(onSubmit)();
   }
@@ -362,6 +380,7 @@ export function ArticleForm({ article, categories }: ArticleFormProps) {
               <ArticleFormPublicationPanel
                 control={control}
                 tagsError={errors.tags?.message}
+                scheduledAtError={errors.scheduledAt?.message}
                 categories={availableCategories}
                 allowCreateCategory={!article}
                 onCategoriesChange={setAvailableCategories}
