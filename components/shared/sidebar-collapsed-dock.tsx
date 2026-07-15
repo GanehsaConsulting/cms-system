@@ -1,9 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { SidebarProfileAvatar } from "@/components/cms/sidebar-profile-avatar";
+import { BrandAppLogo } from "@/components/shared/app-mark-tile";
 import { useAppearanceDrawer } from "@/components/shared/appearance-drawer-provider";
 import { useBrand } from "@/components/shared/brand-provider";
 import { useNotificationCenter } from "@/components/shared/notification-center-provider";
@@ -13,6 +13,7 @@ import {
   SidebarDockItem,
   useSidebarDockTooltipVisible,
 } from "@/components/shared/sidebar-dock";
+import { SystemAppLogo } from "@/components/shared/system-app-logo";
 import { useSidebar } from "@/components/ui/sidebar";
 import { isArticleSectionActive } from "@/config/article-tabs";
 import { isBannerSectionActive } from "@/config/banner-tabs";
@@ -22,16 +23,15 @@ import {
   appearanceNavItem,
   CMS_NAME,
   notificationsNavItem,
-  utilityNavLinks,
+  searchNavItem,
 } from "@/config/nav";
 import { isPriceSectionActive } from "@/config/price-tabs";
-import { RADIUS_DEEP } from "@/config/shape";
 import {
   SIDEBAR_DOCK_ACTIVE_DOT_CLASS,
   SIDEBAR_DOCK_LABEL_CLASS,
   SIDEBAR_DOCK_TRIGGER_CLASS,
 } from "@/config/sidebar";
-import { Building2Icon, SidebarIcon } from "@/lib/icons";
+import { SidebarIcon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 
 function DockLabel({ label }: { label: string }) {
@@ -117,6 +117,10 @@ function isDockItemActive(href: string, pathname: string) {
     return isBannerSectionActive(pathname);
   }
 
+  if (href === "/settings") {
+    return pathname === href || pathname.startsWith(`${href}/`);
+  }
+
   return pathname === href;
 }
 
@@ -124,17 +128,26 @@ interface SidebarCollapsedDockProps {
   user?: CmsUser;
   onOpenProfile?: () => void;
   isProfileOpen?: boolean;
+  onOpenSearch?: () => void;
+  isSearchOpen?: boolean;
 }
 
 export function SidebarCollapsedDock({
   user = CURRENT_CMS_USER,
   onOpenProfile,
   isProfileOpen = false,
+  onOpenSearch,
+  isSearchOpen = false,
 }: SidebarCollapsedDockProps) {
   const pathname = usePathname();
   const { toggleSidebar } = useSidebar();
-  const { activeBrand, mainNavLinks, contentNavLinks, openSwitcher } =
-    useBrand();
+  const {
+    activeBrand,
+    mainNavLinks,
+    contentNavLinks,
+    utilityNavLinks,
+    openSwitcher,
+  } = useBrand();
   const { open, openAppearance } = useAppearanceDrawer();
   const { open: notificationsOpen, openNotificationCenter } =
     useNotificationCenter();
@@ -148,22 +161,9 @@ export function SidebarCollapsedDock({
       <SidebarDockItem index={index++}>
         <DockAppButton label={brandLabel} onClick={openSwitcher}>
           {activeBrand?.logo ? (
-            <span
-              className={cn(
-                RADIUS_DEEP,
-                "relative flex size-9 items-center justify-center overflow-hidden bg-muted",
-              )}
-            >
-              <Image
-                src={activeBrand.logo}
-                alt=""
-                fill
-                unoptimized
-                className="object-contain p-1"
-              />
-            </span>
+            <BrandAppLogo src={activeBrand.logo} size="dock" />
           ) : (
-            <SidebarAppIcon icon={Building2Icon} tone="brand" size="dock" />
+            <SystemAppLogo size="dock" />
           )}
         </DockAppButton>
       </SidebarDockItem>
@@ -171,6 +171,20 @@ export function SidebarCollapsedDock({
       <SidebarDockItem index={index++}>
         <DockAppButton label="Expand sidebar" onClick={toggleSidebar}>
           <SidebarAppIcon icon={SidebarIcon} tone="collapse" size="dock" />
+        </DockAppButton>
+      </SidebarDockItem>
+
+      <SidebarDockItem index={index++}>
+        <DockAppButton
+          label={searchNavItem.title}
+          isActive={isSearchOpen}
+          onClick={onOpenSearch}
+        >
+          <SidebarAppIcon
+            icon={searchNavItem.icon}
+            tone={searchNavItem.tone}
+            size="dock"
+          />
         </DockAppButton>
       </SidebarDockItem>
 

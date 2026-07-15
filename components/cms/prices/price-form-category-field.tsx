@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { PriceFormValues } from "@/lib/validations/price";
+import { toSelectItems } from "@/lib/select-items";
 import type { PriceCategory } from "@/types/price-category";
 
 interface PriceFormCategoryFieldProps {
@@ -54,6 +55,7 @@ export function PriceFormCategoryField({
           <div className="flex flex-1 flex-col gap-1.5">
             <Select
               value={field.value || undefined}
+              items={toSelectItems(categories)}
               onValueChange={field.onChange}
             >
               <SelectTrigger id="serviceSlug" className="w-full">

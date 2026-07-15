@@ -20,6 +20,7 @@ import {
   LIST_FILTER_FIELD_CLASS,
   LIST_FILTER_FIELDS_CLASS,
 } from "@/config/list-toolbar";
+import { toSelectItems } from "@/lib/select-items";
 import type { PriceCategory } from "@/types/price-category";
 
 interface PricesListFilterProps {
@@ -54,6 +55,7 @@ export function PricesListFilter({
           <Label htmlFor="price-status-filter">Status</Label>
           <Select
             value={statusFilter}
+            items={toSelectItems(PRICE_STATUS_FILTERS)}
             onValueChange={(value) =>
               onStatusFilterChange(value as PriceStatusFilter)
             }
@@ -82,6 +84,7 @@ export function PricesListFilter({
           <Label htmlFor="price-sort">Sort by</Label>
           <Select
             value={sort}
+            items={toSelectItems(PRICE_LIST_SORT_OPTIONS)}
             onValueChange={(value) => onSortChange(value as PriceListSort)}
           >
             <SelectTrigger id="price-sort" className="w-full">

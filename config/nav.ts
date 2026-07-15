@@ -6,6 +6,7 @@ import {
   FolderOpenIcon,
   GearSixIcon,
   type Icon,
+  MagnifyingGlassIcon,
   PaintpaletteIcon,
   Person2Icon,
   PhotoIcon,
@@ -63,12 +64,18 @@ export const contentNavLinks: NavLink[] = [
     tone: "banners",
   },
   {
-    title: "Media Library",
+    title: "Files & Media",
     href: "/media",
     icon: FolderOpenIcon,
     tone: "media",
   },
 ];
+
+export const searchNavItem: NavActionItem = {
+  title: "Search",
+  icon: MagnifyingGlassIcon,
+  tone: "search",
+};
 
 export const appearanceNavItem: NavActionItem = {
   title: "Appearance",

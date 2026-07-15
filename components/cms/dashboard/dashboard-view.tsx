@@ -113,7 +113,7 @@ export function DashboardView({
     <div className={cn(CMS_FLEX_CHILD, "overflow-y-auto")}>
       <div
         className={cn(
-          "flex w-full flex-col",
+          "flex min-h-full w-full flex-col",
           DASHBOARD_WIDGET_GAP,
           DASHBOARD_WIDGET_INSET,
         )}
@@ -213,7 +213,10 @@ export function DashboardView({
           </div>
         ) : null}
 
-        <DashboardEditWidgetsButton onClick={() => setEditOpen(true)} />
+        <DashboardEditWidgetsButton
+          className="mt-auto"
+          onClick={() => setEditOpen(true)}
+        />
         <DashboardEditWidgetsDialog
           open={editOpen}
           onOpenChange={setEditOpen}

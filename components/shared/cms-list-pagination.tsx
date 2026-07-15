@@ -47,9 +47,13 @@ export function CmsListPagination({
       <div className="justify-self-start">
         <Select
           value={String(pageSize)}
+          items={LIST_PAGE_SIZE_OPTIONS.map((option) => ({
+            value: String(option),
+            label: `${option} / page`,
+          }))}
           onValueChange={(value) => onPageSizeChange(Number(value))}
         >
-          <SelectTrigger className="h-8 w-[7.5rem]">
+          <SelectTrigger className="h-8 w-30">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

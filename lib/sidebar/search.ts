@@ -35,6 +35,7 @@ function toSearchItem(link: NavLink): SidebarSearchItem {
 export function buildSidebarSearchItems(
   mainLinks: NavLink[] = mainNavLinks,
   contentLinks: NavLink[] = contentNavLinks,
+  utilityLinks: NavLink[] = utilityNavLinks,
 ): SidebarSearchItem[] {
   return [
     ...mainLinks.map(toSearchItem),
@@ -47,7 +48,7 @@ export function buildSidebarSearchItems(
       tone: appearanceNavItem.tone,
       action: "appearance",
     },
-    ...utilityNavLinks.map(toSearchItem),
+    ...utilityLinks.map(toSearchItem),
   ];
 }
 

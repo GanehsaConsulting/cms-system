@@ -22,7 +22,7 @@ export function MediaLibrarySectionTabs({
   return (
     <nav
       className={cn(IOS_SEGMENTED_TRACK, "w-full max-w-md")}
-      aria-label="Media library sections"
+      aria-label="Files & media sections"
     >
       {MEDIA_LIBRARY_SECTIONS.map((section) => {
         const isActive = value === section.id;

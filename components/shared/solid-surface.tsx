@@ -15,7 +15,7 @@ export function SolidSurface({ children, className }: SolidSurfaceProps) {
     <div
       className={cn(
         RADIUS_INNER,
-        "border border-border bg-card text-card-foreground shadow-sm",
+        "border border-border/50 bg-card text-card-foreground",
         className,
       )}
     >

@@ -1,27 +1,27 @@
 "use client";
 
+import { useLayoutEffect } from "react";
 import { useWallpaper } from "@/components/shared/wallpaper-provider";
-import { getWallpaperLayerStyle } from "@/lib/wallpaper/resolve-wallpaper";
-import { cn } from "@/lib/utils";
+import { paintWallpaperBootLayer } from "@/lib/wallpaper/apply-wallpaper-paint";
 
+/**
+ * Keeps the boot wallpaper layer in sync after hydration.
+ * Does not render its own layer — that would flash the default before storage loads.
+ */
 export function WallpaperBackground() {
-  const { wallpaper, maskOpacity, maskColor } = useWallpaper();
+  const { wallpaper, maskOpacity, maskColor, isReady } = useWallpaper();
 
-  return (
-    <div aria-hidden className="pointer-events-none fixed inset-0 z-0">
-      <div
-        className="absolute inset-0 transition-[background-color,background-image] duration-500 ease-out"
-        style={getWallpaperLayerStyle(wallpaper)}
-      />
-      {maskOpacity > 0 ? (
-        <div
-          className={cn(
-            maskColor === "black" ? "bg-black" : "bg-white",
-            "absolute inset-0 transition-opacity duration-300",
-          )}
-          style={{ opacity: maskOpacity / 100 }}
-        />
-      ) : null}
-    </div>
-  );
+  useLayoutEffect(() => {
+    if (!isReady) {
+      return;
+    }
+
+    paintWallpaperBootLayer({
+      wallpaper,
+      maskOpacity,
+      maskColor,
+    });
+  }, [isReady, maskColor, maskOpacity, wallpaper]);
+
+  return null;
 }

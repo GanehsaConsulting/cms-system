@@ -19,6 +19,7 @@ import {
   LIST_FILTER_FIELD_CLASS,
   LIST_FILTER_FIELDS_CLASS,
 } from "@/config/list-toolbar";
+import { toSelectItems } from "@/lib/select-items";
 
 interface ClientsListFilterProps {
   featuredFilter: ClientFeaturedFilter;
@@ -44,6 +45,7 @@ export function ClientsListFilter({
           <Label htmlFor="client-featured-filter">Visibility</Label>
           <Select
             value={featuredFilter}
+            items={toSelectItems(CLIENT_FEATURED_FILTERS)}
             onValueChange={(value) =>
               onFeaturedFilterChange(value as ClientFeaturedFilter)
             }
@@ -65,6 +67,7 @@ export function ClientsListFilter({
           <Label htmlFor="client-sort">Sort by</Label>
           <Select
             value={sort}
+            items={toSelectItems(CLIENT_LIST_SORT_OPTIONS)}
             onValueChange={(value) => onSortChange(value as ClientListSort)}
           >
             <SelectTrigger id="client-sort" className="w-full">

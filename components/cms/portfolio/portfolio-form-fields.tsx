@@ -17,6 +17,7 @@ import { PORTFOLIO_WORK_TYPES } from "@/config/clients-works";
 import { PORTFOLIO_FORM_LIMITS } from "@/config/portfolio-form";
 import { RADIUS_DEEP } from "@/config/shape";
 import type { PortfolioFormValues } from "@/lib/validations/portfolio";
+import { toSelectItems } from "@/lib/select-items";
 import type { Client } from "@/types/client";
 import { cn } from "@/lib/utils";
 
@@ -79,7 +80,14 @@ export function PortfolioFormFields({
             name="clientId"
             render={({ field, fieldState }) => (
               <div className="space-y-1.5">
-                <Select value={field.value} onValueChange={field.onChange}>
+                <Select
+                  value={field.value}
+                  items={clients.map((client) => ({
+                    value: client.id,
+                    label: client.name,
+                  }))}
+                  onValueChange={field.onChange}
+                >
                   <SelectTrigger id="clientId" className="w-full">
                     <SelectValue placeholder="Select a client" />
                   </SelectTrigger>
@@ -120,7 +128,11 @@ export function PortfolioFormFields({
           name="workType"
           render={({ field, fieldState }) => (
             <div className="space-y-1.5">
-              <Select value={field.value} onValueChange={field.onChange}>
+              <Select
+                value={field.value}
+                items={toSelectItems(PORTFOLIO_WORK_TYPES)}
+                onValueChange={field.onChange}
+              >
                 <SelectTrigger id="workType" className="w-full">
                   <SelectValue />
                 </SelectTrigger>

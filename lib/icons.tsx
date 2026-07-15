@@ -19,7 +19,8 @@ import {
   sfEllipsis,
   sfExclamationmarkTriangleFill,
   sfEyeFill,
-  sfFolder,
+  sfEyeSlashFill,
+  sfFolderFill,
   sfGearshapeFill,
   sfGlobeFill,
   sfInfoCircleFill,
@@ -107,12 +108,13 @@ export const DollarSignIcon = createSFIcon(
 );
 export const DotsThreeIcon = createSFIcon(sfEllipsis, "DotsThreeIcon");
 export const EyeIcon = createSFIcon(sfEyeFill, "EyeIcon");
+export const EyeSlashIcon = createSFIcon(sfEyeSlashFill, "EyeSlashIcon");
 export const FileTextIcon = createSFIcon(sfTextPageFill, "FileTextIcon");
 export const FilterIcon = createSFIcon(
   sfLine3HorizontalDecreaseCircle,
   "FilterIcon",
 );
-export const FolderOpenIcon = createSFIcon(sfFolder, "FolderOpenIcon");
+export const FolderOpenIcon = createSFIcon(sfFolderFill, "FolderOpenIcon");
 export const GearSixIcon = createSFIcon(sfGearshapeFill, "GearSixIcon");
 export const GlobeIcon = createSFIcon(sfGlobeFill, "GlobeIcon");
 export const InfoIcon = createSFIcon(sfInfoCircleFill, "InfoIcon");

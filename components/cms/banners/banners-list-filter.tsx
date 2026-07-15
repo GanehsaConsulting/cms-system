@@ -19,6 +19,7 @@ import {
   LIST_FILTER_FIELD_CLASS,
   LIST_FILTER_FIELDS_CLASS,
 } from "@/config/list-toolbar";
+import { toSelectItems } from "@/lib/select-items";
 
 interface BannersListFilterProps {
   statusFilter: BannerStatusFilter;
@@ -44,6 +45,7 @@ export function BannersListFilter({
           <Label htmlFor="banner-status-filter">Status</Label>
           <Select
             value={statusFilter}
+            items={toSelectItems(BANNER_STATUS_FILTERS)}
             onValueChange={(value) =>
               onStatusFilterChange(value as BannerStatusFilter)
             }
@@ -65,6 +67,7 @@ export function BannersListFilter({
           <Label htmlFor="banner-sort">Sort by</Label>
           <Select
             value={sort}
+            items={toSelectItems(BANNER_LIST_SORT_OPTIONS)}
             onValueChange={(value) => onSortChange(value as BannerListSort)}
           >
             <SelectTrigger id="banner-sort" className="w-full">

@@ -1,22 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { useSidebar } from "@/components/ui/sidebar";
+import { SidebarBrandSwitchDialog } from "@/components/cms/sidebar-brand-switch-dialog";
+import { SidebarBrandSwitcherButton } from "@/components/cms/sidebar-brand-switcher-button";
 import { SidebarNav } from "@/components/cms/sidebar-nav";
 import { SidebarProfileButton } from "@/components/cms/sidebar-profile-button";
 import { SidebarProfileDialog } from "@/components/cms/sidebar-profile-dialog";
 import { SidebarSearchDialog } from "@/components/cms/sidebar-search-dialog";
 import { SidebarSearchTrigger } from "@/components/cms/sidebar-search-trigger";
-import { SidebarBrandSwitchDialog } from "@/components/cms/sidebar-brand-switch-dialog";
-import { SidebarBrandSwitcherButton } from "@/components/cms/sidebar-brand-switcher-button";
 import { SidebarCollapseTrigger } from "@/components/shared/sidebar-collapse-trigger";
 import { SidebarCollapsedDock } from "@/components/shared/sidebar-collapsed-dock";
-import { CURRENT_CMS_USER, type CmsUser } from "@/config/cms-user";
-import {
-  SEPARATED_SIDEBAR_CLASS,
-  SEPARATED_SIDEBAR_GUTTER,
-  SIDEBAR_COLLAPSED_DOCK_WRAPPER,
-} from "@/config/sidebar";
 import {
   Sidebar,
   SidebarContent,
@@ -25,9 +18,16 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarSeparator,
+  useSidebar,
 } from "@/components/ui/sidebar";
-import type { CmsProfileFormValues } from "@/lib/validations/cms-user";
+import { type CmsUser, CURRENT_CMS_USER } from "@/config/cms-user";
+import {
+  SEPARATED_SIDEBAR_CLASS,
+  SEPARATED_SIDEBAR_GUTTER,
+  SIDEBAR_COLLAPSED_DOCK_WRAPPER,
+} from "@/config/sidebar";
 import { cn } from "@/lib/utils";
+import type { CmsProfileFormValues } from "@/lib/validations/cms-user";
 
 export function CmsSidebar() {
   const { state } = useSidebar();
@@ -62,6 +62,8 @@ export function CmsSidebar() {
               user={user}
               onOpenProfile={() => setProfileOpen(true)}
               isProfileOpen={profileOpen}
+              onOpenSearch={() => setSearchOpen(true)}
+              isSearchOpen={searchOpen}
             />
           </div>
         ) : (

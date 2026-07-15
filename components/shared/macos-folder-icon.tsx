@@ -97,23 +97,6 @@ export function MacOsFolderIcon({
         d="M9.5 12.8H19.8L23.8 16.8H9.8C8.1 16.8 6.6 15.8 5.8 14.3C6.8 13.4 8.1 12.8 9.5 12.8Z"
         fill={`url(#${uid}-tab)`}
       />
-
-      {/* Pocket opening highlight */}
-      <path
-        d="M10 27.5H51"
-        stroke="rgb(255 255 255 / 0.32)"
-        strokeWidth="1"
-        strokeLinecap="round"
-      />
-
-      {/* Front edge sheen */}
-      <path
-        d="M9.5 42.8H51.5"
-        stroke="color-mix(in srgb, var(--primary) 25%, black)"
-        strokeWidth="0.75"
-        strokeLinecap="round"
-        opacity="0.22"
-      />
     </svg>
   );
 }

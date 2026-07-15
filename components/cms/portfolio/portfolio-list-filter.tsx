@@ -19,6 +19,7 @@ import {
   LIST_FILTER_FIELD_CLASS,
   LIST_FILTER_FIELDS_CLASS,
 } from "@/config/list-toolbar";
+import { toSelectItems } from "@/lib/select-items";
 
 interface PortfolioListFilterProps {
   workTypeFilter: PortfolioWorkTypeFilter;
@@ -44,6 +45,7 @@ export function PortfolioListFilter({
           <Label htmlFor="portfolio-type-filter">Work type</Label>
           <Select
             value={workTypeFilter}
+            items={toSelectItems(PORTFOLIO_WORK_TYPE_FILTERS)}
             onValueChange={(value) =>
               onWorkTypeFilterChange(value as PortfolioWorkTypeFilter)
             }
@@ -65,6 +67,7 @@ export function PortfolioListFilter({
           <Label htmlFor="portfolio-sort">Sort by</Label>
           <Select
             value={sort}
+            items={toSelectItems(PORTFOLIO_LIST_SORT_OPTIONS)}
             onValueChange={(value) => onSortChange(value as PortfolioListSort)}
           >
             <SelectTrigger id="portfolio-sort" className="w-full">

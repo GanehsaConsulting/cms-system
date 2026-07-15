@@ -15,7 +15,7 @@ const QUICK_ACTION_FEATURE: Record<string, BrandFeatureId> = {
 
 /**
  * Widget → brand features required (any). Empty = always available.
- * Content health / browse stay available for Media Library (always in nav);
+ * Content health / browse stay available for Files & Media (always in nav);
  * their items are filtered separately.
  */
 const WIDGET_FEATURES: Record<DashboardWidgetId, BrandFeatureId[]> = {

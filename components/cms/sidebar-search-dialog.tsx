@@ -32,15 +32,16 @@ export function SidebarSearchDialog({
 }: SidebarSearchDialogProps) {
   const router = useRouter();
   const { openAppearance } = useAppearanceDrawer();
-  const { mainNavLinks, contentNavLinks } = useBrand();
+  const { mainNavLinks, contentNavLinks, utilityNavLinks } = useBrand();
   const inputRef = useRef<HTMLInputElement>(null);
   const listId = useId();
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
 
   const searchItems = useMemo(
-    () => buildSidebarSearchItems(mainNavLinks, contentNavLinks),
-    [contentNavLinks, mainNavLinks],
+    () =>
+      buildSidebarSearchItems(mainNavLinks, contentNavLinks, utilityNavLinks),
+    [contentNavLinks, mainNavLinks, utilityNavLinks],
   );
 
   const results = useMemo(

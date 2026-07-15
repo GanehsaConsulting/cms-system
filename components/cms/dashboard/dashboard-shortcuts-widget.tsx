@@ -40,7 +40,7 @@ const SHORTCUTS: DashboardShortcut[] = [
     icon: PhotoIcon,
   },
   {
-    label: "Media library",
+    label: "Files & Media",
     description: "Files and folders",
     href: "/media",
     icon: FolderOpenIcon,

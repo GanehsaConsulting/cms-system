@@ -21,6 +21,7 @@ import {
   LIST_FILTER_FIELD_CLASS,
   LIST_FILTER_FIELDS_CLASS,
 } from "@/config/list-toolbar";
+import { toSelectItems } from "@/lib/select-items";
 
 interface UserListFilterProps {
   statusFilter: UserStatusFilter;
@@ -50,6 +51,7 @@ export function UserListFilter({
           <Label htmlFor="user-status-filter">Status</Label>
           <Select
             value={statusFilter}
+            items={toSelectItems(USER_STATUS_FILTERS)}
             onValueChange={(value) =>
               onStatusFilterChange(value as UserStatusFilter)
             }
@@ -71,6 +73,7 @@ export function UserListFilter({
           <Label htmlFor="user-role-filter">Role</Label>
           <Select
             value={roleFilter}
+            items={toSelectItems(USER_ROLE_FILTERS)}
             onValueChange={(value) =>
               onRoleFilterChange(value as UserRoleFilter)
             }
@@ -92,6 +95,7 @@ export function UserListFilter({
           <Label htmlFor="user-sort">Sort by</Label>
           <Select
             value={sort}
+            items={toSelectItems(USER_LIST_SORT_OPTIONS)}
             onValueChange={(value) => onSortChange(value as UserListSort)}
           >
             <SelectTrigger id="user-sort" className="w-full">

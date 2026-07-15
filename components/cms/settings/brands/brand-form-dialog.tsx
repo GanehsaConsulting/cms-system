@@ -27,6 +27,7 @@ import { BRAND_FEATURE_IDS, BRAND_FORM_LIMITS, BRAND_STATUSES } from "@/config/b
 import { DIALOG_FORM_CLASS } from "@/config/dialog";
 import { createBrandAction, updateBrandAction } from "@/lib/actions/brands";
 import { slugify } from "@/lib/articles/slug";
+import { toSelectItems } from "@/lib/select-items";
 import type { BrandFeatureId } from "@/config/brand";
 import type { Brand } from "@/types/brand";
 
@@ -192,6 +193,7 @@ export function BrandFormDialog({
               <Label htmlFor="brand-status">Status</Label>
               <Select
                 value={status}
+                items={toSelectItems(BRAND_STATUSES)}
                 onValueChange={(value) =>
                   setStatus(value as Brand["status"])
                 }

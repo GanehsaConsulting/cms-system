@@ -70,16 +70,16 @@ export const WALLPAPERS: Wallpaper[] = [
     id: "solid",
     label: "Solid",
     kind: "solid",
-    preview: "#F5F5F7",
-    background: "#F5F5F7",
+    preview: "#FFFFFF",
+    background: "#FFFFFF",
     themeVariants: {
       light: {
-        preview: "#F5F5F7",
-        background: "#F5F5F7",
+        preview: "#FFFFFF",
+        background: "#FFFFFF",
       },
       dark: {
-        preview: "#1C1C1E",
-        background: "#1C1C1E",
+        preview: "#000000",
+        background: "#000000",
       },
     },
   },

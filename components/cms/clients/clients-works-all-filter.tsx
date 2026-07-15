@@ -21,6 +21,7 @@ import {
   LIST_FILTER_FIELD_CLASS,
   LIST_FILTER_FIELDS_CLASS,
 } from "@/config/list-toolbar";
+import { toSelectItems } from "@/lib/select-items";
 
 interface ClientsWorksAllFilterProps {
   featuredFilter: ClientFeaturedFilter;
@@ -50,6 +51,7 @@ export function ClientsWorksAllFilter({
           <Label htmlFor="all-featured-filter">Visibility</Label>
           <Select
             value={featuredFilter}
+            items={toSelectItems(CLIENT_FEATURED_FILTERS)}
             onValueChange={(value) =>
               onFeaturedFilterChange(value as ClientFeaturedFilter)
             }
@@ -71,6 +73,7 @@ export function ClientsWorksAllFilter({
           <Label htmlFor="all-portfolio-filter">Portfolio</Label>
           <Select
             value={portfolioFilter}
+            items={toSelectItems(CLIENTS_WORKS_ALL_PORTFOLIO_FILTERS)}
             onValueChange={(value) =>
               onPortfolioFilterChange(value as ClientsWorksAllPortfolioFilter)
             }
@@ -92,6 +95,7 @@ export function ClientsWorksAllFilter({
           <Label htmlFor="all-sort">Sort by</Label>
           <Select
             value={sort}
+            items={toSelectItems(CLIENTS_WORKS_ALL_SORT_OPTIONS)}
             onValueChange={(value) =>
               onSortChange(value as ClientsWorksAllListSort)
             }

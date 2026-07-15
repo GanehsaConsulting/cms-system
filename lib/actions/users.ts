@@ -6,6 +6,7 @@ import {
   deleteUser,
   updateUser,
 } from "@/lib/db/users";
+import { requireCmsSettingsAccess } from "@/lib/users/require-settings-access";
 import {
   parseUserForm,
   userFormSchema,
@@ -17,6 +18,11 @@ function revalidateUserPaths() {
 }
 
 export async function createUserAction(formData: FormData) {
+  const access = await requireCmsSettingsAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
   const parsed = userFormSchema.safeParse(parseUserForm(formData));
 
   if (!parsed.success) {
@@ -39,6 +45,11 @@ export async function createUserAction(formData: FormData) {
 }
 
 export async function updateUserAction(id: string, formData: FormData) {
+  const access = await requireCmsSettingsAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
   const parsed = userFormSchema.safeParse(parseUserForm(formData));
 
   if (!parsed.success) {
@@ -61,6 +72,11 @@ export async function updateUserAction(id: string, formData: FormData) {
 }
 
 export async function deleteUserAction(id: string) {
+  const access = await requireCmsSettingsAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
   try {
     await deleteUser(id);
     revalidateUserPaths();

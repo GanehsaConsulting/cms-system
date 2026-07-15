@@ -6,6 +6,7 @@ import {
   deleteBrand,
   updateBrand,
 } from "@/lib/db/brands";
+import { requireCmsSettingsAccess } from "@/lib/users/require-settings-access";
 import {
   brandFormSchema,
   brandFormToInput,
@@ -18,6 +19,11 @@ function revalidateBrandPaths() {
 }
 
 export async function createBrandAction(formData: FormData) {
+  const access = await requireCmsSettingsAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
   const parsed = brandFormSchema.safeParse(parseBrandForm(formData));
 
   if (!parsed.success) {
@@ -40,6 +46,11 @@ export async function createBrandAction(formData: FormData) {
 }
 
 export async function updateBrandAction(id: string, formData: FormData) {
+  const access = await requireCmsSettingsAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
   const parsed = brandFormSchema.safeParse(parseBrandForm(formData));
 
   if (!parsed.success) {
@@ -62,6 +73,11 @@ export async function updateBrandAction(id: string, formData: FormData) {
 }
 
 export async function deleteBrandAction(id: string) {
+  const access = await requireCmsSettingsAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
   try {
     await deleteBrand(id);
     revalidateBrandPaths();

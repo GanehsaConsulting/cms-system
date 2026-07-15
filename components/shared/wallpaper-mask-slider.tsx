@@ -20,7 +20,11 @@ import {
 import { cn } from "@/lib/utils";
 
 export function WallpaperMaskSlider() {
-  const { maskOpacity, setMaskOpacity } = useWallpaper();
+  const { wallpaper, maskOpacity, setMaskOpacity } = useWallpaper();
+
+  if (wallpaper.kind === "solid") {
+    return null;
+  }
 
   return (
     <div

@@ -76,7 +76,7 @@ export function DashboardContentHealthWidget({
     },
     {
       id: "media",
-      label: "Media",
+      label: "Files & Media",
       value: mediaFilesCount,
       hint: "Library files",
       href: "/media",

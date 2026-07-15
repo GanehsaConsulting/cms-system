@@ -8,7 +8,12 @@ import {
   useMemo,
   useState,
 } from "react";
-import { contentNavLinks, mainNavLinks } from "@/config/nav";
+import {
+  contentNavLinks,
+  mainNavLinks,
+  utilityNavLinks,
+  type NavLink,
+} from "@/config/nav";
 import {
   filterNavLinksByBrand,
   resolveActiveBrand,
@@ -24,8 +29,10 @@ interface BrandContextValue {
   activeBrand: Brand | null;
   activeBrandId: string | null;
   setActiveBrandId: (id: string) => void;
-  mainNavLinks: typeof import("@/config/nav").mainNavLinks;
-  contentNavLinks: typeof import("@/config/nav").contentNavLinks;
+  mainNavLinks: NavLink[];
+  contentNavLinks: NavLink[];
+  utilityNavLinks: NavLink[];
+  canAccessSettings: boolean;
   switcherOpen: boolean;
   openSwitcher: () => void;
   closeSwitcher: () => void;
@@ -36,10 +43,15 @@ const BrandContext = createContext<BrandContextValue | null>(null);
 
 interface BrandProviderProps {
   brands: Brand[];
+  canAccessSettings?: boolean;
   children: React.ReactNode;
 }
 
-export function BrandProvider({ brands, children }: BrandProviderProps) {
+export function BrandProvider({
+  brands,
+  canAccessSettings = false,
+  children,
+}: BrandProviderProps) {
   const [activeBrandId, setActiveBrandIdState] = useState<string | null>(null);
   const [switcherOpen, setSwitcherOpen] = useState(false);
   const [hydrated, setHydrated] = useState(false);
@@ -85,6 +97,11 @@ export function BrandProvider({ brands, children }: BrandProviderProps) {
     [activeBrand],
   );
 
+  const filteredUtilityNav = useMemo(
+    () => (canAccessSettings ? utilityNavLinks : []),
+    [canAccessSettings],
+  );
+
   const value = useMemo(
     () => ({
       brands,
@@ -93,6 +110,8 @@ export function BrandProvider({ brands, children }: BrandProviderProps) {
       setActiveBrandId,
       mainNavLinks: filteredMainNav,
       contentNavLinks: filteredContentNav,
+      utilityNavLinks: filteredUtilityNav,
+      canAccessSettings,
       switcherOpen,
       openSwitcher: () => setSwitcherOpen(true),
       closeSwitcher: () => setSwitcherOpen(false),
@@ -101,8 +120,10 @@ export function BrandProvider({ brands, children }: BrandProviderProps) {
     [
       activeBrand,
       brands,
+      canAccessSettings,
       filteredContentNav,
       filteredMainNav,
+      filteredUtilityNav,
       setActiveBrandId,
       switcherOpen,
     ],

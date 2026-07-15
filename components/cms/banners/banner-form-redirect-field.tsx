@@ -54,6 +54,10 @@ export function BannerFormRedirectField({
         <Label htmlFor="banner-redirect-mode">Redirect type</Label>
         <Select
           value={mode}
+          items={[
+            { value: "url", label: "Website URL / path" },
+            { value: "whatsapp", label: "WhatsApp" },
+          ]}
           disabled={disabled}
           onValueChange={(value) => {
             if (value === "url" || value === "whatsapp") {
@@ -87,7 +91,7 @@ export function BannerFormRedirectField({
           </p>
         </div>
       ) : (
-        <div className="space-y-3 rounded-[var(--radius-deep)] border border-chart-2/25 bg-muted/40 p-3">
+        <div className="space-y-3 rounded-(--radius-deep) border border-chart-2/25 bg-muted/40 p-3">
           <BannerFormWhatsappPhoneField
             value={whatsappPhone}
             disabled={disabled}

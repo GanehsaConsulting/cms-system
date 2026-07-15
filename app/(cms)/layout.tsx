@@ -1,17 +1,26 @@
 import { CmsShell } from "@/components/cms/cms-shell";
-import { RootLayoutBody } from "@/components/shared/root-layout-body";
+import { filterBrandsByUserAccess } from "@/lib/brands/access";
 import { getBrands } from "@/lib/db/brands";
+import { getCurrentCmsUser } from "@/lib/users/current";
+import { canAccessCmsSettings } from "@/lib/users/permissions";
 
 export default async function CmsLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const brands = await getBrands();
+  const [brands, currentUser] = await Promise.all([
+    getBrands(),
+    getCurrentCmsUser(),
+  ]);
+  const accessibleBrands = filterBrandsByUserAccess(brands, currentUser);
 
   return (
-    <RootLayoutBody>
-      <CmsShell brands={brands}>{children}</CmsShell>
-    </RootLayoutBody>
+    <CmsShell
+      brands={accessibleBrands}
+      canAccessSettings={canAccessCmsSettings(currentUser)}
+    >
+      {children}
+    </CmsShell>
   );
 }

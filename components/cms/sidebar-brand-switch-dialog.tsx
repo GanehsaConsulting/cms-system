@@ -25,6 +25,7 @@ export function SidebarBrandSwitchDialog() {
     setActiveBrandId,
     switcherOpen,
     setSwitcherOpen,
+    canAccessSettings,
   } = useBrand();
 
   const sortedBrands = useMemo(
@@ -66,15 +67,19 @@ export function SidebarBrandSwitchDialog() {
             <div className="rounded-(--radius-inner) border border-(--separator) border-dashed px-4 py-8 text-center">
               <p className="font-medium text-sm">No brands yet</p>
               <p className="mt-1 text-muted-foreground text-xs leading-relaxed">
-                Add a brand in Settings to start switching workspaces.
+                {canAccessSettings
+                  ? "Add a brand in Settings to start switching workspaces."
+                  : "Ask a Super Admin to assign you a brand workspace."}
               </p>
-              <Button
-                type="button"
-                className="mt-4 h-8"
-                onClick={handleOpenSettings}
-              >
-                Open Settings
-              </Button>
+              {canAccessSettings ? (
+                <Button
+                  type="button"
+                  className="mt-4 h-8"
+                  onClick={handleOpenSettings}
+                >
+                  Open Settings
+                </Button>
+              ) : null}
             </div>
           ) : (
             sortedBrands.map((brand) => (
@@ -88,7 +93,7 @@ export function SidebarBrandSwitchDialog() {
           )}
         </CmsDialogBody>
 
-        {sortedBrands.length > 0 ? (
+        {sortedBrands.length > 0 && canAccessSettings ? (
           <CmsDialogFooter className="justify-start sm:justify-start">
             <Button
               type="button"

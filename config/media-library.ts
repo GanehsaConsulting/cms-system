@@ -1,6 +1,6 @@
 import type { MediaTypeFilter, MediaViewMode } from "@/types/media";
 
-export const MEDIA_LIBRARY_PAGE_TITLE = "Media Library";
+export const MEDIA_LIBRARY_PAGE_TITLE = "Files & Media";
 
 export const MEDIA_LIBRARY_PAGE_DESCRIPTION =
   "Organize pending uploads in folders, or browse files already used across CMS modules.";

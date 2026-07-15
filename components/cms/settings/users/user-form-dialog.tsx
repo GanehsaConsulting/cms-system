@@ -30,6 +30,7 @@ import {
 } from "@/config/user";
 import { DIALOG_FORM_CLASS } from "@/config/dialog";
 import { createUserAction, updateUserAction } from "@/lib/actions/users";
+import { toSelectItems } from "@/lib/select-items";
 import type { Brand } from "@/types/brand";
 import type { User } from "@/types/user";
 
@@ -189,6 +190,7 @@ export function UserFormDialog({
                 <Label htmlFor="user-role">Role</Label>
                 <Select
                   value={role}
+                  items={toSelectItems(USER_ROLES)}
                   onValueChange={(value) => setRole(value as UserRoleId)}
                   disabled={isPending}
                 >
@@ -209,6 +211,7 @@ export function UserFormDialog({
                 <Label htmlFor="user-status">Status</Label>
                 <Select
                   value={status}
+                  items={toSelectItems(USER_STATUSES)}
                   onValueChange={(value) =>
                     setStatus(value as User["status"])
                   }

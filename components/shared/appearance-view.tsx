@@ -63,8 +63,8 @@ export function AppearanceView() {
           <WallpaperPicker />
         </div>
         <p className={SETTINGS_SECTION_FOOTER}>
-          Choose a preset, upload your own image, or adjust the mask for
-          readability.
+          Choose a preset or upload your own image. Solid backgrounds skip the
+          accessibility mask.
         </p>
       </section>
     </div>

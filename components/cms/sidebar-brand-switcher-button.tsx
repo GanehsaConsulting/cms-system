@@ -1,13 +1,12 @@
 "use client";
 
-import Image from "next/image";
+import { BrandAppLogo } from "@/components/shared/app-mark-tile";
 import { useBrand } from "@/components/shared/brand-provider";
-import { SidebarAppIcon } from "@/components/shared/sidebar-app-icon";
+import { SystemAppLogo } from "@/components/shared/system-app-logo";
 import { SidebarMenuButton } from "@/components/ui/sidebar";
 import { CMS_NAME } from "@/config/nav";
-import { RADIUS_DEEP } from "@/config/shape";
 import { SEPARATED_MENU_ITEM } from "@/config/sidebar";
-import { Building2Icon, CaretDownIcon } from "@/lib/icons";
+import { CaretDownIcon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 
 interface SidebarBrandSwitcherButtonProps {
@@ -34,22 +33,9 @@ export function SidebarBrandSwitcherButton({
       )}
     >
       {activeBrand?.logo ? (
-        <span
-          className={cn(
-            RADIUS_DEEP,
-            "relative flex size-9 shrink-0 items-center justify-center overflow-hidden bg-muted",
-          )}
-        >
-          <Image
-            src={activeBrand.logo}
-            alt=""
-            fill
-            unoptimized
-            className="object-contain p-1"
-          />
-        </span>
+        <BrandAppLogo src={activeBrand.logo} size="dock" />
       ) : (
-        <SidebarAppIcon icon={Building2Icon} tone="brand" size="dock" />
+        <SystemAppLogo size="dock" />
       )}
 
       <span className="inline-flex min-w-0 flex-1 items-center gap-1 group-data-[collapsible=icon]:hidden">
