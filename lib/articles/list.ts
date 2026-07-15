@@ -1,6 +1,9 @@
-import type { ArticleListSort, ArticleStatusFilter } from "@/config/article-list";
-import { ARTICLE_LIST_PAGE_SIZE } from "@/config/article-list";
 import { getArticleCategory } from "@/config/article-categories";
+import type {
+  ArticleListSort,
+  ArticleStatusFilter,
+} from "@/config/article-list";
+import { ARTICLE_LIST_PAGE_SIZE } from "@/config/article-list";
 import { paginateList } from "@/lib/list/pagination";
 import type { Article, ArticleStatus } from "@/types/article";
 
@@ -42,6 +45,7 @@ export function countArticlesByStatus(articles: Article[]) {
   const counts: Record<ArticleStatusFilter, number> = {
     all: articles.length,
     draft: 0,
+    scheduled: 0,
     published: 0,
     archived: 0,
   };
@@ -89,7 +93,8 @@ export function sortArticles(articles: Article[], sort: ArticleListSort) {
     switch (sort) {
       case "updated-asc":
         return (
-          new Date(left.updatedAt).getTime() - new Date(right.updatedAt).getTime()
+          new Date(left.updatedAt).getTime() -
+          new Date(right.updatedAt).getTime()
         );
       case "title-asc":
         return left.title.localeCompare(right.title, "en");
@@ -121,12 +126,14 @@ export function sortArticles(articles: Article[], sort: ArticleListSort) {
         );
       case "created-desc":
         return (
-          new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime()
+          new Date(right.createdAt).getTime() -
+          new Date(left.createdAt).getTime()
         );
       case "updated-desc":
       default:
         return (
-          new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime()
+          new Date(right.updatedAt).getTime() -
+          new Date(left.updatedAt).getTime()
         );
     }
   });
@@ -174,6 +181,7 @@ export function normalizeArticle(article: Article): Article {
 
 export const statusLabels: Record<ArticleStatus, string> = {
   draft: "Draft",
+  scheduled: "Scheduled",
   published: "Published",
   archived: "Archived",
 };

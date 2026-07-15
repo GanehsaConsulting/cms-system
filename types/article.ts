@@ -1,4 +1,4 @@
-export type ArticleStatus = "draft" | "published" | "archived";
+export type ArticleStatus = "draft" | "scheduled" | "published" | "archived";
 
 import type { ArticleCategoryId } from "@/config/article-categories";
 
@@ -17,6 +17,7 @@ export interface Article {
   highlighted: boolean;
   gallery: string[];
   thumbnail: string;
+  /** Publish time when published, or scheduled go-live time when scheduled. */
   publishedAt: string | null;
   createdAt: string;
   updatedAt: string;
@@ -36,4 +37,6 @@ export interface ArticleInput {
   highlighted: boolean;
   gallery: string[];
   thumbnail: string;
+  /** Required when status is `scheduled`; ignored for other statuses (DB owns it). */
+  publishedAt: string | null;
 }

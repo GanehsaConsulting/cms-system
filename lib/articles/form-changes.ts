@@ -32,6 +32,7 @@ export function getArticleFormChangedSections(
 
   if (
     baseline.status !== current.status ||
+    baseline.scheduledAt !== current.scheduledAt ||
     baseline.highlighted !== current.highlighted ||
     baseline.category !== current.category ||
     baseline.authorName !== current.authorName ||

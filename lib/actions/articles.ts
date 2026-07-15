@@ -46,6 +46,7 @@ function parseArticleForm(formData: FormData) {
     excerpt: String(formData.get("excerpt") ?? ""),
     content: String(formData.get("content") ?? ""),
     status: String(formData.get("status") ?? "draft"),
+    scheduledAt: String(formData.get("scheduledAt") ?? ""),
     authorName: String(formData.get("authorName") ?? ""),
     category: String(formData.get("category") ?? "general"),
     tags: parseTags(formData.get("tags")),
@@ -132,7 +133,8 @@ export async function deleteArticleAction(id: string) {
   } catch (error) {
     return {
       success: false as const,
-      error: error instanceof Error ? error.message : "Failed to delete article",
+      error:
+        error instanceof Error ? error.message : "Failed to delete article",
     };
   }
 }
