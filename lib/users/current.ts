@@ -1,8 +1,12 @@
-import { CURRENT_CMS_USER } from "@/config/cms-user";
-import { getUserById } from "@/lib/db/users";
+import { getServerSession, toCmsUser } from "@/lib/auth/session";
 import type { User } from "@/types/user";
 
-/** Placeholder session user until auth is wired. */
+/** Signed-in CMS user from the server session (null when anonymous). */
 export async function getCurrentCmsUser(): Promise<User | null> {
-  return getUserById(CURRENT_CMS_USER.id);
+  const session = await getServerSession();
+  if (!session?.user) {
+    return null;
+  }
+
+  return toCmsUser(session.user);
 }
