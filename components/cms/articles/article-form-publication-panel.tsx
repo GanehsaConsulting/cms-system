@@ -18,6 +18,7 @@ import {
   SelectTrigger,
 } from "@/components/ui/select";
 import type { ArticleCategoryStyle } from "@/config/article-categories";
+import type { ArticleAuthorOption } from "@/lib/articles/authors";
 import { getDefaultScheduleDatetimeLocal } from "@/lib/articles/schedule";
 import type { ArticleFormValues } from "@/lib/validations/article";
 import type { ArticleStatus } from "@/types/article";
@@ -28,6 +29,7 @@ interface ArticleFormPublicationPanelProps {
   tagsError?: string;
   scheduledAtError?: string;
   categories: ArticleCategoryStyle[];
+  authors: ArticleAuthorOption[];
   allowCreateCategory?: boolean;
   onCategoriesChange: (categories: ArticleCategoryStyle[]) => void;
   onCategoryCreated: (category: CustomArticleCategory) => void;
@@ -38,6 +40,7 @@ export function ArticleFormPublicationPanel({
   tagsError,
   scheduledAtError,
   categories,
+  authors,
   allowCreateCategory = false,
   onCategoriesChange,
   onCategoryCreated,
@@ -128,7 +131,7 @@ export function ArticleFormPublicationPanel({
           )}
         />
 
-        <ArticleFormAuthorField control={control} />
+        <ArticleFormAuthorField control={control} authors={authors} />
       </div>
     </SolidSurface>
   );

@@ -2,9 +2,16 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { findArticleAuthorByName } from "@/lib/articles/authors";
 import { isKnownArticleCategory } from "@/lib/articles/categories";
-import { createArticle, deleteArticle, updateArticle } from "@/lib/db/articles";
+import {
+  createArticle,
+  deleteArticle,
+  getArticleById,
+  updateArticle,
+} from "@/lib/db/articles";
 import { getCustomCategories } from "@/lib/db/categories";
+import { requireCmsContentAccess } from "@/lib/users/require-content-access";
 import {
   articleFormSchema,
   articleFormToInput,
@@ -59,12 +66,25 @@ function parseArticleForm(formData: FormData) {
 }
 
 export async function createArticleAction(formData: FormData) {
+  const access = await requireCmsContentAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
   const parsed = articleFormSchema.safeParse(parseArticleForm(formData));
 
   if (!parsed.success) {
     return {
       success: false as const,
       error: parsed.error.issues[0]?.message ?? "Invalid article data",
+    };
+  }
+
+  const author = await findArticleAuthorByName(parsed.data.authorName);
+  if (!author) {
+    return {
+      success: false as const,
+      error: "Selected author is invalid",
     };
   }
 
@@ -78,7 +98,9 @@ export async function createArticleAction(formData: FormData) {
   }
 
   try {
-    const article = await createArticle(articleFormToInput(parsed.data));
+    const article = await createArticle(articleFormToInput(parsed.data), {
+      authorId: author.id,
+    });
     revalidatePath("/");
     revalidatePath("/articles");
     redirect(`/articles/${article.id}/edit`);
@@ -91,12 +113,38 @@ export async function createArticleAction(formData: FormData) {
 }
 
 export async function updateArticleAction(id: string, formData: FormData) {
+  const access = await requireCmsContentAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
   const parsed = articleFormSchema.safeParse(parseArticleForm(formData));
 
   if (!parsed.success) {
     return {
       success: false as const,
       error: parsed.error.issues[0]?.message ?? "Invalid article data",
+    };
+  }
+
+  const author = await findArticleAuthorByName(parsed.data.authorName);
+  const current = await getArticleById(id);
+  if (!current) {
+    return {
+      success: false as const,
+      error: "Article not found",
+    };
+  }
+
+  const isLegacyAuthor =
+    !author &&
+    current.authorName.trim().toLowerCase() ===
+      parsed.data.authorName.trim().toLowerCase();
+
+  if (!author && !isLegacyAuthor) {
+    return {
+      success: false as const,
+      error: "Selected author is invalid",
     };
   }
 
@@ -110,7 +158,9 @@ export async function updateArticleAction(id: string, formData: FormData) {
   }
 
   try {
-    await updateArticle(id, articleFormToInput(parsed.data));
+    await updateArticle(id, articleFormToInput(parsed.data), {
+      authorId: author?.id ?? null,
+    });
     revalidatePath("/");
     revalidatePath("/articles");
     revalidatePath(`/articles/${id}/edit`);
@@ -125,6 +175,11 @@ export async function updateArticleAction(id: string, formData: FormData) {
 }
 
 export async function deleteArticleAction(id: string) {
+  const access = await requireCmsContentAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
   try {
     await deleteArticle(id);
     revalidatePath("/");

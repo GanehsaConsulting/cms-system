@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { ARTICLE_AUTHORS } from "@/config/article-authors";
 import { ARTICLE_FORM_LIMITS } from "@/config/article-form";
 import {
   fromDatetimeLocalValue,
@@ -15,7 +14,11 @@ export const articleStatusSchema = z.enum([
   "archived",
 ]);
 
-export const articleAuthorSchema = z.enum(ARTICLE_AUTHORS);
+export const articleAuthorSchema = z
+  .string()
+  .trim()
+  .min(1, "Author is required")
+  .max(80, "Author name must be at most 80 characters");
 
 export const articleCategorySchema = z
   .string()

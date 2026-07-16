@@ -1,36 +1,44 @@
-import { readFile, writeFile } from "node:fs/promises";
-import path from "node:path";
+import { asc, eq } from "drizzle-orm";
 import { ARTICLE_CATEGORIES } from "@/config/article-categories";
 import { getCustomCategoryBadgeClass } from "@/config/article-category-styles";
+import { slugify } from "@/lib/articles/slug";
+import { db } from "@/lib/db/client";
+import { articleCategories } from "@/lib/db/schema";
 import type {
   CustomArticleCategory,
   CustomArticleCategoryInput,
 } from "@/types/category";
-import { slugify } from "@/lib/articles/slug";
 
-const DATA_PATH = path.join(process.cwd(), "data/categories.json");
-
-async function readCategories(): Promise<CustomArticleCategory[]> {
-  const raw = await readFile(DATA_PATH, "utf-8");
-  return JSON.parse(raw) as CustomArticleCategory[];
-}
-
-async function writeCategories(categories: CustomArticleCategory[]): Promise<void> {
-  await writeFile(DATA_PATH, `${JSON.stringify(categories, null, 2)}\n`, "utf-8");
+function rowToCategory(
+  row: typeof articleCategories.$inferSelect,
+): CustomArticleCategory {
+  return {
+    id: row.id,
+    label: row.label,
+    badgeClassName: row.badgeClassName,
+    createdAt: row.createdAt.toISOString(),
+  };
 }
 
 export async function getCustomCategories(): Promise<CustomArticleCategory[]> {
-  const categories = await readCategories();
-  return categories.sort((left, right) =>
-    left.label.localeCompare(right.label),
-  );
+  const rows = await db
+    .select()
+    .from(articleCategories)
+    .orderBy(asc(articleCategories.label));
+
+  return rows.map(rowToCategory);
 }
 
 export async function getCustomCategoryById(
   id: string,
 ): Promise<CustomArticleCategory | null> {
-  const categories = await readCategories();
-  return categories.find((category) => category.id === id) ?? null;
+  const rows = await db
+    .select()
+    .from(articleCategories)
+    .where(eq(articleCategories.id, id))
+    .limit(1);
+
+  return rows[0] ? rowToCategory(rows[0]) : null;
 }
 
 export async function createCustomCategory(
@@ -47,23 +55,27 @@ export async function createCustomCategory(
     throw new Error("Category already exists");
   }
 
-  const categories = await readCategories();
-  const duplicate = categories.find(
-    (category) => category.id === id || category.label.toLowerCase() === label.toLowerCase(),
+  const existing = await getCustomCategories();
+  const duplicate = existing.find(
+    (category) =>
+      category.id === id ||
+      category.label.toLowerCase() === label.toLowerCase(),
   );
 
   if (duplicate) {
     throw new Error("Category already exists");
   }
 
-  const category: CustomArticleCategory = {
-    id,
-    label,
-    badgeClassName: getCustomCategoryBadgeClass(categories.length),
-    createdAt: new Date().toISOString(),
-  };
+  const now = new Date();
+  const [row] = await db
+    .insert(articleCategories)
+    .values({
+      id,
+      label,
+      badgeClassName: getCustomCategoryBadgeClass(existing.length),
+      createdAt: now,
+    })
+    .returning();
 
-  categories.push(category);
-  await writeCategories(categories);
-  return category;
+  return rowToCategory(row);
 }

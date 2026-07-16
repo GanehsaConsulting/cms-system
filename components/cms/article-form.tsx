@@ -27,10 +27,6 @@ import { SolidSurface } from "@/components/shared/solid-surface";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ARTICLE_ACTION_CONFIRMATIONS } from "@/config/article-actions";
-import {
-  DEFAULT_ARTICLE_AUTHOR,
-  resolveArticleAuthorName,
-} from "@/config/article-authors";
 import type { ArticleCategoryStyle } from "@/config/article-categories";
 import { ARTICLE_FORM_LIMITS } from "@/config/article-form";
 import { RADIUS_DEEP } from "@/config/shape";
@@ -41,6 +37,7 @@ import {
   deleteArticleAction,
   updateArticleAction,
 } from "@/lib/actions/articles";
+import type { ArticleAuthorOption } from "@/lib/articles/authors";
 import { getArticleFormChangedSections } from "@/lib/articles/form-changes";
 import {
   getDefaultScheduleDatetimeLocal,
@@ -58,25 +55,32 @@ import type { ArticlePreviewData } from "@/types/article-preview";
 interface ArticleFormProps {
   article?: Article;
   categories: ArticleCategoryStyle[];
+  authors: ArticleAuthorOption[];
+  defaultAuthorName: string;
 }
 
-const defaultValues: ArticleFormValues = {
-  title: "",
-  excerpt: "",
-  content: "<p></p>",
-  status: "draft",
-  scheduledAt: "",
-  authorName: DEFAULT_ARTICLE_AUTHOR,
-  category: "general",
-  tags: [],
-  metaTitle: "",
-  metaDescription: "",
-  highlighted: false,
-  thumbnail: "",
-  gallery: [],
-};
+function buildDefaultValues(defaultAuthorName: string): ArticleFormValues {
+  return {
+    title: "",
+    excerpt: "",
+    content: "<p></p>",
+    status: "draft",
+    scheduledAt: "",
+    authorName: defaultAuthorName,
+    category: "general",
+    tags: [],
+    metaTitle: "",
+    metaDescription: "",
+    highlighted: false,
+    thumbnail: "",
+    gallery: [],
+  };
+}
 
-function articleToFormValues(article: Article): ArticleFormValues {
+function articleToFormValues(
+  article: Article,
+  fallbackAuthor: string,
+): ArticleFormValues {
   return {
     title: article.title,
     excerpt: article.excerpt,
@@ -86,7 +90,7 @@ function articleToFormValues(article: Article): ArticleFormValues {
       article.status === "scheduled"
         ? toDatetimeLocalValue(article.publishedAt)
         : "",
-    authorName: resolveArticleAuthorName(article.authorName),
+    authorName: article.authorName || fallbackAuthor,
     category: article.category,
     tags: article.tags,
     metaTitle: article.metaTitle,
@@ -97,7 +101,12 @@ function articleToFormValues(article: Article): ArticleFormValues {
   };
 }
 
-export function ArticleForm({ article, categories }: ArticleFormProps) {
+export function ArticleForm({
+  article,
+  categories,
+  authors,
+  defaultAuthorName,
+}: ArticleFormProps) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -107,9 +116,16 @@ export function ArticleForm({ article, categories }: ArticleFormProps) {
   const [isPending, startTransition] = useTransition();
   const { requestConfirm, confirmDialog } = useConfirmDialog(isPending);
 
+  const defaultValues = useMemo(
+    () => buildDefaultValues(defaultAuthorName),
+    [defaultAuthorName],
+  );
+
   const form = useForm<ArticleFormValues>({
     resolver: zodResolver(articleFormSchema),
-    defaultValues: article ? articleToFormValues(article) : defaultValues,
+    defaultValues: article
+      ? articleToFormValues(article, defaultAuthorName)
+      : defaultValues,
   });
 
   const {
@@ -134,8 +150,9 @@ export function ArticleForm({ article, categories }: ArticleFormProps) {
   const authorName = watchedValues.authorName;
 
   const baselineValues = useMemo(
-    () => (article ? articleToFormValues(article) : defaultValues),
-    [article],
+    () =>
+      article ? articleToFormValues(article, defaultAuthorName) : defaultValues,
+    [article, defaultAuthorName, defaultValues],
   );
 
   const changedSections = useMemo(
@@ -382,6 +399,7 @@ export function ArticleForm({ article, categories }: ArticleFormProps) {
                 tagsError={errors.tags?.message}
                 scheduledAtError={errors.scheduledAt?.message}
                 categories={availableCategories}
+                authors={authors}
                 allowCreateCategory={!article}
                 onCategoriesChange={setAvailableCategories}
                 onCategoryCreated={(createdCategory) => {

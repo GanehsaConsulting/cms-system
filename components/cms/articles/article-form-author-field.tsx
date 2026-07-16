@@ -10,14 +10,23 @@ import {
   SelectItem,
   SelectTrigger,
 } from "@/components/ui/select";
-import { ARTICLE_AUTHORS } from "@/config/article-authors";
+import type { ArticleAuthorOption } from "@/lib/articles/authors";
+import { toSelectItems } from "@/lib/select-items";
 import type { ArticleFormValues } from "@/lib/validations/article";
 
 interface ArticleFormAuthorFieldProps {
   control: Control<ArticleFormValues>;
+  authors: ArticleAuthorOption[];
 }
 
-export function ArticleFormAuthorField({ control }: ArticleFormAuthorFieldProps) {
+export function ArticleFormAuthorField({
+  control,
+  authors,
+}: ArticleFormAuthorFieldProps) {
+  const items = toSelectItems(
+    authors.map((author) => ({ id: author.name, label: author.name })),
+  );
+
   return (
     <div className="space-y-2">
       <Label htmlFor="authorName">Author</Label>
@@ -25,7 +34,11 @@ export function ArticleFormAuthorField({ control }: ArticleFormAuthorFieldProps)
         control={control}
         name="authorName"
         render={({ field }) => (
-          <Select value={field.value} onValueChange={field.onChange}>
+          <Select
+            value={field.value}
+            onValueChange={field.onChange}
+            items={items}
+          >
             <SelectTrigger
               id="authorName"
               className="h-8 w-full gap-2 px-2.5 py-0"
@@ -36,14 +49,14 @@ export function ArticleFormAuthorField({ control }: ArticleFormAuthorFieldProps)
               </span>
             </SelectTrigger>
             <SelectContent className="p-1">
-              {ARTICLE_AUTHORS.map((authorName) => (
+              {authors.map((author) => (
                 <SelectItem
-                  key={authorName}
-                  value={authorName}
+                  key={author.id}
+                  value={author.name}
                   className="justify-start py-1.5 pr-8 pl-2"
                 >
-                  <ArticleAuthorAvatar name={authorName} size="xs" />
-                  <span className="text-left">{authorName}</span>
+                  <ArticleAuthorAvatar name={author.name} size="xs" />
+                  <span className="text-left">{author.name}</span>
                 </SelectItem>
               ))}
             </SelectContent>

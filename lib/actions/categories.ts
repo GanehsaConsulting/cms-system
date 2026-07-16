@@ -2,9 +2,15 @@
 
 import { revalidatePath } from "next/cache";
 import { createCustomCategory } from "@/lib/db/categories";
+import { requireCmsContentAccess } from "@/lib/users/require-content-access";
 import { createCategorySchema } from "@/lib/validations/category";
 
 export async function createCategoryAction(formData: FormData) {
+  const access = await requireCmsContentAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
   const parsed = createCategorySchema.safeParse({
     label: String(formData.get("label") ?? ""),
   });
