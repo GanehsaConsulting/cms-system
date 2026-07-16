@@ -1,4 +1,5 @@
 import { RADIUS_DEEP } from "@/config/shape";
+import { GLASS_SURFACE } from "./glass";
 
 /** Shared list toolbar layout and control styling. */
 
@@ -10,10 +11,10 @@ export const LIST_TOOLBAR_CLASS =
  * Use for list search, filter, and secondary toolbar buttons.
  */
 export const LIST_TOOLBAR_CONTROL_SURFACE = [
-  RADIUS_DEEP,
-  "border-0 bg-black/5 shadow-none transition-colors",
+  RADIUS_DEEP, GLASS_SURFACE,
+  "border-0! shadow-none transition-colors",
   "hover:bg-black/8",
-  "dark:border-0 dark:bg-white/8 dark:shadow-none dark:hover:bg-white/12",
+  "dark:shadow-none dark:hover:bg-white/12",
 ].join(" ");
 
 export const LIST_TOOLBAR_CONTROL_HEIGHT = "h-8";

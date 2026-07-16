@@ -10,12 +10,19 @@ export const GLASS_BACKDROP = "glass-backdrop";
 /** Frosted fill — uses CSS var. */
 export const GLASS_FILL = "bg-[var(--glass-fill)]";
 
-export const GLASS_BORDER = "border border-black/12 dark:border-white/12";
+/** Hairline outline — visibility controlled by Appearance → Glass Border. */
+export const GLASS_BORDER = "glass-border";
+
+/** L1 shell outline — always on; matches sidebar (`--glass-shell-border`). */
+export const GLASS_SHELL_BORDER = "glass-shell-border";
 
 export const GLASS_HIGHLIGHT =
   "shadow-[inset_0_1px_0_0_rgba(255,255,255,0.26),0_1px_2px_rgba(0,0,0,0.02)] dark:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.04),0_1px_3px_rgba(0,0,0,0.18)]";
 
 export const GLASS_SURFACE = `${GLASS_BACKDROP} ${GLASS_BORDER} ${GLASS_FILL} ${GLASS_HIGHLIGHT}`;
+
+/** L1 outer shell — main content column; shell border is not toggleable. */
+export const GLASS_SHELL_SURFACE = `${GLASS_BACKDROP} ${GLASS_SHELL_BORDER} ${GLASS_FILL} ${GLASS_HIGHLIGHT}`;
 
 /**
  * Modal / drawer panel — same frosted look (blur-3xl).
@@ -38,4 +45,4 @@ export const GLASS_TILE_HIGHLIGHT =
 export const GLASS_TILE_BASE = `${GLASS_BACKDROP} ${GLASS_TILE_HIGHLIGHT}`;
 
 /** iOS-style hairline outline for large glass shells (sidebar). */
-export const GLASS_SHELL_OUTLINE = `${GLASS_BACKDROP} ${GLASS_BORDER} ${GLASS_HIGHLIGHT}`;
+export const GLASS_SHELL_OUTLINE = `${GLASS_BACKDROP} ${GLASS_SHELL_BORDER} ${GLASS_HIGHLIGHT}`;

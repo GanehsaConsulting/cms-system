@@ -1,4 +1,4 @@
-import { GLASS_SURFACE } from "@/config/glass";
+import { GLASS_SHELL_SURFACE } from "@/config/glass";
 import { RADIUS_OUTER, SEPARATED_CONTROL } from "@/config/shape";
 import type { AppIconStyle } from "@/types/appearance";
 
@@ -17,8 +17,8 @@ export const SEPARATED_SIDEBAR_RADIUS = RADIUS_OUTER;
 /** Expanded menu row — System Settings density (~22px icons). */
 export const SEPARATED_MENU_ITEM = `${SEPARATED_CONTROL} h-8! gap-2 px-2!`;
 
-/** Applied to `[data-slot="sidebar-inner"]` via globals.css — keep in sync with GLASS_SURFACE. */
-export const SEPARATED_SIDEBAR_GLASS = GLASS_SURFACE;
+/** Applied to `[data-slot="sidebar-inner"]` via globals.css — shell border always on. */
+export const SEPARATED_SIDEBAR_GLASS = GLASS_SHELL_SURFACE;
 
 /** Uniform inset inside the glass shell (top/right/bottom/left). */
 export const SIDEBAR_INNER_PADDING = "0.5rem";

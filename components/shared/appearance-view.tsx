@@ -53,7 +53,7 @@ export function AppearanceView() {
           <GlassBlurPicker />
         </div>
         <p className={SETTINGS_SECTION_FOOTER}>
-          Adjust blur intensity and glass panel transparency.
+          Adjust blur, transparency, and glass border.
         </p>
       </section>
 

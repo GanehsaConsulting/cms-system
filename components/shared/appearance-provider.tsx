@@ -12,6 +12,7 @@ import {
 import { DEFAULT_ACCENT_ID } from "@/config/accent-colors";
 import { DEFAULT_APP_ICON_STYLE } from "@/config/app-icon-styles";
 import { DEFAULT_GLASS_BLUR_LEVEL } from "@/config/glass-blur";
+import { DEFAULT_GLASS_BORDER_ENABLED } from "@/config/glass-border";
 import { DEFAULT_GLASS_FILL_TRANSPARENCY } from "@/config/glass-fill";
 import { DEFAULT_THEME_MODE } from "@/config/theme-modes";
 import {
@@ -21,8 +22,10 @@ import {
 import { applyGlassAppearance } from "@/lib/appearance/apply-glass-blur";
 import {
   readStoredGlassBlurLevel,
+  readStoredGlassBorderEnabled,
   readStoredGlassFillTransparency,
   writeStoredGlassBlurLevel,
+  writeStoredGlassBorderEnabled,
   writeStoredGlassFillTransparency,
 } from "@/lib/appearance/glass-blur-storage";
 import {
@@ -46,12 +49,14 @@ interface AppearanceContextValue {
   appIconStyle: AppIconStyle;
   glassBlurLevel: GlassBlurLevelId;
   glassFillTransparency: number;
+  glassBorderEnabled: boolean;
   resolvedDark: boolean;
   setThemeMode: (mode: ThemeMode) => void;
   setAccentId: (id: AccentColorId) => void;
   setAppIconStyle: (style: AppIconStyle) => void;
   setGlassBlurLevel: (levelId: GlassBlurLevelId) => void;
   setGlassFillTransparency: (value: number) => void;
+  setGlassBorderEnabled: (enabled: boolean) => void;
 }
 
 const AppearanceContext = createContext<AppearanceContextValue | null>(null);
@@ -81,6 +86,9 @@ export function AppearanceProvider({
   const [glassFillTransparency, setGlassFillTransparencyState] = useState(
     DEFAULT_GLASS_FILL_TRANSPARENCY,
   );
+  const [glassBorderEnabled, setGlassBorderEnabledState] = useState(
+    DEFAULT_GLASS_BORDER_ENABLED,
+  );
   const [resolvedDark, setResolvedDark] = useState(initialResolvedDark);
 
   useLayoutEffect(() => {
@@ -89,23 +97,30 @@ export function AppearanceProvider({
     const storedAppIconStyle = readStoredAppIconStyle();
     const storedGlassBlurLevel = readStoredGlassBlurLevel();
     const storedGlassFillTransparency = readStoredGlassFillTransparency();
+    const storedGlassBorderEnabled = readStoredGlassBorderEnabled();
 
     setThemeModeState(storedThemeMode);
     setAccentIdState(storedAccentId);
     setAppIconStyleState(storedAppIconStyle);
     setGlassBlurLevelState(storedGlassBlurLevel);
     setGlassFillTransparencyState(storedGlassFillTransparency);
+    setGlassBorderEnabledState(storedGlassBorderEnabled);
     writeStoredThemeMode(storedThemeMode);
     writeStoredAccentId(storedAccentId);
     writeStoredAppIconStyle(storedAppIconStyle);
     writeStoredGlassBlurLevel(storedGlassBlurLevel);
     writeStoredGlassFillTransparency(storedGlassFillTransparency);
+    writeStoredGlassBorderEnabled(storedGlassBorderEnabled);
     applyAppearance({
       themeMode: storedThemeMode,
       accentId: storedAccentId,
       appIconStyle: storedAppIconStyle,
     });
-    applyGlassAppearance(storedGlassBlurLevel, storedGlassFillTransparency);
+    applyGlassAppearance(
+      storedGlassBlurLevel,
+      storedGlassFillTransparency,
+      storedGlassBorderEnabled,
+    );
     setResolvedDark(resolveDarkMode(storedThemeMode));
   }, []);
 
@@ -130,8 +145,12 @@ export function AppearanceProvider({
   }, [themeMode, accentId, appIconStyle]);
 
   useEffect(() => {
-    applyGlassAppearance(glassBlurLevel, glassFillTransparency);
-  }, [glassBlurLevel, glassFillTransparency]);
+    applyGlassAppearance(
+      glassBlurLevel,
+      glassFillTransparency,
+      glassBorderEnabled,
+    );
+  }, [glassBlurLevel, glassFillTransparency, glassBorderEnabled]);
 
   const setThemeMode = useCallback((mode: ThemeMode) => {
     setThemeModeState(mode);
@@ -164,6 +183,11 @@ export function AppearanceProvider({
     writeStoredGlassFillTransparency(value);
   }, []);
 
+  const setGlassBorderEnabled = useCallback((enabled: boolean) => {
+    setGlassBorderEnabledState(enabled);
+    writeStoredGlassBorderEnabled(enabled);
+  }, []);
+
   const value = useMemo<AppearanceContextValue>(
     () => ({
       themeMode,
@@ -171,22 +195,26 @@ export function AppearanceProvider({
       appIconStyle,
       glassBlurLevel,
       glassFillTransparency,
+      glassBorderEnabled,
       resolvedDark,
       setThemeMode,
       setAccentId,
       setAppIconStyle,
       setGlassBlurLevel,
       setGlassFillTransparency,
+      setGlassBorderEnabled,
     }),
     [
       accentId,
       appIconStyle,
       glassBlurLevel,
+      glassBorderEnabled,
       glassFillTransparency,
       resolvedDark,
       setAccentId,
       setAppIconStyle,
       setGlassBlurLevel,
+      setGlassBorderEnabled,
       setGlassFillTransparency,
       setThemeMode,
       themeMode,

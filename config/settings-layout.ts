@@ -47,7 +47,7 @@ export const SETTINGS_SEGMENTED_ITEM = IOS_SEGMENTED_ITEM_STACKED;
 /** @deprecated Use IOS_SEGMENTED_ITEM_ACTIVE from @/config/ios-segmented */
 export const SETTINGS_SEGMENTED_ITEM_ACTIVE = IOS_SEGMENTED_ITEM_ACTIVE;
 
-export const SETTINGS_ROW_DIVIDER = "border-b border-[color:var(--separator)]";
+export const SETTINGS_ROW_DIVIDER = "border-b pb-4 border-[color:var(--separator)]";
 
 /** Floating appearance panel — same frosted surface as Dialog. */
 export const APPEARANCE_DRAWER_SURFACE = [

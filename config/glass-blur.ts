@@ -7,11 +7,11 @@ export const GLASS_BLUR_LEVELS: {
   label: string;
   blurPx: number;
 }[] = [
-  { id: "off", label: "Mati", blurPx: 0 },
-  { id: "light", label: "Ringan", blurPx: 6 },
+  { id: "off", label: "Off", blurPx: 0 },
+  { id: "light", label: "Light", blurPx: 6 },
   { id: "normal", label: "Normal", blurPx: 12 },
-  { id: "strong", label: "Kuat", blurPx: 18 },
-  { id: "max", label: "Maks", blurPx: 24 },
+  { id: "strong", label: "Strong", blurPx: 18 },
+  { id: "max", label: "Max", blurPx: 24 },
 ];
 
 export const GLASS_BLUR_LEVEL_IDS = new Set<GlassBlurLevelId>(

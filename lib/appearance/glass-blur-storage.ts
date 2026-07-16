@@ -3,6 +3,10 @@ import {
   GLASS_BLUR_LEVEL_IDS,
 } from "@/config/glass-blur";
 import {
+  DEFAULT_GLASS_BORDER_ENABLED,
+  GLASS_BORDER_STORAGE_KEY,
+} from "@/config/glass-border";
+import {
   clampGlassFillTransparency,
   DEFAULT_GLASS_FILL_TRANSPARENCY,
 } from "@/config/glass-fill";
@@ -48,5 +52,28 @@ export function writeStoredGlassFillTransparency(value: number): void {
   window.localStorage.setItem(
     FILL_TRANSPARENCY_STORAGE_KEY,
     String(clampGlassFillTransparency(value)),
+  );
+}
+
+export function readStoredGlassBorderEnabled(): boolean {
+  if (typeof window === "undefined") {
+    return DEFAULT_GLASS_BORDER_ENABLED;
+  }
+
+  const stored = window.localStorage.getItem(GLASS_BORDER_STORAGE_KEY);
+  if (stored === "on") {
+    return true;
+  }
+  if (stored === "off") {
+    return false;
+  }
+
+  return DEFAULT_GLASS_BORDER_ENABLED;
+}
+
+export function writeStoredGlassBorderEnabled(enabled: boolean): void {
+  window.localStorage.setItem(
+    GLASS_BORDER_STORAGE_KEY,
+    enabled ? "on" : "off",
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useAppearance } from "@/components/shared/appearance-provider";
+import { GlassBorderToggle } from "@/components/shared/glass-border-toggle";
 import { Slider } from "@/components/ui/slider";
 import { GLASS_BLUR_LEVELS } from "@/config/glass-blur";
 import {
@@ -37,7 +38,7 @@ export function GlassBlurPicker() {
   return (
     <div className={cn(SETTINGS_INSET_BLOCK, SETTINGS_CONTROL_STACK)}>
       <fieldset className={cn(SETTINGS_SEGMENTED_TRACK, "border-0")}>
-        <legend className="sr-only">Tingkat blur glass</legend>
+        <legend className="sr-only">Glass blur level</legend>
         {GLASS_BLUR_LEVELS.map((level) => {
           const selected = glassBlurLevel === level.id;
 
@@ -72,7 +73,7 @@ export function GlassBlurPicker() {
             htmlFor="glass-fill-transparency-slider"
             className={SETTINGS_FIELD_LABEL}
           >
-            Transparansi
+            Transparency
           </label>
           <span className="text-muted-foreground text-xs tabular-nums">
             {glassFillTransparency}%
@@ -91,7 +92,7 @@ export function GlassBlurPicker() {
             min={GLASS_FILL_TRANSPARENCY_MIN}
             max={GLASS_FILL_TRANSPARENCY_MAX}
             step={GLASS_FILL_TRANSPARENCY_STEP}
-            aria-label="Transparansi panel glass"
+            aria-label="Glass panel transparency"
           />
           <span
             aria-hidden
@@ -103,9 +104,11 @@ export function GlassBlurPicker() {
         <div className="flex justify-between text-[10px] text-muted-foreground">
           <span>Solid</span>
           <span>Default {DEFAULT_GLASS_FILL_TRANSPARENCY}%</span>
-          <span>Transparan</span>
+          <span>Clear</span>
         </div>
       </div>
+
+      <GlassBorderToggle />
     </div>
   );
 }

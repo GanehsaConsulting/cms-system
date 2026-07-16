@@ -344,6 +344,28 @@
       brightness(var(--glass-backdrop-brightness));
   }
 
+  /* Glass border — off by default (transparent). Enable via Appearance. */
+  .glass-border {
+    border-width: 1px;
+    border-style: solid;
+    border-color: transparent;
+  }
+
+  :root[data-glass-border="on"] .glass-border {
+    border-color: rgb(0 0 0 / 0.1);
+  }
+
+  :root.dark[data-glass-border="on"] .glass-border {
+    border-color: rgb(255 255 255 / 0.12);
+  }
+
+  /* L1 shell outline — always on; matches sidebar inner border. */
+  .glass-shell-border {
+    border-width: 1px;
+    border-style: solid;
+    border-color: var(--glass-shell-border);
+  }
+
   :root[data-glass-blur="off"] .glass-backdrop,
   :root[data-glass-blur="off"] .app-sidebar > [data-slot="sidebar-inner"] {
     -webkit-backdrop-filter: none;

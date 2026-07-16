@@ -1,4 +1,4 @@
-import { GLASS_SURFACE } from "@/config/glass";
+import { GLASS_SHELL_SURFACE } from "@/config/glass";
 import { RADIUS_OUTER } from "@/config/shape";
 import { cn } from "@/lib/utils";
 
@@ -13,7 +13,7 @@ export function GlassPanel({ children, className }: GlassPanelProps) {
     <div
       className={cn(
         RADIUS_OUTER,
-        GLASS_SURFACE,
+        GLASS_SHELL_SURFACE,
         "flex min-h-0 flex-1 flex-col overflow-hidden",
         className,
       )}
