@@ -1,12 +1,42 @@
+import { eq } from "drizzle-orm";
 import { getServerSession, toCmsUser } from "@/lib/auth/session";
+import { db } from "@/lib/db/client";
+import { user as authUserTable } from "@/lib/db/schema";
 import type { User } from "@/types/user";
 
-/** Signed-in CMS user from the server session (null when anonymous). */
+/**
+ * Signed-in CMS user.
+ * Authorization fields (role, status, brandAccess, position) are read from
+ * Postgres — Better Auth session/cookie cache often omits additionalFields,
+ * which would incorrectly demote Super Admin to Viewer.
+ */
 export async function getCurrentCmsUser(): Promise<User | null> {
   const session = await getServerSession();
-  if (!session?.user) {
+  const sessionUser = session?.user;
+  if (!sessionUser?.id) {
     return null;
   }
 
-  return toCmsUser(session.user);
+  const [row] = await db
+    .select({
+      id: authUserTable.id,
+      name: authUserTable.name,
+      email: authUserTable.email,
+      image: authUserTable.image,
+      createdAt: authUserTable.createdAt,
+      updatedAt: authUserTable.updatedAt,
+      position: authUserTable.position,
+      role: authUserTable.role,
+      status: authUserTable.status,
+      brandAccess: authUserTable.brandAccess,
+    })
+    .from(authUserTable)
+    .where(eq(authUserTable.id, sessionUser.id))
+    .limit(1);
+
+  if (!row) {
+    return toCmsUser(sessionUser);
+  }
+
+  return toCmsUser(row);
 }

@@ -10,19 +10,24 @@ import { NotificationCenterProvider } from "@/components/shared/notification-cen
 import { SidebarInset } from "@/components/ui/sidebar";
 import { SEPARATED_SIDEBAR_ICON_WIDTH } from "@/config/sidebar";
 import { DESKTOP_OUTER_GUTTER } from "@/config/spacing";
+import type { CmsUser } from "@/config/cms-user";
 import { cn } from "@/lib/utils";
 import type { Brand } from "@/types/brand";
 
 interface CmsShellProps {
   children: React.ReactNode;
   brands: Brand[];
+  user?: CmsUser;
   canAccessSettings?: boolean;
+  canAccessAllPages?: boolean;
 }
 
 export function CmsShell({
   children,
   brands,
+  user,
   canAccessSettings = false,
+  canAccessAllPages = false,
 }: CmsShellProps) {
   const pathname = usePathname();
   const isDashboard = pathname === "/";
@@ -30,7 +35,12 @@ export function CmsShell({
   return (
     <AppearanceDrawerProvider>
       <NotificationCenterProvider>
-        <BrandProvider brands={brands} canAccessSettings={canAccessSettings}>
+        <BrandProvider
+          brands={brands}
+          userName={user?.name}
+          canAccessSettings={canAccessSettings}
+          canAccessAllPages={canAccessAllPages}
+        >
           <CmsSidebarProvider
             className="relative z-10 flex h-svh max-h-svh min-h-0 w-full overflow-hidden bg-transparent"
             style={
@@ -39,7 +49,7 @@ export function CmsShell({
               } as React.CSSProperties
             }
           >
-            <CmsSidebar />
+            <CmsSidebar user={user} />
             <SidebarInset
               className={cn(
                 "flex min-h-0 flex-1 flex-col overflow-hidden bg-transparent",

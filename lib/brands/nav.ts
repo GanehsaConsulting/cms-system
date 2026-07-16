@@ -6,6 +6,7 @@ export function filterNavLinksByBrand(
   links: NavLink[],
   brand: Brand | null,
 ): NavLink[] {
+  // `null` brand = unrestricted (e.g. Super Admin via featureBrand).
   if (!brand) {
     return links;
   }

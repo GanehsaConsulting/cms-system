@@ -27,12 +27,16 @@ import type { Brand } from "@/types/brand";
 interface BrandContextValue {
   brands: Brand[];
   activeBrand: Brand | null;
+  /** Brand used for feature gating — `null` means unrestricted (Super Admin). */
+  featureBrand: Brand | null;
   activeBrandId: string | null;
   setActiveBrandId: (id: string) => void;
   mainNavLinks: NavLink[];
   contentNavLinks: NavLink[];
   utilityNavLinks: NavLink[];
+  userName: string | null;
   canAccessSettings: boolean;
+  canAccessAllPages: boolean;
   switcherOpen: boolean;
   openSwitcher: () => void;
   closeSwitcher: () => void;
@@ -43,13 +47,17 @@ const BrandContext = createContext<BrandContextValue | null>(null);
 
 interface BrandProviderProps {
   brands: Brand[];
+  userName?: string | null;
   canAccessSettings?: boolean;
+  canAccessAllPages?: boolean;
   children: React.ReactNode;
 }
 
 export function BrandProvider({
   brands,
+  userName = null,
   canAccessSettings = false,
+  canAccessAllPages = false,
   children,
 }: BrandProviderProps) {
   const [activeBrandId, setActiveBrandIdState] = useState<string | null>(null);
@@ -74,6 +82,8 @@ export function BrandProvider({
     );
   }, [activeBrandId, brands, hydrated]);
 
+  const featureBrand = canAccessAllPages ? null : activeBrand;
+
   const setActiveBrandId = useCallback(
     (id: string) => {
       const brand = brands.find((item) => item.id === id);
@@ -87,15 +97,19 @@ export function BrandProvider({
     [brands],
   );
 
-  const filteredMainNav = useMemo(
-    () => filterNavLinksByBrand(mainNavLinks, activeBrand),
-    [activeBrand],
-  );
+  const filteredMainNav = useMemo(() => {
+    if (canAccessAllPages) {
+      return mainNavLinks;
+    }
+    return filterNavLinksByBrand(mainNavLinks, activeBrand);
+  }, [activeBrand, canAccessAllPages]);
 
-  const filteredContentNav = useMemo(
-    () => filterNavLinksByBrand(contentNavLinks, activeBrand),
-    [activeBrand],
-  );
+  const filteredContentNav = useMemo(() => {
+    if (canAccessAllPages) {
+      return contentNavLinks;
+    }
+    return filterNavLinksByBrand(contentNavLinks, activeBrand);
+  }, [activeBrand, canAccessAllPages]);
 
   const filteredUtilityNav = useMemo(
     () => (canAccessSettings ? utilityNavLinks : []),
@@ -106,12 +120,15 @@ export function BrandProvider({
     () => ({
       brands,
       activeBrand,
+      featureBrand,
       activeBrandId: activeBrand?.id ?? null,
       setActiveBrandId,
       mainNavLinks: filteredMainNav,
       contentNavLinks: filteredContentNav,
       utilityNavLinks: filteredUtilityNav,
+      userName,
       canAccessSettings,
+      canAccessAllPages,
       switcherOpen,
       openSwitcher: () => setSwitcherOpen(true),
       closeSwitcher: () => setSwitcherOpen(false),
@@ -120,12 +137,15 @@ export function BrandProvider({
     [
       activeBrand,
       brands,
+      canAccessAllPages,
       canAccessSettings,
+      featureBrand,
       filteredContentNav,
       filteredMainNav,
       filteredUtilityNav,
       setActiveBrandId,
       switcherOpen,
+      userName,
     ],
   );
 

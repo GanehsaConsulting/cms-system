@@ -14,8 +14,8 @@ interface DashboardQuickActionsProps {
 export function DashboardQuickActions({
   className,
 }: DashboardQuickActionsProps) {
-  const { activeBrand } = useBrand();
-  const actions = filterDashboardQuickActionsForBrand(activeBrand);
+  const { featureBrand } = useBrand();
+  const actions = filterDashboardQuickActionsForBrand(featureBrand);
 
   if (actions.length === 0) {
     return null;

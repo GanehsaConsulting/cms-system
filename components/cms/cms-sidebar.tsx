@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SidebarBrandSwitchDialog } from "@/components/cms/sidebar-brand-switch-dialog";
 import { SidebarBrandSwitcherButton } from "@/components/cms/sidebar-brand-switcher-button";
 import { SidebarNav } from "@/components/cms/sidebar-nav";
@@ -29,12 +29,22 @@ import {
 import { cn } from "@/lib/utils";
 import type { CmsProfileFormValues } from "@/lib/validations/cms-user";
 
-export function CmsSidebar() {
+interface CmsSidebarProps {
+  user?: CmsUser;
+}
+
+export function CmsSidebar({
+  user: initialUser = CURRENT_CMS_USER,
+}: CmsSidebarProps) {
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
   const [searchOpen, setSearchOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [user, setUser] = useState<CmsUser>(CURRENT_CMS_USER);
+  const [user, setUser] = useState<CmsUser>(initialUser);
+
+  useEffect(() => {
+    setUser(initialUser);
+  }, [initialUser]);
 
   function handleUserUpdate(values: CmsProfileFormValues) {
     setUser((current) => ({

@@ -27,18 +27,10 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
-    minPasswordLength: 12,
+    minPasswordLength: 8,
     maxPasswordLength: 128,
     // Internal CMS — no public self-signup.
     disableSignUp: true,
-  },
-  session: {
-    expiresIn: env.AUTH_SESSION_MAX_AGE,
-    updateAge: env.AUTH_SESSION_UPDATE_AGE,
-    cookieCache: {
-      enabled: true,
-      maxAge: 5 * 60,
-    },
   },
   user: {
     additionalFields: {
@@ -47,25 +39,39 @@ export const auth = betterAuth({
         required: false,
         defaultValue: "",
         input: false,
+        returned: true,
       },
       role: {
         type: "string",
         required: false,
         defaultValue: "viewer",
         input: false,
+        returned: true,
       },
       status: {
         type: "string",
         required: false,
         defaultValue: "active",
         input: false,
+        returned: true,
       },
       brandAccess: {
         type: "string",
         required: false,
         defaultValue: "[]",
         input: false,
+        returned: true,
       },
+    },
+  },
+  session: {
+    expiresIn: env.AUTH_SESSION_MAX_AGE,
+    updateAge: env.AUTH_SESSION_UPDATE_AGE,
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60,
+      // Bump when CMS auth fields change so stale cookie cache is dropped.
+      version: "cms-user-fields-v1",
     },
   },
   rateLimit: {

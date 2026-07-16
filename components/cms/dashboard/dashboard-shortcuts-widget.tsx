@@ -54,9 +54,9 @@ interface DashboardShortcutsWidgetProps {
 export function DashboardShortcutsWidget({
   className,
 }: DashboardShortcutsWidgetProps) {
-  const { activeBrand } = useBrand();
+  const { featureBrand } = useBrand();
   const shortcuts = SHORTCUTS.filter((item) =>
-    brandSupportsHrefFeature(activeBrand, item.href, true),
+    brandSupportsHrefFeature(featureBrand, item.href, true),
   );
 
   if (shortcuts.length === 0) {

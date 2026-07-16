@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
 import { SidebarProfileAction } from "@/components/cms/sidebar-profile-action";
 import { SidebarProfileAvatar } from "@/components/cms/sidebar-profile-avatar";
 import { SidebarProfileEditDialog } from "@/components/cms/sidebar-profile-edit-dialog";
@@ -16,6 +17,7 @@ import {
 } from "@/components/shared/cms-dialog";
 import type { CmsUser } from "@/config/cms-user";
 import { RADIUS_INNER } from "@/config/shape";
+import { authClient } from "@/lib/auth/client";
 import { KeyIcon, LogoutIcon, PencilSimpleIcon } from "@/lib/icons";
 import type {
   CmsPasswordFormValues,
@@ -36,9 +38,11 @@ export function SidebarProfileDialog({
   onOpenChange,
   onUserUpdate,
 }: SidebarProfileDialogProps) {
+  const router = useRouter();
   const [editOpen, setEditOpen] = useState(false);
   const [passwordOpen, setPasswordOpen] = useState(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
+  const [isLoggingOut, startLogout] = useTransition();
   const [notice, setNotice] = useState<{
     title: string;
     description: string;
@@ -71,12 +75,24 @@ export function SidebarProfileDialog({
   }
 
   function handleLogoutConfirm() {
-    setLogoutOpen(false);
-    onOpenChange(false);
-    setNotice({
-      title: "Signed out",
-      description:
-        "Auth is not connected yet. This action will sign you out once login is available.",
+    startLogout(async () => {
+      const result = await authClient.signOut();
+
+      if (result.error) {
+        setLogoutOpen(false);
+        setNotice({
+          title: "Could not sign out",
+          description:
+            result.error.message ||
+            "Something went wrong. Please try again.",
+        });
+        return;
+      }
+
+      setLogoutOpen(false);
+      onOpenChange(false);
+      router.replace("/login");
+      router.refresh();
     });
   }
 
@@ -167,6 +183,7 @@ export function SidebarProfileDialog({
         description="You will need to sign in again to manage content in this CMS."
         confirmLabel="Log out"
         variant="destructive"
+        isPending={isLoggingOut}
         onConfirm={handleLogoutConfirm}
       />
 

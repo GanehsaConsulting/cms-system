@@ -17,14 +17,14 @@ function getFirstName(fullName: string) {
 }
 
 export function DashboardGreeting() {
-  const { activeBrand } = useBrand();
+  const { activeBrand, userName } = useBrand();
   const [now, setNow] = useState<Date | null>(null);
 
   useEffect(() => {
     setNow(new Date());
   }, []);
 
-  const firstName = getFirstName(CURRENT_CMS_USER.name);
+  const firstName = getFirstName(userName ?? CURRENT_CMS_USER.name);
   const brandName = activeBrand?.name ?? CMS_NAME;
   const greetingBase = now ? getTimeOfDayGreeting(now) : "Welcome back";
   const greeting = `${greetingBase}, ${firstName}`;

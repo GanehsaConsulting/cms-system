@@ -41,7 +41,7 @@ export function DashboardContentHealthWidget({
   mediaFilesCount,
   className,
 }: DashboardContentHealthWidgetProps) {
-  const { activeBrand } = useBrand();
+  const { featureBrand } = useBrand();
 
   const items: ContentHealthItem[] = [
     {
@@ -82,7 +82,7 @@ export function DashboardContentHealthWidget({
       href: "/media",
       icon: FolderOpenIcon,
     },
-  ].filter((item) => brandSupportsHrefFeature(activeBrand, item.href, true));
+  ].filter((item) => brandSupportsHrefFeature(featureBrand, item.href, true));
 
   if (items.length === 0) {
     return null;

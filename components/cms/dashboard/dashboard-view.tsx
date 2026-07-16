@@ -52,7 +52,7 @@ export function DashboardView({
   banners,
   mediaFilesCount,
 }: DashboardViewProps) {
-  const { activeBrand } = useBrand();
+  const { featureBrand } = useBrand();
   const {
     visibility,
     editOpen,
@@ -63,7 +63,9 @@ export function DashboardView({
   } = useDashboardWidgets();
 
   function canShow(id: DashboardWidgetId) {
-    return isDashboardWidgetAvailableForBrand(id, activeBrand) && isVisible(id);
+    return (
+      isDashboardWidgetAvailableForBrand(id, featureBrand) && isVisible(id)
+    );
   }
 
   const publishedCount = articles.filter(
@@ -82,17 +84,17 @@ export function DashboardView({
     DASHBOARD_DRAFTS_ATTENTION_LIMIT,
   );
   const recentItems = buildDashboardRecentItems({
-    articles: brandSupportsFeature(activeBrand, "articles") ? articles : [],
-    clients: brandSupportsHrefFeature(activeBrand, "/clients") ? clients : [],
-    prices: brandSupportsHrefFeature(activeBrand, "/prices") ? prices : [],
-    banners: brandSupportsHrefFeature(activeBrand, "/banners") ? banners : [],
+    articles: brandSupportsFeature(featureBrand, "articles") ? articles : [],
+    clients: brandSupportsHrefFeature(featureBrand, "/clients") ? clients : [],
+    prices: brandSupportsHrefFeature(featureBrand, "/prices") ? prices : [],
+    banners: brandSupportsHrefFeature(featureBrand, "/banners") ? banners : [],
     limit: DASHBOARD_RECENT_ACTIVITY_LIMIT,
   });
 
   const showGreeting = canShow("greeting");
   const showQuickActions =
     canShow("quick-actions") &&
-    filterDashboardQuickActionsForBrand(activeBrand).length > 0;
+    filterDashboardQuickActionsForBrand(featureBrand).length > 0;
   const showContentHealth = canShow("content-health");
   const showArticleStats = canShow("article-stats");
   const showRecentArticles = canShow("recent-articles");

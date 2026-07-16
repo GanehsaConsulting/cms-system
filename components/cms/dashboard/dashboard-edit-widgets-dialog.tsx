@@ -34,9 +34,9 @@ export function DashboardEditWidgetsDialog({
   onToggle,
   onReset,
 }: DashboardEditWidgetsDialogProps) {
-  const { activeBrand } = useBrand();
+  const { featureBrand } = useBrand();
   const options = DASHBOARD_WIDGET_OPTIONS.filter((option) =>
-    isDashboardWidgetAvailableForBrand(option.id, activeBrand),
+    isDashboardWidgetAvailableForBrand(option.id, featureBrand),
   );
 
   return (
