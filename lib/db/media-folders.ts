@@ -1,6 +1,7 @@
-import { readFile, writeFile } from "node:fs/promises";
-import path from "node:path";
+import { asc, eq, inArray } from "drizzle-orm";
+import { db } from "@/lib/db/client";
 import { deleteMediaLibraryFilesInFolders } from "@/lib/db/media-files";
+import { mediaFolders } from "@/lib/db/schema";
 import {
   canCreateChildFolder,
   canMoveFolderTo,
@@ -16,36 +17,34 @@ import {
 } from "@/lib/validations/media-folder";
 import type { MediaFolder } from "@/types/media";
 
-const FOLDERS_PATH = path.join(process.cwd(), "data/media-folders.json");
-
-async function readFolders(): Promise<MediaFolder[]> {
-  try {
-    const raw = await readFile(FOLDERS_PATH, "utf-8");
-    return JSON.parse(raw) as MediaFolder[];
-  } catch (error) {
-    if (
-      error &&
-      typeof error === "object" &&
-      "code" in error &&
-      error.code === "ENOENT"
-    ) {
-      return [];
-    }
-    throw error;
-  }
-}
-
-async function writeFolders(folders: MediaFolder[]): Promise<void> {
-  await writeFile(FOLDERS_PATH, `${JSON.stringify(folders, null, 2)}\n`, "utf-8");
+function rowToFolder(row: typeof mediaFolders.$inferSelect): MediaFolder {
+  return {
+    id: row.id,
+    name: row.name,
+    parentId: row.parentId,
+    depth: row.depth,
+    createdAt: row.createdAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString(),
+  };
 }
 
 export async function getMediaFolders(): Promise<MediaFolder[]> {
-  return readFolders();
+  const rows = await db
+    .select()
+    .from(mediaFolders)
+    .orderBy(asc(mediaFolders.name));
+  return rows.map(rowToFolder);
 }
 
-export async function getMediaFolderById(id: string): Promise<MediaFolder | null> {
-  const folders = await readFolders();
-  return getFolderById(folders, id);
+export async function getMediaFolderById(
+  id: string,
+): Promise<MediaFolder | null> {
+  const rows = await db
+    .select()
+    .from(mediaFolders)
+    .where(eq(mediaFolders.id, id))
+    .limit(1);
+  return rows[0] ? rowToFolder(rows[0]) : null;
 }
 
 export async function createMediaFolder(input: {
@@ -57,7 +56,7 @@ export async function createMediaFolder(input: {
     throw new Error(parsed.error.issues[0]?.message ?? "Invalid folder data");
   }
 
-  const folders = await readFolders();
+  const folders = await getMediaFolders();
   const parent = parsed.data.parentId
     ? getFolderById(folders, parsed.data.parentId)
     : null;
@@ -80,19 +79,20 @@ export async function createMediaFolder(input: {
     throw new Error("A folder with this name already exists here");
   }
 
-  const now = new Date().toISOString();
-  const folder: MediaFolder = {
-    id: crypto.randomUUID(),
-    name: parsed.data.name.trim(),
-    parentId: parsed.data.parentId,
-    depth: getNextFolderDepth(parent),
-    createdAt: now,
-    updatedAt: now,
-  };
+  const now = new Date();
+  const [row] = await db
+    .insert(mediaFolders)
+    .values({
+      id: crypto.randomUUID(),
+      name: parsed.data.name.trim(),
+      parentId: parsed.data.parentId,
+      depth: getNextFolderDepth(parent),
+      createdAt: now,
+      updatedAt: now,
+    })
+    .returning();
 
-  folders.push(folder);
-  await writeFolders(folders);
-  return folder;
+  return rowToFolder(row);
 }
 
 export async function updateMediaFolder(
@@ -104,14 +104,11 @@ export async function updateMediaFolder(
     throw new Error(parsed.error.issues[0]?.message ?? "Invalid folder data");
   }
 
-  const folders = await readFolders();
-  const index = folders.findIndex((folder) => folder.id === id);
-
-  if (index === -1) {
+  const folders = await getMediaFolders();
+  const current = getFolderById(folders, id);
+  if (!current) {
     throw new Error("Folder not found");
   }
-
-  const current = folders[index];
 
   if (
     !isFolderNameUniqueAmongSiblings(
@@ -124,19 +121,20 @@ export async function updateMediaFolder(
     throw new Error("A folder with this name already exists here");
   }
 
-  const updated: MediaFolder = {
-    ...current,
-    name: parsed.data.name.trim(),
-    updatedAt: new Date().toISOString(),
-  };
+  const [row] = await db
+    .update(mediaFolders)
+    .set({
+      name: parsed.data.name.trim(),
+      updatedAt: new Date(),
+    })
+    .where(eq(mediaFolders.id, id))
+    .returning();
 
-  folders[index] = updated;
-  await writeFolders(folders);
-  return updated;
+  return rowToFolder(row);
 }
 
 export async function deleteMediaFolder(id: string): Promise<void> {
-  const folders = await readFolders();
+  const folders = await getMediaFolders();
   const folder = getFolderById(folders, id);
 
   if (!folder) {
@@ -144,9 +142,8 @@ export async function deleteMediaFolder(id: string): Promise<void> {
   }
 
   const idsToDelete = [id, ...getDescendantFolderIds(folders, id)];
-
   await deleteMediaLibraryFilesInFolders(idsToDelete);
-  await writeFolders(folders.filter((item) => !idsToDelete.includes(item.id)));
+  await db.delete(mediaFolders).where(inArray(mediaFolders.id, idsToDelete));
 }
 
 export async function moveMediaFolders(
@@ -157,7 +154,7 @@ export async function moveMediaFolders(
     return 0;
   }
 
-  const folders = await readFolders();
+  const folders = await getMediaFolders();
   const rootIds = getRootSelectedFolderIds(folders, ids);
 
   if (rootIds.length === 0) {
@@ -171,7 +168,7 @@ export async function moveMediaFolders(
     }
   }
 
-  const now = new Date().toISOString();
+  const now = new Date();
   const folderMap = new Map(folders.map((folder) => [folder.id, folder]));
   let movedCount = 0;
 
@@ -211,7 +208,10 @@ export async function moveMediaFolders(
       targetParentId ? (folderMap.get(targetParentId) ?? null) : null,
     );
     const depthDelta = nextDepth - folder.depth;
-    const affectedIds = [folderId, ...getDescendantFolderIds(folders, folderId)];
+    const affectedIds = [
+      folderId,
+      ...getDescendantFolderIds(folders, folderId),
+    ];
 
     for (const affectedId of affectedIds) {
       const current = folderMap.get(affectedId);
@@ -219,14 +219,12 @@ export async function moveMediaFolders(
         continue;
       }
 
-      const updated: MediaFolder = {
+      folderMap.set(affectedId, {
         ...current,
         parentId: affectedId === folderId ? targetParentId : current.parentId,
         depth: current.depth + depthDelta,
-        updatedAt: now,
-      };
-
-      folderMap.set(affectedId, updated);
+        updatedAt: now.toISOString(),
+      });
     }
 
     movedCount += 1;
@@ -236,6 +234,16 @@ export async function moveMediaFolders(
     return 0;
   }
 
-  await writeFolders([...folderMap.values()]);
+  for (const folder of folderMap.values()) {
+    await db
+      .update(mediaFolders)
+      .set({
+        parentId: folder.parentId,
+        depth: folder.depth,
+        updatedAt: new Date(folder.updatedAt),
+      })
+      .where(eq(mediaFolders.id, folder.id));
+  }
+
   return movedCount;
 }

@@ -65,8 +65,10 @@ export async function readMediaUploadFile(file: File): Promise<{
     file.type ||
     classifyMediaUrl(file.name).mimeType ||
     "application/octet-stream";
+
+  // Keep a data URL for the server action — createMediaLibraryFiles uploads to Cloudinary.
   const url = `data:${mimeType};base64,${buffer.toString("base64")}`;
-  const classified = classifyMediaUrl(url);
+  const classified = classifyMediaUrl(file.name);
 
   return {
     url,

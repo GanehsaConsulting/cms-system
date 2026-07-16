@@ -7,3 +7,4 @@ export {
   user,
   verification,
 } from "./auth";
+export { mediaFiles, mediaFolders } from "./media";

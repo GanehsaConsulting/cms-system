@@ -7,10 +7,11 @@ import {
   moveMediaFolders,
   updateMediaFolder,
 } from "@/lib/db/media-folders";
+import { requireCmsContentAccess } from "@/lib/users/require-content-access";
 import {
-  parseMediaFolderForm,
   mediaFolderFormSchema,
   mediaFolderMoveSchema,
+  parseMediaFolderForm,
 } from "@/lib/validations/media-folder";
 
 function revalidateMediaLibrary() {
@@ -18,7 +19,14 @@ function revalidateMediaLibrary() {
 }
 
 export async function createMediaFolderAction(formData: FormData) {
-  const parsed = mediaFolderFormSchema.safeParse(parseMediaFolderForm(formData));
+  const access = await requireCmsContentAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
+  const parsed = mediaFolderFormSchema.safeParse(
+    parseMediaFolderForm(formData),
+  );
 
   if (!parsed.success) {
     return {
@@ -40,6 +48,11 @@ export async function createMediaFolderAction(formData: FormData) {
 }
 
 export async function updateMediaFolderAction(id: string, formData: FormData) {
+  const access = await requireCmsContentAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
   const parsed = mediaFolderFormSchema.pick({ name: true }).safeParse({
     name: String(formData.get("name") ?? ""),
   });
@@ -64,6 +77,11 @@ export async function updateMediaFolderAction(id: string, formData: FormData) {
 }
 
 export async function deleteMediaFolderAction(id: string) {
+  const access = await requireCmsContentAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
   try {
     await deleteMediaFolder(id);
     revalidateMediaLibrary();
@@ -80,6 +98,11 @@ export async function moveMediaFoldersAction(
   folderIds: string[],
   targetParentId: string | null,
 ) {
+  const access = await requireCmsContentAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
   const parsed = mediaFolderMoveSchema.safeParse({
     folderIds,
     targetParentId,

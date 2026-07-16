@@ -43,6 +43,7 @@ export async function uploadImageBuffer(
   options: {
     folder?: string;
     publicId?: string;
+    resourceType?: "image" | "video" | "raw" | "auto";
   } = {},
 ) {
   const client = getCloudinary();
@@ -59,7 +60,7 @@ export async function uploadImageBuffer(
       {
         folder: options.folder ?? "cms-system",
         public_id: options.publicId,
-        resource_type: "image",
+        resource_type: options.resourceType ?? "image",
         overwrite: false,
       },
       (error, result) => {
@@ -71,10 +72,10 @@ export async function uploadImageBuffer(
         resolve({
           public_id: result.public_id,
           secure_url: result.secure_url,
-          width: result.width,
-          height: result.height,
-          format: result.format,
-          bytes: result.bytes,
+          width: result.width ?? 0,
+          height: result.height ?? 0,
+          format: result.format ?? "",
+          bytes: result.bytes ?? buffer.byteLength,
         });
       },
     );

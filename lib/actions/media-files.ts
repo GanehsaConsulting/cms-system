@@ -9,16 +9,17 @@ import {
   updateMediaLibraryFile,
 } from "@/lib/db/media-files";
 import {
-  mediaLibraryFileMoveSchema,
-  mediaLibraryFileIdsSchema,
-  mediaLibraryFileRenameSchema,
-  parseMediaLibraryFileRenameForm,
-} from "@/lib/validations/media-file";
-import {
   normalizeUploadBatch,
   readMediaUploadFile,
   validateMediaUploadFile,
 } from "@/lib/media/upload";
+import { requireCmsContentAccess } from "@/lib/users/require-content-access";
+import {
+  mediaLibraryFileIdsSchema,
+  mediaLibraryFileMoveSchema,
+  mediaLibraryFileRenameSchema,
+  parseMediaLibraryFileRenameForm,
+} from "@/lib/validations/media-file";
 
 function revalidateMediaLibrary() {
   revalidatePath("/media");
@@ -28,6 +29,11 @@ export async function uploadMediaLibraryFilesAction(
   folderId: string,
   formData: FormData,
 ) {
+  const access = await requireCmsContentAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
   const entries = formData.getAll("files");
   const files = entries.filter((entry): entry is File => entry instanceof File);
 
@@ -64,6 +70,11 @@ export async function uploadMediaLibraryFilesAction(
 }
 
 export async function deleteMediaLibraryFileAction(id: string) {
+  const access = await requireCmsContentAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
   try {
     await deleteMediaLibraryFile(id);
     revalidateMediaLibrary();
@@ -77,6 +88,11 @@ export async function deleteMediaLibraryFileAction(id: string) {
 }
 
 export async function deleteMediaLibraryFilesAction(ids: string[]) {
+  const access = await requireCmsContentAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
   const parsed = mediaLibraryFileIdsSchema.safeParse(ids);
 
   if (!parsed.success) {
@@ -102,6 +118,11 @@ export async function moveMediaLibraryFilesAction(
   fileIds: string[],
   targetFolderId: string,
 ) {
+  const access = await requireCmsContentAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
   const parsed = mediaLibraryFileMoveSchema.safeParse({
     fileIds,
     targetFolderId,
@@ -129,7 +150,15 @@ export async function moveMediaLibraryFilesAction(
   }
 }
 
-export async function renameMediaLibraryFileAction(id: string, formData: FormData) {
+export async function renameMediaLibraryFileAction(
+  id: string,
+  formData: FormData,
+) {
+  const access = await requireCmsContentAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
   const parsed = mediaLibraryFileRenameSchema.safeParse(
     parseMediaLibraryFileRenameForm(formData),
   );

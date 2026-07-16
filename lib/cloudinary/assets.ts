@@ -18,6 +18,7 @@ function parseDataUrl(value: string): { mime: string; buffer: Buffer } | null {
 export async function resolveImageAsset(
   value: string,
   folder: string,
+  resourceType: "image" | "video" | "raw" | "auto" = "image",
 ): Promise<string> {
   const trimmed = value.trim();
   if (!trimmed) {
@@ -33,7 +34,10 @@ export async function resolveImageAsset(
     return trimmed;
   }
 
-  const uploaded = await uploadImageBuffer(parsed.buffer, { folder });
+  const uploaded = await uploadImageBuffer(parsed.buffer, {
+    folder,
+    resourceType,
+  });
   return uploaded.secure_url;
 }
 

@@ -1,98 +1,100 @@
-import { readFile, writeFile } from "node:fs/promises";
-import path from "node:path";
-import { getFolderById } from "@/lib/media/folders";
+import { and, desc, eq, inArray, ne } from "drizzle-orm";
+import {
+  resolveImageAsset,
+  tryDeleteCloudinaryUrl,
+} from "@/lib/cloudinary/assets";
+import { db } from "@/lib/db/client";
 import { getMediaFolders } from "@/lib/db/media-folders";
+import { mediaFiles } from "@/lib/db/schema";
+import { getFolderById } from "@/lib/media/folders";
 import type { MediaKind, MediaLibraryFile } from "@/types/media";
 
-const DATA_PATH = path.join(process.cwd(), "data/media-files.json");
-
-async function readFiles(): Promise<MediaLibraryFile[]> {
-  try {
-    const raw = await readFile(DATA_PATH, "utf-8");
-    return JSON.parse(raw) as MediaLibraryFile[];
-  } catch (error) {
-    if (
-      error &&
-      typeof error === "object" &&
-      "code" in error &&
-      error.code === "ENOENT"
-    ) {
-      return [];
-    }
-    throw error;
-  }
+function rowToFile(row: typeof mediaFiles.$inferSelect): MediaLibraryFile {
+  return {
+    id: row.id,
+    folderId: row.folderId,
+    url: row.url,
+    filename: row.filename,
+    mimeType: row.mimeType,
+    kind: row.kind as MediaKind,
+    sizeBytes: row.sizeBytes,
+    uploadedAt: row.uploadedAt.toISOString(),
+    updatedAt: row.updatedAt.toISOString(),
+  };
 }
 
-async function writeFiles(files: MediaLibraryFile[]): Promise<void> {
-  await writeFile(DATA_PATH, `${JSON.stringify(files, null, 2)}\n`, "utf-8");
+async function isFilenameUniqueInFolder(
+  folderId: string,
+  filename: string,
+  excludeId?: string,
+): Promise<boolean> {
+  const normalized = filename.trim().toLowerCase();
+  const rows = await db
+    .select({ id: mediaFiles.id, filename: mediaFiles.filename })
+    .from(mediaFiles)
+    .where(eq(mediaFiles.folderId, folderId));
+
+  return !rows.some(
+    (file) =>
+      file.id !== excludeId &&
+      file.filename.trim().toLowerCase() === normalized,
+  );
 }
 
 export async function getMediaLibraryFiles(): Promise<MediaLibraryFile[]> {
-  const files = await readFiles();
-  return files.sort(
-    (left, right) =>
-      new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime(),
-  );
+  const rows = await db
+    .select()
+    .from(mediaFiles)
+    .orderBy(desc(mediaFiles.updatedAt));
+  return rows.map(rowToFile);
 }
 
 export async function getMediaLibraryFilesByFolderId(
   folderId: string,
 ): Promise<MediaLibraryFile[]> {
-  const files = await getMediaLibraryFiles();
-  return files.filter((file) => file.folderId === folderId);
+  const rows = await db
+    .select()
+    .from(mediaFiles)
+    .where(eq(mediaFiles.folderId, folderId))
+    .orderBy(desc(mediaFiles.updatedAt));
+  return rows.map(rowToFile);
 }
 
 export async function getMediaLibraryFileById(
   id: string,
 ): Promise<MediaLibraryFile | null> {
-  const files = await readFiles();
-  return files.find((file) => file.id === id) ?? null;
-}
-
-function isFilenameUniqueInFolder(
-  files: MediaLibraryFile[],
-  folderId: string,
-  filename: string,
-  excludeId?: string,
-): boolean {
-  const normalized = filename.trim().toLowerCase();
-  return !files.some(
-    (file) =>
-      file.folderId === folderId &&
-      file.id !== excludeId &&
-      file.filename.trim().toLowerCase() === normalized,
-  );
+  const rows = await db
+    .select()
+    .from(mediaFiles)
+    .where(eq(mediaFiles.id, id))
+    .limit(1);
+  return rows[0] ? rowToFile(rows[0]) : null;
 }
 
 export async function updateMediaLibraryFile(
   id: string,
   input: { filename: string },
 ): Promise<MediaLibraryFile> {
-  const files = await readFiles();
-  const index = files.findIndex((file) => file.id === id);
-
-  if (index === -1) {
+  const current = await getMediaLibraryFileById(id);
+  if (!current) {
     throw new Error("File not found");
   }
 
   const filename = input.filename.trim();
-  const current = files[index];
-
-  if (
-    !isFilenameUniqueInFolder(files, current.folderId, filename, id)
-  ) {
+  if (!(await isFilenameUniqueInFolder(current.folderId, filename, id))) {
     throw new Error("A file with this name already exists in this folder");
   }
 
-  const updated: MediaLibraryFile = {
-    ...current,
-    filename,
-    updatedAt: new Date().toISOString(),
-  };
+  const [row] = await db
+    .update(mediaFiles)
+    .set({
+      filename,
+      updatedAt: new Date(),
+    })
+    .where(eq(mediaFiles.id, id))
+    .returning();
 
-  files[index] = updated;
-  await writeFiles(files);
-  return updated;
+  return rowToFile(row);
 }
 
 export async function createMediaLibraryFiles(
@@ -116,23 +118,42 @@ export async function createMediaLibraryFiles(
     throw new Error("No files to upload");
   }
 
-  const files = await readFiles();
-  const now = new Date().toISOString();
-  const created = uploads.map((upload) => ({
-    id: crypto.randomUUID(),
-    folderId,
-    url: upload.url,
-    filename: upload.filename,
-    mimeType: upload.mimeType,
-    kind: upload.kind,
-    sizeBytes: upload.sizeBytes,
-    uploadedAt: now,
-    updatedAt: now,
-  }));
+  const now = new Date();
+  const createdRows = [];
 
-  files.push(...created);
-  await writeFiles(files);
-  return created;
+  for (const upload of uploads) {
+    const resourceType =
+      upload.kind === "video"
+        ? "video"
+        : upload.kind === "image"
+          ? "image"
+          : "auto";
+    const url = await resolveImageAsset(
+      upload.url,
+      `cms-system/media/${folderId}`,
+      resourceType,
+    );
+
+    const [row] = await db
+      .insert(mediaFiles)
+      .values({
+        id: crypto.randomUUID(),
+        folderId,
+        url,
+        publicId: null,
+        filename: upload.filename,
+        mimeType: upload.mimeType,
+        kind: upload.kind,
+        sizeBytes: upload.sizeBytes,
+        uploadedAt: now,
+        updatedAt: now,
+      })
+      .returning();
+
+    createdRows.push(row);
+  }
+
+  return createdRows.map(rowToFile);
 }
 
 export async function deleteMediaLibraryFile(id: string): Promise<void> {
@@ -144,17 +165,18 @@ export async function deleteMediaLibraryFiles(ids: string[]): Promise<number> {
     return 0;
   }
 
-  const idSet = new Set(ids);
-  const files = await readFiles();
-  const next = files.filter((file) => !idSet.has(file.id));
-  const removedCount = files.length - next.length;
+  const existing = await db
+    .select()
+    .from(mediaFiles)
+    .where(inArray(mediaFiles.id, ids));
 
-  if (removedCount === 0) {
+  if (existing.length === 0) {
     throw new Error("No files found");
   }
 
-  await writeFiles(next);
-  return removedCount;
+  await Promise.all(existing.map((file) => tryDeleteCloudinaryUrl(file.url)));
+  await db.delete(mediaFiles).where(inArray(mediaFiles.id, ids));
+  return existing.length;
 }
 
 export async function moveMediaLibraryFiles(
@@ -172,9 +194,10 @@ export async function moveMediaLibraryFiles(
     throw new Error("Folder not found");
   }
 
-  const files = await readFiles();
-  const idSet = new Set(ids);
-  const toMove = files.filter((file) => idSet.has(file.id));
+  const toMove = await db
+    .select()
+    .from(mediaFiles)
+    .where(inArray(mediaFiles.id, ids));
 
   if (toMove.length === 0) {
     throw new Error("No files found");
@@ -186,7 +209,7 @@ export async function moveMediaLibraryFiles(
     }
 
     if (
-      !isFilenameUniqueInFolder(files, targetFolderId, file.filename, file.id)
+      !(await isFilenameUniqueInFolder(targetFolderId, file.filename, file.id))
     ) {
       throw new Error(
         `A file named "${file.filename}" already exists in the destination folder`,
@@ -194,21 +217,30 @@ export async function moveMediaLibraryFiles(
     }
   }
 
-  const now = new Date().toISOString();
-  const next = files.map((file) => {
-    if (!idSet.has(file.id) || file.folderId === targetFolderId) {
-      return file;
+  const now = new Date();
+  let movedCount = 0;
+
+  for (const file of toMove) {
+    if (file.folderId === targetFolderId) {
+      continue;
     }
 
-    return {
-      ...file,
-      folderId: targetFolderId,
-      updatedAt: now,
-    };
-  });
+    await db
+      .update(mediaFiles)
+      .set({
+        folderId: targetFolderId,
+        updatedAt: now,
+      })
+      .where(
+        and(
+          eq(mediaFiles.id, file.id),
+          ne(mediaFiles.folderId, targetFolderId),
+        ),
+      );
+    movedCount += 1;
+  }
 
-  await writeFiles(next);
-  return toMove.filter((file) => file.folderId !== targetFolderId).length;
+  return movedCount;
 }
 
 export async function deleteMediaLibraryFilesInFolders(
@@ -218,14 +250,17 @@ export async function deleteMediaLibraryFilesInFolders(
     return 0;
   }
 
-  const files = await readFiles();
-  const idSet = new Set(folderIds);
-  const next = files.filter((file) => !idSet.has(file.folderId));
-  const removedCount = files.length - next.length;
+  const existing = await db
+    .select()
+    .from(mediaFiles)
+    .where(inArray(mediaFiles.folderId, folderIds));
 
-  if (removedCount > 0) {
-    await writeFiles(next);
+  if (existing.length === 0) {
+    return 0;
   }
 
-  return removedCount;
+  await Promise.all(existing.map((file) => tryDeleteCloudinaryUrl(file.url)));
+  await db.delete(mediaFiles).where(inArray(mediaFiles.folderId, folderIds));
+
+  return existing.length;
 }
