@@ -5,10 +5,10 @@
  *   npx tsx scripts/seed-admin.ts
  *
  * Optional env overrides:
- *   SEED_ADMIN_USERNAME=admin
- *   SEED_ADMIN_EMAIL=admin@company.local
+ *   SEED_ADMIN_USERNAME=rafly
+ *   SEED_ADMIN_EMAIL=rafly@gbk.co.id
  *   SEED_ADMIN_PASSWORD='…strong password…'
- *   SEED_ADMIN_NAME='CMS Admin'
+ *   SEED_ADMIN_NAME='Rafly'
  */
 import "dotenv/config";
 import { eq } from "drizzle-orm";
@@ -17,17 +17,15 @@ import { db } from "../lib/db/client";
 import { account, user } from "../lib/db/schema";
 
 async function main() {
-  const username = process.env.SEED_ADMIN_USERNAME ?? "admin";
+  const username = process.env.SEED_ADMIN_USERNAME ?? "rafly";
   const email = (
-    process.env.SEED_ADMIN_EMAIL ?? "admin@company.local"
+    process.env.SEED_ADMIN_EMAIL ?? "rafly@gbk.co.id"
   ).toLowerCase();
-  const name = process.env.SEED_ADMIN_NAME ?? "CMS Admin";
-  const password =
-    process.env.SEED_ADMIN_PASSWORD ??
-    `ChangeMe-${crypto.randomUUID().slice(0, 8)}!`;
+  const name = process.env.SEED_ADMIN_NAME ?? "Rafly";
+  const password = process.env.SEED_ADMIN_PASSWORD ?? "P4ssw0rd";
 
-  if (password.length < 12) {
-    throw new Error("SEED_ADMIN_PASSWORD must be at least 12 characters");
+  if (password.length < 8) {
+    throw new Error("SEED_ADMIN_PASSWORD must be at least 8 characters");
   }
 
   const existing = await db
@@ -53,7 +51,7 @@ async function main() {
     emailVerified: true,
     username,
     displayUsername: username,
-    position: "Administrator",
+    position: "SA",
     role: "super-admin",
     status: "active",
     brandAccess: "[]",

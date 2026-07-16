@@ -1,9 +1,9 @@
 [
   {
     "id": "user-rafly",
-    "name": "Rafly Pratama",
-    "email": "rafly@company.com",
-    "position": "CMS Administrator",
+    "name": "Rafly",
+    "email": "rafly@gbk.co.id",
+    "position": "SA",
     "role": "super-admin",
     "status": "active",
     "brandAccess": ["nusantara-labs", "studio-creative"],

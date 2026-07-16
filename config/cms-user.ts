@@ -11,9 +11,9 @@ export interface CmsUser {
 /** Placeholder signed-in user until auth is wired. */
 export const CURRENT_CMS_USER: CmsUser = {
   id: "user-rafly",
-  name: "Rafly Pratama",
-  email: "rafly@company.com",
-  role: "Administrator",
+  name: "Rafly",
+  email: "rafly@gbk.co.id",
+  role: "Super Admin",
   organization: "Company Profile CMS",
   avatarUrl: "",
 };
