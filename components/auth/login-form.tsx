@@ -1,11 +1,12 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
 import { LoginAppLogo } from "@/components/auth/login-app-logo";
 import { useAppearance } from "@/components/shared/appearance-provider";
 import { Input } from "@/components/ui/input";
 import { GLASS_SURFACE } from "@/config/glass";
+import { authClient } from "@/lib/auth/client";
 import { CaretRightIcon, EyeIcon, EyeSlashIcon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 
@@ -31,8 +32,9 @@ const ENTER_BUTTON_CLASS = cn(
 
 export function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { resolvedDark } = useAppearance();
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -43,14 +45,28 @@ export function LoginForm() {
     event.preventDefault();
     setError(null);
 
-    const trimmedName = name.trim();
-    if (!trimmedName || !password) {
-      setError("Enter your name and password to continue.");
+    const trimmedUsername = username.trim();
+    if (!trimmedUsername || !password) {
+      setError("Enter your username and password to continue.");
       return;
     }
 
-    startTransition(() => {
-      router.push("/");
+    startTransition(async () => {
+      const result = await authClient.signIn.username({
+        username: trimmedUsername,
+        password,
+      });
+
+      if (result.error) {
+        setError(result.error.message || "Invalid username or password.");
+        return;
+      }
+
+      const next = searchParams.get("next");
+      const destination =
+        next?.startsWith("/") && !next.startsWith("//") ? next : "/";
+      router.replace(destination);
+      router.refresh();
     });
   }
 
@@ -69,15 +85,15 @@ export function LoginForm() {
 
       <div className="flex w-full flex-col gap-2.5">
         <Input
-          id="login-name"
-          name="name"
+          id="login-username"
+          name="username"
           autoComplete="username"
           placeholder="Username"
-          value={name}
+          value={username}
           disabled={isPending}
-          onChange={(event) => setName(event.target.value)}
+          onChange={(event) => setUsername(event.target.value)}
           className={FIELD_CLASS}
-          aria-label="Name"
+          aria-label="Username"
         />
 
         <div className="flex w-full items-center gap-2">
@@ -101,8 +117,8 @@ export function LoginForm() {
               aria-pressed={passwordVisible}
               onClick={() => setPasswordVisible((visible) => !visible)}
               className={cn(
-                "absolute top-1/2 right-1.5 flex size-5 -translate-y-1/2 items-center justify-center rounded-md",
-                "text-muted-foreground transition-colors hover:text-foreground",
+                "absolute top-1/2 right-1.5 flex size-5 -translate-y-1/2 items-center justify-center",
+                "rounded-md text-muted-foreground transition-colors hover:text-foreground",
                 "disabled:pointer-events-none disabled:opacity-50",
               )}
             >
