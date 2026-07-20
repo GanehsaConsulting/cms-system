@@ -1,4 +1,12 @@
-import { boolean, jsonb, primaryKey, text, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  index,
+  jsonb,
+  primaryKey,
+  text,
+  timestamp,
+  uniqueIndex,
+} from "drizzle-orm/pg-core";
 import { cmsSchema } from "@/lib/db/schema/auth";
 
 export const articleCategories = cmsSchema.table(
@@ -14,6 +22,7 @@ export const articleCategories = cmsSchema.table(
   },
   (table) => [
     primaryKey({ columns: [table.brandId, table.id] }),
+    index("article_categories_brand_id_idx").on(table.brandId),
   ],
 );
 
@@ -45,5 +54,14 @@ export const articles = cmsSchema.table(
       .$onUpdate(() => new Date())
       .notNull(),
   },
-  (table) => [uniqueIndex("articles_brand_slug_idx").on(table.brandId, table.slug)],
+  (table) => [
+    uniqueIndex("articles_brand_slug_idx").on(table.brandId, table.slug),
+    index("articles_brand_updated_at_idx").on(table.brandId, table.updatedAt),
+    index("articles_brand_status_idx").on(table.brandId, table.status),
+    index("articles_status_published_at_idx").on(
+      table.status,
+      table.publishedAt,
+    ),
+    index("articles_author_id_idx").on(table.authorId),
+  ],
 );
