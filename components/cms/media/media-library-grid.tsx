@@ -7,13 +7,18 @@ import { cn } from "@/lib/utils";
 
 interface MediaLibraryGridProps {
   assets: MediaAsset[];
+  onAssetSelect?: (asset: MediaAsset) => void;
 }
 
-export function MediaLibraryGrid({ assets }: MediaLibraryGridProps) {
+export function MediaLibraryGrid({ assets, onAssetSelect }: MediaLibraryGridProps) {
   return (
     <div className={cn(MEDIA_LIBRARY_GRID_CLASS)}>
       {assets.map((asset) => (
-        <MediaLibraryGridCard key={asset.id} asset={asset} />
+        <MediaLibraryGridCard
+          key={asset.id}
+          asset={asset}
+          onSelect={onAssetSelect}
+        />
       ))}
     </div>
   );

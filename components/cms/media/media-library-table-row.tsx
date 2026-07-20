@@ -19,16 +19,20 @@ import { cn } from "@/lib/utils";
 
 interface MediaLibraryTableRowProps {
   asset: MediaAsset;
+  onSelect?: (asset: MediaAsset) => void;
 }
 
-export function MediaLibraryTableRow({ asset }: MediaLibraryTableRowProps) {
+export function MediaLibraryTableRow({ asset, onSelect }: MediaLibraryTableRowProps) {
   const primaryUsage = asset.usages[0];
   const sourceHref = primaryUsage ? getMediaSourceHref(primaryUsage) : null;
   const updated = formatClientDateParts(asset.updatedAt);
   const canPreview = isRenderableMediaPreview(asset.kind);
 
   return (
-    <CmsListTableRow isSelected={false} onClick={() => undefined}>
+    <CmsListTableRow
+      isSelected={false}
+      onClick={() => onSelect?.(asset)}
+    >
       <TableCell className={LIST_TABLE_CELL_CLASS}>
         <div className="flex min-w-[220px] items-center gap-3">
           <div

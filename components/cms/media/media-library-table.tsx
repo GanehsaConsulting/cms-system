@@ -8,9 +8,10 @@ import type { MediaAsset } from "@/types/media";
 
 interface MediaLibraryTableProps {
   assets: MediaAsset[];
+  onAssetSelect?: (asset: MediaAsset) => void;
 }
 
-export function MediaLibraryTable({ assets }: MediaLibraryTableProps) {
+export function MediaLibraryTable({ assets, onAssetSelect }: MediaLibraryTableProps) {
   return (
     <CmsListTable
       header={
@@ -24,7 +25,11 @@ export function MediaLibraryTable({ assets }: MediaLibraryTableProps) {
       }
     >
       {assets.map((asset) => (
-        <MediaLibraryTableRow key={asset.id} asset={asset} />
+        <MediaLibraryTableRow
+          key={asset.id}
+          asset={asset}
+          onSelect={onAssetSelect}
+        />
       ))}
     </CmsListTable>
   );
