@@ -4,7 +4,10 @@ import {
   publicJson,
   publicOptionsResponse,
 } from "@/lib/api/public-response";
+import { getClientById } from "@/lib/db/clients";
 import { getPortfolioById } from "@/lib/db/portfolio";
+import { toPublicClientRef } from "@/types/public-client";
+import { toPublicPortfolioDetail } from "@/types/public-portfolio";
 
 export function OPTIONS() {
   return publicOptionsResponse();
@@ -29,11 +32,17 @@ export async function GET(
   }
 
   const { id } = await context.params;
-  const item = await getPortfolioById(decodeURIComponent(id));
+  const item = await getPortfolioById(result.brand.id, decodeURIComponent(id));
 
   if (!item) {
     return publicError("Portfolio item not found", 404);
   }
 
-  return publicJson(item);
+  const client = await getClientById(result.brand.id, item.clientId);
+
+  if (!client) {
+    return publicError("Portfolio item not found", 404);
+  }
+
+  return publicJson(toPublicPortfolioDetail(item, toPublicClientRef(client)));
 }

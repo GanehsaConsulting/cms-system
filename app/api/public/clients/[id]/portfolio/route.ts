@@ -10,13 +10,17 @@ import {
   publicListJson,
   publicOptionsResponse,
 } from "@/lib/api/public-response";
+import { getClientById } from "@/lib/db/clients";
 import { getPortfolioItems } from "@/lib/db/portfolio";
 
 export function OPTIONS() {
   return publicOptionsResponse();
 }
 
-export async function GET(request: Request) {
+export async function GET(
+  request: Request,
+  context: { params: Promise<{ id: string }> },
+) {
   const { searchParams } = new URL(request.url);
   const result = await requirePublicBrand(searchParams.get("brandId"));
 
@@ -31,8 +35,19 @@ export async function GET(request: Request) {
     return publicListJson(empty.items, empty.pagination);
   }
 
+  const { id } = await context.params;
+  const clientId = decodeURIComponent(id);
+  const client = await getClientById(result.brand.id, clientId);
+
+  if (!client) {
+    return publicError("Client not found", 404);
+  }
+
   const items = await getPortfolioItems(result.brand.id);
-  const filtered = filterPublicPortfolioItems(items, query);
+  const filtered = filterPublicPortfolioItems(items, {
+    ...query,
+    clientId,
+  });
   const page = paginatePublicPortfolioSummaries(
     filtered,
     query.page ?? 1,
