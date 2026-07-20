@@ -23,6 +23,11 @@ import { deleteMediaLibraryFilesAction } from "@/lib/actions/media-files";
 import { deleteMediaFolderAction } from "@/lib/actions/media-folders";
 import { getRootSelectedFolderIds } from "@/lib/media/folders";
 import { countMediaAssetsByKind } from "@/lib/media/list";
+import {
+  notifyError,
+  notifyFromActionResult,
+  notifySuccess,
+} from "@/lib/notify/action-toast";
 import { LIST_TOOLBAR_CLASS } from "@/config/list-toolbar";
 import { CMS_FLEX_CHILD, CMS_SCROLL_REGION } from "@/config/spacing";
 import type { MediaFolder, MediaLibraryFile } from "@/types/media";
@@ -125,9 +130,7 @@ export function MediaLibraryLibraryView({
           const result = await deleteMediaLibraryFilesAction(
             fileSelection.selectedIds,
           );
-          if (!result.success) {
-            return;
-          }
+          if (!notifyFromActionResult(result, "Files deleted.")) return;
 
           fileSelection.clear();
           router.refresh();
@@ -153,10 +156,14 @@ export function MediaLibraryLibraryView({
           for (const id of rootIds) {
             const result = await deleteMediaFolderAction(id);
             if (!result.success) {
+              notifyError(result.error || "Failed to delete folder.");
               return;
             }
           }
 
+          notifySuccess(
+            rootIds.length === 1 ? "Folder deleted." : "Folders deleted.",
+          );
           folderSelection.clear();
           router.refresh();
         });

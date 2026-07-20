@@ -6,6 +6,7 @@ import { AppThemeProvider } from "@/components/providers/app-theme-provider";
 import { RootAppearanceBootstrap } from "@/components/shared/root-appearance-bootstrap";
 import { WallpaperBackground } from "@/components/shared/wallpaper-background";
 import { WallpaperProvider } from "@/components/shared/wallpaper-provider";
+import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { DEFAULT_ACCENT_ID } from "@/config/accent-colors";
 import { DEFAULT_APP_ICON_STYLE } from "@/config/app-icon-styles";
@@ -64,6 +65,7 @@ export default async function RootLayout({
             <div className="relative z-10 flex min-h-0 flex-1 flex-col overflow-hidden">
               <TooltipProvider>{children}</TooltipProvider>
             </div>
+            <Toaster />
           </WallpaperProvider>
         </AppThemeProvider>
       </body>

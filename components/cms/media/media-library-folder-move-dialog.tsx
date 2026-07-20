@@ -21,6 +21,7 @@ import {
   getRootSelectedFolderIds,
 } from "@/lib/media/folders";
 import { CaretRightIcon } from "@/lib/icons";
+import { notifyError, notifyFromActionResult } from "@/lib/notify/action-toast";
 import type { MediaFolder } from "@/types/media";
 import type { MediaFolderTreeNode } from "@/lib/media/folders";
 import { cn } from "@/lib/utils";
@@ -163,7 +164,9 @@ export function MediaLibraryFolderMoveDialog({
     setError(null);
 
     if (selectedParentKey === null) {
-      setError("Select a destination");
+      const message = "Select a destination";
+      setError(message);
+      notifyError(message);
       return;
     }
 
@@ -174,15 +177,19 @@ export function MediaLibraryFolderMoveDialog({
       (targetParentId === null && currentParentId === null) ||
       targetParentId === currentParentId
     ) {
-      setError("Folders are already in this location");
+      const message = "Folders are already in this location";
+      setError(message);
+      notifyError(message);
       return;
     }
 
     startTransition(async () => {
       const result = await moveMediaFoldersAction(rootIds, targetParentId);
 
-      if (!result.success) {
-        setError(result.error);
+      if (!notifyFromActionResult(result, "Folders moved.")) {
+        if (!result.success) {
+          setError(result.error);
+        }
         return;
       }
 

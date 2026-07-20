@@ -14,6 +14,7 @@ import {
 import { useConfirmDialog } from "@/hooks/use-confirm-dialog";
 import { deleteMediaLibraryFileAction } from "@/lib/actions/media-files";
 import { DotsThreeIcon, PencilSimpleIcon, TrashIcon } from "@/lib/icons";
+import { notifyFromActionResult } from "@/lib/notify/action-toast";
 import type { MediaLibraryFile } from "@/types/media";
 import { cn } from "@/lib/utils";
 
@@ -44,9 +45,7 @@ export function MediaLibraryLibraryFileActionsMenu({
       onConfirm: () => {
         startTransition(async () => {
           const result = await deleteMediaLibraryFileAction(file.id);
-          if (!result.success) {
-            return;
-          }
+          if (!notifyFromActionResult(result, "File deleted.")) return;
           router.refresh();
         });
       },

@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DIALOG_FORM_CLASS } from "@/config/dialog";
 import { renameMediaLibraryFileAction } from "@/lib/actions/media-files";
+import { notifyFromActionResult } from "@/lib/notify/action-toast";
 import type { MediaLibraryFile } from "@/types/media";
 
 interface MediaLibraryFileRenameDialogProps {
@@ -57,8 +58,10 @@ export function MediaLibraryFileRenameDialog({
     startTransition(async () => {
       const result = await renameMediaLibraryFileAction(file.id, formData);
 
-      if (!result.success) {
-        setError(result.error);
+      if (!notifyFromActionResult(result, "File renamed.")) {
+        if (!result.success) {
+          setError(result.error);
+        }
         return;
       }
 

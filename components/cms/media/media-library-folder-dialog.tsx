@@ -19,6 +19,7 @@ import {
   createMediaFolderAction,
   updateMediaFolderAction,
 } from "@/lib/actions/media-folders";
+import { notifyFromActionResult } from "@/lib/notify/action-toast";
 import type { MediaFolder } from "@/types/media";
 
 interface MediaLibraryFolderDialogProps {
@@ -67,8 +68,15 @@ export function MediaLibraryFolderDialog({
         ? await updateMediaFolderAction(folder?.id ?? "", formData)
         : await createMediaFolderAction(formData);
 
-      if (!result.success) {
-        setError(result.error);
+      if (
+        !notifyFromActionResult(
+          result,
+          isRename ? "Folder renamed." : "Folder created.",
+        )
+      ) {
+        if (!result.success) {
+          setError(result.error);
+        }
         return;
       }
 

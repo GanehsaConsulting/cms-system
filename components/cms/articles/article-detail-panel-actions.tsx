@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { ARTICLE_ACTION_CONFIRMATIONS } from "@/config/article-actions";
 import { useConfirmDialog } from "@/hooks/use-confirm-dialog";
 import { deleteArticleAction } from "@/lib/actions/articles";
+import { runNotifiedAction } from "@/lib/notify/action-toast";
 import type { ArticlePreviewData } from "@/types/article-preview";
 import type { Article } from "@/types/article";
 
@@ -25,6 +26,7 @@ function toPreviewData(article: Article): ArticlePreviewData {
     tags: article.tags,
     authorName: article.authorName,
     slug: article.slug,
+    thumbnail: article.thumbnail,
   };
 }
 
@@ -43,7 +45,14 @@ export function ArticleDetailPanelActions({
       ...confirmation,
       onConfirm: () => {
         startTransition(async () => {
-          await deleteArticleAction(article.id);
+          const notified = await runNotifiedAction(
+            () => deleteArticleAction(article.id),
+            {
+              success: "Article deleted.",
+              errorFallback: "Failed to delete article.",
+            },
+          );
+          if (!notified.ok) return;
           router.refresh();
         });
       },
@@ -52,7 +61,7 @@ export function ArticleDetailPanelActions({
 
   return (
     <>
-      <div className="flex items-center gap-1.5 border-[color:var(--separator)] border-t p-3">
+      <div className="flex items-center gap-1.5 border-(--separator) border-t p-3">
         <Button
           type="button"
           variant="outline"

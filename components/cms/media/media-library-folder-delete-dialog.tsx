@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { deleteMediaFolderAction } from "@/lib/actions/media-folders";
 import { getFolderDeleteImpact } from "@/lib/media/folders";
 import { FolderOpenIcon } from "@/lib/icons";
+import { notifyFromActionResult } from "@/lib/notify/action-toast";
 import type { MediaFolder, MediaLibraryFile } from "@/types/media";
 
 interface MediaLibraryFolderDeleteDialogProps {
@@ -50,9 +51,7 @@ export function MediaLibraryFolderDeleteDialog({
 
     startTransition(async () => {
       const result = await deleteMediaFolderAction(folder.id);
-      if (!result.success) {
-        return;
-      }
+      if (!notifyFromActionResult(result, "Folder deleted.")) return;
 
       onOpenChange(false);
       router.refresh();
@@ -87,7 +86,7 @@ export function MediaLibraryFolderDeleteDialog({
                   <p className="font-medium text-sm">
                     Subfolders that will also be deleted
                   </p>
-                  <ul className="max-h-40 space-y-1 overflow-y-auto rounded-[var(--radius-deep)] bg-muted/50 p-3">
+                  <ul className="max-h-40 space-y-1 overflow-y-auto rounded-(--radius-deep) bg-muted/50 p-3">
                     {impact.descendantFolders.map((subfolder) => (
                       <li
                         key={subfolder.id}

@@ -30,6 +30,7 @@ import {
 } from "@/config/user";
 import { DIALOG_FORM_CLASS } from "@/config/dialog";
 import { createUserAction, updateUserAction } from "@/lib/actions/users";
+import { notifyError, notifySuccess } from "@/lib/notify/action-toast";
 import { toSelectItems } from "@/lib/select-items";
 import type { Brand } from "@/types/brand";
 import type { User } from "@/types/user";
@@ -118,20 +119,33 @@ export function UserFormDialog({
     formData.set("brandAccess", JSON.stringify(brandAccess));
 
     startTransition(async () => {
-      const result = user
-        ? await updateUserAction(user.id, formData)
-        : await createUserAction(formData);
+      if (user) {
+        const result = await updateUserAction(user.id, formData);
+        if (!result.success) {
+          notifyError(result.error || "Failed to save user.");
+          setError(result.error);
+          return;
+        }
 
+        notifySuccess("User saved.");
+        onSaved(result.user);
+        onOpenChange(false);
+        return;
+      }
+
+      const result = await createUserAction(formData);
       if (!result.success) {
+        notifyError(result.error || "Failed to create user.");
         setError(result.error);
         return;
       }
 
+      notifySuccess("User created.");
       onSaved(result.user);
 
       // Creating a user generates a temporary password (UI currently
       // doesn't ask for it). Show it once, then let admin close the dialog.
-      if (!user && "password" in result && result.password) {
+      if (result.password) {
         setCreatedCredentials({
           username: result.username ?? "",
           password: result.password,

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { GLASS_SURFACE } from "@/config/glass";
 import { authClient } from "@/lib/auth/client";
 import { CaretRightIcon, EyeIcon, EyeSlashIcon } from "@/lib/icons";
+import { notifyError, notifySuccess } from "@/lib/notify/action-toast";
 import { cn } from "@/lib/utils";
 
 const FIELD_SURFACE = cn(
@@ -47,7 +48,9 @@ export function LoginForm() {
 
     const trimmedUsername = username.trim();
     if (!trimmedUsername || !password) {
-      setError("Enter your username and password to continue.");
+      const message = "Enter your username and password to continue.";
+      setError(message);
+      notifyError(message);
       return;
     }
 
@@ -58,10 +61,14 @@ export function LoginForm() {
       });
 
       if (result.error) {
-        setError(result.error.message || "Invalid username or password.");
+        const message =
+          result.error.message || "Invalid username or password.";
+        setError(message);
+        notifyError(message);
         return;
       }
 
+      notifySuccess("Signed in.");
       const next = searchParams.get("next");
       const destination =
         next?.startsWith("/") && !next.startsWith("//") ? next : "/";

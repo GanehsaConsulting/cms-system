@@ -19,6 +19,7 @@ import type { CmsUser } from "@/config/cms-user";
 import { RADIUS_INNER } from "@/config/shape";
 import { authClient } from "@/lib/auth/client";
 import { KeyIcon, LogoutIcon, PencilSimpleIcon } from "@/lib/icons";
+import { notifyError, notifySuccess } from "@/lib/notify/action-toast";
 import type {
   CmsPasswordFormValues,
   CmsProfileFormValues,
@@ -72,10 +73,12 @@ export function SidebarProfileDialog({
       });
 
       if (updateResult.error) {
+        const description =
+          updateResult.error.message || "Please try again later.";
+        notifyError(description);
         setNotice({
           title: "Could not update profile",
-          description:
-            updateResult.error.message || "Please try again later.",
+          description,
         });
         return;
       }
@@ -85,15 +88,18 @@ export function SidebarProfileDialog({
       });
 
       if (emailResult.error) {
+        const description =
+          emailResult.error.message || "Please try again later.";
+        notifyError(description);
         setNotice({
           title: "Could not update email",
-          description:
-            emailResult.error.message || "Please try again later.",
+          description,
         });
         return;
       }
 
       onUserUpdate(values);
+      notifySuccess("Profile updated.");
       setNotice({
         title: "Profile updated",
         description: "Your profile details have been saved.",
@@ -111,14 +117,17 @@ export function SidebarProfileDialog({
       });
 
       if (result.error) {
+        const description =
+          result.error.message || "Please check your current password.";
+        notifyError(description);
         setNotice({
           title: "Could not update password",
-          description:
-            result.error.message || "Please check your current password.",
+          description,
         });
         return;
       }
 
+      notifySuccess("Password updated.");
       setNotice({
         title: "Password updated",
         description: "Your sign-in password has been updated.",
@@ -133,15 +142,17 @@ export function SidebarProfileDialog({
 
       if (result.error) {
         setLogoutOpen(false);
+        const description =
+          result.error.message || "Something went wrong. Please try again.";
+        notifyError(description);
         setNotice({
           title: "Could not sign out",
-          description:
-            result.error.message ||
-            "Something went wrong. Please try again.",
+          description,
         });
         return;
       }
 
+      notifySuccess("Signed out.");
       setLogoutOpen(false);
       onOpenChange(false);
       router.replace("/login");

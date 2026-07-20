@@ -1,0 +1,43 @@
+---
+description: Every CMS mutation must show a success or error toast after execution
+alwaysApply: true
+---
+
+# Action Feedback — Mandatory
+
+Every user-triggered mutation (Server Action, auth client update, batch delete/upload) **must** show feedback after it finishes — success **or** failure. Silent success/failure is not allowed.
+
+## How
+
+Use helpers from `@/lib/notify/action-toast`:
+
+```ts
+import { notifyError, notifyFromActionResult, runNotifiedAction } from "@/lib/notify/action-toast";
+
+// Preferred for Server Actions
+const notified = await runNotifiedAction(
+  () => deleteBrandAction(id),
+  { success: "Brand deleted.", errorFallback: "Failed to delete brand." },
+);
+if (!notified.ok) return;
+
+// Or when you already have a result object
+if (!notifyFromActionResult(result, "Article saved.")) return;
+
+// Validation / client-only failures
+notifyError("Please fix the highlighted fields before saving.");
+```
+
+## Rules
+
+- Call `notifySuccess` / `notifyError` / `notifyFromActionResult` / `runNotifiedAction` on **every** create, update, delete, upload, move, rename, and auth profile mutation.
+- Do **not** rely only on inline `setError` / `setSuccess` banners — toasts are mandatory; inline UI may remain as extra context.
+- For actions that `redirect()`, use `runNotifiedAction` so success still toasts before navigation.
+- English copy only (UI language rule).
+- Keep messages short and specific: `"Article saved."`, `"Failed to delete banner."`
+
+## Do not
+
+- Swallow `result.success === false` without `notifyError`
+- Fire-and-forget `await someAction()` with no toast
+- Add a second toast library — use Sonner via `@/lib/notify/action-toast` only

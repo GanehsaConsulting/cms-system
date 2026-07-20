@@ -20,6 +20,7 @@ import {
   updatePriceCategoryAction,
 } from "@/lib/actions/price-categories";
 import { slugify } from "@/lib/articles/slug";
+import { notifyError, notifySuccess } from "@/lib/notify/action-toast";
 import type { PriceCategory } from "@/types/price-category";
 
 interface PriceCategoryFormDialogProps {
@@ -75,10 +76,12 @@ export function PriceCategoryFormDialog({
         : await createPriceCategoryAction(formData);
 
       if (!result.success) {
+        notifyError(result.error || "Failed to save category.");
         setError(result.error);
         return;
       }
 
+      notifySuccess(category ? "Category saved." : "Category created.");
       onSaved(result.category);
       resetForm();
       onOpenChange(false);

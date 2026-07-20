@@ -19,6 +19,7 @@ import { useConfirmDialog } from "@/hooks/use-confirm-dialog";
 import { deleteBrandAction } from "@/lib/actions/brands";
 import { formatClientDateParts } from "@/lib/clients/list";
 import { DotsThreeIcon, PencilSimpleIcon, TrashIcon } from "@/lib/icons";
+import { notifyFromActionResult } from "@/lib/notify/action-toast";
 import type { Brand } from "@/types/brand";
 import { cn } from "@/lib/utils";
 
@@ -43,9 +44,7 @@ export function BrandListCard({ brand, onEdit }: BrandListCardProps) {
       onConfirm: () => {
         startTransition(async () => {
           const result = await deleteBrandAction(brand.id);
-          if (!result.success) {
-            return;
-          }
+          if (!notifyFromActionResult(result, "Brand deleted.")) return;
           router.refresh();
         });
       },

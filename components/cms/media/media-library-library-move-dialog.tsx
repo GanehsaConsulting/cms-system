@@ -17,6 +17,7 @@ import { DIALOG_FORM_CLASS } from "@/config/dialog";
 import { moveMediaLibraryFilesAction } from "@/lib/actions/media-files";
 import { buildMediaFolderTree } from "@/lib/media/folders";
 import { CaretRightIcon } from "@/lib/icons";
+import { notifyError, notifyFromActionResult } from "@/lib/notify/action-toast";
 import type { MediaFolder } from "@/types/media";
 import type { MediaFolderTreeNode } from "@/lib/media/folders";
 import { cn } from "@/lib/utils";
@@ -138,15 +139,19 @@ export function MediaLibraryLibraryMoveDialog({
     setError(null);
 
     if (!selectedFolderId) {
-      setError("Select a destination folder");
+      const message = "Select a destination folder";
+      setError(message);
+      notifyError(message);
       return;
     }
 
     startTransition(async () => {
       const result = await moveMediaLibraryFilesAction(fileIds, selectedFolderId);
 
-      if (!result.success) {
-        setError(result.error);
+      if (!notifyFromActionResult(result, "Files moved.")) {
+        if (!result.success) {
+          setError(result.error);
+        }
         return;
       }
 

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { CLIENT_ACTION_CONFIRMATIONS } from "@/config/client-actions";
 import { useConfirmDialog } from "@/hooks/use-confirm-dialog";
 import { deleteClientAction } from "@/lib/actions/clients";
+import { runNotifiedAction } from "@/lib/notify/action-toast";
 import type { Client } from "@/types/client";
 
 interface ClientsWorksAllDetailPanelActionsProps {
@@ -28,7 +29,14 @@ export function ClientsWorksAllDetailPanelActions({
       ...confirmation,
       onConfirm: () => {
         startTransition(async () => {
-          await deleteClientAction(client.id);
+          const notified = await runNotifiedAction(
+            () => deleteClientAction(client.id),
+            {
+              success: "Client deleted.",
+              errorFallback: "Failed to delete client.",
+            },
+          );
+          if (!notified.ok) return;
           router.refresh();
         });
       },

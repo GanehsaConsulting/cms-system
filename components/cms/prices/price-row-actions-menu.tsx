@@ -14,6 +14,7 @@ import {
 import { PRICE_ACTION_CONFIRMATIONS } from "@/config/price-actions";
 import { useConfirmDialog } from "@/hooks/use-confirm-dialog";
 import { deletePriceAction } from "@/lib/actions/prices";
+import { runNotifiedAction } from "@/lib/notify/action-toast";
 import { getPriceDisplayText } from "@/lib/prices/normalize";
 import type { Price } from "@/types/price";
 
@@ -35,7 +36,14 @@ export function PriceRowActionsMenu({ price }: PriceRowActionsMenuProps) {
       ...confirmation,
       onConfirm: () => {
         startTransition(async () => {
-          await deletePriceAction(price.id);
+          const notified = await runNotifiedAction(
+            () => deletePriceAction(price.id),
+            {
+              success: "Price plan deleted.",
+              errorFallback: "Failed to delete price plan.",
+            },
+          );
+          if (!notified.ok) return;
           router.refresh();
         });
       },

@@ -27,6 +27,7 @@ import { BRAND_FEATURE_IDS, BRAND_FORM_LIMITS, BRAND_STATUSES } from "@/config/b
 import { DIALOG_FORM_CLASS } from "@/config/dialog";
 import { createBrandAction, updateBrandAction } from "@/lib/actions/brands";
 import { slugify } from "@/lib/articles/slug";
+import { notifyError, notifySuccess } from "@/lib/notify/action-toast";
 import { toSelectItems } from "@/lib/select-items";
 import type { BrandFeatureId } from "@/config/brand";
 import type { Brand } from "@/types/brand";
@@ -106,10 +107,12 @@ export function BrandFormDialog({
         : await createBrandAction(formData);
 
       if (!result.success) {
+        notifyError(result.error || "Failed to save brand.");
         setError(result.error);
         return;
       }
 
+      notifySuccess(brand ? "Brand saved." : "Brand created.");
       onSaved(result.brand);
       onOpenChange(false);
     });

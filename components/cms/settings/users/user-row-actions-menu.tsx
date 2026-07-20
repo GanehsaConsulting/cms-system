@@ -13,6 +13,7 @@ import {
 import { useConfirmDialog } from "@/hooks/use-confirm-dialog";
 import { deleteUserAction } from "@/lib/actions/users";
 import { DotsThreeIcon, PencilSimpleIcon, TrashIcon } from "@/lib/icons";
+import { notifyFromActionResult } from "@/lib/notify/action-toast";
 import type { User } from "@/types/user";
 
 interface UserRowActionsMenuProps {
@@ -35,9 +36,7 @@ export function UserRowActionsMenu({ user, onEdit }: UserRowActionsMenuProps) {
       onConfirm: () => {
         startTransition(async () => {
           const result = await deleteUserAction(user.id);
-          if (!result.success) {
-            return;
-          }
+          if (!notifyFromActionResult(result, "User deleted.")) return;
           router.refresh();
         });
       },

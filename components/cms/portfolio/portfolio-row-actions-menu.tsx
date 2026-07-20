@@ -14,6 +14,7 @@ import {
 import { PORTFOLIO_ACTION_CONFIRMATIONS } from "@/config/portfolio-form";
 import { useConfirmDialog } from "@/hooks/use-confirm-dialog";
 import { deletePortfolioAction } from "@/lib/actions/portfolio";
+import { runNotifiedAction } from "@/lib/notify/action-toast";
 import type { Portfolio } from "@/types/portfolio";
 
 interface PortfolioRowActionsMenuProps {
@@ -32,7 +33,14 @@ export function PortfolioRowActionsMenu({
       ...PORTFOLIO_ACTION_CONFIRMATIONS.delete,
       onConfirm: () => {
         startTransition(async () => {
-          await deletePortfolioAction(item.id);
+          const notified = await runNotifiedAction(
+            () => deletePortfolioAction(item.id),
+            {
+              success: "Work deleted.",
+              errorFallback: "Failed to delete work.",
+            },
+          );
+          if (!notified.ok) return;
           router.refresh();
         });
       },

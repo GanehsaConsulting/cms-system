@@ -27,6 +27,7 @@ import {
 } from "@/lib/actions/banners";
 import { getBannerImages } from "@/lib/banners/images";
 import { bannerKeyFromImageFileName } from "@/lib/banners/key-from-image";
+import { notifyError, notifySuccess } from "@/lib/notify/action-toast";
 import {
   buildWhatsAppUrl,
   extractWhatsAppMessage,
@@ -216,10 +217,12 @@ export function BannerFormDialog({
         : await createBannerAction(formData);
 
       if (!result.success) {
+        notifyError(result.error || "Failed to save banner.");
         setError(result.error);
         return;
       }
 
+      notifySuccess(banner ? "Banner saved." : "Banner created.");
       onSaved(result.banner);
       onOpenChange(false);
     });

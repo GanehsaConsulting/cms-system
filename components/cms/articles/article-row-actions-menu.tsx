@@ -14,6 +14,7 @@ import {
 import { ARTICLE_ACTION_CONFIRMATIONS } from "@/config/article-actions";
 import { useConfirmDialog } from "@/hooks/use-confirm-dialog";
 import { deleteArticleAction } from "@/lib/actions/articles";
+import { runNotifiedAction } from "@/lib/notify/action-toast";
 import type { Article } from "@/types/article";
 
 interface ArticleRowActionsMenuProps {
@@ -32,7 +33,14 @@ export function ArticleRowActionsMenu({ article }: ArticleRowActionsMenuProps) {
       ...confirmation,
       onConfirm: () => {
         startTransition(async () => {
-          await deleteArticleAction(article.id);
+          const notified = await runNotifiedAction(
+            () => deleteArticleAction(article.id),
+            {
+              success: "Article deleted.",
+              errorFallback: "Failed to delete article.",
+            },
+          );
+          if (!notified.ok) return;
           router.refresh();
         });
       },

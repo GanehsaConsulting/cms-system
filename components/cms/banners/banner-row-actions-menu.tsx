@@ -14,6 +14,7 @@ import {
 import { BANNER_ACTION_CONFIRMATIONS } from "@/config/banner-actions";
 import { useConfirmDialog } from "@/hooks/use-confirm-dialog";
 import { deleteBannerAction } from "@/lib/actions/banners";
+import { notifyFromActionResult } from "@/lib/notify/action-toast";
 import type { Banner } from "@/types/banner";
 
 interface BannerRowActionsMenuProps {
@@ -36,7 +37,8 @@ export function BannerRowActionsMenu({
       ...confirmation,
       onConfirm: () => {
         startTransition(async () => {
-          await deleteBannerAction(banner.id);
+          const result = await deleteBannerAction(banner.id);
+          if (!notifyFromActionResult(result, "Banner deleted.")) return;
           router.refresh();
         });
       },

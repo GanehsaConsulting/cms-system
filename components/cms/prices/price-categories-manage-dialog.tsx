@@ -16,6 +16,7 @@ import {
 import { RADIUS_DEEP } from "@/config/shape";
 import { useConfirmDialog } from "@/hooks/use-confirm-dialog";
 import { deletePriceCategoryAction } from "@/lib/actions/price-categories";
+import { notifyFromActionResult } from "@/lib/notify/action-toast";
 import type { PriceCategory } from "@/types/price-category";
 import { cn } from "@/lib/utils";
 
@@ -81,8 +82,12 @@ export function PriceCategoriesManageDialog({
       onConfirm: () => {
         startTransition(async () => {
           const result = await deletePriceCategoryAction(category.id);
-          if (!result.success) {
-            setActionError(result.error);
+          if (
+            !notifyFromActionResult(result, "Category deleted.", "Failed to delete category.")
+          ) {
+            if (!result.success) {
+              setActionError(result.error);
+            }
             return;
           }
 

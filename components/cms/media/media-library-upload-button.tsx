@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { MEDIA_LIBRARY_ACCEPT_ATTRIBUTE } from "@/config/media-library";
 import { uploadMediaLibraryFilesAction } from "@/lib/actions/media-files";
 import { UploadSimpleIcon } from "@/lib/icons";
+import { notifyFromActionResult } from "@/lib/notify/action-toast";
 
 interface MediaLibraryUploadButtonProps {
   folderId: string | null;
@@ -39,8 +40,10 @@ export function MediaLibraryUploadButton({
     setError(null);
     startTransition(async () => {
       const result = await uploadMediaLibraryFilesAction(folderId, formData);
-      if (!result.success) {
-        setError(result.error);
+      if (!notifyFromActionResult(result, "Files uploaded.")) {
+        if (!result.success) {
+          setError(result.error);
+        }
         return;
       }
 
