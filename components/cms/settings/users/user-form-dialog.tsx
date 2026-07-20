@@ -75,6 +75,10 @@ export function UserFormDialog({
   );
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [createdCredentials, setCreatedCredentials] = useState<{
+    username: string;
+    password: string;
+  } | null>(null);
 
   useEffect(() => {
     if (!open) {
@@ -89,6 +93,7 @@ export function UserFormDialog({
     setStatus(user?.status ?? "active");
     setBrandAccess(getDefaultBrandAccess(brands, user));
     setError(null);
+    setCreatedCredentials(null);
   }, [brands, open, user]);
 
   function handleOpenChange(nextOpen: boolean) {
@@ -123,6 +128,17 @@ export function UserFormDialog({
       }
 
       onSaved(result.user);
+
+      // Creating a user generates a temporary password (UI currently
+      // doesn't ask for it). Show it once, then let admin close the dialog.
+      if (!user && "password" in result && result.password) {
+        setCreatedCredentials({
+          username: result.username ?? "",
+          password: result.password,
+        });
+        return;
+      }
+
       onOpenChange(false);
     });
   }
@@ -243,20 +259,66 @@ export function UserFormDialog({
                 {error}
               </p>
             ) : null}
+
+            {createdCredentials ? (
+              <div className="space-y-2 rounded-xl border-(--separator) border bg-muted/50 p-3">
+                <div>
+                  <p className="text-sm font-medium">Temporary credentials</p>
+                  <p className="text-muted-foreground text-xs">
+                    Share these with the user. The password is shown once.
+                  </p>
+                </div>
+
+                <div className="space-y-1 text-xs">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-muted-foreground">Username</span>
+                    <code className="truncate rounded bg-background/70 px-2 py-1 font-mono text-[11px]">
+                      {createdCredentials.username}
+                    </code>
+                  </div>
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-muted-foreground">Password</span>
+                    <code className="rounded bg-background/70 px-2 py-1 font-mono text-[11px]">
+                      {createdCredentials.password}
+                    </code>
+                  </div>
+                </div>
+              </div>
+            ) : null}
           </CmsDialogBody>
 
           <CmsDialogFooter>
-            <Button
-              type="button"
-              variant="secondary"
-              disabled={isPending}
-              onClick={() => handleOpenChange(false)}
-            >
-              Cancel
-            </Button>
-            <Button type="submit" disabled={isPending || brands.length === 0}>
-              {isPending ? "Saving..." : isEdit ? "Save changes" : "Create user"}
-            </Button>
+            {createdCredentials ? (
+              <Button
+                type="button"
+                variant="secondary"
+                disabled={isPending}
+                onClick={() => onOpenChange(false)}
+              >
+                Done
+              </Button>
+            ) : (
+              <>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  disabled={isPending}
+                  onClick={() => handleOpenChange(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isPending || brands.length === 0}
+                >
+                  {isPending
+                    ? "Saving..."
+                    : isEdit
+                      ? "Save changes"
+                      : "Create user"}
+                </Button>
+              </>
+            )}
           </CmsDialogFooter>
         </form>
       </CmsDialogContent>

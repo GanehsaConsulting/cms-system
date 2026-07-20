@@ -33,9 +33,14 @@ export async function createUserAction(formData: FormData) {
   }
 
   try {
-    const user = await createUser(userFormToInput(parsed.data));
+    const created = await createUser(userFormToInput(parsed.data));
     revalidateUserPaths();
-    return { success: true as const, user };
+    return {
+      success: true as const,
+      user: created.user,
+      username: created.username,
+      password: created.password,
+    };
   } catch (error) {
     return {
       success: false as const,

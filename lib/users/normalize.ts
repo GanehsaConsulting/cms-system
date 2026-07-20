@@ -1,7 +1,13 @@
 import { isUserRoleId } from "@/config/user";
 import type { User } from "@/types/user";
 
-export function normalizeUser(user: User): User {
+/** Raw user shape from DB or JSON — role/status may be plain strings. */
+type UserInputLike = Omit<User, "role" | "status"> & {
+  role: string;
+  status: string;
+};
+
+export function normalizeUser(user: UserInputLike): User {
   return {
     ...user,
     name: user.name.trim(),

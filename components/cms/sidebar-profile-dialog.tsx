@@ -43,6 +43,7 @@ export function SidebarProfileDialog({
   const [passwordOpen, setPasswordOpen] = useState(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [isLoggingOut, startLogout] = useTransition();
+  const [isSaving, startSaving] = useTransition();
   const [notice, setNotice] = useState<{
     title: string;
     description: string;
@@ -59,18 +60,70 @@ export function SidebarProfileDialog({
   }
 
   function handleProfileSave(values: CmsProfileFormValues) {
-    onUserUpdate(values);
-    setNotice({
-      title: "Profile updated",
-      description: "Your profile details have been saved for this session.",
+    startSaving(async () => {
+      setNotice(null);
+
+      // Better Auth separates "update profile" vs "change email".
+      // - updateUser: name + image
+      // - changeEmail: newEmail
+      const updateResult = await authClient.updateUser({
+        name: values.name,
+        image: values.avatarUrl || null,
+      });
+
+      if (updateResult.error) {
+        setNotice({
+          title: "Could not update profile",
+          description:
+            updateResult.error.message || "Please try again later.",
+        });
+        return;
+      }
+
+      const emailResult = await authClient.changeEmail({
+        newEmail: values.email,
+      });
+
+      if (emailResult.error) {
+        setNotice({
+          title: "Could not update email",
+          description:
+            emailResult.error.message || "Please try again later.",
+        });
+        return;
+      }
+
+      onUserUpdate(values);
+      setNotice({
+        title: "Profile updated",
+        description: "Your profile details have been saved.",
+      });
+      router.refresh();
     });
   }
 
-  function handlePasswordSave(_values: CmsPasswordFormValues) {
-    setNotice({
-      title: "Password updated",
-      description:
-        "Your password change was accepted locally. Connect authentication to persist it.",
+  function handlePasswordSave(values: CmsPasswordFormValues) {
+    startSaving(async () => {
+      setNotice(null);
+      const result = await authClient.changePassword({
+        currentPassword: values.currentPassword,
+        newPassword: values.newPassword,
+      });
+
+      if (result.error) {
+        setNotice({
+          title: "Could not update password",
+          description:
+            result.error.message || "Please check your current password.",
+        });
+        return;
+      }
+
+      setNotice({
+        title: "Password updated",
+        description: "Your sign-in password has been updated.",
+      });
+      router.refresh();
     });
   }
 
