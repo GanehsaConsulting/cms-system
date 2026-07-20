@@ -1,10 +1,10 @@
 [
   {
-    "id": "nusantara-labs",
-    "name": "Nusantara Labs",
-    "slug": "nusantara-labs",
-    "logo": "",
-    "description": "Primary company profile brand with full CMS access.",
+    "id": "ganesha-consulting",
+    "name": "Ganesha Consulting",
+    "slug": "ganesha-consulting",
+    "logo": "/brands/ganesha-consulting.png",
+    "description": "Consulting company profile with full CMS access.",
     "status": "active",
     "features": [
       "dashboard",
@@ -14,28 +14,56 @@
       "banners"
     ],
     "createdAt": "2026-01-10T08:00:00.000Z",
-    "updatedAt": "2026-03-01T10:30:00.000Z"
+    "updatedAt": "2026-07-20T02:00:00.000Z"
   },
   {
-    "id": "studio-creative",
-    "name": "Studio Creative",
-    "slug": "studio-creative",
-    "logo": "",
-    "description": "Creative agency focused on articles and portfolio works.",
+    "id": "go-space",
+    "name": "Go Space",
+    "slug": "go-space",
+    "logo": "/brands/logo-gospace.png",
+    "description": "Co-working and space brand with full CMS access.",
     "status": "active",
-    "features": ["dashboard", "articles", "clients-works"],
-    "createdAt": "2026-02-05T09:15:00.000Z",
-    "updatedAt": "2026-02-28T14:20:00.000Z"
+    "features": [
+      "dashboard",
+      "articles",
+      "prices",
+      "clients-works",
+      "banners"
+    ],
+    "createdAt": "2026-01-10T08:00:00.000Z",
+    "updatedAt": "2026-07-20T02:00:00.000Z"
   },
   {
-    "id": "retail-partners",
-    "name": "Retail Partners",
-    "slug": "retail-partners",
-    "logo": "",
-    "description": "Retail brand with pricing and banner campaigns only.",
-    "status": "inactive",
-    "features": ["dashboard", "prices", "banners"],
-    "createdAt": "2026-02-18T11:00:00.000Z",
-    "updatedAt": "2026-02-18T11:00:00.000Z"
+    "id": "gonline",
+    "name": "Gonline",
+    "slug": "gonline",
+    "logo": "/brands/gonline-logo-only.png",
+    "description": "Gonline brand with full CMS access.",
+    "status": "active",
+    "features": [
+      "dashboard",
+      "articles",
+      "prices",
+      "clients-works",
+      "banners"
+    ],
+    "createdAt": "2026-01-10T08:00:00.000Z",
+    "updatedAt": "2026-07-20T02:00:00.000Z"
+  },
+  {
+    "id": "gec",
+    "name": "Ganesha Enginerring & Constructions",
+    "slug": "gec",
+    "logo": "/brands/gec-logo-only.webp",
+    "description": "GEC brand with dashboard, articles, clients & works, and banners.",
+    "status": "active",
+    "features": [
+      "dashboard",
+      "articles",
+      "clients-works",
+      "banners"
+    ],
+    "createdAt": "2026-01-10T08:00:00.000Z",
+    "updatedAt": "2026-07-20T03:16:32.479Z"
   }
 ]

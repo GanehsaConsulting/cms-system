@@ -164,7 +164,7 @@ export function BrandFormDialog({
                 id="brand-slug"
                 value={slug}
                 maxLength={BRAND_FORM_LIMITS.slug}
-                placeholder="nusantara-labs"
+                placeholder="ganesha-consulting"
                 disabled={isPending}
                 onChange={(event) => {
                   setSlugTouched(true);
