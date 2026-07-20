@@ -27,7 +27,7 @@ import type { Brand } from "@/types/brand";
 interface BrandContextValue {
   brands: Brand[];
   activeBrand: Brand | null;
-  /** Brand used for feature gating — `null` means unrestricted (Super Admin). */
+  /** Brand used for feature gating — always the active brand's enabled modules. */
   featureBrand: Brand | null;
   activeBrandId: string | null;
   setActiveBrandId: (id: string) => void;
@@ -82,7 +82,7 @@ export function BrandProvider({
     );
   }, [activeBrandId, brands, hydrated]);
 
-  const featureBrand = canAccessAllPages ? null : activeBrand;
+  const featureBrand = activeBrand;
 
   const setActiveBrandId = useCallback(
     (id: string) => {
@@ -97,19 +97,15 @@ export function BrandProvider({
     [brands],
   );
 
-  const filteredMainNav = useMemo(() => {
-    if (canAccessAllPages) {
-      return mainNavLinks;
-    }
-    return filterNavLinksByBrand(mainNavLinks, activeBrand);
-  }, [activeBrand, canAccessAllPages]);
+  const filteredMainNav = useMemo(
+    () => filterNavLinksByBrand(mainNavLinks, activeBrand),
+    [activeBrand],
+  );
 
-  const filteredContentNav = useMemo(() => {
-    if (canAccessAllPages) {
-      return contentNavLinks;
-    }
-    return filterNavLinksByBrand(contentNavLinks, activeBrand);
-  }, [activeBrand, canAccessAllPages]);
+  const filteredContentNav = useMemo(
+    () => filterNavLinksByBrand(contentNavLinks, activeBrand),
+    [activeBrand],
+  );
 
   const filteredUtilityNav = useMemo(
     () => (canAccessSettings ? utilityNavLinks : []),

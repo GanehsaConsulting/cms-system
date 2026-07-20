@@ -14,8 +14,8 @@ export function canAccessCmsSettings(
 }
 
 /**
- * Super Admin may open every CMS page and nav item,
- * regardless of the active brand's feature flags.
+ * Super Admin can switch across all brands and open Settings.
+ * Sidebar and dashboard modules still follow the active brand's enabled features.
  */
 export function canAccessAllCmsPages(
   user: Pick<User, "role"> | null | undefined,

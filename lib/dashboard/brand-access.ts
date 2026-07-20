@@ -35,7 +35,7 @@ export function brandSupportsFeature(
   feature: BrandFeatureId,
 ): boolean {
   if (!brand) {
-    return true;
+    return false;
   }
 
   return brand.features.includes(feature);

@@ -6,9 +6,9 @@ export function filterNavLinksByBrand(
   links: NavLink[],
   brand: Brand | null,
 ): NavLink[] {
-  // `null` brand = unrestricted (e.g. Super Admin via featureBrand).
+  // No active brand yet — hide feature-gated links until one resolves.
   if (!brand) {
-    return links;
+    return links.filter((link) => !getNavFeatureForHref(link.href));
   }
 
   return links.filter((link) => {
