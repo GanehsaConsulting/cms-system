@@ -11,6 +11,7 @@ import { PriceFormLocaleFields } from "@/components/cms/prices/price-form-locale
 import { PriceFormLocaleTabs } from "@/components/cms/prices/price-form-locale-tabs";
 import { PriceFormMetaFields } from "@/components/cms/prices/price-form-meta-fields";
 import { PriceFormPricingFields } from "@/components/cms/prices/price-form-pricing-fields";
+import { PriceFormPublishChecklist } from "@/components/cms/prices/price-form-publish-checklist";
 import { PriceFormSectionHeading } from "@/components/cms/prices/price-form-section-heading";
 import { PriceFormStatusField } from "@/components/cms/prices/price-form-status-field";
 import { PricePreviewDialog } from "@/components/cms/prices/price-preview-dialog";
@@ -25,6 +26,7 @@ import {
   deletePriceAction,
   updatePriceAction,
 } from "@/lib/actions/prices";
+import { runNotifiedAction } from "@/lib/notify/action-toast";
 import { priceToFormInput, createEmptyPriceInput } from "@/lib/prices/defaults";
 import { getPriceFormChangedSections } from "@/lib/prices/form-changes";
 import { buildWhatsAppUrl } from "@/lib/prices/whatsapp";
@@ -103,6 +105,29 @@ export function PriceForm({ price, categories }: PriceFormProps) {
     });
   }, [watchedValues]);
 
+  const publishChecklistValues = useMemo(
+    () => ({
+      serviceSlug: watchedValues.serviceSlug,
+      description: watchedValues.description,
+      service: watchedValues.service,
+      packageName: watchedValues.packageName,
+      price: watchedValues.price,
+      whatsappPhone: watchedValues.whatsappPhone,
+      whatsappMessage: watchedValues.whatsappMessage,
+      features: watchedValues.features,
+    }),
+    [
+      watchedValues.serviceSlug,
+      watchedValues.description,
+      watchedValues.service,
+      watchedValues.packageName,
+      watchedValues.price,
+      watchedValues.whatsappPhone,
+      watchedValues.whatsappMessage,
+      watchedValues.features,
+    ],
+  );
+
   const previewData = useMemo<PricePreviewData>(() => {
     const packageName =
       watchedValues.packageName[activeLocale].trim() ||
@@ -150,12 +175,18 @@ export function PriceForm({ price, categories }: PriceFormProps) {
     setSuccess(null);
 
     startTransition(async () => {
-      const result = price
-        ? await updatePriceAction(price.id, buildFormData(values))
-        : await createPriceAction(buildFormData(values));
-
-      if (result && !result.success) {
-        setError(result.error);
+      const notified = await runNotifiedAction(
+        () =>
+          price
+            ? updatePriceAction(price.id, buildFormData(values))
+            : createPriceAction(buildFormData(values)),
+        {
+          success: "Price plan saved.",
+          errorFallback: "Failed to save price plan.",
+        },
+      );
+      if (!notified.ok) {
+        setError("Failed to save price plan.");
         return;
       }
 
@@ -171,9 +202,15 @@ export function PriceForm({ price, categories }: PriceFormProps) {
     if (!price) return;
 
     startTransition(async () => {
-      const result = await deletePriceAction(price.id);
-      if (result && !result.success) {
-        setError(result.error);
+      const notified = await runNotifiedAction(
+        () => deletePriceAction(price.id),
+        {
+          success: "Price plan deleted.",
+          errorFallback: "Failed to delete price plan.",
+        },
+      );
+      if (!notified.ok) {
+        setError("Failed to delete price plan.");
         setDeleteOpen(false);
       }
     });
@@ -252,6 +289,8 @@ export function PriceForm({ price, categories }: PriceFormProps) {
                 hasUnsavedChanges={hasUnsavedChanges}
               />
             </SolidSurface>
+
+            <PriceFormPublishChecklist values={publishChecklistValues} />
 
             <SolidSurface className="space-y-4 p-4">
               <PriceFormSectionHeading

@@ -10,6 +10,7 @@ import { ClientFormGeneralFields } from "@/components/cms/clients/client-form-ge
 import { ClientFormHeader } from "@/components/cms/clients/client-form-header";
 import { ClientFormInfoPanel } from "@/components/cms/clients/client-form-info-panel";
 import { ClientFormLogoField } from "@/components/cms/clients/client-form-logo-field";
+import { ClientFormPublishChecklist } from "@/components/cms/clients/client-form-publish-checklist";
 import { ClientFormSectionHeading } from "@/components/cms/clients/client-form-section-heading";
 import { ClientFormTestimonialsSection } from "@/components/cms/clients/client-form-testimonials-section";
 import { CmsPageShell } from "@/components/shared/cms-page-shell";
@@ -27,6 +28,7 @@ import {
   createEmptyClientInput,
 } from "@/lib/clients/defaults";
 import { getClientFormChangedSections } from "@/lib/clients/form-changes";
+import { runNotifiedAction } from "@/lib/notify/action-toast";
 import {
   type ClientFormValues,
   clientFormSchema,
@@ -86,6 +88,25 @@ export function ClientForm({ client }: ClientFormProps) {
   const hasUnsavedChanges =
     Boolean(client) && (isDirty || changedSections.length > 0);
 
+  const publishChecklistValues = useMemo(
+    () => ({
+      name: watchedValues.name,
+      logo: watchedValues.logo,
+      website: watchedValues.website,
+      description: watchedValues.description,
+      testimonials: watchedValues.testimonials,
+      photos: watchedValues.photos,
+    }),
+    [
+      watchedValues.name,
+      watchedValues.logo,
+      watchedValues.website,
+      watchedValues.description,
+      watchedValues.testimonials,
+      watchedValues.photos,
+    ],
+  );
+
   function buildFormData(values: ClientFormValues) {
     const formData = new FormData();
     formData.set("name", values.name);
@@ -103,12 +124,18 @@ export function ClientForm({ client }: ClientFormProps) {
     setSuccess(null);
 
     startTransition(async () => {
-      const result = client
-        ? await updateClientAction(client.id, buildFormData(values))
-        : await createClientAction(buildFormData(values));
-
-      if (result && !result.success) {
-        setError(result.error);
+      const notified = await runNotifiedAction(
+        () =>
+          client
+            ? updateClientAction(client.id, buildFormData(values))
+            : createClientAction(buildFormData(values)),
+        {
+          success: "Client saved.",
+          errorFallback: "Failed to save client.",
+        },
+      );
+      if (!notified.ok) {
+        setError("Failed to save client.");
         return;
       }
 
@@ -124,9 +151,15 @@ export function ClientForm({ client }: ClientFormProps) {
     if (!client) return;
 
     startTransition(async () => {
-      const result = await deleteClientAction(client.id);
-      if (result && !result.success) {
-        setError(result.error);
+      const notified = await runNotifiedAction(
+        () => deleteClientAction(client.id),
+        {
+          success: "Client deleted.",
+          errorFallback: "Failed to delete client.",
+        },
+      );
+      if (!notified.ok) {
+        setError("Failed to delete client.");
         setDeleteOpen(false);
       }
     });
@@ -202,6 +235,8 @@ export function ClientForm({ client }: ClientFormProps) {
                 hasUnsavedChanges={hasUnsavedChanges}
               />
             </SolidSurface>
+
+            <ClientFormPublishChecklist values={publishChecklistValues} />
 
             {client ? (
               <ClientFormDangerZone

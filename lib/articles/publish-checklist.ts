@@ -1,32 +1,11 @@
+import {
+  buildPublishChecklistResult,
+  type PublishChecklistItem,
+  type PublishChecklistResult,
+} from "@/lib/publish-checklist/shared";
 import type { ArticleFormValues } from "@/lib/validations/article";
 
-export type PublishChecklistItemId =
-  | "title"
-  | "content"
-  | "excerpt"
-  | "category"
-  | "author"
-  | "tags"
-  | "metaTitle"
-  | "metaDescription";
-
-export interface PublishChecklistItem {
-  id: PublishChecklistItemId;
-  label: string;
-  hint: string;
-  completed: boolean;
-  required: boolean;
-  weight: number;
-}
-
-export interface PublishChecklistResult {
-  items: PublishChecklistItem[];
-  score: number;
-  completedCount: number;
-  totalCount: number;
-  requiredComplete: boolean;
-  statusLabel: string;
-}
+export type { PublishChecklistItem, PublishChecklistResult };
 
 export type PublishChecklistValues = Pick<
   ArticleFormValues,
@@ -45,22 +24,6 @@ function hasArticleContent(content: string): boolean {
     content !== "<p></p>" &&
     content.replace(/<[^>]*>/g, "").trim().length > 0
   );
-}
-
-function getScoreStatusLabel(score: number): string {
-  if (score >= 100) {
-    return "Excellent";
-  }
-
-  if (score >= 80) {
-    return "Good to go";
-  }
-
-  if (score >= 50) {
-    return "Almost there";
-  }
-
-  return "Needs work";
 }
 
 export function getArticlePublishChecklist(
@@ -133,22 +96,5 @@ export function getArticlePublishChecklist(
     },
   ];
 
-  const totalWeight = items.reduce((sum, item) => sum + item.weight, 0);
-  const earnedWeight = items
-    .filter((item) => item.completed)
-    .reduce((sum, item) => sum + item.weight, 0);
-  const score = Math.round((earnedWeight / totalWeight) * 100);
-  const completedCount = items.filter((item) => item.completed).length;
-  const requiredComplete = items
-    .filter((item) => item.required)
-    .every((item) => item.completed);
-
-  return {
-    items,
-    score,
-    completedCount,
-    totalCount: items.length,
-    requiredComplete,
-    statusLabel: getScoreStatusLabel(score),
-  };
+  return buildPublishChecklistResult(items);
 }

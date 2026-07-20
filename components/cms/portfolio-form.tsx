@@ -1,12 +1,13 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PortfolioFormCoverField } from "@/components/cms/portfolio/portfolio-form-cover-field";
 import { PortfolioFormFields } from "@/components/cms/portfolio/portfolio-form-fields";
 import { PortfolioFormHeader } from "@/components/cms/portfolio/portfolio-form-header";
+import { PortfolioFormPublishChecklist } from "@/components/cms/portfolio/portfolio-form-publish-checklist";
 import { CmsPageShell } from "@/components/shared/cms-page-shell";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { SolidSurface } from "@/components/shared/solid-surface";
@@ -18,6 +19,7 @@ import {
   deletePortfolioAction,
   updatePortfolioAction,
 } from "@/lib/actions/portfolio";
+import { runNotifiedAction } from "@/lib/notify/action-toast";
 import {
   createEmptyPortfolioInput,
   portfolioToFormInput,
@@ -60,7 +62,28 @@ export function PortfolioForm({
     watch,
   } = form;
 
-  const watchedTitle = watch("title");
+  const watchedValues = watch();
+
+  const publishChecklistValues = useMemo(
+    () => ({
+      title: watchedValues.title,
+      clientId: watchedValues.clientId,
+      workType: watchedValues.workType,
+      coverImage: watchedValues.coverImage,
+      description: watchedValues.description,
+      url: watchedValues.url,
+    }),
+    [
+      watchedValues.title,
+      watchedValues.clientId,
+      watchedValues.workType,
+      watchedValues.coverImage,
+      watchedValues.description,
+      watchedValues.url,
+    ],
+  );
+
+  const watchedTitle = watchedValues.title;
 
   function onSubmit(values: PortfolioFormValues) {
     setError(null);
@@ -76,12 +99,18 @@ export function PortfolioForm({
     formData.set("featured", values.featured ? "true" : "false");
 
     startTransition(async () => {
-      const result = item
-        ? await updatePortfolioAction(item.id, formData)
-        : await createPortfolioAction(formData);
-
-      if (result && !result.success) {
-        setError(result.error);
+      const notified = await runNotifiedAction(
+        () =>
+          item
+            ? updatePortfolioAction(item.id, formData)
+            : createPortfolioAction(formData),
+        {
+          success: "Work saved.",
+          errorFallback: "Failed to save work.",
+        },
+      );
+      if (!notified.ok) {
+        setError("Failed to save work.");
         return;
       }
 
@@ -98,9 +127,15 @@ export function PortfolioForm({
     }
 
     startTransition(async () => {
-      const result = await deletePortfolioAction(item.id);
-      if (result && !result.success) {
-        setError(result.error);
+      const notified = await runNotifiedAction(
+        () => deletePortfolioAction(item.id),
+        {
+          success: "Work deleted.",
+          errorFallback: "Failed to delete work.",
+        },
+      );
+      if (!notified.ok) {
+        setError("Failed to delete work.");
         setDeleteOpen(false);
       }
     });
@@ -120,35 +155,43 @@ export function PortfolioForm({
       >
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className={cn("flex flex-col", STACK_GAP)}
+          className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_18rem]"
         >
-          <SolidSurface className="space-y-5 p-4 sm:p-5">
-            <PortfolioFormFields control={control} clients={clients} />
-            <PortfolioFormCoverField control={control} />
-          </SolidSurface>
-
-          {error ? <p className="text-destructive text-sm">{error}</p> : null}
-          {success ? <p className="text-emerald-600 text-sm">{success}</p> : null}
-
-          {item ? (
-            <SolidSurface className="space-y-3 p-4 sm:p-5">
-              <div>
-                <h2 className="font-semibold text-sm">Danger zone</h2>
-                <p className="mt-1 text-muted-foreground text-xs leading-relaxed">
-                  Permanently remove this portfolio work.
-                </p>
-              </div>
-              <Button
-                type="button"
-                variant="destructive"
-                className="h-9"
-                disabled={isPending}
-                onClick={() => setDeleteOpen(true)}
-              >
-                Delete work
-              </Button>
+          <div className={cn("flex flex-col", STACK_GAP)}>
+            <SolidSurface className="space-y-5 p-4 sm:p-5">
+              <PortfolioFormFields control={control} clients={clients} />
+              <PortfolioFormCoverField control={control} />
             </SolidSurface>
-          ) : null}
+
+            {error ? <p className="text-destructive text-sm">{error}</p> : null}
+            {success ? (
+              <p className="text-emerald-600 text-sm">{success}</p>
+            ) : null}
+
+            {item ? (
+              <SolidSurface className="space-y-3 p-4 sm:p-5">
+                <div>
+                  <h2 className="font-semibold text-sm">Danger zone</h2>
+                  <p className="mt-1 text-muted-foreground text-xs leading-relaxed">
+                    Permanently remove this portfolio work.
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  className="h-9"
+                  disabled={isPending}
+                  onClick={() => setDeleteOpen(true)}
+                >
+                  Delete work
+                </Button>
+              </SolidSurface>
+            ) : null}
+          </div>
+
+          <aside className={cn("flex flex-col", STACK_GAP)}>
+            <PortfolioFormPublishChecklist values={publishChecklistValues} />
+          </aside>
         </form>
       </CmsPageShell>
 
