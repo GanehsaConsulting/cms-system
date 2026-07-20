@@ -3,6 +3,7 @@ import type { Client } from "@/types/client";
 export function normalizeClient(client: Partial<Client> & { id: string }): Client {
   return {
     id: client.id,
+    brandId: String(client.brandId ?? "").trim(),
     name: client.name ?? "",
     logo: client.logo ?? "",
     website: client.website ?? "",

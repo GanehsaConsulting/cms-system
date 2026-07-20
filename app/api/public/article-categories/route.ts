@@ -22,6 +22,6 @@ export async function GET(request: Request) {
     return publicJson([]);
   }
 
-  const categories = await getPublicArticleCategories();
+  const categories = await getPublicArticleCategories(result.brand.id);
   return publicJson(categories);
 }

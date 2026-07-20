@@ -26,7 +26,7 @@ export async function GET(
   }
 
   const { key } = await context.params;
-  const banner = await getBannerByKey(decodeURIComponent(key));
+  const banner = await getBannerByKey(result.brand.id, decodeURIComponent(key));
 
   if (!banner || !banner.isActive) {
     return publicError("Banner not found", 404);

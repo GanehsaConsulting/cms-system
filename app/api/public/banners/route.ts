@@ -32,7 +32,7 @@ export async function GET(request: Request) {
   const sort = searchParams.get("sort")?.trim() || "updatedAt-desc";
   const key = searchParams.get("key")?.trim() || null;
 
-  const banners = await getBanners();
+  const banners = await getBanners(result.brand.id);
   const data = banners
     .filter((banner) => banner.isActive)
     .filter((banner) => (key ? banner.key === key : true))

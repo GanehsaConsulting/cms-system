@@ -1,4 +1,5 @@
 import { MediaLibraryView } from "@/components/cms/media/media-library-view";
+import { resolveCmsActiveBrandId } from "@/lib/brands/active-brand";
 import { collectMediaLibrary } from "@/lib/media/collect";
 import { getArticles } from "@/lib/db/articles";
 import { getBanners } from "@/lib/db/banners";
@@ -10,12 +11,13 @@ import { getPortfolioItems } from "@/lib/db/portfolio";
 import { getUsers } from "@/lib/db/users";
 
 export default async function MediaLibraryPage() {
+  const brandId = await resolveCmsActiveBrandId();
   const [articles, banners, clients, portfolio, brands, users, folders, files] =
     await Promise.all([
-      getArticles(),
-      getBanners(),
-      getClients(),
-      getPortfolioItems(),
+      brandId ? getArticles(brandId) : Promise.resolve([]),
+      brandId ? getBanners(brandId) : Promise.resolve([]),
+      brandId ? getClients(brandId) : Promise.resolve([]),
+      brandId ? getPortfolioItems(brandId) : Promise.resolve([]),
       getBrands(),
       getUsers(),
       getMediaFolders(),

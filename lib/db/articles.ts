@@ -1,4 +1,5 @@
 import { and, desc, eq, isNotNull, lte, ne } from "drizzle-orm";
+import { assertBrandMatch } from "@/lib/brands/content-scope";
 import { normalizeArticle } from "@/lib/articles/list";
 import { resolveImageAsset, resolveImageAssets } from "@/lib/cloudinary/assets";
 import { db } from "@/lib/db/client";
@@ -15,6 +16,7 @@ function toIso(value: Date | null | undefined): string | null {
 function rowToArticle(row: typeof articles.$inferSelect): Article {
   return normalizeArticle({
     id: row.id,
+    brandId: row.brandId,
     title: row.title,
     slug: row.slug,
     excerpt: row.excerpt,
@@ -110,46 +112,54 @@ async function resolveArticleMedia(input: ArticleInput): Promise<{
   return { thumbnail, gallery };
 }
 
-export async function getArticles(): Promise<Article[]> {
+export async function getArticles(brandId: string): Promise<Article[]> {
   await promoteDueScheduledArticles();
 
   const rows = await db
     .select()
     .from(articles)
+    .where(eq(articles.brandId, brandId))
     .orderBy(desc(articles.updatedAt));
 
   return rows.map(rowToArticle);
 }
 
-export async function getArticleById(id: string): Promise<Article | null> {
+export async function getArticleById(
+  brandId: string,
+  id: string,
+): Promise<Article | null> {
   await promoteDueScheduledArticles();
 
   const rows = await db
     .select()
     .from(articles)
-    .where(eq(articles.id, id))
+    .where(and(eq(articles.id, id), eq(articles.brandId, brandId)))
     .limit(1);
 
   return rows[0] ? rowToArticle(rows[0]) : null;
 }
 
-export async function getArticleBySlug(slug: string): Promise<Article | null> {
+export async function getArticleBySlug(
+  brandId: string,
+  slug: string,
+): Promise<Article | null> {
   await promoteDueScheduledArticles();
 
   const rows = await db
     .select()
     .from(articles)
-    .where(eq(articles.slug, slug))
+    .where(and(eq(articles.slug, slug), eq(articles.brandId, brandId)))
     .limit(1);
 
   return rows[0] ? rowToArticle(rows[0]) : null;
 }
 
 export async function createArticle(
+  brandId: string,
   input: ArticleInput,
   options: { authorId?: string | null } = {},
 ): Promise<Article> {
-  const existing = await getArticleBySlug(input.slug);
+  const existing = await getArticleBySlug(brandId, input.slug);
   if (existing) {
     throw new Error("Slug is already in use");
   }
@@ -163,6 +173,7 @@ export async function createArticle(
     .insert(articles)
     .values({
       id,
+      brandId,
       title: input.title,
       slug: input.slug,
       excerpt: input.excerpt,
@@ -187,11 +198,12 @@ export async function createArticle(
 }
 
 export async function updateArticle(
+  brandId: string,
   id: string,
   input: ArticleInput,
   options: { authorId?: string | null } = {},
 ): Promise<Article> {
-  const current = await getArticleById(id);
+  const current = await getArticleById(brandId, id);
   if (!current) {
     throw new Error("Article not found");
   }
@@ -199,7 +211,13 @@ export async function updateArticle(
   const slugTaken = await db
     .select({ id: articles.id })
     .from(articles)
-    .where(and(eq(articles.slug, input.slug), ne(articles.id, id)))
+    .where(
+      and(
+        eq(articles.brandId, brandId),
+        eq(articles.slug, input.slug),
+        ne(articles.id, id),
+      ),
+    )
     .limit(1);
 
   if (slugTaken.length > 0) {
@@ -230,19 +248,29 @@ export async function updateArticle(
       publishedAt: resolved.publishedAt,
       updatedAt: now,
     })
-    .where(eq(articles.id, id))
+    .where(and(eq(articles.id, id), eq(articles.brandId, brandId)))
     .returning();
+
+  if (!row) {
+    throw new Error("Article not found");
+  }
 
   return rowToArticle(row);
 }
 
-export async function deleteArticle(id: string): Promise<void> {
+export async function deleteArticle(brandId: string, id: string): Promise<void> {
   const deleted = await db
     .delete(articles)
-    .where(eq(articles.id, id))
+    .where(and(eq(articles.id, id), eq(articles.brandId, brandId)))
     .returning({ id: articles.id });
 
   if (deleted.length === 0) {
     throw new Error("Article not found");
   }
+}
+
+/** Ensures a fetched article belongs to the requested brand (public/CMS guards). */
+export function ensureArticleBrand(article: Article, brandId: string): Article {
+  assertBrandMatch(article, brandId, "Article not found");
+  return article;
 }

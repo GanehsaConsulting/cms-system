@@ -4,6 +4,7 @@ import type { ArticleCategoryId } from "@/config/article-categories";
 
 export interface Article {
   id: string;
+  brandId: string;
   title: string;
   slug: string;
   excerpt: string;

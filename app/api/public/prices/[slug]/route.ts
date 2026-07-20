@@ -26,7 +26,7 @@ export async function GET(
   }
 
   const { slug } = await context.params;
-  const price = await getPriceBySlug(decodeURIComponent(slug));
+  const price = await getPriceBySlug(result.brand.id, decodeURIComponent(slug));
 
   if (!price || !price.isActive) {
     return publicError("Price not found", 404);

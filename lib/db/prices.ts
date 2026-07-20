@@ -1,6 +1,7 @@
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { slugify, slugifyArticleTitle } from "@/lib/articles/slug";
+import { slugifyArticleTitle } from "@/lib/articles/slug";
+import { assertBrandMatch, filterByBrand } from "@/lib/brands/content-scope";
 import { PRICE_FORM_LIMITS } from "@/config/price-form";
 import {
   isLocalizedTextComplete,
@@ -9,6 +10,7 @@ import {
 import { normalizePrice } from "@/lib/prices/normalize";
 import type { Price, PriceFeature, PriceInput } from "@/types/price";
 import type { LocalizedText } from "@/types/locale";
+import { slugify } from "@/lib/articles/slug";
 
 const DATA_PATH = path.join(process.cwd(), "data/prices.json");
 
@@ -76,28 +78,50 @@ function nextPriceId(prices: Price[]): string {
   return String(maxId + 1);
 }
 
-export async function getPrices(): Promise<Price[]> {
-  const prices = await readPrices();
+export async function getPrices(brandId: string): Promise<Price[]> {
+  const prices = filterByBrand(await readPrices(), brandId);
   return prices.sort(
     (left, right) =>
       new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime(),
   );
 }
 
-export async function getPriceById(id: string): Promise<Price | null> {
+export async function getPriceById(
+  brandId: string,
+  id: string,
+): Promise<Price | null> {
   const prices = await readPrices();
-  return prices.find((price) => price.id === id) ?? null;
+  const price = prices.find((item) => item.id === id) ?? null;
+
+  if (!price) {
+    return null;
+  }
+
+  try {
+    assertBrandMatch(price, brandId, "Price plan not found");
+    return price;
+  } catch {
+    return null;
+  }
 }
 
-export async function getPriceBySlug(slug: string): Promise<Price | null> {
-  const prices = await readPrices();
+export async function getPriceBySlug(
+  brandId: string,
+  slug: string,
+): Promise<Price | null> {
+  const prices = filterByBrand(await readPrices(), brandId);
   return prices.find((price) => price.slug === slug) ?? null;
 }
 
-export async function createPrice(input: PriceInput): Promise<Price> {
+export async function createPrice(
+  brandId: string,
+  input: PriceInput,
+): Promise<Price> {
   const prices = await readPrices();
   const normalized = normalizeInput(input);
-  const existing = prices.find((price) => price.slug === normalized.slug);
+  const existing = filterByBrand(prices, brandId).find(
+    (price) => price.slug === normalized.slug,
+  );
 
   if (existing) {
     throw new Error("Slug is already in use");
@@ -106,6 +130,7 @@ export async function createPrice(input: PriceInput): Promise<Price> {
   const now = new Date().toISOString();
   const price: Price = {
     id: nextPriceId(prices),
+    brandId,
     ...normalized,
     createdAt: now,
     updatedAt: now,
@@ -117,6 +142,7 @@ export async function createPrice(input: PriceInput): Promise<Price> {
 }
 
 export async function updatePrice(
+  brandId: string,
   id: string,
   input: PriceInput,
 ): Promise<Price> {
@@ -127,8 +153,10 @@ export async function updatePrice(
     throw new Error("Price plan not found");
   }
 
+  assertBrandMatch(prices[index], brandId, "Price plan not found");
+
   const normalized = normalizeInput(input);
-  const slugTaken = prices.some(
+  const slugTaken = filterByBrand(prices, brandId).some(
     (price) => price.slug === normalized.slug && price.id !== id,
   );
 
@@ -139,6 +167,7 @@ export async function updatePrice(
   const updated: Price = {
     ...prices[index],
     ...normalized,
+    brandId,
     updatedAt: new Date().toISOString(),
   };
 
@@ -147,13 +176,17 @@ export async function updatePrice(
   return updated;
 }
 
-export async function deletePrice(id: string): Promise<void> {
+export async function deletePrice(brandId: string, id: string): Promise<void> {
   const prices = await readPrices();
-  const nextPrices = prices.filter((price) => price.id !== id);
+  const target = prices.find((price) => price.id === id);
 
-  if (nextPrices.length === prices.length) {
+  if (!target) {
     throw new Error("Price plan not found");
   }
+
+  assertBrandMatch(target, brandId, "Price plan not found");
+
+  const nextPrices = prices.filter((price) => price.id !== id);
 
   await writePrices(nextPrices);
 }

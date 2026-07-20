@@ -7,6 +7,7 @@ export interface PriceFeature {
 
 export interface Price {
   id: string;
+  brandId: string;
   slug: string;
   serviceSlug: string;
   category: string;

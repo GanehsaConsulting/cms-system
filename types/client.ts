@@ -13,6 +13,7 @@ export interface ClientPhoto {
 
 export interface Client {
   id: string;
+  brandId: string;
   name: string;
   logo: string;
   website: string;

@@ -1,4 +1,5 @@
 import { PortfolioForm } from "@/components/cms/portfolio-form";
+import { resolveCmsActiveBrandId } from "@/lib/brands/active-brand";
 import { getClients } from "@/lib/db/clients";
 
 interface NewPortfolioPageProps {
@@ -8,7 +9,8 @@ interface NewPortfolioPageProps {
 export default async function NewPortfolioPage({
   searchParams,
 }: NewPortfolioPageProps) {
-  const clients = await getClients();
+  const brandId = await resolveCmsActiveBrandId();
+  const clients = brandId ? await getClients(brandId) : [];
   const { clientId } = await searchParams;
   const defaultClientId =
     clientId && clients.some((client) => client.id === clientId)

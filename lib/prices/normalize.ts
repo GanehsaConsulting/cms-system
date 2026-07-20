@@ -65,6 +65,7 @@ export function normalizePrice(price: Price): Price {
 
   return {
     ...price,
+    brandId: String(price.brandId ?? "").trim(),
     slug: price.slug ?? "",
     serviceSlug: price.serviceSlug ?? "",
     category: price.category ?? "",

@@ -37,7 +37,7 @@ export async function GET(request: Request) {
   const query = getSearchQuery(searchParams);
   const sort = searchParams.get("sort")?.trim() || "updatedAt-desc";
 
-  const prices = await getPrices();
+  const prices = await getPrices(result.brand.id);
   const data = prices
     .filter((price) => price.isActive)
     .filter((price) =>

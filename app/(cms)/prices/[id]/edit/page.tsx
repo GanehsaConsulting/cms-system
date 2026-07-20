@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { PriceForm } from "@/components/cms/price-form";
+import { resolveCmsActiveBrandId } from "@/lib/brands/active-brand";
 import { getPriceCategories } from "@/lib/db/price-categories";
 import { getPriceById } from "@/lib/db/prices";
 
@@ -9,9 +10,15 @@ interface EditPricePageProps {
 
 export default async function EditPricePage({ params }: EditPricePageProps) {
   const { id } = await params;
+  const brandId = await resolveCmsActiveBrandId();
+
+  if (!brandId) {
+    notFound();
+  }
+
   const [price, categories] = await Promise.all([
-    getPriceById(id),
-    getPriceCategories(),
+    getPriceById(brandId, id),
+    getPriceCategories(brandId),
   ]);
 
   if (!price) {

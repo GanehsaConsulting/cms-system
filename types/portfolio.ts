@@ -2,6 +2,7 @@ export type PortfolioWorkType = "social-media" | "website";
 
 export interface Portfolio {
   id: string;
+  brandId: string;
   title: string;
   /** Client this work belongs to. */
   clientId: string;

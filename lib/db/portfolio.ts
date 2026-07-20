@@ -1,5 +1,6 @@
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { assertBrandMatch, filterByBrand } from "@/lib/brands/content-scope";
 import { getClientById } from "@/lib/db/clients";
 import { normalizePortfolio } from "@/lib/portfolio/normalize";
 import type { Portfolio, PortfolioInput } from "@/types/portfolio";
@@ -40,30 +41,45 @@ function normalizeInput(input: PortfolioInput): PortfolioInput {
   };
 }
 
-async function assertClientExists(clientId: string) {
-  const client = await getClientById(clientId);
+async function assertClientExists(brandId: string, clientId: string) {
+  const client = await getClientById(brandId, clientId);
   if (!client) {
     throw new Error("Selected client was not found");
   }
 }
 
-export async function getPortfolioItems(): Promise<Portfolio[]> {
-  const items = await readPortfolioItems();
+export async function getPortfolioItems(brandId: string): Promise<Portfolio[]> {
+  const items = filterByBrand(await readPortfolioItems(), brandId);
   return items.sort(
     (left, right) =>
       new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime(),
   );
 }
 
-export async function getPortfolioById(id: string): Promise<Portfolio | null> {
+export async function getPortfolioById(
+  brandId: string,
+  id: string,
+): Promise<Portfolio | null> {
   const items = await readPortfolioItems();
-  return items.find((item) => item.id === id) ?? null;
+  const item = items.find((entry) => entry.id === id) ?? null;
+
+  if (!item) {
+    return null;
+  }
+
+  try {
+    assertBrandMatch(item, brandId, "Portfolio item not found");
+    return item;
+  } catch {
+    return null;
+  }
 }
 
 export async function getPortfolioByClientId(
+  brandId: string,
   clientId: string,
 ): Promise<Portfolio[]> {
-  const items = await readPortfolioItems();
+  const items = filterByBrand(await readPortfolioItems(), brandId);
   return items
     .filter((item) => item.clientId === clientId)
     .sort(
@@ -74,15 +90,17 @@ export async function getPortfolioByClientId(
 }
 
 export async function createPortfolio(
+  brandId: string,
   input: PortfolioInput,
 ): Promise<Portfolio> {
   const normalized = normalizeInput(input);
-  await assertClientExists(normalized.clientId);
+  await assertClientExists(brandId, normalized.clientId);
 
   const items = await readPortfolioItems();
   const now = new Date().toISOString();
   const item: Portfolio = {
     id: crypto.randomUUID(),
+    brandId,
     ...normalized,
     createdAt: now,
     updatedAt: now,
@@ -94,11 +112,12 @@ export async function createPortfolio(
 }
 
 export async function updatePortfolio(
+  brandId: string,
   id: string,
   input: PortfolioInput,
 ): Promise<Portfolio> {
   const normalized = normalizeInput(input);
-  await assertClientExists(normalized.clientId);
+  await assertClientExists(brandId, normalized.clientId);
 
   const items = await readPortfolioItems();
   const index = items.findIndex((item) => item.id === id);
@@ -107,9 +126,12 @@ export async function updatePortfolio(
     throw new Error("Portfolio item not found");
   }
 
+  assertBrandMatch(items[index], brandId, "Portfolio item not found");
+
   const updated: Portfolio = {
     ...items[index],
     ...normalized,
+    brandId,
     updatedAt: new Date().toISOString(),
   };
 
@@ -118,22 +140,27 @@ export async function updatePortfolio(
   return updated;
 }
 
-export async function deletePortfolio(id: string): Promise<void> {
+export async function deletePortfolio(brandId: string, id: string): Promise<void> {
   const items = await readPortfolioItems();
-  const next = items.filter((item) => item.id !== id);
+  const target = items.find((item) => item.id === id);
 
-  if (next.length === items.length) {
+  if (!target) {
     throw new Error("Portfolio item not found");
   }
 
-  await writePortfolioItems(next);
+  assertBrandMatch(target, brandId, "Portfolio item not found");
+
+  await writePortfolioItems(items.filter((item) => item.id !== id));
 }
 
 export async function deletePortfolioByClientId(
+  brandId: string,
   clientId: string,
 ): Promise<void> {
   const items = await readPortfolioItems();
-  const next = items.filter((item) => item.clientId !== clientId);
+  const next = items.filter(
+    (item) => item.clientId !== clientId || item.brandId !== brandId,
+  );
 
   if (next.length === items.length) {
     return;

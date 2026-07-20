@@ -29,7 +29,7 @@ export async function GET(
   }
 
   const { id } = await context.params;
-  const client = await getClientById(decodeURIComponent(id));
+  const client = await getClientById(result.brand.id, decodeURIComponent(id));
 
   if (!client) {
     return publicError("Client not found", 404);

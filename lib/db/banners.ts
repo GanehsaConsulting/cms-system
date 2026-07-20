@@ -1,6 +1,7 @@
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { slugify } from "@/lib/articles/slug";
+import { assertBrandMatch, filterByBrand } from "@/lib/brands/content-scope";
 import { getBannerImages } from "@/lib/banners/images";
 import type { Banner, BannerInput } from "@/types/banner";
 
@@ -12,6 +13,7 @@ function normalizeBanner(raw: LegacyBanner): Banner {
   const { image: _legacyImage, ...rest } = raw;
   return {
     ...rest,
+    brandId: String(rest.brandId ?? "").trim(),
     images: getBannerImages(raw),
   };
 }
@@ -48,28 +50,46 @@ function normalizeInput(input: BannerInput): BannerInput {
   };
 }
 
-export async function getBanners(): Promise<Banner[]> {
-  const banners = await readBanners();
+export async function getBanners(brandId: string): Promise<Banner[]> {
+  const banners = filterByBrand(await readBanners(), brandId);
   return banners.sort(
     (left, right) =>
       new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime(),
   );
 }
 
-export async function getBannerById(id: string): Promise<Banner | null> {
+export async function getBannerById(
+  brandId: string,
+  id: string,
+): Promise<Banner | null> {
   const banners = await readBanners();
-  return banners.find((banner) => banner.id === id) ?? null;
+  const banner = banners.find((item) => item.id === id) ?? null;
+
+  if (!banner) {
+    return null;
+  }
+
+  try {
+    assertBrandMatch(banner, brandId, "Banner not found");
+    return banner;
+  } catch {
+    return null;
+  }
 }
 
 /** Public lookup — prefer active banners; returns null if missing or inactive. */
-export async function getBannerByKey(key: string): Promise<Banner | null> {
+export async function getBannerByKey(
+  brandId: string,
+  key: string,
+): Promise<Banner | null> {
   const normalizedKey = slugify(key.trim());
   if (!normalizedKey) {
     return null;
   }
 
-  const banners = await readBanners();
-  const banner = banners.find((item) => item.key === normalizedKey) ?? null;
+  const banners = filterByBrand(await readBanners(), brandId);
+  const banner =
+    banners.find((item) => item.key === normalizedKey) ?? null;
 
   if (!banner || !banner.isActive) {
     return null;
@@ -78,7 +98,10 @@ export async function getBannerByKey(key: string): Promise<Banner | null> {
   return banner;
 }
 
-export async function createBanner(input: BannerInput): Promise<Banner> {
+export async function createBanner(
+  brandId: string,
+  input: BannerInput,
+): Promise<Banner> {
   const banners = await readBanners();
   const normalized = normalizeInput(input);
 
@@ -90,7 +113,9 @@ export async function createBanner(input: BannerInput): Promise<Banner> {
     throw new Error("At least one image is required");
   }
 
-  const duplicate = banners.find((banner) => banner.key === normalized.key);
+  const duplicate = filterByBrand(banners, brandId).find(
+    (banner) => banner.key === normalized.key,
+  );
   if (duplicate) {
     throw new Error("A banner with this key already exists");
   }
@@ -98,6 +123,7 @@ export async function createBanner(input: BannerInput): Promise<Banner> {
   const now = new Date().toISOString();
   const banner: Banner = {
     id: crypto.randomUUID(),
+    brandId,
     ...normalized,
     createdAt: now,
     updatedAt: now,
@@ -109,6 +135,7 @@ export async function createBanner(input: BannerInput): Promise<Banner> {
 }
 
 export async function updateBanner(
+  brandId: string,
   id: string,
   input: BannerInput,
 ): Promise<Banner> {
@@ -118,6 +145,8 @@ export async function updateBanner(
   if (index === -1) {
     throw new Error("Banner not found");
   }
+
+  assertBrandMatch(banners[index], brandId, "Banner not found");
 
   const normalized = normalizeInput(input);
 
@@ -129,7 +158,7 @@ export async function updateBanner(
     throw new Error("At least one image is required");
   }
 
-  const duplicate = banners.find(
+  const duplicate = filterByBrand(banners, brandId).find(
     (banner) => banner.id !== id && banner.key === normalized.key,
   );
   if (duplicate) {
@@ -139,6 +168,7 @@ export async function updateBanner(
   const updated: Banner = {
     ...banners[index],
     ...normalized,
+    brandId,
     updatedAt: new Date().toISOString(),
   };
 
@@ -147,13 +177,15 @@ export async function updateBanner(
   return updated;
 }
 
-export async function deleteBanner(id: string): Promise<void> {
+export async function deleteBanner(brandId: string, id: string): Promise<void> {
   const banners = await readBanners();
-  const exists = banners.some((banner) => banner.id === id);
+  const target = banners.find((banner) => banner.id === id);
 
-  if (!exists) {
+  if (!target) {
     throw new Error("Banner not found");
   }
+
+  assertBrandMatch(target, brandId, "Banner not found");
 
   await writeBanners(banners.filter((banner) => banner.id !== id));
 }

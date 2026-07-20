@@ -29,7 +29,7 @@ export async function GET(request: Request) {
 
   const query = getSearchQuery(searchParams);
   const sort = searchParams.get("sort")?.trim() || "label-asc";
-  const categories = await getPriceCategories();
+  const categories = await getPriceCategories(result.brand.id);
   const data = categories
     .filter((category) => matchesSearch(query, [category.id, category.label]))
     .sort((left, right) => {

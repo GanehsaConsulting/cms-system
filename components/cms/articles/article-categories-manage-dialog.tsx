@@ -20,6 +20,7 @@ import { deleteCategoryAction } from "@/lib/actions/categories";
 import { isBuiltinArticleCategory } from "@/lib/articles/categories";
 import { PencilSimpleIcon, PlusIcon, TrashIcon } from "@/lib/icons";
 import { notifyFromActionResult } from "@/lib/notify/action-toast";
+import { useBrand } from "@/components/shared/brand-provider";
 import type { CustomArticleCategory } from "@/types/category";
 import { cn } from "@/lib/utils";
 
@@ -37,6 +38,7 @@ export function ArticleCategoriesManageDialog({
   onCategoriesChange,
 }: ArticleCategoriesManageDialogProps) {
   const router = useRouter();
+  const { activeBrandId } = useBrand();
   const [formOpen, setFormOpen] = useState(false);
   const [editingCategory, setEditingCategory] =
     useState<CustomArticleCategory | null>(null);
@@ -60,6 +62,7 @@ export function ArticleCategoriesManageDialog({
   function handleEdit(category: ArticleCategoryStyle) {
     setEditingCategory({
       id: category.id,
+      brandId: activeBrandId ?? "",
       label: category.label,
       badgeClassName: category.badgeClassName,
       createdAt: "",
@@ -130,7 +133,6 @@ export function ArticleCategoriesManageDialog({
           <CmsDialogBody className="flex flex-col gap-3">
             <Button
               type="button"
-              variant="secondary"
               className="w-full gap-1.5 bg-primary dark:bg-primary"
               onClick={handleCreate}
             >

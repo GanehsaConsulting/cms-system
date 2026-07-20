@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { findArticleAuthorByName } from "@/lib/articles/authors";
 import { isKnownArticleCategory } from "@/lib/articles/categories";
+import { requireCmsActiveBrandId } from "@/lib/brands/active-brand";
 import {
   createArticle,
   deleteArticle,
@@ -71,6 +72,11 @@ export async function createArticleAction(formData: FormData) {
     return { success: false as const, error: access.error };
   }
 
+  const brand = await requireCmsActiveBrandId();
+  if (!brand.ok) {
+    return { success: false as const, error: brand.error };
+  }
+
   const parsed = articleFormSchema.safeParse(parseArticleForm(formData));
 
   if (!parsed.success) {
@@ -88,7 +94,7 @@ export async function createArticleAction(formData: FormData) {
     };
   }
 
-  const customCategories = await getCustomCategories();
+  const customCategories = await getCustomCategories(brand.brandId);
 
   if (!isKnownArticleCategory(parsed.data.category, customCategories)) {
     return {
@@ -98,7 +104,7 @@ export async function createArticleAction(formData: FormData) {
   }
 
   try {
-    const article = await createArticle(articleFormToInput(parsed.data), {
+    const article = await createArticle(brand.brandId, articleFormToInput(parsed.data), {
       authorId: author.id,
     });
     revalidatePath("/");
@@ -118,6 +124,11 @@ export async function updateArticleAction(id: string, formData: FormData) {
     return { success: false as const, error: access.error };
   }
 
+  const brand = await requireCmsActiveBrandId();
+  if (!brand.ok) {
+    return { success: false as const, error: brand.error };
+  }
+
   const parsed = articleFormSchema.safeParse(parseArticleForm(formData));
 
   if (!parsed.success) {
@@ -128,7 +139,7 @@ export async function updateArticleAction(id: string, formData: FormData) {
   }
 
   const author = await findArticleAuthorByName(parsed.data.authorName);
-  const current = await getArticleById(id);
+  const current = await getArticleById(brand.brandId, id);
   if (!current) {
     return {
       success: false as const,
@@ -148,7 +159,7 @@ export async function updateArticleAction(id: string, formData: FormData) {
     };
   }
 
-  const customCategories = await getCustomCategories();
+  const customCategories = await getCustomCategories(brand.brandId);
 
   if (!isKnownArticleCategory(parsed.data.category, customCategories)) {
     return {
@@ -158,7 +169,7 @@ export async function updateArticleAction(id: string, formData: FormData) {
   }
 
   try {
-    await updateArticle(id, articleFormToInput(parsed.data), {
+    await updateArticle(brand.brandId, id, articleFormToInput(parsed.data), {
       authorId: author?.id ?? null,
     });
     revalidatePath("/");
@@ -180,8 +191,13 @@ export async function deleteArticleAction(id: string) {
     return { success: false as const, error: access.error };
   }
 
+  const brand = await requireCmsActiveBrandId();
+  if (!brand.ok) {
+    return { success: false as const, error: brand.error };
+  }
+
   try {
-    await deleteArticle(id);
+    await deleteArticle(brand.brandId, id);
     revalidatePath("/");
     revalidatePath("/articles");
     redirect("/articles");

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { requireCmsActiveBrandId } from "@/lib/brands/active-brand";
 import { createClient } from "@/lib/db/clients";
 import { createPortfolio } from "@/lib/db/portfolio";
 import {
@@ -26,6 +27,11 @@ export async function createClientWithPortfolioAction(formData: FormData) {
   const access = await requireCmsContentAccess();
   if (!access.ok) {
     return { success: false as const, error: access.error };
+  }
+
+  const brand = await requireCmsActiveBrandId();
+  if (!brand.ok) {
+    return { success: false as const, error: brand.error };
   }
 
   const clientParsed = clientFormSchema.safeParse(parseClientForm(formData));
@@ -54,8 +60,12 @@ export async function createClientWithPortfolioAction(formData: FormData) {
   }
 
   try {
-    const client = await createClient(clientFormToInput(clientParsed.data));
+    const client = await createClient(
+      brand.brandId,
+      clientFormToInput(clientParsed.data),
+    );
     const item = await createPortfolio(
+      brand.brandId,
       portfolioFormToInput({
         ...workParsed.data,
         clientId: client.id,

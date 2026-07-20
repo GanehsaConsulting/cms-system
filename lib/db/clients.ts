@@ -1,5 +1,6 @@
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { assertBrandMatch, filterByBrand } from "@/lib/brands/content-scope";
 import { normalizeClient } from "@/lib/clients/normalize";
 import type { Client, ClientInput } from "@/types/client";
 
@@ -52,26 +53,44 @@ function normalizeInput(input: ClientInput): ClientInput {
   };
 }
 
-export async function getClients(): Promise<Client[]> {
-  const clients = await readClients();
+export async function getClients(brandId: string): Promise<Client[]> {
+  const clients = filterByBrand(await readClients(), brandId);
   return clients.sort(
     (left, right) =>
       new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime(),
   );
 }
 
-export async function getClientById(id: string): Promise<Client | null> {
+export async function getClientById(
+  brandId: string,
+  id: string,
+): Promise<Client | null> {
   const clients = await readClients();
-  return clients.find((client) => client.id === id) ?? null;
+  const client = clients.find((item) => item.id === id) ?? null;
+
+  if (!client) {
+    return null;
+  }
+
+  try {
+    assertBrandMatch(client, brandId, "Client not found");
+    return client;
+  } catch {
+    return null;
+  }
 }
 
-export async function createClient(input: ClientInput): Promise<Client> {
+export async function createClient(
+  brandId: string,
+  input: ClientInput,
+): Promise<Client> {
   const clients = await readClients();
   const normalized = normalizeInput(input);
   const now = new Date().toISOString();
 
   const client: Client = {
     id: crypto.randomUUID(),
+    brandId,
     ...normalized,
     createdAt: now,
     updatedAt: now,
@@ -83,6 +102,7 @@ export async function createClient(input: ClientInput): Promise<Client> {
 }
 
 export async function updateClient(
+  brandId: string,
   id: string,
   input: ClientInput,
 ): Promise<Client> {
@@ -93,9 +113,12 @@ export async function updateClient(
     throw new Error("Client not found");
   }
 
+  assertBrandMatch(clients[index], brandId, "Client not found");
+
   const updated: Client = {
     ...clients[index],
     ...normalizeInput(input),
+    brandId,
     updatedAt: new Date().toISOString(),
   };
 
@@ -104,13 +127,17 @@ export async function updateClient(
   return updated;
 }
 
-export async function deleteClient(id: string): Promise<void> {
+export async function deleteClient(brandId: string, id: string): Promise<void> {
   const clients = await readClients();
-  const nextClients = clients.filter((client) => client.id !== id);
+  const target = clients.find((client) => client.id === id);
 
-  if (nextClients.length === clients.length) {
+  if (!target) {
     throw new Error("Client not found");
   }
+
+  assertBrandMatch(target, brandId, "Client not found");
+
+  const nextClients = clients.filter((client) => client.id !== id);
 
   await writeClients(nextClients);
 }

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { requireCmsActiveBrandId } from "@/lib/brands/active-brand";
 import { getPriceCategoryById } from "@/lib/db/price-categories";
 import { createPrice, deletePrice, updatePrice } from "@/lib/db/prices";
 import { requireCmsContentAccess } from "@/lib/users/require-content-access";
@@ -11,8 +12,8 @@ import {
   priceFormToInput,
 } from "@/lib/validations/price";
 
-async function assertValidPriceCategory(serviceSlug: string) {
-  const category = await getPriceCategoryById(serviceSlug);
+async function assertValidPriceCategory(brandId: string, serviceSlug: string) {
+  const category = await getPriceCategoryById(brandId, serviceSlug);
   if (!category) {
     return {
       success: false as const,
@@ -29,6 +30,11 @@ export async function createPriceAction(formData: FormData) {
     return { success: false as const, error: access.error };
   }
 
+  const brand = await requireCmsActiveBrandId();
+  if (!brand.ok) {
+    return { success: false as const, error: brand.error };
+  }
+
   const parsed = priceFormSchema.safeParse(parsePriceForm(formData));
 
   if (!parsed.success) {
@@ -38,13 +44,16 @@ export async function createPriceAction(formData: FormData) {
     };
   }
 
-  const categoryError = await assertValidPriceCategory(parsed.data.serviceSlug);
+  const categoryError = await assertValidPriceCategory(
+    brand.brandId,
+    parsed.data.serviceSlug,
+  );
   if (categoryError) {
     return categoryError;
   }
 
   try {
-    const price = await createPrice(priceFormToInput(parsed.data));
+    const price = await createPrice(brand.brandId, priceFormToInput(parsed.data));
     revalidatePath("/");
     revalidatePath("/prices");
     redirect(`/prices/${price.id}/edit`);
@@ -62,6 +71,11 @@ export async function updatePriceAction(id: string, formData: FormData) {
     return { success: false as const, error: access.error };
   }
 
+  const brand = await requireCmsActiveBrandId();
+  if (!brand.ok) {
+    return { success: false as const, error: brand.error };
+  }
+
   const parsed = priceFormSchema.safeParse(parsePriceForm(formData));
 
   if (!parsed.success) {
@@ -71,13 +85,16 @@ export async function updatePriceAction(id: string, formData: FormData) {
     };
   }
 
-  const categoryError = await assertValidPriceCategory(parsed.data.serviceSlug);
+  const categoryError = await assertValidPriceCategory(
+    brand.brandId,
+    parsed.data.serviceSlug,
+  );
   if (categoryError) {
     return categoryError;
   }
 
   try {
-    await updatePrice(id, priceFormToInput(parsed.data));
+    await updatePrice(brand.brandId, id, priceFormToInput(parsed.data));
     revalidatePath("/");
     revalidatePath("/prices");
     revalidatePath(`/prices/${id}/edit`);
@@ -97,8 +114,13 @@ export async function deletePriceAction(id: string) {
     return { success: false as const, error: access.error };
   }
 
+  const brand = await requireCmsActiveBrandId();
+  if (!brand.ok) {
+    return { success: false as const, error: brand.error };
+  }
+
   try {
-    await deletePrice(id);
+    await deletePrice(brand.brandId, id);
     revalidatePath("/");
     revalidatePath("/prices");
     redirect("/prices");

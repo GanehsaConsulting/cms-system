@@ -1,5 +1,6 @@
 export interface Banner {
   id: string;
+  brandId: string;
   name: string;
   /** Unique lookup key for the public site (e.g. popup, mega-menu, homepage). */
   key: string;

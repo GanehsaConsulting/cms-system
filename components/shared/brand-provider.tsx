@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import {
   createContext,
   useCallback,
@@ -60,6 +61,7 @@ export function BrandProvider({
   canAccessAllPages = false,
   children,
 }: BrandProviderProps) {
+  const router = useRouter();
   const [activeBrandId, setActiveBrandIdState] = useState<string | null>(null);
   const [switcherOpen, setSwitcherOpen] = useState(false);
   const [hydrated, setHydrated] = useState(false);
@@ -67,7 +69,13 @@ export function BrandProvider({
   useEffect(() => {
     const storedId = readStoredActiveBrandId();
     const resolved = resolveActiveBrand(brands, storedId);
-    setActiveBrandIdState(resolved?.id ?? null);
+    const resolvedId = resolved?.id ?? null;
+
+    if (resolvedId) {
+      writeStoredActiveBrandId(resolvedId);
+    }
+
+    setActiveBrandIdState(resolvedId);
     setHydrated(true);
   }, [brands]);
 
@@ -93,8 +101,9 @@ export function BrandProvider({
 
       writeStoredActiveBrandId(id);
       setActiveBrandIdState(id);
+      router.refresh();
     },
-    [brands],
+    [brands, router],
   );
 
   const filteredMainNav = useMemo(

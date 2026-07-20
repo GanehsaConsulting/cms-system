@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { requireCmsActiveBrandId } from "@/lib/brands/active-brand";
 import {
   createPortfolio,
   deletePortfolio,
@@ -30,6 +31,11 @@ export async function createPortfolioAction(formData: FormData) {
     return { success: false as const, error: access.error };
   }
 
+  const brand = await requireCmsActiveBrandId();
+  if (!brand.ok) {
+    return { success: false as const, error: brand.error };
+  }
+
   const parsed = portfolioFormSchema.safeParse(parsePortfolioForm(formData));
 
   if (!parsed.success) {
@@ -40,7 +46,10 @@ export async function createPortfolioAction(formData: FormData) {
   }
 
   try {
-    const item = await createPortfolio(portfolioFormToInput(parsed.data));
+    const item = await createPortfolio(
+      brand.brandId,
+      portfolioFormToInput(parsed.data),
+    );
     revalidatePortfolioPaths(item.id);
     redirect(`/clients/portfolio/${item.id}/edit`);
   } catch (error) {
@@ -58,6 +67,11 @@ export async function updatePortfolioAction(id: string, formData: FormData) {
     return { success: false as const, error: access.error };
   }
 
+  const brand = await requireCmsActiveBrandId();
+  if (!brand.ok) {
+    return { success: false as const, error: brand.error };
+  }
+
   const parsed = portfolioFormSchema.safeParse(parsePortfolioForm(formData));
 
   if (!parsed.success) {
@@ -68,7 +82,11 @@ export async function updatePortfolioAction(id: string, formData: FormData) {
   }
 
   try {
-    await updatePortfolio(id, portfolioFormToInput(parsed.data));
+    await updatePortfolio(
+      brand.brandId,
+      id,
+      portfolioFormToInput(parsed.data),
+    );
     revalidatePortfolioPaths(id);
     return { success: true as const };
   } catch (error) {
@@ -86,8 +104,13 @@ export async function deletePortfolioAction(id: string) {
     return { success: false as const, error: access.error };
   }
 
+  const brand = await requireCmsActiveBrandId();
+  if (!brand.ok) {
+    return { success: false as const, error: brand.error };
+  }
+
   try {
-    await deletePortfolio(id);
+    await deletePortfolio(brand.brandId, id);
     revalidatePortfolioPaths();
     redirect("/clients/portfolio");
   } catch (error) {

@@ -96,6 +96,45 @@ export function formatMediaUsageSummary(usages: MediaUsage[]): string {
   return `${primary.sourceLabel} · ${primary.entityTitle} · +${usages.length - 1} more`;
 }
 
+export function formatMediaUsageFieldLabel(fieldPath: string): string {
+  if (fieldPath === "thumbnail") {
+    return "Thumbnail";
+  }
+
+  if (fieldPath === "coverImage") {
+    return "Cover image";
+  }
+
+  if (fieldPath === "logo") {
+    return "Logo";
+  }
+
+  if (fieldPath === "avatarUrl") {
+    return "Avatar";
+  }
+
+  if (fieldPath === "content") {
+    return "Body content";
+  }
+
+  const galleryMatch = fieldPath.match(/^gallery\[(\d+)\]$/);
+  if (galleryMatch) {
+    return `Gallery image ${Number(galleryMatch[1]) + 1}`;
+  }
+
+  const bannerMatch = fieldPath.match(/^images\[(\d+)\]$/);
+  if (bannerMatch) {
+    return `Banner image ${Number(bannerMatch[1]) + 1}`;
+  }
+
+  const photoMatch = fieldPath.match(/^photos\./);
+  if (photoMatch) {
+    return "Client photo";
+  }
+
+  return fieldPath;
+}
+
 export function getMediaSourceHref(usage: MediaUsage): string | null {
   switch (usage.source) {
     case "article":

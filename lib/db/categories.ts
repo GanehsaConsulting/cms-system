@@ -1,4 +1,4 @@
-import { asc, eq } from "drizzle-orm";
+import { and, asc, eq } from "drizzle-orm";
 import { ARTICLE_CATEGORIES } from "@/config/article-categories";
 import { getCustomCategoryBadgeClass } from "@/config/article-category-styles";
 import { slugify } from "@/lib/articles/slug";
@@ -14,34 +14,42 @@ function rowToCategory(
 ): CustomArticleCategory {
   return {
     id: row.id,
+    brandId: row.brandId,
     label: row.label,
     badgeClassName: row.badgeClassName,
     createdAt: row.createdAt.toISOString(),
   };
 }
 
-export async function getCustomCategories(): Promise<CustomArticleCategory[]> {
+export async function getCustomCategories(
+  brandId: string,
+): Promise<CustomArticleCategory[]> {
   const rows = await db
     .select()
     .from(articleCategories)
+    .where(eq(articleCategories.brandId, brandId))
     .orderBy(asc(articleCategories.label));
 
   return rows.map(rowToCategory);
 }
 
 export async function getCustomCategoryById(
+  brandId: string,
   id: string,
 ): Promise<CustomArticleCategory | null> {
   const rows = await db
     .select()
     .from(articleCategories)
-    .where(eq(articleCategories.id, id))
+    .where(
+      and(eq(articleCategories.id, id), eq(articleCategories.brandId, brandId)),
+    )
     .limit(1);
 
   return rows[0] ? rowToCategory(rows[0]) : null;
 }
 
 export async function createCustomCategory(
+  brandId: string,
   input: CustomArticleCategoryInput,
 ): Promise<CustomArticleCategory> {
   const label = input.label.trim();
@@ -55,7 +63,7 @@ export async function createCustomCategory(
     throw new Error("Category already exists");
   }
 
-  const existing = await getCustomCategories();
+  const existing = await getCustomCategories(brandId);
   const duplicate = existing.find(
     (category) =>
       category.id === id ||
@@ -71,6 +79,7 @@ export async function createCustomCategory(
     .insert(articleCategories)
     .values({
       id,
+      brandId,
       label,
       badgeClassName: getCustomCategoryBadgeClass(existing.length),
       createdAt: now,
@@ -81,6 +90,7 @@ export async function createCustomCategory(
 }
 
 export async function updateCustomCategory(
+  brandId: string,
   id: string,
   input: CustomArticleCategoryInput,
 ): Promise<CustomArticleCategory> {
@@ -94,7 +104,7 @@ export async function updateCustomCategory(
     throw new Error("Category name is invalid");
   }
 
-  const existing = await getCustomCategories();
+  const existing = await getCustomCategories(brandId);
   const current = existing.find((category) => category.id === id);
 
   if (!current) {
@@ -114,7 +124,9 @@ export async function updateCustomCategory(
   const [row] = await db
     .update(articleCategories)
     .set({ label })
-    .where(eq(articleCategories.id, id))
+    .where(
+      and(eq(articleCategories.id, id), eq(articleCategories.brandId, brandId)),
+    )
     .returning();
 
   if (!row) {
@@ -124,12 +136,15 @@ export async function updateCustomCategory(
   return rowToCategory(row);
 }
 
-export async function deleteCustomCategory(id: string): Promise<void> {
+export async function deleteCustomCategory(
+  brandId: string,
+  id: string,
+): Promise<void> {
   if (id in ARTICLE_CATEGORIES) {
     throw new Error("Built-in categories cannot be deleted");
   }
 
-  const existing = await getCustomCategoryById(id);
+  const existing = await getCustomCategoryById(brandId, id);
 
   if (!existing) {
     throw new Error("Category not found");
@@ -138,7 +153,12 @@ export async function deleteCustomCategory(id: string): Promise<void> {
   const inUse = await db
     .select({ id: articles.id })
     .from(articles)
-    .where(eq(articles.category, id))
+    .where(
+      and(
+        eq(articles.brandId, brandId),
+        eq(articles.category, id),
+      ),
+    )
     .limit(1);
 
   if (inUse.length > 0) {
@@ -147,5 +167,9 @@ export async function deleteCustomCategory(id: string): Promise<void> {
     );
   }
 
-  await db.delete(articleCategories).where(eq(articleCategories.id, id));
+  await db
+    .delete(articleCategories)
+    .where(
+      and(eq(articleCategories.id, id), eq(articleCategories.brandId, brandId)),
+    );
 }

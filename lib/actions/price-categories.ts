@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { requireCmsActiveBrandId } from "@/lib/brands/active-brand";
 import {
   createPriceCategory,
   deletePriceCategory,
@@ -20,6 +21,11 @@ export async function createPriceCategoryAction(formData: FormData) {
     return { success: false as const, error: access.error };
   }
 
+  const brand = await requireCmsActiveBrandId();
+  if (!brand.ok) {
+    return { success: false as const, error: brand.error };
+  }
+
   const parsed = priceCategorySchema.safeParse({
     label: String(formData.get("label") ?? ""),
   });
@@ -32,7 +38,7 @@ export async function createPriceCategoryAction(formData: FormData) {
   }
 
   try {
-    const category = await createPriceCategory(parsed.data);
+    const category = await createPriceCategory(brand.brandId, parsed.data);
     revalidatePricePaths();
     return { success: true as const, category };
   } catch (error) {
@@ -53,6 +59,11 @@ export async function updatePriceCategoryAction(
     return { success: false as const, error: access.error };
   }
 
+  const brand = await requireCmsActiveBrandId();
+  if (!brand.ok) {
+    return { success: false as const, error: brand.error };
+  }
+
   const parsed = priceCategorySchema.safeParse({
     label: String(formData.get("label") ?? ""),
   });
@@ -65,7 +76,7 @@ export async function updatePriceCategoryAction(
   }
 
   try {
-    const category = await updatePriceCategory(id, parsed.data);
+    const category = await updatePriceCategory(brand.brandId, id, parsed.data);
     revalidatePricePaths();
     return { success: true as const, category };
   } catch (error) {
@@ -83,8 +94,13 @@ export async function deletePriceCategoryAction(id: string) {
     return { success: false as const, error: access.error };
   }
 
+  const brand = await requireCmsActiveBrandId();
+  if (!brand.ok) {
+    return { success: false as const, error: brand.error };
+  }
+
   try {
-    await deletePriceCategory(id);
+    await deletePriceCategory(brand.brandId, id);
     revalidatePricePaths();
     return { success: true as const };
   } catch (error) {

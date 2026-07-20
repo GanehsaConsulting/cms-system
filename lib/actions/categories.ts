@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { requireCmsActiveBrandId } from "@/lib/brands/active-brand";
 import {
   createCustomCategory,
   deleteCustomCategory,
@@ -20,6 +21,11 @@ export async function createCategoryAction(formData: FormData) {
     return { success: false as const, error: access.error };
   }
 
+  const brand = await requireCmsActiveBrandId();
+  if (!brand.ok) {
+    return { success: false as const, error: brand.error };
+  }
+
   const parsed = createCategorySchema.safeParse({
     label: String(formData.get("label") ?? ""),
   });
@@ -32,7 +38,7 @@ export async function createCategoryAction(formData: FormData) {
   }
 
   try {
-    const category = await createCustomCategory(parsed.data);
+    const category = await createCustomCategory(brand.brandId, parsed.data);
     revalidateArticlePaths();
     return {
       success: true as const,
@@ -53,6 +59,11 @@ export async function updateCategoryAction(id: string, formData: FormData) {
     return { success: false as const, error: access.error };
   }
 
+  const brand = await requireCmsActiveBrandId();
+  if (!brand.ok) {
+    return { success: false as const, error: brand.error };
+  }
+
   const parsed = createCategorySchema.safeParse({
     label: String(formData.get("label") ?? ""),
   });
@@ -65,7 +76,7 @@ export async function updateCategoryAction(id: string, formData: FormData) {
   }
 
   try {
-    const category = await updateCustomCategory(id, parsed.data);
+    const category = await updateCustomCategory(brand.brandId, id, parsed.data);
     revalidateArticlePaths();
     return { success: true as const, category };
   } catch (error) {
@@ -83,8 +94,13 @@ export async function deleteCategoryAction(id: string) {
     return { success: false as const, error: access.error };
   }
 
+  const brand = await requireCmsActiveBrandId();
+  if (!brand.ok) {
+    return { success: false as const, error: brand.error };
+  }
+
   try {
-    await deleteCustomCategory(id);
+    await deleteCustomCategory(brand.brandId, id);
     revalidateArticlePaths();
     return { success: true as const };
   } catch (error) {

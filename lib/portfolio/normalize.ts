@@ -4,6 +4,7 @@ import { isPortfolioWorkType } from "@/config/clients-works";
 export function normalizePortfolio(raw: Portfolio): Portfolio {
   return {
     id: String(raw.id ?? ""),
+    brandId: String(raw.brandId ?? "").trim(),
     title: String(raw.title ?? "").trim(),
     clientId: String(raw.clientId ?? "").trim(),
     workType: isPortfolioWorkType(String(raw.workType ?? ""))

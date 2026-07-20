@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { requireCmsActiveBrandId } from "@/lib/brands/active-brand";
 import {
   createClient,
   deleteClient,
@@ -21,6 +22,11 @@ export async function createClientAction(formData: FormData) {
     return { success: false as const, error: access.error };
   }
 
+  const brand = await requireCmsActiveBrandId();
+  if (!brand.ok) {
+    return { success: false as const, error: brand.error };
+  }
+
   const parsed = clientFormSchema.safeParse(parseClientForm(formData));
 
   if (!parsed.success) {
@@ -31,7 +37,7 @@ export async function createClientAction(formData: FormData) {
   }
 
   try {
-    const client = await createClient(clientFormToInput(parsed.data));
+    const client = await createClient(brand.brandId, clientFormToInput(parsed.data));
     revalidatePath("/");
     revalidatePath("/clients");
     revalidatePath("/clients/clients");
@@ -51,6 +57,11 @@ export async function updateClientAction(id: string, formData: FormData) {
     return { success: false as const, error: access.error };
   }
 
+  const brand = await requireCmsActiveBrandId();
+  if (!brand.ok) {
+    return { success: false as const, error: brand.error };
+  }
+
   const parsed = clientFormSchema.safeParse(parseClientForm(formData));
 
   if (!parsed.success) {
@@ -61,7 +72,7 @@ export async function updateClientAction(id: string, formData: FormData) {
   }
 
   try {
-    await updateClient(id, clientFormToInput(parsed.data));
+    await updateClient(brand.brandId, id, clientFormToInput(parsed.data));
     revalidatePath("/");
     revalidatePath("/clients");
     revalidatePath("/clients/clients");
@@ -82,9 +93,14 @@ export async function deleteClientAction(id: string) {
     return { success: false as const, error: access.error };
   }
 
+  const brand = await requireCmsActiveBrandId();
+  if (!brand.ok) {
+    return { success: false as const, error: brand.error };
+  }
+
   try {
-    await deletePortfolioByClientId(id);
-    await deleteClient(id);
+    await deletePortfolioByClientId(brand.brandId, id);
+    await deleteClient(brand.brandId, id);
     revalidatePath("/");
     revalidatePath("/clients");
     revalidatePath("/clients/clients");

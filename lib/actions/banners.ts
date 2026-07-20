@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { requireCmsActiveBrandId } from "@/lib/brands/active-brand";
 import {
   createBanner,
   deleteBanner,
@@ -47,6 +48,11 @@ export async function createBannerAction(formData: FormData) {
     return { success: false as const, error: access.error };
   }
 
+  const brand = await requireCmsActiveBrandId();
+  if (!brand.ok) {
+    return { success: false as const, error: brand.error };
+  }
+
   const parsed = parseBannerFormData(formData);
 
   if (!parsed.success) {
@@ -57,7 +63,7 @@ export async function createBannerAction(formData: FormData) {
   }
 
   try {
-    const banner = await createBanner(parsed.data);
+    const banner = await createBanner(brand.brandId, parsed.data);
     revalidateBannerPaths();
     return { success: true as const, banner };
   } catch (error) {
@@ -74,6 +80,11 @@ export async function updateBannerAction(id: string, formData: FormData) {
     return { success: false as const, error: access.error };
   }
 
+  const brand = await requireCmsActiveBrandId();
+  if (!brand.ok) {
+    return { success: false as const, error: brand.error };
+  }
+
   const parsed = parseBannerFormData(formData);
 
   if (!parsed.success) {
@@ -84,7 +95,7 @@ export async function updateBannerAction(id: string, formData: FormData) {
   }
 
   try {
-    const banner = await updateBanner(id, parsed.data);
+    const banner = await updateBanner(brand.brandId, id, parsed.data);
     revalidateBannerPaths();
     return { success: true as const, banner };
   } catch (error) {
@@ -101,8 +112,13 @@ export async function deleteBannerAction(id: string) {
     return { success: false as const, error: access.error };
   }
 
+  const brand = await requireCmsActiveBrandId();
+  if (!brand.ok) {
+    return { success: false as const, error: brand.error };
+  }
+
   try {
-    await deleteBanner(id);
+    await deleteBanner(brand.brandId, id);
     revalidateBannerPaths();
     return { success: true as const };
   } catch (error) {
