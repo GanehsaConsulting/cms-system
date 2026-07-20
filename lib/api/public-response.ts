@@ -17,7 +17,7 @@ export function publicOptionsResponse(): NextResponse {
 
 export function publicJson<T>(
   data: T,
-  init?: { status?: number; headers?: HeadersInit },
+  init?: { status?: number; headers?: HeadersInit; cacheControl?: string },
 ): NextResponse {
   return NextResponse.json(
     { data },
@@ -25,7 +25,37 @@ export function publicJson<T>(
       status: init?.status ?? 200,
       headers: {
         ...CORS_HEADERS,
-        "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
+        "Cache-Control":
+          init?.cacheControl ??
+          "public, s-maxage=60, stale-while-revalidate=300",
+        ...init?.headers,
+      },
+    },
+  );
+}
+
+export function publicListJson<T>(
+  items: T[],
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  },
+  init?: { status?: number; headers?: HeadersInit; cacheControl?: string },
+): NextResponse {
+  return NextResponse.json(
+    {
+      data: items,
+      meta: { pagination },
+    },
+    {
+      status: init?.status ?? 200,
+      headers: {
+        ...CORS_HEADERS,
+        "Cache-Control":
+          init?.cacheControl ??
+          "public, s-maxage=60, stale-while-revalidate=300",
         ...init?.headers,
       },
     },

@@ -1,11 +1,14 @@
+import {
+  getRelatedPublicArticles,
+  parseRelatedLimit,
+} from "@/lib/api/public-articles";
 import { brandHasFeature, requirePublicBrand } from "@/lib/api/public-brand";
 import {
   publicError,
   publicJson,
   publicOptionsResponse,
 } from "@/lib/api/public-response";
-import { verifyPreviewSecret } from "@/lib/preview/verify-preview-secret";
-import { getArticleBySlug } from "@/lib/db/articles";
+import { getArticleBySlug, getArticles } from "@/lib/db/articles";
 
 export function OPTIONS() {
   return publicOptionsResponse();
@@ -23,26 +26,20 @@ export async function GET(
   }
 
   if (!brandHasFeature(result.brand, "articles")) {
-    return publicError("Articles module is not enabled for this brand", 404);
+    return publicJson([]);
   }
 
   const { slug } = await context.params;
-  const article = await getArticleBySlug(
-    result.brand.id,
-    decodeURIComponent(slug),
-  );
+  const decodedSlug = decodeURIComponent(slug);
+  const source = await getArticleBySlug(result.brand.id, decodedSlug);
 
-  if (!article) {
+  if (!source || source.status !== "published") {
     return publicError("Article not found", 404);
   }
 
-  const preview = verifyPreviewSecret(request);
+  const limit = parseRelatedLimit(searchParams);
+  const articles = await getArticles(result.brand.id);
+  const related = getRelatedPublicArticles(articles, source, limit);
 
-  if (!preview && article.status !== "published") {
-    return publicError("Article not found", 404);
-  }
-
-  return publicJson(article, {
-    cacheControl: preview ? "private, no-store" : undefined,
-  });
+  return publicJson(related);
 }
