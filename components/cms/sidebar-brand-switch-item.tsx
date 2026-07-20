@@ -1,7 +1,10 @@
 "use client";
 
 import { BrandStatusBadge } from "@/components/cms/settings/brands/brand-status-badge";
-import { AppMarkTile, BrandAppLogo } from "@/components/shared/app-mark-tile";
+import {
+  BrandAppLogo,
+} from "@/components/shared/brand-app-logo";
+import { BrandAppMarkFallback } from "@/components/shared/brand-app-mark-fallback";
 import { RADIUS_DEEP } from "@/config/shape";
 import { CheckIcon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
@@ -36,11 +39,7 @@ export function SidebarBrandSwitchItem({
       {brand.logo ? (
         <BrandAppLogo src={brand.logo} size="dock" />
       ) : (
-        <AppMarkTile size="dock">
-          <span className="font-semibold text-muted-foreground text-sm">
-            {brand.name.slice(0, 1).toUpperCase()}
-          </span>
-        </AppMarkTile>
+        <BrandAppMarkFallback label={brand.name} size="dock" />
       )}
 
       <span className="min-w-0 flex-1 truncate font-medium text-sm">

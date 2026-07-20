@@ -1,6 +1,6 @@
 "use client";
 
-import { BrandAppLogo } from "@/components/shared/app-mark-tile";
+import { BrandAppLogo } from "@/components/shared/brand-app-logo";
 import { useBrand } from "@/components/shared/brand-provider";
 import { SystemAppLogo } from "@/components/shared/system-app-logo";
 import { SidebarMenuButton } from "@/components/ui/sidebar";
@@ -35,7 +35,7 @@ export function SidebarBrandSwitcherButton({
       {activeBrand?.logo ? (
         <BrandAppLogo src={activeBrand.logo} size="dock" />
       ) : (
-        <SystemAppLogo size="dock" />
+        <SystemAppLogo size="dock" sidebarShell />
       )}
 
       <span className="inline-flex min-w-0 flex-1 items-center justify-between gap-2 group-data-[collapsible=icon]:hidden">

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { GLASS_SURFACE } from "@/config/glass";
+import { SIDEBAR_APP_MARK_LOGO_IMAGE } from "@/config/sidebar";
 import { cn } from "@/lib/utils";
 
 type AppMarkTileSize = "sm" | "dock" | "lg";
@@ -21,7 +21,7 @@ interface AppMarkTileProps {
   decorative?: boolean;
 }
 
-/** Frosted glass squircle shared by system + brand marks in sidebar/dock. */
+/** App squircle container — use with sidebar shell classes or custom tile styling. */
 export function AppMarkTile({
   children,
   size = "dock",
@@ -31,8 +31,6 @@ export function AppMarkTile({
   return (
     <span
       className={cn(
-        GLASS_SURFACE,
-        TILE_SHADOW,
         "relative inline-flex shrink-0 items-center justify-center overflow-hidden",
         SIZE_CLASS[size],
         className,
@@ -49,6 +47,7 @@ interface BrandAppLogoProps {
   size?: AppMarkTileSize;
   className?: string;
   alt?: string;
+  shellClassName?: string;
 }
 
 const IMAGE_SIZE: Record<AppMarkTileSize, number> = {
@@ -57,25 +56,32 @@ const IMAGE_SIZE: Record<AppMarkTileSize, number> = {
   lg: 80,
 };
 
-/** Brand mark on the same glass tile as SystemAppLogo. */
+/** Brand mark on the same app-menu squircle as SidebarAppIcon. */
 export function BrandAppLogo({
   src,
   size = "dock",
   className,
   alt = "",
+  shellClassName,
 }: BrandAppLogoProps) {
   const px = IMAGE_SIZE[size];
 
   return (
-    <AppMarkTile size={size} className={className} decorative={alt === ""}>
+    <AppMarkTile
+      size={size}
+      className={cn(shellClassName, className)}
+      decorative={alt === ""}
+    >
       <Image
         src={src}
         alt={alt}
         width={px}
         height={px}
         unoptimized
-        className="size-full object-contain"
+        className={cn("size-full object-contain", SIDEBAR_APP_MARK_LOGO_IMAGE)}
       />
     </AppMarkTile>
   );
 }
+
+export { TILE_SHADOW };

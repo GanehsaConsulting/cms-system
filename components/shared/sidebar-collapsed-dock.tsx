@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { SidebarProfileAvatar } from "@/components/cms/sidebar-profile-avatar";
-import { BrandAppLogo } from "@/components/shared/app-mark-tile";
+import { BrandAppLogo } from "@/components/shared/brand-app-logo";
 import { useAppearanceDrawer } from "@/components/shared/appearance-drawer-provider";
 import { useBrand } from "@/components/shared/brand-provider";
 import { useNotificationCenter } from "@/components/shared/notification-center-provider";
@@ -163,7 +163,7 @@ export function SidebarCollapsedDock({
           {activeBrand?.logo ? (
             <BrandAppLogo src={activeBrand.logo} size="dock" />
           ) : (
-            <SystemAppLogo size="dock" />
+            <SystemAppLogo size="dock" sidebarShell />
           )}
         </DockAppButton>
       </SidebarDockItem>

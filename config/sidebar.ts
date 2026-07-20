@@ -59,6 +59,17 @@ export const SIDEBAR_APP_ICON_GLYPH_SHADOW_COLORED =
 const APP_ICON_SHELL_LIGHT = "from-white via-white to-[#F5F5F7]";
 const APP_ICON_SHELL_DARK = "from-[#3A3A3C] via-[#2C2C2E] to-[#1C1C1E]";
 
+/** Lighter squircle for logo marks when App Icon Style is Dark (menu glyphs stay on dark shell). */
+const APP_MARK_SHELL_DARK_STYLE = "from-[#636366] via-[#7C7C80] to-[#8E8E93]";
+
+/** Light elevated tile for brand/system logos in dark theme — keeps marks visible on glass sidebar. */
+export const APP_MARK_SHELL_DARK_THEME =
+  "dark:from-[#F2F2F7] dark:via-white dark:to-[#E5E5EA] dark:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.75),0_1px_3px_rgba(0,0,0,0.28)]";
+
+/** Subtle lift for raster logos on dark UI. */
+export const SIDEBAR_APP_MARK_LOGO_IMAGE =
+  "dark:brightness-110 dark:contrast-[1.06] dark:saturate-[1.05]";
+
 const APP_ICON_COLORED_SHELLS = {
   brand: "from-[#8B9AFF] via-[#5B6CFF] to-[#3B4FE0]",
   overview: "from-[#64D2FF] via-[#32ADE6] to-[#007AFF]",
@@ -154,6 +165,25 @@ export function getSidebarAppIconTone(
     shell,
     glyph: APP_ICON_GLYPHS[tone][style],
   };
+}
+
+/** Squircle shell for brand/system marks — light tile in dark theme so logos stay visible. */
+export function getSidebarAppMarkShellClasses(
+  size: "sm" | "dock",
+  style: AppIconStyle,
+  tone: SidebarAppIconTone = "brand",
+): string {
+  const base =
+    size === "sm" ? SIDEBAR_APP_ICON_SHELL : SIDEBAR_DOCK_APP_ICON_SHELL;
+
+  const shell =
+    style === "colored"
+      ? APP_ICON_COLORED_SHELLS[tone]
+      : style === "light"
+        ? APP_ICON_SHELL_LIGHT
+        : APP_MARK_SHELL_DARK_STYLE;
+
+  return `${base} bg-linear-to-b ${shell} ${APP_MARK_SHELL_DARK_THEME}`;
 }
 
 /** @deprecated Use getSidebarAppIconTone(tone, style) */

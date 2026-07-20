@@ -24,7 +24,7 @@ export function SidebarBrandButton({ className }: SidebarBrandButtonProps) {
       render={<Link href="/" />}
       tooltip={CMS_NAME}
     >
-      <SystemAppLogo size="dock" />
+      <SystemAppLogo size="dock" sidebarShell />
       <div className="grid min-w-0 flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
         <span className="truncate font-semibold">{CMS_NAME}</span>
         <span className="truncate text-muted-foreground text-xs">
