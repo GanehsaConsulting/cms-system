@@ -24,7 +24,7 @@ type ActionResultLike =
 
 function isFailedResult(result: ActionResultLike): result is FailedActionResult {
   return (
-    Boolean(result) &&
+    result != null &&
     typeof result === "object" &&
     "success" in result &&
     result.success === false

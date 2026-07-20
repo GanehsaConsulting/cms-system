@@ -2,7 +2,7 @@
  * One-time import of legacy JSON articles into Postgres.
  *
  * Usage:
- *   npx tsx scripts/migrate-articles-json.ts
+ *   npx tsx scripts/migrate-articles-json.ts [brandId]
  */
 import "dotenv/config";
 import { readFile } from "node:fs/promises";
@@ -14,6 +14,8 @@ import { articles } from "../lib/db/schema";
 import type { Article } from "../types/article";
 
 async function main() {
+  const brandId = process.argv[2]?.trim() || "gec";
+
   const raw = await readFile(
     path.join(process.cwd(), "data/articles.json"),
     "utf-8",
@@ -38,6 +40,7 @@ async function main() {
 
     await db.insert(articles).values({
       id: article.id,
+      brandId,
       title: article.title,
       slug: article.slug,
       excerpt: article.excerpt,
