@@ -25,6 +25,7 @@ function toPreviewData(article: Article): ArticlePreviewData {
     category: article.category,
     tags: article.tags,
     authorName: article.authorName,
+    authorImage: article.authorImage,
     slug: article.slug,
     thumbnail: article.thumbnail,
   };

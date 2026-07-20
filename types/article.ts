@@ -20,6 +20,8 @@ export interface Article {
   thumbnail: string;
   /** Publish time when published, or scheduled go-live time when scheduled. */
   publishedAt: string | null;
+  /** CMS display — resolved from linked author profile when available. */
+  authorImage?: string | null;
   createdAt: string;
   updatedAt: string;
 }

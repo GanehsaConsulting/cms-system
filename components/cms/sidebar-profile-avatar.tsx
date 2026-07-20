@@ -6,11 +6,12 @@ import { cn } from "@/lib/utils";
 interface SidebarProfileAvatarProps {
   name: string;
   avatarUrl?: string;
-  size?: "sm" | "md" | "lg" | "dock";
+  size?: "xs" | "sm" | "md" | "lg" | "dock";
   className?: string;
 }
 
 const sizeClasses = {
+  xs: "size-5 rounded-full text-[9px]",
   sm: "size-8 rounded-full text-[10px]",
   md: "size-10 rounded-full text-xs",
   lg: "size-14 rounded-full text-base",

@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useRef, useState } from "react";
 import type { Control } from "react-hook-form";
 import { Controller, useWatch } from "react-hook-form";
@@ -68,19 +67,11 @@ export function SidebarProfilePhotoField({
           <div className="space-y-3">
             <Label>Profile photo</Label>
             <div className="flex items-center gap-3">
-              {avatarUrl ? (
-                <span className="relative size-14 shrink-0 overflow-hidden rounded-full bg-muted">
-                  <Image
-                    src={avatarUrl}
-                    alt=""
-                    fill
-                    unoptimized
-                    className="object-cover"
-                  />
-                </span>
-              ) : (
-                <SidebarProfileAvatar name={displayName} size="lg" />
-              )}
+              <SidebarProfileAvatar
+                name={displayName}
+                avatarUrl={avatarUrl || undefined}
+                size="lg"
+              />
 
               <div className="min-w-0 flex-1 space-y-2">
                 <input

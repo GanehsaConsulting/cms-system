@@ -34,7 +34,11 @@ export function ArticlePreviewPage({
 
           <div className="mt-4 flex flex-wrap items-center gap-3 text-muted-foreground text-sm">
             <div className="flex items-center gap-2">
-              <ArticleAuthorAvatar name={article.authorName} size="sm" />
+              <ArticleAuthorAvatar
+                name={article.authorName}
+                avatarUrl={article.authorImage}
+                size="sm"
+              />
               <span>{article.authorName}</span>
             </div>
             <span aria-hidden>·</span>

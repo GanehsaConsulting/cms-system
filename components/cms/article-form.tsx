@@ -56,18 +56,17 @@ import type { ArticlePreviewData } from "@/types/article-preview";
 interface ArticleFormProps {
   article?: Article;
   categories: ArticleCategoryStyle[];
-  authors: ArticleAuthorOption[];
-  defaultAuthorName: string;
+  currentAuthor: ArticleAuthorOption;
 }
 
-function buildDefaultValues(defaultAuthorName: string): ArticleFormValues {
+function buildDefaultValues(currentAuthor: ArticleAuthorOption): ArticleFormValues {
   return {
     title: "",
     excerpt: "",
     content: "<p></p>",
     status: "draft",
     scheduledAt: "",
-    authorName: defaultAuthorName,
+    authorName: currentAuthor.name,
     category: "general",
     tags: [],
     metaTitle: "",
@@ -80,7 +79,7 @@ function buildDefaultValues(defaultAuthorName: string): ArticleFormValues {
 
 function articleToFormValues(
   article: Article,
-  fallbackAuthor: string,
+  currentAuthor: ArticleAuthorOption,
 ): ArticleFormValues {
   return {
     title: article.title,
@@ -91,7 +90,7 @@ function articleToFormValues(
       article.status === "scheduled"
         ? toDatetimeLocalValue(article.publishedAt)
         : "",
-    authorName: article.authorName || fallbackAuthor,
+    authorName: currentAuthor.name,
     category: article.category,
     tags: article.tags,
     metaTitle: article.metaTitle,
@@ -105,8 +104,7 @@ function articleToFormValues(
 export function ArticleForm({
   article,
   categories,
-  authors,
-  defaultAuthorName,
+  currentAuthor,
 }: ArticleFormProps) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
@@ -122,14 +120,14 @@ export function ArticleForm({
   }, [categories]);
 
   const defaultValues = useMemo(
-    () => buildDefaultValues(defaultAuthorName),
-    [defaultAuthorName],
+    () => buildDefaultValues(currentAuthor),
+    [currentAuthor],
   );
 
   const form = useForm<ArticleFormValues>({
     resolver: zodResolver(articleFormSchema),
     defaultValues: article
-      ? articleToFormValues(article, defaultAuthorName)
+      ? articleToFormValues(article, currentAuthor)
       : defaultValues,
   });
 
@@ -144,6 +142,13 @@ export function ArticleForm({
     formState: { errors, isDirty },
   } = form;
 
+  useEffect(() => {
+    setValue("authorName", currentAuthor.name, {
+      shouldDirty: false,
+      shouldValidate: true,
+    });
+  }, [currentAuthor.name, setValue]);
+
   const watchedValues = watch();
   const title = watchedValues.title;
   const excerpt = watchedValues.excerpt;
@@ -156,8 +161,8 @@ export function ArticleForm({
 
   const baselineValues = useMemo(
     () =>
-      article ? articleToFormValues(article, defaultAuthorName) : defaultValues,
-    [article, defaultAuthorName, defaultValues],
+      article ? articleToFormValues(article, currentAuthor) : defaultValues,
+    [article, currentAuthor, defaultValues],
   );
 
   const changedSections = useMemo(
@@ -217,11 +222,22 @@ export function ArticleForm({
       content,
       category,
       tags,
-      authorName,
+      authorName: currentAuthor.name,
+      authorImage: currentAuthor.image,
       slug: derivedSlug,
       thumbnail,
     }),
-    [title, excerpt, content, category, tags, authorName, derivedSlug, thumbnail],
+    [
+      title,
+      excerpt,
+      content,
+      category,
+      tags,
+      currentAuthor.name,
+      currentAuthor.image,
+      derivedSlug,
+      thumbnail,
+    ],
   );
 
   function buildFormData(values: ArticleFormValues) {
@@ -435,7 +451,7 @@ export function ArticleForm({
                 tagsError={errors.tags?.message}
                 scheduledAtError={errors.scheduledAt?.message}
                 categories={availableCategories}
-                authors={authors}
+                currentAuthor={currentAuthor}
                 onCategoriesChange={setAvailableCategories}
               />
               <ArticleFormSeoPanel

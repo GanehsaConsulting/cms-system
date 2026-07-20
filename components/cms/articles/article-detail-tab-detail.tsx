@@ -16,7 +16,11 @@ export function ArticleDetailTabDetail({
       <div className="space-y-1.5">
         <dt className="text-muted-foreground">Author</dt>
         <dd className="flex items-center gap-2">
-          <ArticleAuthorAvatar name={article.authorName} size="md" />
+          <ArticleAuthorAvatar
+            name={article.authorName}
+            avatarUrl={article.authorImage}
+            size="md"
+          />
           <span>{article.authorName}</span>
         </dd>
       </div>

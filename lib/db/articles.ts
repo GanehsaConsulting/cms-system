@@ -3,7 +3,7 @@ import { assertBrandMatch } from "@/lib/brands/content-scope";
 import { normalizeArticle } from "@/lib/articles/list";
 import { resolveImageAsset, resolveImageAssets } from "@/lib/cloudinary/assets";
 import { db } from "@/lib/db/client";
-import { articles } from "@/lib/db/schema";
+import { articles, user } from "@/lib/db/schema";
 import type { Article, ArticleInput, ArticleStatus } from "@/types/article";
 
 function toIso(value: Date | null | undefined): string | null {
@@ -13,7 +13,10 @@ function toIso(value: Date | null | undefined): string | null {
   return value.toISOString();
 }
 
-function rowToArticle(row: typeof articles.$inferSelect): Article {
+function rowToArticle(
+  row: typeof articles.$inferSelect,
+  authorImage: string | null = null,
+): Article {
   return normalizeArticle({
     id: row.id,
     brandId: row.brandId,
@@ -23,6 +26,7 @@ function rowToArticle(row: typeof articles.$inferSelect): Article {
     content: row.content,
     status: row.status as ArticleStatus,
     authorName: row.authorName,
+    authorImage,
     category: row.category,
     tags: Array.isArray(row.tags) ? row.tags : [],
     metaTitle: row.metaTitle,
@@ -116,12 +120,18 @@ export async function getArticles(brandId: string): Promise<Article[]> {
   await promoteDueScheduledArticles();
 
   const rows = await db
-    .select()
+    .select({
+      article: articles,
+      authorImage: user.image,
+    })
     .from(articles)
+    .leftJoin(user, eq(articles.authorId, user.id))
     .where(eq(articles.brandId, brandId))
     .orderBy(desc(articles.updatedAt));
 
-  return rows.map(rowToArticle);
+  return rows.map(({ article, authorImage }) =>
+    rowToArticle(article, authorImage ?? null),
+  );
 }
 
 export async function getArticleById(
@@ -131,12 +141,20 @@ export async function getArticleById(
   await promoteDueScheduledArticles();
 
   const rows = await db
-    .select()
+    .select({
+      article: articles,
+      authorImage: user.image,
+    })
     .from(articles)
+    .leftJoin(user, eq(articles.authorId, user.id))
     .where(and(eq(articles.id, id), eq(articles.brandId, brandId)))
     .limit(1);
 
-  return rows[0] ? rowToArticle(rows[0]) : null;
+  if (!rows[0]) {
+    return null;
+  }
+
+  return rowToArticle(rows[0].article, rows[0].authorImage ?? null);
 }
 
 export async function getArticleBySlug(
@@ -146,12 +164,20 @@ export async function getArticleBySlug(
   await promoteDueScheduledArticles();
 
   const rows = await db
-    .select()
+    .select({
+      article: articles,
+      authorImage: user.image,
+    })
     .from(articles)
+    .leftJoin(user, eq(articles.authorId, user.id))
     .where(and(eq(articles.slug, slug), eq(articles.brandId, brandId)))
     .limit(1);
 
-  return rows[0] ? rowToArticle(rows[0]) : null;
+  if (!rows[0]) {
+    return null;
+  }
+
+  return rowToArticle(rows[0].article, rows[0].authorImage ?? null);
 }
 
 export async function createArticle(

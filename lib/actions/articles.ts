@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { findArticleAuthorByName } from "@/lib/articles/authors";
+import { getCurrentArticleAuthor } from "@/lib/articles/authors";
 import { isKnownArticleCategory } from "@/lib/articles/categories";
 import { requireCmsActiveBrandId } from "@/lib/brands/active-brand";
 import {
@@ -86,11 +86,11 @@ export async function createArticleAction(formData: FormData) {
     };
   }
 
-  const author = await findArticleAuthorByName(parsed.data.authorName);
+  const author = await getCurrentArticleAuthor();
   if (!author) {
     return {
       success: false as const,
-      error: "Selected author is invalid",
+      error: "You must be signed in to save articles.",
     };
   }
 
@@ -104,9 +104,16 @@ export async function createArticleAction(formData: FormData) {
   }
 
   try {
-    const article = await createArticle(brand.brandId, articleFormToInput(parsed.data), {
-      authorId: author.id,
-    });
+    const article = await createArticle(
+      brand.brandId,
+      {
+        ...articleFormToInput(parsed.data),
+        authorName: author.name,
+      },
+      {
+        authorId: author.id,
+      },
+    );
     revalidatePath("/");
     revalidatePath("/articles");
     redirect(`/articles/${article.id}/edit`);
@@ -138,24 +145,19 @@ export async function updateArticleAction(id: string, formData: FormData) {
     };
   }
 
-  const author = await findArticleAuthorByName(parsed.data.authorName);
+  const author = await getCurrentArticleAuthor();
+  if (!author) {
+    return {
+      success: false as const,
+      error: "You must be signed in to save articles.",
+    };
+  }
+
   const current = await getArticleById(brand.brandId, id);
   if (!current) {
     return {
       success: false as const,
       error: "Article not found",
-    };
-  }
-
-  const isLegacyAuthor =
-    !author &&
-    current.authorName.trim().toLowerCase() ===
-      parsed.data.authorName.trim().toLowerCase();
-
-  if (!author && !isLegacyAuthor) {
-    return {
-      success: false as const,
-      error: "Selected author is invalid",
     };
   }
 
@@ -169,9 +171,17 @@ export async function updateArticleAction(id: string, formData: FormData) {
   }
 
   try {
-    await updateArticle(brand.brandId, id, articleFormToInput(parsed.data), {
-      authorId: author?.id ?? null,
-    });
+    await updateArticle(
+      brand.brandId,
+      id,
+      {
+        ...articleFormToInput(parsed.data),
+        authorName: author.name,
+      },
+      {
+        authorId: author.id,
+      },
+    );
     revalidatePath("/");
     revalidatePath("/articles");
     revalidatePath(`/articles/${id}/edit`);

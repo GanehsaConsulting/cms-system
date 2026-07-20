@@ -22,7 +22,7 @@ interface ArticleFormPublicationPanelProps {
   tagsError?: string;
   scheduledAtError?: string;
   categories: ArticleCategoryStyle[];
-  authors: ArticleAuthorOption[];
+  currentAuthor: ArticleAuthorOption;
   onCategoriesChange: (categories: ArticleCategoryStyle[]) => void;
 }
 
@@ -31,7 +31,7 @@ export function ArticleFormPublicationPanel({
   tagsError,
   scheduledAtError,
   categories,
-  authors,
+  currentAuthor,
   onCategoriesChange,
 }: ArticleFormPublicationPanelProps) {
   const { setValue } = useFormContext<ArticleFormValues>();
@@ -128,7 +128,7 @@ export function ArticleFormPublicationPanel({
           )}
         />
 
-        <ArticleFormAuthorField control={control} authors={authors} />
+        <ArticleFormAuthorField control={control} author={currentAuthor} />
       </div>
     </SolidSurface>
   );

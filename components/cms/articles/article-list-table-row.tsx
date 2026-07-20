@@ -55,7 +55,10 @@ export function ArticleListTableRow({
         </div>
       </TableCell>
       <TableCell className={LIST_TABLE_CELL_CLASS}>
-        <ArticleAuthorCell name={article.authorName} />
+        <ArticleAuthorCell
+          name={article.authorName}
+          avatarUrl={article.authorImage}
+        />
       </TableCell>
       <TableCell className={LIST_TABLE_CELL_CLASS}>
         <ArticleCategoryBadge categoryId={article.category} />

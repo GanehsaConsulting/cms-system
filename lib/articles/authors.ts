@@ -1,6 +1,7 @@
 import { and, asc, eq } from "drizzle-orm";
 import { db } from "@/lib/db/client";
 import { user } from "@/lib/db/schema";
+import { getCurrentCmsUser } from "@/lib/users/current";
 
 export interface ArticleAuthorOption {
   id: string;
@@ -27,6 +28,21 @@ export async function getArticleAuthorOptions(): Promise<
     name: row.name,
     image: row.image,
   }));
+}
+
+/** Signed-in CMS user as the fixed article author. */
+export async function getCurrentArticleAuthor(): Promise<ArticleAuthorOption | null> {
+  const currentUser = await getCurrentCmsUser();
+
+  if (!currentUser) {
+    return null;
+  }
+
+  return {
+    id: currentUser.id,
+    name: currentUser.name,
+    image: currentUser.avatarUrl.trim() || null,
+  };
 }
 
 export async function findArticleAuthorByName(

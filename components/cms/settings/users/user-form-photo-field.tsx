@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useRef, useState } from "react";
 import { SidebarProfileAvatar } from "@/components/cms/sidebar-profile-avatar";
 import { Button } from "@/components/ui/button";
@@ -60,19 +59,11 @@ export function UserFormPhotoField({
     <div className="space-y-3">
       <Label>Profile photo</Label>
       <div className="flex items-center gap-3">
-        {value ? (
-          <span className="relative size-14 shrink-0 overflow-hidden rounded-full bg-muted">
-            <Image
-              src={value}
-              alt=""
-              fill
-              unoptimized
-              className="object-cover"
-            />
-          </span>
-        ) : (
-          <SidebarProfileAvatar name={nameFallback} size="lg" />
-        )}
+        <SidebarProfileAvatar
+          name={nameFallback}
+          avatarUrl={value || undefined}
+          size="lg"
+        />
 
         <div className="min-w-0 flex-1 space-y-2">
           <input

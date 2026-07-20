@@ -7,6 +7,7 @@ export interface ArticlePreviewData {
   category: ArticleCategoryId | string;
   tags: string[];
   authorName: string;
+  authorImage?: string | null;
   slug: string;
   thumbnail?: string;
 }
