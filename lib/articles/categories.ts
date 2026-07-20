@@ -58,3 +58,7 @@ export function isKnownArticleCategory(
 
   return customCategories.some((category) => category.id === categoryId);
 }
+
+export function isBuiltinArticleCategory(categoryId: string): boolean {
+  return categoryId in ARTICLE_CATEGORIES;
+}

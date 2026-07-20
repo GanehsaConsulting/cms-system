@@ -1,6 +1,7 @@
 "use client";
 
 import { ArticlesListFilter } from "@/components/cms/articles/articles-list-filter";
+import { ArticlesListManageCategoriesButton } from "@/components/cms/articles/articles-list-manage-categories-button";
 import { ArticlesListOptionsMenu } from "@/components/cms/articles/articles-list-options-menu";
 import { ArticlesListSearch } from "@/components/cms/articles/articles-list-search";
 import { ArticlesListCreateButton } from "@/components/cms/articles/articles-list-create-button";
@@ -16,6 +17,7 @@ interface ArticlesListToolbarProps {
   onStatusFilterChange: (filter: ArticleStatusFilter) => void;
   onSortChange: (sort: ArticleListSort) => void;
   onResetFilters: () => void;
+  onManageCategories: () => void;
 }
 
 export function ArticlesListToolbar({
@@ -27,6 +29,7 @@ export function ArticlesListToolbar({
   onStatusFilterChange,
   onSortChange,
   onResetFilters,
+  onManageCategories,
 }: ArticlesListToolbarProps) {
   return (
     <div className={LIST_TOOLBAR_CLASS}>
@@ -40,6 +43,7 @@ export function ArticlesListToolbar({
       />
       <ArticlesListSearch value={search} onChange={onSearchChange} />
       <ArticlesListOptionsMenu />
+      <ArticlesListManageCategoriesButton onClick={onManageCategories} />
       <ArticlesListCreateButton />
     </div>
   );

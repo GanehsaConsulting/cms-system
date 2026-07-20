@@ -3,7 +3,7 @@ import { ARTICLE_CATEGORIES } from "@/config/article-categories";
 import { getCustomCategoryBadgeClass } from "@/config/article-category-styles";
 import { slugify } from "@/lib/articles/slug";
 import { db } from "@/lib/db/client";
-import { articleCategories } from "@/lib/db/schema";
+import { articles, articleCategories } from "@/lib/db/schema";
 import type {
   CustomArticleCategory,
   CustomArticleCategoryInput,
@@ -78,4 +78,74 @@ export async function createCustomCategory(
     .returning();
 
   return rowToCategory(row);
+}
+
+export async function updateCustomCategory(
+  id: string,
+  input: CustomArticleCategoryInput,
+): Promise<CustomArticleCategory> {
+  if (id in ARTICLE_CATEGORIES) {
+    throw new Error("Built-in categories cannot be renamed");
+  }
+
+  const label = input.label.trim();
+
+  if (!label) {
+    throw new Error("Category name is invalid");
+  }
+
+  const existing = await getCustomCategories();
+  const current = existing.find((category) => category.id === id);
+
+  if (!current) {
+    throw new Error("Category not found");
+  }
+
+  const duplicate = existing.find(
+    (category) =>
+      category.id !== id &&
+      category.label.toLowerCase() === label.toLowerCase(),
+  );
+
+  if (duplicate) {
+    throw new Error("Category already exists");
+  }
+
+  const [row] = await db
+    .update(articleCategories)
+    .set({ label })
+    .where(eq(articleCategories.id, id))
+    .returning();
+
+  if (!row) {
+    throw new Error("Category not found");
+  }
+
+  return rowToCategory(row);
+}
+
+export async function deleteCustomCategory(id: string): Promise<void> {
+  if (id in ARTICLE_CATEGORIES) {
+    throw new Error("Built-in categories cannot be deleted");
+  }
+
+  const existing = await getCustomCategoryById(id);
+
+  if (!existing) {
+    throw new Error("Category not found");
+  }
+
+  const inUse = await db
+    .select({ id: articles.id })
+    .from(articles)
+    .where(eq(articles.category, id))
+    .limit(1);
+
+  if (inUse.length > 0) {
+    throw new Error(
+      "Category is in use by one or more articles. Reassign those articles first.",
+    );
+  }
+
+  await db.delete(articleCategories).where(eq(articleCategories.id, id));
 }

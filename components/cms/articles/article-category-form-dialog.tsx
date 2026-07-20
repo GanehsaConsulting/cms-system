@@ -15,29 +15,36 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ARTICLE_FORM_LIMITS } from "@/config/article-form";
 import { DIALOG_FORM_CLASS } from "@/config/dialog";
-import { createCategoryAction } from "@/lib/actions/categories";
+import {
+  createCategoryAction,
+  updateCategoryAction,
+} from "@/lib/actions/categories";
 import { slugify } from "@/lib/articles/slug";
+import { notifyError, notifySuccess } from "@/lib/notify/action-toast";
 import type { CustomArticleCategory } from "@/types/category";
 
-interface ArticleFormCreateCategoryDialogProps {
+interface ArticleCategoryFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onCreated: (category: CustomArticleCategory) => void;
+  category?: CustomArticleCategory | null;
+  onSaved: (category: CustomArticleCategory) => void;
 }
 
-export function ArticleFormCreateCategoryDialog({
+export function ArticleCategoryFormDialog({
   open,
   onOpenChange,
-  onCreated,
-}: ArticleFormCreateCategoryDialogProps) {
-  const [label, setLabel] = useState("");
+  category,
+  onSaved,
+}: ArticleCategoryFormDialogProps) {
+  const isEdit = Boolean(category);
+  const [label, setLabel] = useState(category?.label ?? "");
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  const previewId = slugify(label);
+  const previewId = isEdit ? category?.id ?? "" : slugify(label);
 
   function resetForm() {
-    setLabel("");
+    setLabel(category?.label ?? "");
     setError(null);
   }
 
@@ -48,6 +55,9 @@ export function ArticleFormCreateCategoryDialog({
 
     if (!nextOpen) {
       resetForm();
+    } else {
+      setLabel(category?.label ?? "");
+      setError(null);
     }
 
     onOpenChange(nextOpen);
@@ -61,14 +71,18 @@ export function ArticleFormCreateCategoryDialog({
     formData.set("label", label);
 
     startTransition(async () => {
-      const result = await createCategoryAction(formData);
+      const result = category
+        ? await updateCategoryAction(category.id, formData)
+        : await createCategoryAction(formData);
 
       if (!result.success) {
+        notifyError(result.error || "Failed to save category.");
         setError(result.error);
         return;
       }
 
-      onCreated(result.category);
+      notifySuccess(category ? "Category saved." : "Category created.");
+      onSaved(result.category);
       resetForm();
       onOpenChange(false);
     });
@@ -78,18 +92,22 @@ export function ArticleFormCreateCategoryDialog({
     <CmsDialog open={open} onOpenChange={handleOpenChange}>
       <CmsDialogContent showCloseButton={!isPending} size="sm">
         <CmsDialogHeader>
-          <CmsDialogTitle>Create New Category</CmsDialogTitle>
+          <CmsDialogTitle>
+            {isEdit ? "Rename category" : "Create article category"}
+          </CmsDialogTitle>
           <CmsDialogDescription>
-            Add a category for organizing articles on your company profile site.
+            {isEdit
+              ? "Update the display name. Articles already using this category stay linked."
+              : "Categories group articles on your company profile site."}
           </CmsDialogDescription>
         </CmsDialogHeader>
 
         <form onSubmit={handleSubmit} className={DIALOG_FORM_CLASS}>
           <CmsDialogBody className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="category-label">Category name</Label>
+              <Label htmlFor="article-category-label">Category name</Label>
               <Input
-                id="category-label"
+                id="article-category-label"
                 value={label}
                 onChange={(event) => setLabel(event.target.value)}
                 placeholder="e.g. Product Updates"
@@ -121,7 +139,11 @@ export function ArticleFormCreateCategoryDialog({
               type="submit"
               disabled={isPending || label.trim().length < 2}
             >
-              {isPending ? "Creating..." : "Create Category"}
+              {isPending
+                ? "Saving..."
+                : isEdit
+                  ? "Save changes"
+                  : "Create category"}
             </Button>
           </CmsDialogFooter>
         </form>
