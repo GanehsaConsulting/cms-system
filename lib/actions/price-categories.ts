@@ -7,6 +7,7 @@ import {
   updatePriceCategory,
 } from "@/lib/db/price-categories";
 import { priceCategorySchema } from "@/lib/validations/price-category";
+import { requireCmsContentAccess } from "@/lib/users/require-content-access";
 
 function revalidatePricePaths() {
   revalidatePath("/prices");
@@ -14,6 +15,11 @@ function revalidatePricePaths() {
 }
 
 export async function createPriceCategoryAction(formData: FormData) {
+  const access = await requireCmsContentAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
   const parsed = priceCategorySchema.safeParse({
     label: String(formData.get("label") ?? ""),
   });
@@ -42,6 +48,11 @@ export async function updatePriceCategoryAction(
   id: string,
   formData: FormData,
 ) {
+  const access = await requireCmsContentAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
   const parsed = priceCategorySchema.safeParse({
     label: String(formData.get("label") ?? ""),
   });
@@ -67,6 +78,11 @@ export async function updatePriceCategoryAction(
 }
 
 export async function deletePriceCategoryAction(id: string) {
+  const access = await requireCmsContentAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
   try {
     await deletePriceCategory(id);
     revalidatePricePaths();

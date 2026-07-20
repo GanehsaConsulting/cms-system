@@ -12,6 +12,7 @@ import {
   portfolioFormSchema,
   portfolioFormToInput,
 } from "@/lib/validations/portfolio";
+import { requireCmsContentAccess } from "@/lib/users/require-content-access";
 
 function revalidatePortfolioPaths(id?: string) {
   revalidatePath("/");
@@ -24,6 +25,11 @@ function revalidatePortfolioPaths(id?: string) {
 }
 
 export async function createPortfolioAction(formData: FormData) {
+  const access = await requireCmsContentAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
   const parsed = portfolioFormSchema.safeParse(parsePortfolioForm(formData));
 
   if (!parsed.success) {
@@ -47,6 +53,11 @@ export async function createPortfolioAction(formData: FormData) {
 }
 
 export async function updatePortfolioAction(id: string, formData: FormData) {
+  const access = await requireCmsContentAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
   const parsed = portfolioFormSchema.safeParse(parsePortfolioForm(formData));
 
   if (!parsed.success) {
@@ -70,6 +81,11 @@ export async function updatePortfolioAction(id: string, formData: FormData) {
 }
 
 export async function deletePortfolioAction(id: string) {
+  const access = await requireCmsContentAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
   try {
     await deletePortfolio(id);
     revalidatePortfolioPaths();

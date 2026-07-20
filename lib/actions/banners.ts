@@ -7,6 +7,7 @@ import {
   updateBanner,
 } from "@/lib/db/banners";
 import { bannerSchema } from "@/lib/validations/banner";
+import { requireCmsContentAccess } from "@/lib/users/require-content-access";
 
 function revalidateBannerPaths() {
   revalidatePath("/banners");
@@ -41,6 +42,11 @@ function parseBannerFormData(formData: FormData) {
 }
 
 export async function createBannerAction(formData: FormData) {
+  const access = await requireCmsContentAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
   const parsed = parseBannerFormData(formData);
 
   if (!parsed.success) {
@@ -63,6 +69,11 @@ export async function createBannerAction(formData: FormData) {
 }
 
 export async function updateBannerAction(id: string, formData: FormData) {
+  const access = await requireCmsContentAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
   const parsed = parseBannerFormData(formData);
 
   if (!parsed.success) {
@@ -85,6 +96,11 @@ export async function updateBannerAction(id: string, formData: FormData) {
 }
 
 export async function deleteBannerAction(id: string) {
+  const access = await requireCmsContentAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
   try {
     await deleteBanner(id);
     revalidateBannerPaths();

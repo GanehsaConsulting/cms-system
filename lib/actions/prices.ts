@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getPriceCategoryById } from "@/lib/db/price-categories";
 import { createPrice, deletePrice, updatePrice } from "@/lib/db/prices";
+import { requireCmsContentAccess } from "@/lib/users/require-content-access";
 import {
   parsePriceForm,
   priceFormSchema,
@@ -23,6 +24,11 @@ async function assertValidPriceCategory(serviceSlug: string) {
 }
 
 export async function createPriceAction(formData: FormData) {
+  const access = await requireCmsContentAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
   const parsed = priceFormSchema.safeParse(parsePriceForm(formData));
 
   if (!parsed.success) {
@@ -51,6 +57,11 @@ export async function createPriceAction(formData: FormData) {
 }
 
 export async function updatePriceAction(id: string, formData: FormData) {
+  const access = await requireCmsContentAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
   const parsed = priceFormSchema.safeParse(parsePriceForm(formData));
 
   if (!parsed.success) {
@@ -81,6 +92,11 @@ export async function updatePriceAction(id: string, formData: FormData) {
 }
 
 export async function deletePriceAction(id: string) {
+  const access = await requireCmsContentAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
   try {
     await deletePrice(id);
     revalidatePath("/");

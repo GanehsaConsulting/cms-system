@@ -13,6 +13,7 @@ import {
   portfolioFormSchema,
   portfolioFormToInput,
 } from "@/lib/validations/portfolio";
+import { requireCmsContentAccess } from "@/lib/users/require-content-access";
 
 function revalidateClientsPaths() {
   revalidatePath("/");
@@ -22,6 +23,11 @@ function revalidateClientsPaths() {
 }
 
 export async function createClientWithPortfolioAction(formData: FormData) {
+  const access = await requireCmsContentAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
   const clientParsed = clientFormSchema.safeParse(parseClientForm(formData));
 
   if (!clientParsed.success) {

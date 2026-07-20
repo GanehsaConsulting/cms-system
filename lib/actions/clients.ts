@@ -8,6 +8,7 @@ import {
   updateClient,
 } from "@/lib/db/clients";
 import { deletePortfolioByClientId } from "@/lib/db/portfolio";
+import { requireCmsContentAccess } from "@/lib/users/require-content-access";
 import {
   clientFormSchema,
   clientFormToInput,
@@ -15,6 +16,11 @@ import {
 } from "@/lib/validations/client";
 
 export async function createClientAction(formData: FormData) {
+  const access = await requireCmsContentAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
   const parsed = clientFormSchema.safeParse(parseClientForm(formData));
 
   if (!parsed.success) {
@@ -40,6 +46,11 @@ export async function createClientAction(formData: FormData) {
 }
 
 export async function updateClientAction(id: string, formData: FormData) {
+  const access = await requireCmsContentAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
   const parsed = clientFormSchema.safeParse(parseClientForm(formData));
 
   if (!parsed.success) {
@@ -66,6 +77,11 @@ export async function updateClientAction(id: string, formData: FormData) {
 }
 
 export async function deleteClientAction(id: string) {
+  const access = await requireCmsContentAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
   try {
     await deletePortfolioByClientId(id);
     await deleteClient(id);
