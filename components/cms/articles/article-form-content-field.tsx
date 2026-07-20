@@ -1,7 +1,23 @@
 "use client";
 
-import { ArticleEditor } from "@/components/cms/article-editor";
+import dynamic from "next/dynamic";
 import { ArticleFormField } from "@/components/cms/articles/article-form-field";
+
+const ArticleEditor = dynamic(
+  () =>
+    import("@/components/cms/article-editor").then((mod) => ({
+      default: mod.ArticleEditor,
+    })),
+  {
+    ssr: false,
+    loading: () => (
+      <div
+        className="article-editor-wrapper min-h-[280px] rounded-md bg-muted/40"
+        aria-hidden
+      />
+    ),
+  },
+);
 
 interface ArticleFormContentFieldProps {
   value: string;

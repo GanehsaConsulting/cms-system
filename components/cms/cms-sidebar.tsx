@@ -1,13 +1,12 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
-import { SidebarBrandSwitchDialog } from "@/components/cms/sidebar-brand-switch-dialog";
 import { SidebarBrandSwitcherButton } from "@/components/cms/sidebar-brand-switcher-button";
 import { SidebarNav } from "@/components/cms/sidebar-nav";
 import { SidebarProfileButton } from "@/components/cms/sidebar-profile-button";
-import { SidebarProfileDialog } from "@/components/cms/sidebar-profile-dialog";
-import { SidebarSearchDialog } from "@/components/cms/sidebar-search-dialog";
 import { SidebarSearchTrigger } from "@/components/cms/sidebar-search-trigger";
+import { useBrand } from "@/components/shared/brand-provider";
 import { SidebarCollapseTrigger } from "@/components/shared/sidebar-collapse-trigger";
 import { SidebarCollapsedDock } from "@/components/shared/sidebar-collapsed-dock";
 import {
@@ -29,6 +28,30 @@ import {
 import { cn } from "@/lib/utils";
 import type { CmsProfileFormValues } from "@/lib/validations/cms-user";
 
+const SidebarBrandSwitchDialog = dynamic(
+  () =>
+    import("@/components/cms/sidebar-brand-switch-dialog").then((mod) => ({
+      default: mod.SidebarBrandSwitchDialog,
+    })),
+  { ssr: false },
+);
+
+const SidebarSearchDialog = dynamic(
+  () =>
+    import("@/components/cms/sidebar-search-dialog").then((mod) => ({
+      default: mod.SidebarSearchDialog,
+    })),
+  { ssr: false },
+);
+
+const SidebarProfileDialog = dynamic(
+  () =>
+    import("@/components/cms/sidebar-profile-dialog").then((mod) => ({
+      default: mod.SidebarProfileDialog,
+    })),
+  { ssr: false },
+);
+
 interface CmsSidebarProps {
   user?: CmsUser;
 }
@@ -37,6 +60,7 @@ export function CmsSidebar({
   user: initialUser = CURRENT_CMS_USER,
 }: CmsSidebarProps) {
   const { state } = useSidebar();
+  const { switcherOpen } = useBrand();
   const isCollapsed = state === "collapsed";
   const [searchOpen, setSearchOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -106,14 +130,18 @@ export function CmsSidebar({
       </Sidebar>
 
       <SidebarCollapseTrigger />
-      <SidebarBrandSwitchDialog />
-      <SidebarSearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
-      <SidebarProfileDialog
-        user={user}
-        open={profileOpen}
-        onOpenChange={setProfileOpen}
-        onUserUpdate={handleUserUpdate}
-      />
+      {switcherOpen ? <SidebarBrandSwitchDialog /> : null}
+      {searchOpen ? (
+        <SidebarSearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
+      ) : null}
+      {profileOpen ? (
+        <SidebarProfileDialog
+          user={user}
+          open={profileOpen}
+          onOpenChange={setProfileOpen}
+          onUserUpdate={handleUserUpdate}
+        />
+      ) : null}
     </>
   );
 }
