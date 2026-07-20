@@ -1,13 +1,13 @@
 import { PricesListView } from "@/components/cms/prices/prices-list-view";
-import { resolveCmsActiveBrandId } from "@/lib/brands/active-brand";
+import { requireCmsNavHref } from "@/lib/brands/require-cms-nav";
 import { getPriceCategories } from "@/lib/db/price-categories";
 import { getPrices } from "@/lib/db/prices";
 
 export default async function PricesPage() {
-  const brandId = await resolveCmsActiveBrandId();
+  const brand = await requireCmsNavHref("/prices");
   const [prices, categories] = await Promise.all([
-    brandId ? getPrices(brandId) : Promise.resolve([]),
-    brandId ? getPriceCategories(brandId) : Promise.resolve([]),
+    getPrices(brand.id),
+    getPriceCategories(brand.id),
   ]);
 
   return <PricesListView prices={prices} categories={categories} />;

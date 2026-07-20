@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
+import { BannerFormPublishChecklist } from "@/components/cms/banners/banner-form-publish-checklist";
 import { BannerFormImageField } from "@/components/cms/banners/banner-form-image-field";
 import {
   BannerFormRedirectField,
@@ -235,6 +236,19 @@ export function BannerFormDialog({
       ? isValidWhatsAppPhone(form.whatsappPhone)
       : form.redirectUrl.trim().length > 0);
 
+  const publishChecklistValues = useMemo(
+    () => ({
+      name: form.name,
+      key: form.key,
+      images: form.images,
+      redirectMode: form.redirectMode,
+      redirectUrl: form.redirectUrl,
+      whatsappPhone: form.whatsappPhone,
+      isActive: form.isActive,
+    }),
+    [form],
+  );
+
   return (
     <CmsDialog open={open} onOpenChange={handleOpenChange}>
       <CmsDialogContent showCloseButton={!isPending} size="md">
@@ -295,6 +309,8 @@ export function BannerFormDialog({
                 updateField("whatsappMessage", value)
               }
             />
+
+            <BannerFormPublishChecklist values={publishChecklistValues} />
 
             {error ? (
               <p className="text-destructive text-xs">{error}</p>

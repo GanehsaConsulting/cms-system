@@ -1,7 +1,3 @@
-import { LIST_DEFAULT_PAGE_SIZE } from "@/config/list-table";
-
-export const BANNER_LIST_PAGE_SIZE = LIST_DEFAULT_PAGE_SIZE;
-
 export type BannerStatusFilter = "all" | "active" | "inactive";
 
 export type BannerListSort =

@@ -465,7 +465,7 @@ interface Portfolio extends PortfolioSummary {
 
 ## CMS production checklist (affects data)
 1. JSON stores (\`data/clients.json\`, \`data/portfolio.json\`) must include \`brandId\` on each row
-2. Backfill legacy rows: \`npx tsx scripts/migrate-brand-isolation.ts gec\` (repeat per brand as needed)
+2. Backfill legacy rows: \`npx tsx scripts/backfill-json-brand-id.ts gec\` (repeat per brand as needed)
 3. Orphan portfolio rows (missing \`clientId\`) return 404 on detail
 
 ## Agent checklist
@@ -487,32 +487,78 @@ GET ${CMS_PUBLIC_API_BASE}/banners/by-key/{key}?brandId={brandId}
 Examples:
 \`\`\`
 ${CMS_PUBLIC_API_BASE}/banners?brandId=gonline
-${CMS_PUBLIC_API_BASE}/banners?brandId=gonline&key=homepage-hero
+${CMS_PUBLIC_API_BASE}/banners?brandId=gonline&key=homepage
 ${CMS_PUBLIC_API_BASE}/banners?brandId=gonline&q=promo&sort=name-asc
-${CMS_PUBLIC_API_BASE}/banners/by-key/homepage-hero?brandId=gonline
+${CMS_PUBLIC_API_BASE}/banners/by-key/homepage?brandId=gonline
+${CMS_PUBLIC_API_BASE}/banners/by-key/popup?brandId=gec
+${CMS_PUBLIC_API_BASE}/banners/by-key/mega-menu?brandId=gec
+${CMS_PUBLIC_API_BASE}/banners/by-key/bottom?brandId=gec
 \`\`\`
 
-Feature required: \`banners\` · Only \`isActive\` banners.
+Feature required: \`banners\` · Only \`isActive: true\` banners are returned.
+
+## Website placement keys (CMS-defined)
+| Key | Placement |
+|-----|-----------|
+| \`homepage\` | Homepage hero (top section) |
+| \`popup\` | Popup banner |
+| \`mega-menu\` | Mega menu banner |
+| \`bottom\` | Bottom sticky banner |
+
+Use **by-key** for each placement — one fetch per slot. Keys are lowercase with hyphens.
 
 ## List query params
 | Param | Values | Notes |
 |-------|--------|-------|
-| \`brandId\` | required | |
+| \`brandId\` | string | **required** |
 | \`key\` | string | filter list by placement key |
 | \`q\` / \`search\` | string | name, key, redirectUrl |
 | \`sort\` | \`updatedAt-desc\` (default), \`name-asc\`, \`key-asc\` | |
 
+List returns \`{ data: Banner[] }\` (typically a small set — pagination not required).
+
 ## Prefer by-key for placements
 \`\`\`ts
-const res = await fetch(
-  \`${CMS_PUBLIC_API_BASE}/banners/by-key/homepage-hero?brandId=\${brandId}\`,
-);
+const PLACEMENT_KEYS = ["homepage", "popup", "mega-menu", "bottom"] as const;
+
+async function loadPlacementBanner(brandId: string, key: string) {
+  const res = await fetch(
+    \`${CMS_PUBLIC_API_BASE}/banners/by-key/\${encodeURIComponent(key)}?brandId=\${brandId}\`,
+  );
+
+  if (!res.ok) {
+    return null; // inactive, missing, or module disabled
+  }
+
+  const { data } = await res.json();
+  return data as Banner;
+}
 \`\`\`
+
+Or bootstrap all active banners once and map by key:
+\`\`\`ts
+const { data: banners } = await fetch(
+  \`${CMS_PUBLIC_API_BASE}/banners?brandId=\${brandId}\`,
+).then((r) => r.json());
+
+const byKey = Object.fromEntries(banners.map((b: Banner) => [b.key, b]));
+const hero = byKey.homepage ?? null;
+\`\`\`
+
+## Carousel
+When \`images.length > 1\`, render as a carousel. Single image = static banner.
+
+## Redirect
+\`redirectUrl\` may be:
+- Absolute URL (\`https://...\`)
+- Site path (\`/contact\`)
+- WhatsApp URL (\`https://wa.me/...\` or \`whatsapp://...\`)
 
 ## Type
 \`\`\`ts
 interface Banner {
   id: string;
+  brandId: string;
   name: string;
   key: string;
   images: string[];
@@ -523,11 +569,18 @@ interface Banner {
 }
 \`\`\`
 
+## CMS production checklist (affects data)
+1. JSON store \`data/banners.json\` must include \`brandId\` on each row
+2. Backfill legacy rows: \`npx tsx scripts/backfill-json-brand-id.ts gec\`
+3. Set **Active** in CMS for banners that should appear on the public site
+4. Use the CMS placement keys above (\`homepage\`, not \`homepage-hero\`)
+
 ## Agent checklist
-- [ ] List + by-key
-- [ ] Filters key/search/sort
+- [ ] Load each placement via \`by-key\` (or list + map by key)
 - [ ] Carousel when \`images.length > 1\`
-- [ ] Hide if brand lacks \`banners\`
+- [ ] Link \`redirectUrl\` on click
+- [ ] Hide placement when 404 / inactive / brand lacks \`banners\`
+- [ ] Cache keys include \`brandId\` + placement key
 `;
 
 const MEDIA_MARKDOWN = `# Media / Files — Frontend Wiring
@@ -671,7 +724,8 @@ export const FE_WIRING_DOC_SECTIONS: FeWiringDocSection[] = [
   {
     id: "banners",
     title: "Banners",
-    summary: "List + by-key with key/search/sort filters.",
+    summary:
+      "By-key placements (homepage, popup, mega-menu, bottom), list filters, carousel.",
     markdown: BANNERS_MARKDOWN,
   },
   {

@@ -44,6 +44,11 @@ export const BANNER_PLACEMENTS: BannerPlacement[] = [
   },
 ];
 
+/** Fixed placement keys used by the CMS and public by-key API. */
+export const BANNER_PLACEMENT_KEYS = BANNER_PLACEMENTS.map(
+  (placement) => placement.key,
+);
+
 export function getBannerPlacementByKey(key: string) {
   return BANNER_PLACEMENTS.find((placement) => placement.key === key) ?? null;
 }

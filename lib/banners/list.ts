@@ -2,7 +2,6 @@ import type {
   BannerListSort,
   BannerStatusFilter,
 } from "@/config/banner-list";
-import { paginateList } from "@/lib/list/pagination";
 import type { Banner } from "@/types/banner";
 
 export function filterBanners(
@@ -65,14 +64,6 @@ export function sortBanners(banners: Banner[], sort: BannerListSort) {
   });
 
   return next;
-}
-
-export function paginateBanners(
-  banners: Banner[],
-  page: number,
-  pageSize: number,
-) {
-  return paginateList(banners, page, pageSize);
 }
 
 export function formatBannerDateParts(iso: string) {

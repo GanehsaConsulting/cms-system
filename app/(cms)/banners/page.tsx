@@ -1,10 +1,10 @@
 import { BannersListView } from "@/components/cms/banners/banners-list-view";
-import { resolveCmsActiveBrandId } from "@/lib/brands/active-brand";
+import { requireCmsNavHref } from "@/lib/brands/require-cms-nav";
 import { getBanners } from "@/lib/db/banners";
 
 export default async function BannersPage() {
-  const brandId = await resolveCmsActiveBrandId();
-  const banners = brandId ? await getBanners(brandId) : [];
+  const brand = await requireCmsNavHref("/banners");
+  const banners = await getBanners(brand.id);
 
   return <BannersListView banners={banners} />;
 }
