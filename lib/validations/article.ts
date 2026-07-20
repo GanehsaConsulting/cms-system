@@ -1,9 +1,6 @@
 import { z } from "zod";
 import { ARTICLE_FORM_LIMITS } from "@/config/article-form";
-import {
-  fromDatetimeLocalValue,
-  isFutureDatetimeLocal,
-} from "@/lib/articles/schedule";
+import { fromDatetimeLocalValue } from "@/lib/articles/schedule";
 import { slugifyArticleTitle } from "@/lib/articles/slug";
 import type { ArticleInput } from "@/types/article";
 
@@ -115,15 +112,6 @@ export const articleFormSchema = z
         code: "custom",
         path: ["scheduledAt"],
         message: "Enter a valid schedule date and time",
-      });
-      return;
-    }
-
-    if (!isFutureDatetimeLocal(data.scheduledAt)) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["scheduledAt"],
-        message: "Schedule date must be in the future",
       });
     }
   });

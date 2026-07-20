@@ -1,4 +1,4 @@
-import { and, desc, eq, ne } from "drizzle-orm";
+import { and, desc, eq, isNotNull, lte, ne } from "drizzle-orm";
 import { normalizeArticle } from "@/lib/articles/list";
 import { resolveImageAsset, resolveImageAssets } from "@/lib/cloudinary/assets";
 import { db } from "@/lib/db/client";
@@ -34,30 +34,68 @@ function rowToArticle(row: typeof articles.$inferSelect): Article {
   });
 }
 
-function resolvePublishedAt(
+/**
+ * Flip due scheduled articles to published.
+ * Runs on reads so public API and CMS stay in sync without a cron.
+ */
+export async function promoteDueScheduledArticles(
+  now = new Date(),
+): Promise<number> {
+  const updated = await db
+    .update(articles)
+    .set({
+      status: "published",
+      updatedAt: now,
+    })
+    .where(
+      and(
+        eq(articles.status, "scheduled"),
+        isNotNull(articles.publishedAt),
+        lte(articles.publishedAt, now),
+      ),
+    )
+    .returning({ id: articles.id });
+
+  return updated.length;
+}
+
+function resolveStatusAndPublishedAt(
   current: Article | null,
   input: ArticleInput,
   now: Date,
-): Date | null {
+): { status: ArticleStatus; publishedAt: Date | null } {
   if (input.status === "published") {
     if (current?.status === "published" && current.publishedAt) {
-      return new Date(current.publishedAt);
+      return {
+        status: "published",
+        publishedAt: new Date(current.publishedAt),
+      };
     }
-    return now;
+    return { status: "published", publishedAt: now };
   }
 
   if (input.status === "scheduled") {
     if (!input.publishedAt) {
       throw new Error("Schedule date is required");
     }
-    return new Date(input.publishedAt);
+
+    const scheduledAt = new Date(input.publishedAt);
+    // Past (or equal) schedule goes live immediately.
+    if (scheduledAt.getTime() <= now.getTime()) {
+      return { status: "published", publishedAt: scheduledAt };
+    }
+
+    return { status: "scheduled", publishedAt: scheduledAt };
   }
 
   if (input.status === "draft") {
-    return null;
+    return { status: "draft", publishedAt: null };
   }
 
-  return current?.publishedAt ? new Date(current.publishedAt) : null;
+  return {
+    status: input.status,
+    publishedAt: current?.publishedAt ? new Date(current.publishedAt) : null,
+  };
 }
 
 async function resolveArticleMedia(input: ArticleInput): Promise<{
@@ -73,6 +111,8 @@ async function resolveArticleMedia(input: ArticleInput): Promise<{
 }
 
 export async function getArticles(): Promise<Article[]> {
+  await promoteDueScheduledArticles();
+
   const rows = await db
     .select()
     .from(articles)
@@ -82,6 +122,8 @@ export async function getArticles(): Promise<Article[]> {
 }
 
 export async function getArticleById(id: string): Promise<Article | null> {
+  await promoteDueScheduledArticles();
+
   const rows = await db
     .select()
     .from(articles)
@@ -92,6 +134,8 @@ export async function getArticleById(id: string): Promise<Article | null> {
 }
 
 export async function getArticleBySlug(slug: string): Promise<Article | null> {
+  await promoteDueScheduledArticles();
+
   const rows = await db
     .select()
     .from(articles)
@@ -112,6 +156,7 @@ export async function createArticle(
 
   const now = new Date();
   const media = await resolveArticleMedia(input);
+  const resolved = resolveStatusAndPublishedAt(null, input, now);
   const id = crypto.randomUUID();
 
   const [row] = await db
@@ -122,7 +167,7 @@ export async function createArticle(
       slug: input.slug,
       excerpt: input.excerpt,
       content: input.content,
-      status: input.status,
+      status: resolved.status,
       authorName: input.authorName,
       authorId: options.authorId ?? null,
       category: input.category,
@@ -132,7 +177,7 @@ export async function createArticle(
       highlighted: input.highlighted,
       gallery: media.gallery,
       thumbnail: media.thumbnail,
-      publishedAt: resolvePublishedAt(null, input, now),
+      publishedAt: resolved.publishedAt,
       createdAt: now,
       updatedAt: now,
     })
@@ -163,6 +208,7 @@ export async function updateArticle(
 
   const now = new Date();
   const media = await resolveArticleMedia(input);
+  const resolved = resolveStatusAndPublishedAt(current, input, now);
 
   const [row] = await db
     .update(articles)
@@ -171,7 +217,7 @@ export async function updateArticle(
       slug: input.slug,
       excerpt: input.excerpt,
       content: input.content,
-      status: input.status,
+      status: resolved.status,
       authorName: input.authorName,
       authorId: options.authorId ?? null,
       category: input.category,
@@ -181,7 +227,7 @@ export async function updateArticle(
       highlighted: input.highlighted,
       gallery: media.gallery,
       thumbnail: media.thumbnail,
-      publishedAt: resolvePublishedAt(current, input, now),
+      publishedAt: resolved.publishedAt,
       updatedAt: now,
     })
     .where(eq(articles.id, id))

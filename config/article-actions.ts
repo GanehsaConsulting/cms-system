@@ -15,7 +15,7 @@ export const ARTICLE_ACTION_CONFIRMATIONS = {
   schedule: {
     title: "Schedule article?",
     description:
-      "This article will stay unpublished until the scheduled date and time.",
+      "This article stays private until the scheduled time, then publishes automatically.",
     confirmLabel: "Schedule",
     variant: "default" as const,
   },

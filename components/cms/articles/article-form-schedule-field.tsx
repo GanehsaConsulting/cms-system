@@ -25,7 +25,7 @@ export function ArticleFormScheduleField({
           label="Publish date & time"
           required
           error={error}
-          hint="The article stays unpublished until this time. Publish now from the header if you want it live immediately."
+          hint="Publishes automatically at this time. If the time is already past, it goes live immediately. Use Publish now in the header to publish right away."
         >
           <Input
             id="scheduledAt"
