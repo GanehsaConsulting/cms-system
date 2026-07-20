@@ -3,6 +3,7 @@
  * Copyable prompts for another agent to wire the public site FE.
  */
 
+import { CRON_JOB_ORG_PUBLISH_SCHEDULED_MARKDOWN } from "@/config/cron-jobs";
 import { CMS_PUBLIC_API_BASE, CMS_PUBLIC_ORIGIN } from "@/config/public-api";
 
 export interface FeWiringDocSection {
@@ -91,7 +92,7 @@ type ApiError = { error: string };
 ## Public visibility rules
 | Domain | Returned |
 |--------|----------|
-| Articles | published only (due scheduled posts auto-promote on read) |
+| Articles | published only (scheduled posts auto-promote via cron + on read) |
 | Prices / banners | active only |
 | Clients / portfolio | all (filter with query) |
 | Brands | active only |
@@ -180,7 +181,7 @@ interface ArticleCategory {
 \`\`\`
 
 ## Scheduled posts
-CMS can set \`status: "scheduled"\` with a future \`publishedAt\`. When that time is reached, the CMS **auto-promotes** the article to \`published\` on the next read (public API or CMS list/detail). The FE only needs to consume published articles — no special scheduled handling on the public site.
+CMS can set \`status: "scheduled"\` with a future \`publishedAt\`. A **cron-job.org** job hits \`GET /api/cron/publish-scheduled\` every minute to promote due posts. Reads (public API / CMS) also promote as a fallback. The FE only consumes \`published\` articles.
 
 ## Agent checklist
 - [ ] List + detail by slug
@@ -555,6 +556,12 @@ export const FE_WIRING_DOC_SECTIONS: FeWiringDocSection[] = [
     title: "Media / Files",
     summary: "No browse API — use embedded asset URLs from content.",
     markdown: MEDIA_MARKDOWN,
+  },
+  {
+    id: "cron-jobs",
+    title: "Scheduled publish (cron)",
+    summary: "cron-job.org setup for auto-publishing scheduled articles.",
+    markdown: CRON_JOB_ORG_PUBLISH_SCHEDULED_MARKDOWN,
   },
 ];
 

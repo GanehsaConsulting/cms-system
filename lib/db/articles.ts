@@ -36,7 +36,7 @@ function rowToArticle(row: typeof articles.$inferSelect): Article {
 
 /**
  * Flip due scheduled articles to published.
- * Runs on reads so public API and CMS stay in sync without a cron.
+ * Also invoked by GET /api/cron/publish-scheduled (cron-job.org).
  */
 export async function promoteDueScheduledArticles(
   now = new Date(),
