@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { RADIUS_DEEP } from "@/config/shape";
 import { getArticleThumbnailGradient } from "@/lib/articles/list";
 import { cn } from "@/lib/utils";
@@ -36,11 +37,20 @@ export function ArticleThumbnail({
           className,
         )}
       >
-        {/* Cloudinary / remote URLs — plain img matches form upload preview. */}
-        <img
+        <Image
           src={imageSrc}
           alt=""
-          className="size-full object-cover"
+          fill
+          sizes={
+            size === "sm"
+              ? "40px"
+              : "(max-width: 768px) 100vw, 288px"
+          }
+          className="object-cover"
+          unoptimized={
+            !imageSrc.includes("res.cloudinary.com") &&
+            !imageSrc.startsWith("/")
+          }
         />
       </div>
     );
