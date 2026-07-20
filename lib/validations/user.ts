@@ -64,3 +64,26 @@ export function parseUserForm(formData: FormData): unknown {
     avatarUrl: String(formData.get("avatarUrl") ?? ""),
   };
 }
+
+/** Super Admin override — no current password required. */
+export const adminSetPasswordSchema = z
+  .object({
+    newPassword: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .max(128, "Password is too long"),
+    confirmPassword: z.string().min(1, "Confirm the new password"),
+  })
+  .refine((values) => values.newPassword === values.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+export type AdminSetPasswordValues = z.infer<typeof adminSetPasswordSchema>;
+
+export function parseAdminSetPasswordForm(formData: FormData): unknown {
+  return {
+    newPassword: String(formData.get("newPassword") ?? ""),
+    confirmPassword: String(formData.get("confirmPassword") ?? ""),
+  };
+}

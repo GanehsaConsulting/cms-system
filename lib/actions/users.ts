@@ -4,10 +4,13 @@ import { revalidatePath } from "next/cache";
 import {
   createUser,
   deleteUser,
+  setUserPassword,
   updateUser,
 } from "@/lib/db/users";
 import { requireCmsSettingsAccess } from "@/lib/users/require-settings-access";
 import {
+  adminSetPasswordSchema,
+  parseAdminSetPasswordForm,
   parseUserForm,
   userFormSchema,
   userFormToInput,
@@ -90,6 +93,36 @@ export async function deleteUserAction(id: string) {
     return {
       success: false as const,
       error: error instanceof Error ? error.message : "Failed to delete user",
+    };
+  }
+}
+
+export async function setUserPasswordAction(id: string, formData: FormData) {
+  const access = await requireCmsSettingsAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
+  const parsed = adminSetPasswordSchema.safeParse(
+    parseAdminSetPasswordForm(formData),
+  );
+
+  if (!parsed.success) {
+    return {
+      success: false as const,
+      error: parsed.error.issues[0]?.message ?? "Invalid password",
+    };
+  }
+
+  try {
+    await setUserPassword(id, parsed.data.newPassword);
+    revalidateUserPaths();
+    return { success: true as const };
+  } catch (error) {
+    return {
+      success: false as const,
+      error:
+        error instanceof Error ? error.message : "Failed to update password",
     };
   }
 }

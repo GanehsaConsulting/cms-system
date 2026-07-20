@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { auth } from "@/lib/auth/auth";
 import { db } from "@/lib/db/client";
 import { user as authUserTable, account as authAccountTable } from "@/lib/db/schema";
@@ -254,4 +254,53 @@ export async function deleteUser(id: string): Promise<void> {
   if (deleted.length === 0) {
     throw new Error("User not found");
   }
+}
+
+/** Super Admin override — hash and write credential password for a user. */
+export async function setUserPassword(
+  userId: string,
+  password: string,
+): Promise<void> {
+  const existing = await getUserByRowId(userId);
+  if (!existing) {
+    throw new Error("User not found");
+  }
+
+  const ctx = await auth.$context;
+  const passwordHash = await ctx.password.hash(password);
+  const now = new Date();
+
+  const accounts = await db
+    .select({ id: authAccountTable.id })
+    .from(authAccountTable)
+    .where(
+      and(
+        eq(authAccountTable.userId, userId),
+        eq(authAccountTable.providerId, "credential"),
+      ),
+    )
+    .limit(1);
+
+  const account = accounts[0];
+
+  if (account) {
+    await db
+      .update(authAccountTable)
+      .set({
+        password: passwordHash,
+        updatedAt: now,
+      })
+      .where(eq(authAccountTable.id, account.id));
+    return;
+  }
+
+  await db.insert(authAccountTable).values({
+    id: crypto.randomUUID(),
+    accountId: userId,
+    providerId: "credential",
+    userId,
+    password: passwordHash,
+    createdAt: now,
+    updatedAt: now,
+  });
 }

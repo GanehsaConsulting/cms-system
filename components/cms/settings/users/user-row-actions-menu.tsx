@@ -1,7 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
+import { UserSetPasswordDialog } from "@/components/cms/settings/users/user-set-password-dialog";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,7 +13,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useConfirmDialog } from "@/hooks/use-confirm-dialog";
 import { deleteUserAction } from "@/lib/actions/users";
-import { DotsThreeIcon, PencilSimpleIcon, TrashIcon } from "@/lib/icons";
+import {
+  DotsThreeIcon,
+  KeyIcon,
+  PencilSimpleIcon,
+  TrashIcon,
+} from "@/lib/icons";
 import { notifyFromActionResult } from "@/lib/notify/action-toast";
 import type { User } from "@/types/user";
 
@@ -24,6 +30,7 @@ interface UserRowActionsMenuProps {
 export function UserRowActionsMenu({ user, onEdit }: UserRowActionsMenuProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [passwordOpen, setPasswordOpen] = useState(false);
   const { requestConfirm, confirmDialog } = useConfirmDialog(isPending);
 
   function handleDelete() {
@@ -60,7 +67,7 @@ export function UserRowActionsMenu({ user, onEdit }: UserRowActionsMenuProps) {
         >
           <DotsThreeIcon className="size-4" />
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-40">
+        <DropdownMenuContent align="end" className="w-44">
           <DropdownMenuItem
             onClick={(event) => {
               event.stopPropagation();
@@ -69,6 +76,15 @@ export function UserRowActionsMenu({ user, onEdit }: UserRowActionsMenuProps) {
           >
             <PencilSimpleIcon />
             Edit
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={(event) => {
+              event.stopPropagation();
+              setPasswordOpen(true);
+            }}
+          >
+            <KeyIcon />
+            Set password
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
@@ -84,6 +100,12 @@ export function UserRowActionsMenu({ user, onEdit }: UserRowActionsMenuProps) {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <UserSetPasswordDialog
+        open={passwordOpen}
+        onOpenChange={setPasswordOpen}
+        user={user}
+      />
 
       {confirmDialog}
     </>

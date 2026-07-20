@@ -1,9 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
+import { useEffect, useTransition } from "react";
 import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
 import {
   CmsDialog,
   CmsDialogBody,
@@ -14,33 +13,37 @@ import {
   CmsDialogTitle,
 } from "@/components/shared/cms-dialog";
 import { PasswordInput } from "@/components/shared/password-input";
+import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { DIALOG_FORM_CLASS } from "@/config/dialog";
+import { setUserPasswordAction } from "@/lib/actions/users";
+import { notifyFromActionResult } from "@/lib/notify/action-toast";
 import {
-  type CmsPasswordFormValues,
-  cmsPasswordFormSchema,
-} from "@/lib/validations/cms-user";
+  type AdminSetPasswordValues,
+  adminSetPasswordSchema,
+} from "@/lib/validations/user";
+import type { User } from "@/types/user";
 
-interface SidebarProfilePasswordDialogProps {
+interface UserSetPasswordDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSave: (values: CmsPasswordFormValues) => void;
+  user: User | null;
 }
 
-export function SidebarProfilePasswordDialog({
+export function UserSetPasswordDialog({
   open,
   onOpenChange,
-  onSave,
-}: SidebarProfilePasswordDialogProps) {
+  user,
+}: UserSetPasswordDialogProps) {
+  const [isPending, startTransition] = useTransition();
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting },
-  } = useForm<CmsPasswordFormValues>({
-    resolver: zodResolver(cmsPasswordFormSchema),
+    formState: { errors },
+  } = useForm<AdminSetPasswordValues>({
+    resolver: zodResolver(adminSetPasswordSchema),
     defaultValues: {
-      currentPassword: "",
       newPassword: "",
       confirmPassword: "",
     },
@@ -49,52 +52,52 @@ export function SidebarProfilePasswordDialog({
   useEffect(() => {
     if (open) {
       reset({
-        currentPassword: "",
         newPassword: "",
         confirmPassword: "",
       });
     }
   }, [open, reset]);
 
-  function onSubmit(values: CmsPasswordFormValues) {
-    onSave(values);
-    onOpenChange(false);
+  function onSubmit(values: AdminSetPasswordValues) {
+    if (!user) {
+      return;
+    }
+
+    const formData = new FormData();
+    formData.set("newPassword", values.newPassword);
+    formData.set("confirmPassword", values.confirmPassword);
+
+    startTransition(async () => {
+      const result = await setUserPasswordAction(user.id, formData);
+      if (
+        !notifyFromActionResult(result, "Password updated.", "Failed to update password.")
+      ) {
+        return;
+      }
+      onOpenChange(false);
+    });
   }
 
   return (
     <CmsDialog open={open} onOpenChange={onOpenChange}>
       <CmsDialogContent showCloseButton size="sm" className="flex flex-col">
         <CmsDialogHeader>
-          <CmsDialogTitle>Change password</CmsDialogTitle>
+          <CmsDialogTitle>Set password</CmsDialogTitle>
           <CmsDialogDescription>
-            Choose a new password for your CMS account.
+            {user
+              ? `Override the login password for ${user.name}. They can sign in with this password immediately.`
+              : "Override the login password for this user."}
           </CmsDialogDescription>
         </CmsDialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className={DIALOG_FORM_CLASS}>
           <CmsDialogBody className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="current-password">Current password</Label>
+              <Label htmlFor="admin-new-password">New password</Label>
               <PasswordInput
-                id="current-password"
-                autoComplete="current-password"
-                disabled={isSubmitting}
-                aria-invalid={Boolean(errors.currentPassword)}
-                {...register("currentPassword")}
-              />
-              {errors.currentPassword ? (
-                <p className="text-destructive text-xs">
-                  {errors.currentPassword.message}
-                </p>
-              ) : null}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="new-password">New password</Label>
-              <PasswordInput
-                id="new-password"
+                id="admin-new-password"
                 autoComplete="new-password"
-                disabled={isSubmitting}
+                disabled={isPending}
                 aria-invalid={Boolean(errors.newPassword)}
                 {...register("newPassword")}
               />
@@ -106,11 +109,11 @@ export function SidebarProfilePasswordDialog({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirm-password">Confirm new password</Label>
+              <Label htmlFor="admin-confirm-password">Confirm password</Label>
               <PasswordInput
-                id="confirm-password"
+                id="admin-confirm-password"
                 autoComplete="new-password"
-                disabled={isSubmitting}
+                disabled={isPending}
                 aria-invalid={Boolean(errors.confirmPassword)}
                 {...register("confirmPassword")}
               />
@@ -126,13 +129,13 @@ export function SidebarProfilePasswordDialog({
             <Button
               type="button"
               variant="outline"
-              disabled={isSubmitting}
+              disabled={isPending}
               onClick={() => onOpenChange(false)}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              Update password
+            <Button type="submit" disabled={isPending || !user}>
+              {isPending ? "Saving..." : "Set password"}
             </Button>
           </CmsDialogFooter>
         </form>
