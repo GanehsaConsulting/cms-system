@@ -1,1 +1,41 @@
-[]
+[
+  {
+    "id": "13899c5b-f25f-4bc2-9363-9b740c6f86ac",
+    "brandId": "go-space",
+    "name": "PY YASSER FARID KONSULTAN INDONESIA",
+    "logo": "https://res.cloudinary.com/dydm4uctz/image/upload/v1782270916/cms-gospace/client-logos/a0ak3snecl4scxbiun6g.jpg",
+    "website": "",
+    "description": "",
+    "featured": false,
+    "testimonials": [],
+    "photos": [],
+    "createdAt": "2026-07-20T17:07:32.545Z",
+    "updatedAt": "2026-07-20T17:07:32.545Z"
+  },
+  {
+    "id": "5e07e37c-629b-4780-b369-11c4bf5824d7",
+    "brandId": "go-space",
+    "name": "Ganesha Multi Kreatif",
+    "logo": "https://www.ganeshaconsulting.co.id/logo-ganesha.png",
+    "website": "",
+    "description": "",
+    "featured": false,
+    "testimonials": [],
+    "photos": [],
+    "createdAt": "2026-07-20T17:07:32.546Z",
+    "updatedAt": "2026-07-20T17:07:32.546Z"
+  },
+  {
+    "id": "88749ed5-dc3e-4e81-bfc8-03d6cd35c9b9",
+    "brandId": "go-space",
+    "name": "PT INTERNATIONAL ALTERNATIVE UNIVERSAL",
+    "logo": "https://res.cloudinary.com/dydm4uctz/image/upload/v1782271847/cms-gospace/client-logos/bza3oisxo7x1jy9uryy0.jpg",
+    "website": "",
+    "description": "",
+    "featured": false,
+    "testimonials": [],
+    "photos": [],
+    "createdAt": "2026-07-20T17:07:32.546Z",
+    "updatedAt": "2026-07-20T17:07:32.546Z"
+  }
+]

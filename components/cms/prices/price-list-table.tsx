@@ -41,13 +41,6 @@ export function PriceListTable({
             onSortChange={onSortChange}
           />
           <CmsListTableSortHead
-            label="Service"
-            column="service"
-            sort={sort}
-            sortMap={PRICE_TABLE_SORT_MAP}
-            onSortChange={onSortChange}
-          />
-          <CmsListTableSortHead
             label="Price"
             column="price"
             sort={sort}

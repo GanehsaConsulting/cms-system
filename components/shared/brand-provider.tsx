@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   createContext,
   useCallback,
@@ -8,6 +8,7 @@ import {
   useEffect,
   useMemo,
   useState,
+  useTransition,
 } from "react";
 import {
   contentNavLinks,
@@ -23,6 +24,8 @@ import {
   readStoredActiveBrandId,
   writeStoredActiveBrandId,
 } from "@/lib/brands/storage";
+import { getBrandSwitchNavigationPath } from "@/lib/brands/workspace-path";
+import { notifySuccess } from "@/lib/notify/action-toast";
 import type { Brand } from "@/types/brand";
 
 interface BrandContextValue {
@@ -32,6 +35,8 @@ interface BrandContextValue {
   featureBrand: Brand | null;
   activeBrandId: string | null;
   setActiveBrandId: (id: string) => void;
+  /** True while `router.refresh()` / navigation is in flight after a brand switch. */
+  isSwitchingBrand: boolean;
   mainNavLinks: NavLink[];
   contentNavLinks: NavLink[];
   utilityNavLinks: NavLink[];
@@ -62,6 +67,8 @@ export function BrandProvider({
   children,
 }: BrandProviderProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const [isSwitchingBrand, startBrandSwitch] = useTransition();
   const [activeBrandId, setActiveBrandIdState] = useState<string | null>(null);
   const [switcherOpen, setSwitcherOpen] = useState(false);
   const [hydrated, setHydrated] = useState(false);
@@ -99,12 +106,37 @@ export function BrandProvider({
         return;
       }
 
+      if (id === activeBrandId) {
+        return;
+      }
+
       writeStoredActiveBrandId(id);
       setActiveBrandIdState(id);
-      router.refresh();
+      notifySuccess(`Switched to ${brand.name}.`);
+
+      const navigateTo = getBrandSwitchNavigationPath(pathname, brand);
+
+      startBrandSwitch(() => {
+        if (navigateTo && navigateTo !== pathname) {
+          router.push(navigateTo);
+          return;
+        }
+        router.refresh();
+      });
     },
-    [brands, router],
+    [activeBrandId, brands, pathname, router],
   );
+
+  const openSwitcher = useCallback(() => {
+    if (isSwitchingBrand) {
+      return;
+    }
+    setSwitcherOpen(true);
+  }, [isSwitchingBrand]);
+
+  const closeSwitcher = useCallback(() => {
+    setSwitcherOpen(false);
+  }, []);
 
   const filteredMainNav = useMemo(
     () => filterNavLinksByBrand(mainNavLinks, activeBrand),
@@ -128,6 +160,7 @@ export function BrandProvider({
       featureBrand,
       activeBrandId: activeBrand?.id ?? null,
       setActiveBrandId,
+      isSwitchingBrand,
       mainNavLinks: filteredMainNav,
       contentNavLinks: filteredContentNav,
       utilityNavLinks: filteredUtilityNav,
@@ -135,8 +168,8 @@ export function BrandProvider({
       canAccessSettings,
       canAccessAllPages,
       switcherOpen,
-      openSwitcher: () => setSwitcherOpen(true),
-      closeSwitcher: () => setSwitcherOpen(false),
+      openSwitcher,
+      closeSwitcher,
       setSwitcherOpen,
     }),
     [
@@ -144,10 +177,13 @@ export function BrandProvider({
       brands,
       canAccessAllPages,
       canAccessSettings,
+      closeSwitcher,
       featureBrand,
       filteredContentNav,
       filteredMainNav,
       filteredUtilityNav,
+      isSwitchingBrand,
+      openSwitcher,
       setActiveBrandId,
       switcherOpen,
       userName,

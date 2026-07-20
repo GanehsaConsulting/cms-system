@@ -1,1 +1,3374 @@
-[]
+[
+  {
+    "id": "1",
+    "brandId": "go-space",
+    "slug": "vo-space-lite",
+    "serviceSlug": "virtual-office",
+    "category": "virtual-office",
+    "highlighted": false,
+    "description": {
+      "id": "Paket virtual office affordable dengan alamat prestisius dan fasilitas meeting room dasar.",
+      "en": "An affordable virtual office package with a prestigious address and basic meeting room facilities.",
+      "zh": "实惠的虚拟办公室套餐，含优质地址和基础会议室设施。"
+    },
+    "service": {
+      "id": "Virtual Office",
+      "en": "Virtual Office",
+      "zh": "虚拟办公室"
+    },
+    "packageName": {
+      "id": "Virtual Office Space Lite",
+      "en": "Virtual Office Space Lite",
+      "zh": "虚拟办公室 Lite 套餐"
+    },
+    "price": 1899000,
+    "strikethroughPrice": 2836000,
+    "whatsappPhone": "628887127000",
+    "whatsappMessage": {
+      "id": "",
+      "en": "",
+      "zh": ""
+    },
+    "isActive": true,
+    "features": [
+      {
+        "id": "1-1",
+        "name": {
+          "id": "Akses Private Lift",
+          "en": "Private lift access",
+          "zh": "私人电梯通道"
+        }
+      },
+      {
+        "id": "1-2",
+        "name": {
+          "id": "Alamat Domisili Prestisius",
+          "en": "Prestigious domicile address",
+          "zh": "优质住所地址"
+        }
+      },
+      {
+        "id": "1-3",
+        "name": {
+          "id": "Free Tea & Coffee",
+          "en": "Free tea & coffee",
+          "zh": "免费茶水和咖啡"
+        }
+      },
+      {
+        "id": "1-4",
+        "name": {
+          "id": "Free Wifi",
+          "en": "Free Wi-Fi",
+          "zh": "免费 Wi-Fi"
+        }
+      },
+      {
+        "id": "1-5",
+        "name": {
+          "id": "Free meeting room 40 jam/tahun",
+          "en": "Free meeting room 40 hours/year",
+          "zh": "免费会议室 40 小时/年"
+        }
+      },
+      {
+        "id": "1-6",
+        "name": {
+          "id": "Meeting room smoking area (3 orang)",
+          "en": "Smoking area meeting room (3 people)",
+          "zh": "吸烟区会议室（3 人）"
+        }
+      },
+      {
+        "id": "1-7",
+        "name": {
+          "id": "Penerimaan Surat & Paket",
+          "en": "Mail & package handling",
+          "zh": "信件和包裹接收"
+        }
+      },
+      {
+        "id": "1-8",
+        "name": {
+          "id": "Resepsionis Profesional",
+          "en": "Professional receptionist",
+          "zh": "专业接待员"
+        }
+      },
+      {
+        "id": "1-9",
+        "name": {
+          "id": "Ruang meeting besar (10 orang)",
+          "en": "Large meeting room (10 people)",
+          "zh": "大型会议室（10 人）"
+        }
+      },
+      {
+        "id": "1-10",
+        "name": {
+          "id": "Ruang meeting kecil (5 orang)",
+          "en": "Small meeting room (5 people)",
+          "zh": "小型会议室（5 人）"
+        }
+      },
+      {
+        "id": "1-11",
+        "name": {
+          "id": "Self Service Pantry",
+          "en": "Self-service pantry",
+          "zh": "自助茶水间"
+        }
+      },
+      {
+        "id": "1-12",
+        "name": {
+          "id": "Smart TV",
+          "en": "Smart TV",
+          "zh": "智能电视"
+        }
+      },
+      {
+        "id": "1-13",
+        "name": {
+          "id": "Whiteboard",
+          "en": "Whiteboard",
+          "zh": "白板"
+        }
+      }
+    ],
+    "createdAt": "2026-07-20T17:07:32.508Z",
+    "updatedAt": "2026-07-20T17:07:32.508Z"
+  },
+  {
+    "id": "2",
+    "brandId": "go-space",
+    "slug": "vo-space-core",
+    "serviceSlug": "virtual-office",
+    "category": "virtual-office",
+    "highlighted": true,
+    "description": {
+      "id": "Paket virtual office dengan kuota meeting room lebih besar untuk kebutuhan operasional yang lebih aktif.",
+      "en": "A virtual office package with a larger meeting room quota for more active operations.",
+      "zh": "会议室额度更大的虚拟办公室套餐，适合更活跃的运营需求。"
+    },
+    "service": {
+      "id": "Virtual Office",
+      "en": "Virtual Office",
+      "zh": "虚拟办公室"
+    },
+    "packageName": {
+      "id": "Virtual Office Space Core",
+      "en": "Virtual Office Space Core",
+      "zh": "虚拟办公室 Core 套餐"
+    },
+    "price": 2900000,
+    "strikethroughPrice": 4328000,
+    "whatsappPhone": "628887127000",
+    "whatsappMessage": {
+      "id": "",
+      "en": "",
+      "zh": ""
+    },
+    "isActive": true,
+    "features": [
+      {
+        "id": "2-1",
+        "name": {
+          "id": "Akses Private Lift",
+          "en": "Private lift access",
+          "zh": "私人电梯通道"
+        }
+      },
+      {
+        "id": "2-2",
+        "name": {
+          "id": "Alamat Domisili Prestisius",
+          "en": "Prestigious domicile address",
+          "zh": "优质住所地址"
+        }
+      },
+      {
+        "id": "2-3",
+        "name": {
+          "id": "Free Tea & Coffee",
+          "en": "Free tea & coffee",
+          "zh": "免费茶水和咖啡"
+        }
+      },
+      {
+        "id": "2-4",
+        "name": {
+          "id": "Free Wifi",
+          "en": "Free Wi-Fi",
+          "zh": "免费 Wi-Fi"
+        }
+      },
+      {
+        "id": "2-5",
+        "name": {
+          "id": "Free meeting room 90 jam/tahun",
+          "en": "Free meeting room 90 hours/year",
+          "zh": "免费会议室 90 小时/年"
+        }
+      },
+      {
+        "id": "2-6",
+        "name": {
+          "id": "Meeting room smoking area (3 orang)",
+          "en": "Smoking area meeting room (3 people)",
+          "zh": "吸烟区会议室（3 人）"
+        }
+      },
+      {
+        "id": "2-7",
+        "name": {
+          "id": "Penerimaan Surat & Paket",
+          "en": "Mail & package handling",
+          "zh": "信件和包裹接收"
+        }
+      },
+      {
+        "id": "2-8",
+        "name": {
+          "id": "Resepsionis Profesional",
+          "en": "Professional receptionist",
+          "zh": "专业接待员"
+        }
+      },
+      {
+        "id": "2-9",
+        "name": {
+          "id": "Ruang meeting besar (10 orang)",
+          "en": "Large meeting room (10 people)",
+          "zh": "大型会议室（10 人）"
+        }
+      },
+      {
+        "id": "2-10",
+        "name": {
+          "id": "Ruang meeting kecil (5 orang)",
+          "en": "Small meeting room (5 people)",
+          "zh": "小型会议室（5 人）"
+        }
+      },
+      {
+        "id": "2-11",
+        "name": {
+          "id": "Self Service Pantry",
+          "en": "Self-service pantry",
+          "zh": "自助茶水间"
+        }
+      },
+      {
+        "id": "2-12",
+        "name": {
+          "id": "Smart TV",
+          "en": "Smart TV",
+          "zh": "智能电视"
+        }
+      },
+      {
+        "id": "2-13",
+        "name": {
+          "id": "Whiteboard",
+          "en": "Whiteboard",
+          "zh": "白板"
+        }
+      }
+    ],
+    "createdAt": "2026-07-20T17:07:32.509Z",
+    "updatedAt": "2026-07-20T17:07:32.509Z"
+  },
+  {
+    "id": "3",
+    "brandId": "go-space",
+    "slug": "meeting-room-small",
+    "serviceSlug": "virtual-office",
+    "category": "meeting-room",
+    "highlighted": false,
+    "description": {
+      "id": "Paket ruang meeting kecil untuk diskusi tim, konsultasi, dan meeting privat.",
+      "en": "A small meeting room package for team discussions, consultations, and private meetings.",
+      "zh": "适合团队讨论、咨询和私人会议的小型会议室套餐。"
+    },
+    "service": {
+      "id": "Virtual Office",
+      "en": "Virtual Office",
+      "zh": "虚拟办公室"
+    },
+    "packageName": {
+      "id": "Ruang Meeting Kecil",
+      "en": "Small Meeting Room",
+      "zh": "小型会议室"
+    },
+    "price": 149000,
+    "strikethroughPrice": 222000,
+    "whatsappPhone": "628887127000",
+    "whatsappMessage": {
+      "id": "",
+      "en": "",
+      "zh": ""
+    },
+    "isActive": true,
+    "features": [
+      {
+        "id": "3-1",
+        "name": {
+          "id": "339k untuk Full Day",
+          "en": "Rp 339K for full day",
+          "zh": "全天 Rp 339K"
+        }
+      },
+      {
+        "id": "3-2",
+        "name": {
+          "id": "Additional 49k/jam",
+          "en": "Additional Rp 49K/hour",
+          "zh": "额外 Rp 49K/小时"
+        }
+      },
+      {
+        "id": "3-3",
+        "name": {
+          "id": "Air Mineral",
+          "en": "Mineral water",
+          "zh": "矿泉水"
+        }
+      },
+      {
+        "id": "3-4",
+        "name": {
+          "id": "Free Wifi",
+          "en": "Free Wi-Fi",
+          "zh": "免费 Wi-Fi"
+        }
+      },
+      {
+        "id": "3-5",
+        "name": {
+          "id": "Smart TV & AC",
+          "en": "Smart TV & AC",
+          "zh": "智能电视与空调"
+        }
+      }
+    ],
+    "createdAt": "2026-07-20T17:07:32.514Z",
+    "updatedAt": "2026-07-20T17:07:32.514Z"
+  },
+  {
+    "id": "4",
+    "brandId": "go-space",
+    "slug": "meeting-room-large",
+    "serviceSlug": "virtual-office",
+    "category": "meeting-room",
+    "highlighted": true,
+    "description": {
+      "id": "Paket ruang meeting besar untuk presentasi klien, workshop, training, dan meeting formal.",
+      "en": "A large meeting room package for client presentations, workshops, training, and formal meetings.",
+      "zh": "适合客户演示、工作坊、培训和正式会议的大型会议室套餐。"
+    },
+    "service": {
+      "id": "Virtual Office",
+      "en": "Virtual Office",
+      "zh": "虚拟办公室"
+    },
+    "packageName": {
+      "id": "Ruang Meeting Besar",
+      "en": "Large Meeting Room",
+      "zh": "大型会议室"
+    },
+    "price": 229000,
+    "strikethroughPrice": 342000,
+    "whatsappPhone": "628887127000",
+    "whatsappMessage": {
+      "id": "",
+      "en": "",
+      "zh": ""
+    },
+    "isActive": true,
+    "features": [
+      {
+        "id": "4-1",
+        "name": {
+          "id": "629k full day",
+          "en": "Rp 629K full day",
+          "zh": "全天 Rp 629K"
+        }
+      },
+      {
+        "id": "4-2",
+        "name": {
+          "id": "8-10 pax",
+          "en": "8–10 pax",
+          "zh": "8–10 人"
+        }
+      },
+      {
+        "id": "4-3",
+        "name": {
+          "id": "Additional 89k/jam",
+          "en": "Additional Rp 89K/hour",
+          "zh": "额外 Rp 89K/小时"
+        }
+      },
+      {
+        "id": "4-4",
+        "name": {
+          "id": "Air Mineral",
+          "en": "Mineral water",
+          "zh": "矿泉水"
+        }
+      },
+      {
+        "id": "4-5",
+        "name": {
+          "id": "Free Wifi",
+          "en": "Free Wi-Fi",
+          "zh": "免费 Wi-Fi"
+        }
+      },
+      {
+        "id": "4-6",
+        "name": {
+          "id": "Smart TV & AC",
+          "en": "Smart TV & AC",
+          "zh": "智能电视与空调"
+        }
+      }
+    ],
+    "createdAt": "2026-07-20T17:07:32.515Z",
+    "updatedAt": "2026-07-20T17:07:32.515Z"
+  },
+  {
+    "id": "5",
+    "brandId": "go-space",
+    "slug": "pt-lengkap-website",
+    "serviceSlug": "pendirian-pt",
+    "category": "pt",
+    "highlighted": true,
+    "description": {
+      "id": "Paket lengkap pendirian PT dengan identitas bisnis digital dan website company.",
+      "en": "A complete PT establishment package with digital business identity and a company website.",
+      "zh": "完整 PT 设立套餐，包含数字商务身份和公司网站。"
+    },
+    "service": {
+      "id": "Pendirian PT",
+      "en": "PT Establishment",
+      "zh": "PT 设立"
+    },
+    "packageName": {
+      "id": "PT LENGKAP + WEBSITE COMPANY",
+      "en": "Complete PT + Company Website",
+      "zh": "完整 PT + 公司网站"
+    },
+    "price": 6500000,
+    "strikethroughPrice": 10156000,
+    "whatsappPhone": "628887127000",
+    "whatsappMessage": {
+      "id": "Halo MinGans! Aku mau konsultasi terkait Pembuatan PT nih!",
+      "en": "Halo MinGans! Aku mau konsultasi terkait Pembuatan PT nih!",
+      "zh": "Halo MinGans! Aku mau konsultasi terkait Pembuatan PT nih!"
+    },
+    "isActive": true,
+    "features": [
+      {
+        "id": "5-1",
+        "name": {
+          "id": "Akta Pendirian Perusahaan",
+          "en": "Company establishment deed",
+          "zh": "公司设立公证书"
+        }
+      },
+      {
+        "id": "5-2",
+        "name": {
+          "id": "Company Profile",
+          "en": "Company profile",
+          "zh": "公司简介"
+        }
+      },
+      {
+        "id": "5-3",
+        "name": {
+          "id": "Coretax Badan",
+          "en": "Corporate Coretax",
+          "zh": "企业 Coretax"
+        }
+      },
+      {
+        "id": "5-4",
+        "name": {
+          "id": "Free Account Gmail",
+          "en": "Free Gmail account",
+          "zh": "免费 Gmail 账号"
+        }
+      },
+      {
+        "id": "5-5",
+        "name": {
+          "id": "Free Konsultasi",
+          "en": "Free consultation",
+          "zh": "免费咨询"
+        }
+      },
+      {
+        "id": "5-6",
+        "name": {
+          "id": "Free Stempel Nama Perusahaan",
+          "en": "Free company stamp",
+          "zh": "免费公司印章"
+        }
+      },
+      {
+        "id": "5-7",
+        "name": {
+          "id": "Free Template Laporan Keuangan",
+          "en": "Free financial report template",
+          "zh": "免费财务报表模板"
+        }
+      },
+      {
+        "id": "5-8",
+        "name": {
+          "id": "Hak Akses OSS",
+          "en": "OSS access rights",
+          "zh": "OSS 访问权限"
+        }
+      },
+      {
+        "id": "5-9",
+        "name": {
+          "id": "Invoice",
+          "en": "Invoice",
+          "zh": "发票"
+        }
+      },
+      {
+        "id": "5-10",
+        "name": {
+          "id": "Kartu Nama",
+          "en": "Business cards",
+          "zh": "名片"
+        }
+      },
+      {
+        "id": "5-11",
+        "name": {
+          "id": "Kop Surat",
+          "en": "Letterhead",
+          "zh": "公司信纸"
+        }
+      },
+      {
+        "id": "5-12",
+        "name": {
+          "id": "Logo Perusahaan",
+          "en": "Company logo",
+          "zh": "公司标志"
+        }
+      },
+      {
+        "id": "5-13",
+        "name": {
+          "id": "NPWP Badan",
+          "en": "Company tax ID",
+          "zh": "公司税号"
+        }
+      },
+      {
+        "id": "5-14",
+        "name": {
+          "id": "Nomor Induk Berusaha (NIB)",
+          "en": "Business Identification Number (NIB)",
+          "zh": "营业识别号 (NIB)"
+        }
+      },
+      {
+        "id": "5-15",
+        "name": {
+          "id": "Pernyataan Mandiri OSS (K3L dan SPPL)",
+          "en": "OSS self-declaration (K3L and SPPL)",
+          "zh": "OSS 自我声明 (K3L 和 SPPL)"
+        }
+      },
+      {
+        "id": "5-16",
+        "name": {
+          "id": "Surat Keputusan Kemenkumham",
+          "en": "Ministry of Law and Human Rights decree",
+          "zh": "法律与人权部批准书"
+        }
+      },
+      {
+        "id": "5-17",
+        "name": {
+          "id": "Surat Keterangan Terdaftar Pajak (SKT)",
+          "en": "Tax registration certificate (SKT)",
+          "zh": "税务登记证明 (SKT)"
+        }
+      },
+      {
+        "id": "5-18",
+        "name": {
+          "id": "Website Company",
+          "en": "Company website",
+          "zh": "公司网站"
+        }
+      }
+    ],
+    "createdAt": "2026-07-20T17:07:32.519Z",
+    "updatedAt": "2026-07-20T17:07:32.519Z"
+  },
+  {
+    "id": "6",
+    "brandId": "go-space",
+    "slug": "pt-lengkap",
+    "serviceSlug": "pendirian-pt",
+    "category": "pt",
+    "highlighted": true,
+    "description": {
+      "id": "Paket pendirian PT lengkap untuk legalitas, branding dasar, dan kebutuhan operasional.",
+      "en": "A complete PT establishment package for legality, basic branding, and operational needs.",
+      "zh": "完整 PT 设立套餐，适合法务、基础品牌和运营需求。"
+    },
+    "service": {
+      "id": "Pendirian PT",
+      "en": "PT Establishment",
+      "zh": "PT 设立"
+    },
+    "packageName": {
+      "id": "PT LENGKAP",
+      "en": "Complete PT",
+      "zh": "完整 PT"
+    },
+    "price": 5000000,
+    "strikethroughPrice": 7812500,
+    "whatsappPhone": "628887127000",
+    "whatsappMessage": {
+      "id": "Halo MinGans! Aku mau konsultasi terkait Pembuatan PT nih!",
+      "en": "Halo MinGans! Aku mau konsultasi terkait Pembuatan PT nih!",
+      "zh": "Halo MinGans! Aku mau konsultasi terkait Pembuatan PT nih!"
+    },
+    "isActive": true,
+    "features": [
+      {
+        "id": "6-1",
+        "name": {
+          "id": "Akta Pendirian Perusahaan",
+          "en": "Company establishment deed",
+          "zh": "公司设立公证书"
+        }
+      },
+      {
+        "id": "6-2",
+        "name": {
+          "id": "Company Profile",
+          "en": "Company profile",
+          "zh": "公司简介"
+        }
+      },
+      {
+        "id": "6-3",
+        "name": {
+          "id": "Coretax Badan",
+          "en": "Corporate Coretax",
+          "zh": "企业 Coretax"
+        }
+      },
+      {
+        "id": "6-4",
+        "name": {
+          "id": "Free Account Gmail",
+          "en": "Free Gmail account",
+          "zh": "免费 Gmail 账号"
+        }
+      },
+      {
+        "id": "6-5",
+        "name": {
+          "id": "Free Konsultasi",
+          "en": "Free consultation",
+          "zh": "免费咨询"
+        }
+      },
+      {
+        "id": "6-6",
+        "name": {
+          "id": "Free Stempel Nama Perusahaan",
+          "en": "Free company stamp",
+          "zh": "免费公司印章"
+        }
+      },
+      {
+        "id": "6-7",
+        "name": {
+          "id": "Free Template Laporan Keuangan",
+          "en": "Free financial report template",
+          "zh": "免费财务报表模板"
+        }
+      },
+      {
+        "id": "6-8",
+        "name": {
+          "id": "Hak Akses OSS",
+          "en": "OSS access rights",
+          "zh": "OSS 访问权限"
+        }
+      },
+      {
+        "id": "6-9",
+        "name": {
+          "id": "Invoice",
+          "en": "Invoice",
+          "zh": "发票"
+        }
+      },
+      {
+        "id": "6-10",
+        "name": {
+          "id": "Kartu Nama",
+          "en": "Business cards",
+          "zh": "名片"
+        }
+      },
+      {
+        "id": "6-11",
+        "name": {
+          "id": "Kop Surat",
+          "en": "Letterhead",
+          "zh": "公司信纸"
+        }
+      },
+      {
+        "id": "6-12",
+        "name": {
+          "id": "Logo Perusahaan",
+          "en": "Company logo",
+          "zh": "公司标志"
+        }
+      },
+      {
+        "id": "6-13",
+        "name": {
+          "id": "NPWP Badan",
+          "en": "Company tax ID",
+          "zh": "公司税号"
+        }
+      },
+      {
+        "id": "6-14",
+        "name": {
+          "id": "Nomor Induk Berusaha (NIB)",
+          "en": "Business Identification Number (NIB)",
+          "zh": "营业识别号 (NIB)"
+        }
+      },
+      {
+        "id": "6-15",
+        "name": {
+          "id": "Pernyataan Mandiri OSS (K3L dan SPPL)",
+          "en": "OSS self-declaration (K3L and SPPL)",
+          "zh": "OSS 自我声明 (K3L 和 SPPL)"
+        }
+      },
+      {
+        "id": "6-16",
+        "name": {
+          "id": "Surat Keputusan Kemenkumham",
+          "en": "Ministry of Law and Human Rights decree",
+          "zh": "法律与人权部批准书"
+        }
+      },
+      {
+        "id": "6-17",
+        "name": {
+          "id": "Surat Keterangan Terdaftar Pajak (SKT)",
+          "en": "Tax registration certificate (SKT)",
+          "zh": "税务登记证明 (SKT)"
+        }
+      }
+    ],
+    "createdAt": "2026-07-20T17:07:32.523Z",
+    "updatedAt": "2026-07-20T17:07:32.523Z"
+  },
+  {
+    "id": "7",
+    "brandId": "go-space",
+    "slug": "pt-dasar",
+    "serviceSlug": "pendirian-pt",
+    "category": "pt",
+    "highlighted": true,
+    "description": {
+      "id": "Paket dasar pendirian PT untuk legalitas inti dan dokumen wajib usaha.",
+      "en": "A basic PT establishment package for core legality and required business documents.",
+      "zh": "基础 PT 设立套餐，包含核心法务和必要业务文件。"
+    },
+    "service": {
+      "id": "Pendirian PT",
+      "en": "PT Establishment",
+      "zh": "PT 设立"
+    },
+    "packageName": {
+      "id": "PT DASAR",
+      "en": "Basic PT",
+      "zh": "基础 PT"
+    },
+    "price": 4900000,
+    "strikethroughPrice": 7031250,
+    "whatsappPhone": "628887127000",
+    "whatsappMessage": {
+      "id": "Halo MinGans! Aku mau konsultasi terkait Pembuatan PT nih!",
+      "en": "Halo MinGans! Aku mau konsultasi terkait Pembuatan PT nih!",
+      "zh": "Halo MinGans! Aku mau konsultasi terkait Pembuatan PT nih!"
+    },
+    "isActive": true,
+    "features": [
+      {
+        "id": "7-1",
+        "name": {
+          "id": "Akta Pendirian Perusahaan",
+          "en": "Company establishment deed",
+          "zh": "公司设立公证书"
+        }
+      },
+      {
+        "id": "7-2",
+        "name": {
+          "id": "Coretax Badan",
+          "en": "Corporate Coretax",
+          "zh": "企业 Coretax"
+        }
+      },
+      {
+        "id": "7-3",
+        "name": {
+          "id": "Free Account Gmail",
+          "en": "Free Gmail account",
+          "zh": "免费 Gmail 账号"
+        }
+      },
+      {
+        "id": "7-4",
+        "name": {
+          "id": "Free Konsultasi",
+          "en": "Free consultation",
+          "zh": "免费咨询"
+        }
+      },
+      {
+        "id": "7-5",
+        "name": {
+          "id": "Free Stempel Nama Perusahaan",
+          "en": "Free company stamp",
+          "zh": "免费公司印章"
+        }
+      },
+      {
+        "id": "7-6",
+        "name": {
+          "id": "Free Template Laporan Keuangan",
+          "en": "Free financial report template",
+          "zh": "免费财务报表模板"
+        }
+      },
+      {
+        "id": "7-7",
+        "name": {
+          "id": "Hak Akses OSS",
+          "en": "OSS access rights",
+          "zh": "OSS 访问权限"
+        }
+      },
+      {
+        "id": "7-8",
+        "name": {
+          "id": "NPWP Badan",
+          "en": "Company tax ID",
+          "zh": "公司税号"
+        }
+      },
+      {
+        "id": "7-9",
+        "name": {
+          "id": "Nomor Induk Berusaha (NIB)",
+          "en": "Business Identification Number (NIB)",
+          "zh": "营业识别号 (NIB)"
+        }
+      },
+      {
+        "id": "7-10",
+        "name": {
+          "id": "Pernyataan Mandiri OSS (K3L dan SPPL)",
+          "en": "OSS self-declaration (K3L and SPPL)",
+          "zh": "OSS 自我声明 (K3L 和 SPPL)"
+        }
+      },
+      {
+        "id": "7-11",
+        "name": {
+          "id": "Surat Keputusan Kemenkumham",
+          "en": "Ministry of Law and Human Rights decree",
+          "zh": "法律与人权部批准书"
+        }
+      },
+      {
+        "id": "7-12",
+        "name": {
+          "id": "Surat Keterangan Terdaftar Pajak (SKT)",
+          "en": "Tax registration certificate (SKT)",
+          "zh": "税务登记证明 (SKT)"
+        }
+      }
+    ],
+    "createdAt": "2026-07-20T17:07:32.532Z",
+    "updatedAt": "2026-07-20T17:07:32.532Z"
+  },
+  {
+    "id": "8",
+    "brandId": "go-space",
+    "slug": "pt-lengkap-pkp-website",
+    "serviceSlug": "pendirian-pt",
+    "category": "pt",
+    "highlighted": false,
+    "description": {
+      "id": "Paket PT lengkap dengan PKP, sertifikat elektronik, dan website company.",
+      "en": "A complete PT package with PKP, electronic certificate, and a company website.",
+      "zh": "完整 PT 套餐，包含 PKP、电子证书和公司网站。"
+    },
+    "service": {
+      "id": "Pendirian PT",
+      "en": "PT Establishment",
+      "zh": "PT 设立"
+    },
+    "packageName": {
+      "id": "PT LENGKAP + PKP + WEBSITE COMPANY",
+      "en": "Complete PT + PKP + Company Website",
+      "zh": "完整 PT + PKP + 公司网站"
+    },
+    "price": 7000000,
+    "strikethroughPrice": 10937500,
+    "whatsappPhone": "628887127000",
+    "whatsappMessage": {
+      "id": "Halo MinGans! Aku mau konsultasi terkait Pembuatan PT nih!",
+      "en": "Halo MinGans! Aku mau konsultasi terkait Pembuatan PT nih!",
+      "zh": "Halo MinGans! Aku mau konsultasi terkait Pembuatan PT nih!"
+    },
+    "isActive": true,
+    "features": [
+      {
+        "id": "8-1",
+        "name": {
+          "id": "Akta Pendirian Perusahaan",
+          "en": "Company establishment deed",
+          "zh": "公司设立公证书"
+        }
+      },
+      {
+        "id": "8-2",
+        "name": {
+          "id": "Company Profile",
+          "en": "Company profile",
+          "zh": "公司简介"
+        }
+      },
+      {
+        "id": "8-3",
+        "name": {
+          "id": "Coretax Badan",
+          "en": "Corporate Coretax",
+          "zh": "企业 Coretax"
+        }
+      },
+      {
+        "id": "8-4",
+        "name": {
+          "id": "Free Account Gmail",
+          "en": "Free Gmail account",
+          "zh": "免费 Gmail 账号"
+        }
+      },
+      {
+        "id": "8-5",
+        "name": {
+          "id": "Free Konsultasi",
+          "en": "Free consultation",
+          "zh": "免费咨询"
+        }
+      },
+      {
+        "id": "8-6",
+        "name": {
+          "id": "Free Stempel Nama Perusahaan",
+          "en": "Free company stamp",
+          "zh": "免费公司印章"
+        }
+      },
+      {
+        "id": "8-7",
+        "name": {
+          "id": "Free Template Laporan Keuangan",
+          "en": "Free financial report template",
+          "zh": "免费财务报表模板"
+        }
+      },
+      {
+        "id": "8-8",
+        "name": {
+          "id": "Hak Akses OSS",
+          "en": "OSS access rights",
+          "zh": "OSS 访问权限"
+        }
+      },
+      {
+        "id": "8-9",
+        "name": {
+          "id": "Invoice",
+          "en": "Invoice",
+          "zh": "发票"
+        }
+      },
+      {
+        "id": "8-10",
+        "name": {
+          "id": "Kartu Nama",
+          "en": "Business cards",
+          "zh": "名片"
+        }
+      },
+      {
+        "id": "8-11",
+        "name": {
+          "id": "Kop Surat",
+          "en": "Letterhead",
+          "zh": "公司信纸"
+        }
+      },
+      {
+        "id": "8-12",
+        "name": {
+          "id": "Logo Perusahaan",
+          "en": "Company logo",
+          "zh": "公司标志"
+        }
+      },
+      {
+        "id": "8-13",
+        "name": {
+          "id": "NPWP Badan",
+          "en": "Company tax ID",
+          "zh": "公司税号"
+        }
+      },
+      {
+        "id": "8-14",
+        "name": {
+          "id": "Nomor Induk Berusaha (NIB)",
+          "en": "Business Identification Number (NIB)",
+          "zh": "营业识别号 (NIB)"
+        }
+      },
+      {
+        "id": "8-15",
+        "name": {
+          "id": "Pernyataan Mandiri OSS (K3L, Tata Ruang dan SPPL)",
+          "en": "OSS self-declaration (K3L, spatial planning, and SPPL)",
+          "zh": "OSS 自我声明 (K3L、空间规划和 SPPL)"
+        }
+      },
+      {
+        "id": "8-16",
+        "name": {
+          "id": "Sertifikat Elektronik",
+          "en": "Electronic certificate",
+          "zh": "电子证书"
+        }
+      },
+      {
+        "id": "8-17",
+        "name": {
+          "id": "Sertifikat Standar (Jika resiko KBLI Menengah Rendah)",
+          "en": "Standard certificate for medium-low risk KBLI",
+          "zh": "中低风险 KBLI 标准证书"
+        }
+      },
+      {
+        "id": "8-18",
+        "name": {
+          "id": "Surat Keputusan Kemenkumham",
+          "en": "Ministry of Law and Human Rights decree",
+          "zh": "法律与人权部批准书"
+        }
+      },
+      {
+        "id": "8-19",
+        "name": {
+          "id": "Surat Keterangan Terdaftar Pajak (SKT)",
+          "en": "Tax registration certificate (SKT)",
+          "zh": "税务登记证明 (SKT)"
+        }
+      },
+      {
+        "id": "8-20",
+        "name": {
+          "id": "Surat Pengukuhan Kena Pajak (SPPKP)",
+          "en": "Taxable entrepreneur confirmation letter (SPPKP)",
+          "zh": "应税企业确认书 (SPPKP)"
+        }
+      },
+      {
+        "id": "8-21",
+        "name": {
+          "id": "Website Company",
+          "en": "Company website",
+          "zh": "公司网站"
+        }
+      }
+    ],
+    "createdAt": "2026-07-20T17:07:32.533Z",
+    "updatedAt": "2026-07-20T17:07:32.533Z"
+  },
+  {
+    "id": "9",
+    "brandId": "go-space",
+    "slug": "pt-lengkap-pkp",
+    "serviceSlug": "pendirian-pt",
+    "category": "pt",
+    "highlighted": false,
+    "description": {
+      "id": "Paket PT lengkap dengan pengurusan PKP dan dokumen pajak terkait.",
+      "en": "A complete PT package with PKP processing and related tax documents.",
+      "zh": "完整 PT 套餐，包含 PKP 办理和相关税务文件。"
+    },
+    "service": {
+      "id": "Pendirian PT",
+      "en": "PT Establishment",
+      "zh": "PT 设立"
+    },
+    "packageName": {
+      "id": "PT LENGKAP + PKP",
+      "en": "Complete PT + PKP",
+      "zh": "完整 PT + PKP"
+    },
+    "price": 6000000,
+    "strikethroughPrice": 9375000,
+    "whatsappPhone": "628887127000",
+    "whatsappMessage": {
+      "id": "Halo MinGans! Aku mau konsultasi terkait Pembuatan PT nih!",
+      "en": "Halo MinGans! Aku mau konsultasi terkait Pembuatan PT nih!",
+      "zh": "Halo MinGans! Aku mau konsultasi terkait Pembuatan PT nih!"
+    },
+    "isActive": true,
+    "features": [
+      {
+        "id": "9-1",
+        "name": {
+          "id": "Akta Pendirian Perusahaan",
+          "en": "Company establishment deed",
+          "zh": "公司设立公证书"
+        }
+      },
+      {
+        "id": "9-2",
+        "name": {
+          "id": "Company Profile",
+          "en": "Company profile",
+          "zh": "公司简介"
+        }
+      },
+      {
+        "id": "9-3",
+        "name": {
+          "id": "Coretax Badan",
+          "en": "Corporate Coretax",
+          "zh": "企业 Coretax"
+        }
+      },
+      {
+        "id": "9-4",
+        "name": {
+          "id": "Free Account Gmail",
+          "en": "Free Gmail account",
+          "zh": "免费 Gmail 账号"
+        }
+      },
+      {
+        "id": "9-5",
+        "name": {
+          "id": "Free Konsultasi",
+          "en": "Free consultation",
+          "zh": "免费咨询"
+        }
+      },
+      {
+        "id": "9-6",
+        "name": {
+          "id": "Free Stempel Nama Perusahaan",
+          "en": "Free company stamp",
+          "zh": "免费公司印章"
+        }
+      },
+      {
+        "id": "9-7",
+        "name": {
+          "id": "Free Template Laporan Keuangan",
+          "en": "Free financial report template",
+          "zh": "免费财务报表模板"
+        }
+      },
+      {
+        "id": "9-8",
+        "name": {
+          "id": "Hak Akses OSS",
+          "en": "OSS access rights",
+          "zh": "OSS 访问权限"
+        }
+      },
+      {
+        "id": "9-9",
+        "name": {
+          "id": "Invoice",
+          "en": "Invoice",
+          "zh": "发票"
+        }
+      },
+      {
+        "id": "9-10",
+        "name": {
+          "id": "Kartu Nama",
+          "en": "Business cards",
+          "zh": "名片"
+        }
+      },
+      {
+        "id": "9-11",
+        "name": {
+          "id": "Kop Surat",
+          "en": "Letterhead",
+          "zh": "公司信纸"
+        }
+      },
+      {
+        "id": "9-12",
+        "name": {
+          "id": "Logo Perusahaan",
+          "en": "Company logo",
+          "zh": "公司标志"
+        }
+      },
+      {
+        "id": "9-13",
+        "name": {
+          "id": "NPWP Badan",
+          "en": "Company tax ID",
+          "zh": "公司税号"
+        }
+      },
+      {
+        "id": "9-14",
+        "name": {
+          "id": "Nomor Induk Berusaha (NIB)",
+          "en": "Business Identification Number (NIB)",
+          "zh": "营业识别号 (NIB)"
+        }
+      },
+      {
+        "id": "9-15",
+        "name": {
+          "id": "Pernyataan Mandiri OSS (K3L dan SPPL)",
+          "en": "OSS self-declaration (K3L and SPPL)",
+          "zh": "OSS 自我声明 (K3L 和 SPPL)"
+        }
+      },
+      {
+        "id": "9-16",
+        "name": {
+          "id": "Sertifikat Elektronik",
+          "en": "Electronic certificate",
+          "zh": "电子证书"
+        }
+      },
+      {
+        "id": "9-17",
+        "name": {
+          "id": "Surat Keputusan Kemenkumham",
+          "en": "Ministry of Law and Human Rights decree",
+          "zh": "法律与人权部批准书"
+        }
+      },
+      {
+        "id": "9-18",
+        "name": {
+          "id": "Surat Keterangan Terdaftar Pajak (SKT)",
+          "en": "Tax registration certificate (SKT)",
+          "zh": "税务登记证明 (SKT)"
+        }
+      },
+      {
+        "id": "9-19",
+        "name": {
+          "id": "Surat Pengukuhan Kena Pajak (SPPKP)",
+          "en": "Taxable entrepreneur confirmation letter (SPPKP)",
+          "zh": "应税企业确认书 (SPPKP)"
+        }
+      }
+    ],
+    "createdAt": "2026-07-20T17:07:32.533Z",
+    "updatedAt": "2026-07-20T17:07:32.533Z"
+  },
+  {
+    "id": "10",
+    "brandId": "go-space",
+    "slug": "pt-perorangan-gold",
+    "serviceSlug": "pendirian-pt",
+    "category": "pt",
+    "highlighted": false,
+    "description": {
+      "id": "Paket PT Perorangan dengan dokumen lebih lengkap untuk usaha perorangan.",
+      "en": "A more complete individual PT package for personal business legality.",
+      "zh": "更完整的个人 PT 套餐，适合个人业务法务需求。"
+    },
+    "service": {
+      "id": "Pendirian PT",
+      "en": "PT Establishment",
+      "zh": "PT 设立"
+    },
+    "packageName": {
+      "id": "PAKET GOLD PT PERORANGAN",
+      "en": "Gold Individual PT Package",
+      "zh": "个人 PT 金牌套餐"
+    },
+    "price": 1500000,
+    "strikethroughPrice": 2343750,
+    "whatsappPhone": "628887127000",
+    "whatsappMessage": {
+      "id": "Halo MinGans! Aku mau konsultasi terkait Pembuatan PT nih!",
+      "en": "Halo MinGans! Aku mau konsultasi terkait Pembuatan PT nih!",
+      "zh": "Halo MinGans! Aku mau konsultasi terkait Pembuatan PT nih!"
+    },
+    "isActive": true,
+    "features": [
+      {
+        "id": "10-1",
+        "name": {
+          "id": "Akta Penegasan Pendirian",
+          "en": "Establishment confirmation deed",
+          "zh": "设立确认公证书"
+        }
+      },
+      {
+        "id": "10-2",
+        "name": {
+          "id": "Free Email PT Perorangan",
+          "en": "Free individual PT email",
+          "zh": "免费个人 PT 邮箱"
+        }
+      },
+      {
+        "id": "10-3",
+        "name": {
+          "id": "Free Konsultasi",
+          "en": "Free consultation",
+          "zh": "免费咨询"
+        }
+      },
+      {
+        "id": "10-4",
+        "name": {
+          "id": "Free Stempel PT Perorangan",
+          "en": "Free individual PT stamp",
+          "zh": "免费个人 PT 印章"
+        }
+      },
+      {
+        "id": "10-5",
+        "name": {
+          "id": "Hak Akses OSS",
+          "en": "OSS access rights",
+          "zh": "OSS 访问权限"
+        }
+      },
+      {
+        "id": "10-6",
+        "name": {
+          "id": "NPWP PT Perorangan",
+          "en": "Individual PT tax ID",
+          "zh": "个人 PT 税号"
+        }
+      },
+      {
+        "id": "10-7",
+        "name": {
+          "id": "Nomor Induk Berusaha (NIB)",
+          "en": "Business Identification Number (NIB)",
+          "zh": "营业识别号 (NIB)"
+        }
+      },
+      {
+        "id": "10-8",
+        "name": {
+          "id": "Pernyataan Mandiri OSS (K3L dan SPPL)",
+          "en": "OSS self-declaration (K3L and SPPL)",
+          "zh": "OSS 自我声明 (K3L 和 SPPL)"
+        }
+      },
+      {
+        "id": "10-9",
+        "name": {
+          "id": "Pesan Nama PT Perorangan",
+          "en": "Individual PT name reservation",
+          "zh": "个人 PT 名称预订"
+        }
+      },
+      {
+        "id": "10-10",
+        "name": {
+          "id": "Surat Keputusan Kemenkumham",
+          "en": "Ministry of Law and Human Rights decree",
+          "zh": "法律与人权部批准书"
+        }
+      },
+      {
+        "id": "10-11",
+        "name": {
+          "id": "Surat Keterangan Terdaftar Pajak PT (SKT)",
+          "en": "Individual PT tax registration certificate (SKT)",
+          "zh": "个人 PT 税务登记证明 (SKT)"
+        }
+      },
+      {
+        "id": "10-12",
+        "name": {
+          "id": "Surat Pernyataan Kemenkumham",
+          "en": "Ministry statement letter",
+          "zh": "法律与人权部声明书"
+        }
+      }
+    ],
+    "createdAt": "2026-07-20T17:07:32.534Z",
+    "updatedAt": "2026-07-20T17:07:32.534Z"
+  },
+  {
+    "id": "11",
+    "brandId": "go-space",
+    "slug": "pt-perorangan-silver",
+    "serviceSlug": "pendirian-pt",
+    "category": "pt",
+    "highlighted": false,
+    "description": {
+      "id": "Paket PT Perorangan ringkas untuk legalitas awal dan kebutuhan OSS.",
+      "en": "A compact individual PT package for early legality and OSS needs.",
+      "zh": "简洁个人 PT 套餐，适合初始法务和 OSS 需求。"
+    },
+    "service": {
+      "id": "Pendirian PT",
+      "en": "PT Establishment",
+      "zh": "PT 设立"
+    },
+    "packageName": {
+      "id": "PAKET SILVER PT PERORANGAN",
+      "en": "Silver Individual PT Package",
+      "zh": "个人 PT 银牌套餐"
+    },
+    "price": 600000,
+    "strikethroughPrice": 937500,
+    "whatsappPhone": "628887127000",
+    "whatsappMessage": {
+      "id": "Halo MinGans! Aku mau konsultasi terkait Pembuatan PT nih!",
+      "en": "Halo MinGans! Aku mau konsultasi terkait Pembuatan PT nih!",
+      "zh": "Halo MinGans! Aku mau konsultasi terkait Pembuatan PT nih!"
+    },
+    "isActive": true,
+    "features": [
+      {
+        "id": "11-1",
+        "name": {
+          "id": "Free Email PT Perorangan",
+          "en": "Free individual PT email",
+          "zh": "免费个人 PT 邮箱"
+        }
+      },
+      {
+        "id": "11-2",
+        "name": {
+          "id": "Free Konsultasi",
+          "en": "Free consultation",
+          "zh": "免费咨询"
+        }
+      },
+      {
+        "id": "11-3",
+        "name": {
+          "id": "Free Stempel PT Perorangan",
+          "en": "Free individual PT stamp",
+          "zh": "免费个人 PT 印章"
+        }
+      },
+      {
+        "id": "11-4",
+        "name": {
+          "id": "Hak Akses OSS",
+          "en": "OSS access rights",
+          "zh": "OSS 访问权限"
+        }
+      },
+      {
+        "id": "11-5",
+        "name": {
+          "id": "NPWP PT Perorangan",
+          "en": "Individual PT tax ID",
+          "zh": "个人 PT 税号"
+        }
+      },
+      {
+        "id": "11-6",
+        "name": {
+          "id": "Nomor Induk Berusaha (NIB)",
+          "en": "Business Identification Number (NIB)",
+          "zh": "营业识别号 (NIB)"
+        }
+      },
+      {
+        "id": "11-7",
+        "name": {
+          "id": "Pernyataan Mandiri OSS (K3L dan SPPL)",
+          "en": "OSS self-declaration (K3L and SPPL)",
+          "zh": "OSS 自我声明 (K3L 和 SPPL)"
+        }
+      },
+      {
+        "id": "11-8",
+        "name": {
+          "id": "Pesan Nama PT Perorangan",
+          "en": "Individual PT name reservation",
+          "zh": "个人 PT 名称预订"
+        }
+      },
+      {
+        "id": "11-9",
+        "name": {
+          "id": "Surat Keputusan Kemenkumham",
+          "en": "Ministry of Law and Human Rights decree",
+          "zh": "法律与人权部批准书"
+        }
+      },
+      {
+        "id": "11-10",
+        "name": {
+          "id": "Surat Keterangan Terdaftar Pajak PT (SKT)",
+          "en": "Individual PT tax registration certificate (SKT)",
+          "zh": "个人 PT 税务登记证明 (SKT)"
+        }
+      },
+      {
+        "id": "11-11",
+        "name": {
+          "id": "Surat Pernyataan Kemenkumham",
+          "en": "Ministry statement letter",
+          "zh": "法律与人权部声明书"
+        }
+      }
+    ],
+    "createdAt": "2026-07-20T17:07:32.535Z",
+    "updatedAt": "2026-07-20T17:07:32.535Z"
+  },
+  {
+    "id": "12",
+    "brandId": "go-space",
+    "slug": "nib",
+    "serviceSlug": "pendirian-pt",
+    "category": "pt",
+    "highlighted": false,
+    "description": {
+      "id": "Pengurusan NIB untuk bisnis yang membutuhkan nomor induk berusaha dan akses OSS.",
+      "en": "NIB processing for businesses that need a business identification number and OSS access.",
+      "zh": "适合需要营业识别号和 OSS 访问权限的企业办理 NIB。"
+    },
+    "service": {
+      "id": "Pendirian PT",
+      "en": "PT Establishment",
+      "zh": "PT 设立"
+    },
+    "packageName": {
+      "id": "Pengurusan NIB (Nomor Induk Berusaha)",
+      "en": "NIB Processing",
+      "zh": "NIB 办理"
+    },
+    "price": 500000,
+    "strikethroughPrice": 1000000,
+    "whatsappPhone": "628887127000",
+    "whatsappMessage": {
+      "id": "Halo MinGans! Aku mau konsultasi terkait Pengurusan NIB nih!",
+      "en": "Halo MinGans! Aku mau konsultasi terkait Pengurusan NIB nih!",
+      "zh": "Halo MinGans! Aku mau konsultasi terkait Pengurusan NIB nih!"
+    },
+    "isActive": true,
+    "features": [
+      {
+        "id": "12-1",
+        "name": {
+          "id": "Hak Akses OSS",
+          "en": "OSS access rights",
+          "zh": "OSS 访问权限"
+        }
+      },
+      {
+        "id": "12-2",
+        "name": {
+          "id": "NIB (Nomor Induk Berusaha)",
+          "en": "Business Identification Number (NIB)",
+          "zh": "营业识别号 (NIB)"
+        }
+      },
+      {
+        "id": "12-3",
+        "name": {
+          "id": "Pernyataan Mandiri (K3L, SPPL dan Tata Ruang)",
+          "en": "Self-declaration for K3L, SPPL, and spatial planning",
+          "zh": "K3L、SPPL 和空间规划自我声明"
+        }
+      },
+      {
+        "id": "12-4",
+        "name": {
+          "id": "Sertifikat Standar (Jika Skala Resiko Menengah Rendah)",
+          "en": "Standard certificate for medium-low risk scale",
+          "zh": "中低风险规模标准证书"
+        }
+      }
+    ],
+    "createdAt": "2026-07-20T17:07:32.535Z",
+    "updatedAt": "2026-07-20T17:07:32.535Z"
+  },
+  {
+    "id": "13",
+    "brandId": "go-space",
+    "slug": "pt-pma",
+    "serviceSlug": "pendirian-pt-pma",
+    "category": "pt-pma",
+    "highlighted": false,
+    "description": {
+      "id": "Pendirian PT PMA untuk kebutuhan penanaman modal asing di Indonesia.",
+      "en": "PT PMA establishment for foreign investment needs in Indonesia.",
+      "zh": "面向在印尼外资投资需求的 PT PMA 设立套餐。"
+    },
+    "service": {
+      "id": "Pendirian PT PMA",
+      "en": "PT PMA Establishment",
+      "zh": "PT PMA 设立"
+    },
+    "packageName": {
+      "id": "PT PMA (Penanaman Modal Asing)",
+      "en": "PT PMA (Foreign Investment)",
+      "zh": "PT PMA（外商投资）"
+    },
+    "price": 8500000,
+    "strikethroughPrice": 13281000,
+    "whatsappPhone": "628887127000",
+    "whatsappMessage": {
+      "id": "Halo MinGans! Aku mau konsultasi terkait Pembuatan PT PMA nih!",
+      "en": "Halo MinGans! Aku mau konsultasi terkait Pembuatan PT PMA nih!",
+      "zh": "Halo MinGans! Aku mau konsultasi terkait Pembuatan PT PMA nih!"
+    },
+    "isActive": true,
+    "features": [
+      {
+        "id": "13-1",
+        "name": {
+          "id": "Akta Pendirian Perusahaan",
+          "en": "Company establishment deed",
+          "zh": "公司设立公证书"
+        }
+      },
+      {
+        "id": "13-2",
+        "name": {
+          "id": "Coretax Badan",
+          "en": "Corporate Coretax",
+          "zh": "企业 Coretax"
+        }
+      },
+      {
+        "id": "13-3",
+        "name": {
+          "id": "Free Konsultasi",
+          "en": "Free consultation",
+          "zh": "免费咨询"
+        }
+      },
+      {
+        "id": "13-4",
+        "name": {
+          "id": "Free Stempel Nama Perusahaan",
+          "en": "Free company stamp",
+          "zh": "免费公司印章"
+        }
+      },
+      {
+        "id": "13-5",
+        "name": {
+          "id": "Free Template Laporan Keuangan",
+          "en": "Free financial report template",
+          "zh": "免费财务报表模板"
+        }
+      },
+      {
+        "id": "13-6",
+        "name": {
+          "id": "Hak Akses OSS",
+          "en": "OSS access rights",
+          "zh": "OSS 访问权限"
+        }
+      },
+      {
+        "id": "13-7",
+        "name": {
+          "id": "KKKPR (Konfirmasi Kesesuaian Kegiatan Pemanfaatan Ruang)",
+          "en": "KKKPR spatial utilization confirmation",
+          "zh": "KKKPR 空间利用适宜性确认"
+        }
+      },
+      {
+        "id": "13-8",
+        "name": {
+          "id": "NPWP Badan",
+          "en": "Company tax ID",
+          "zh": "公司税号"
+        }
+      },
+      {
+        "id": "13-9",
+        "name": {
+          "id": "Nomor Induk Berusaha (NIB)",
+          "en": "Business Identification Number (NIB)",
+          "zh": "营业识别号 (NIB)"
+        }
+      },
+      {
+        "id": "13-10",
+        "name": {
+          "id": "Pernyataan Mandiri OSS (K3L dan SPPL)",
+          "en": "OSS self-declaration (K3L and SPPL)",
+          "zh": "OSS 自我声明 (K3L 和 SPPL)"
+        }
+      },
+      {
+        "id": "13-11",
+        "name": {
+          "id": "Sertifikat Standar (Jika resiko KBLI Menengah Rendah)",
+          "en": "Standard certificate for medium-low risk KBLI",
+          "zh": "中低风险 KBLI 标准证书"
+        }
+      },
+      {
+        "id": "13-12",
+        "name": {
+          "id": "Surat Keputusan Kemenkumham",
+          "en": "Ministry of Law and Human Rights decree",
+          "zh": "法律与人权部批准书"
+        }
+      },
+      {
+        "id": "13-13",
+        "name": {
+          "id": "Surat Keterangan Terdaftar Pajak (SKT)",
+          "en": "Tax registration certificate (SKT)",
+          "zh": "税务登记证明 (SKT)"
+        }
+      }
+    ],
+    "createdAt": "2026-07-20T17:07:32.536Z",
+    "updatedAt": "2026-07-20T17:07:32.536Z"
+  },
+  {
+    "id": "14",
+    "brandId": "go-space",
+    "slug": "cv-lengkap-website",
+    "serviceSlug": "pendirian-cv",
+    "category": "cv",
+    "highlighted": true,
+    "description": {
+      "id": "Paket lengkap pendirian CV dengan aset identitas bisnis dan website company.",
+      "en": "A complete CV establishment package with business identity assets and a company website.",
+      "zh": "完整 CV 设立套餐，包含商务身份资产和公司网站。"
+    },
+    "service": {
+      "id": "Pendirian CV",
+      "en": "CV Establishment",
+      "zh": "CV 设立"
+    },
+    "packageName": {
+      "id": "CV Lengkap + Website Company",
+      "en": "Complete CV + Company Website",
+      "zh": "完整 CV + 公司网站"
+    },
+    "price": 5000000,
+    "strikethroughPrice": 7812500,
+    "whatsappPhone": "628887127000",
+    "whatsappMessage": {
+      "id": "Halo MinGans! Aku mau konsultasi terkait Pembuatan CV nih!",
+      "en": "Halo MinGans! Aku mau konsultasi terkait Pembuatan CV nih!",
+      "zh": "Halo MinGans! Aku mau konsultasi terkait Pembuatan CV nih!"
+    },
+    "isActive": true,
+    "features": [
+      {
+        "id": "14-1",
+        "name": {
+          "id": "Akta Pendirian Perusahaan",
+          "en": "Company establishment deed",
+          "zh": "公司设立公证书"
+        }
+      },
+      {
+        "id": "14-2",
+        "name": {
+          "id": "Company Profil",
+          "en": "Company profile",
+          "zh": "公司简介"
+        }
+      },
+      {
+        "id": "14-3",
+        "name": {
+          "id": "Coretax Badan",
+          "en": "Corporate Coretax",
+          "zh": "企业 Coretax"
+        }
+      },
+      {
+        "id": "14-4",
+        "name": {
+          "id": "Free Konsultasi",
+          "en": "Free consultation",
+          "zh": "免费咨询"
+        }
+      },
+      {
+        "id": "14-5",
+        "name": {
+          "id": "Free Stempel Nama Perusahaan",
+          "en": "Free company stamp",
+          "zh": "免费公司印章"
+        }
+      },
+      {
+        "id": "14-6",
+        "name": {
+          "id": "Free Template Laporan Keuangan",
+          "en": "Free financial report template",
+          "zh": "免费财务报表模板"
+        }
+      },
+      {
+        "id": "14-7",
+        "name": {
+          "id": "Hak Akses OSS",
+          "en": "OSS access rights",
+          "zh": "OSS 访问权限"
+        }
+      },
+      {
+        "id": "14-8",
+        "name": {
+          "id": "Invoice",
+          "en": "Invoice",
+          "zh": "发票"
+        }
+      },
+      {
+        "id": "14-9",
+        "name": {
+          "id": "Kartu Nama",
+          "en": "Business cards",
+          "zh": "名片"
+        }
+      },
+      {
+        "id": "14-10",
+        "name": {
+          "id": "Kop Surat",
+          "en": "Letterhead",
+          "zh": "公司信纸"
+        }
+      },
+      {
+        "id": "14-11",
+        "name": {
+          "id": "Logo Perusahaan",
+          "en": "Company logo",
+          "zh": "公司标志"
+        }
+      },
+      {
+        "id": "14-12",
+        "name": {
+          "id": "NPWP Badan",
+          "en": "Company tax ID",
+          "zh": "公司税号"
+        }
+      },
+      {
+        "id": "14-13",
+        "name": {
+          "id": "Nomor Induk Berusaha (NIB)",
+          "en": "Business Identification Number (NIB)",
+          "zh": "营业识别号 (NIB)"
+        }
+      },
+      {
+        "id": "14-14",
+        "name": {
+          "id": "Pernyataan Mandiri OSS (K3L dan SPPL)",
+          "en": "OSS self-declaration (K3L and SPPL)",
+          "zh": "OSS 自我声明 (K3L 和 SPPL)"
+        }
+      },
+      {
+        "id": "14-15",
+        "name": {
+          "id": "Sertifikat Standar (Jika resiko KBLI Menengah Rendah)",
+          "en": "Standard certificate for medium-low risk KBLI",
+          "zh": "中低风险 KBLI 标准证书"
+        }
+      },
+      {
+        "id": "14-16",
+        "name": {
+          "id": "Surat Keputusan Kemenkumham",
+          "en": "Ministry of Law and Human Rights decree",
+          "zh": "法律与人权部批准书"
+        }
+      },
+      {
+        "id": "14-17",
+        "name": {
+          "id": "Surat Keterangan Terdaftar Pajak (SKT)",
+          "en": "Tax registration certificate (SKT)",
+          "zh": "税务登记证明 (SKT)"
+        }
+      },
+      {
+        "id": "14-18",
+        "name": {
+          "id": "Website Company",
+          "en": "Company website",
+          "zh": "公司网站"
+        }
+      }
+    ],
+    "createdAt": "2026-07-20T17:07:32.536Z",
+    "updatedAt": "2026-07-20T17:07:32.536Z"
+  },
+  {
+    "id": "15",
+    "brandId": "go-space",
+    "slug": "cv-lengkap",
+    "serviceSlug": "pendirian-cv",
+    "category": "cv",
+    "highlighted": true,
+    "description": {
+      "id": "Paket pendirian CV lengkap untuk legalitas, branding dasar, dan operasional.",
+      "en": "A complete CV establishment package for legality, basic branding, and operations.",
+      "zh": "完整 CV 设立套餐，适合法务、基础品牌和运营需求。"
+    },
+    "service": {
+      "id": "Pendirian CV",
+      "en": "CV Establishment",
+      "zh": "CV 设立"
+    },
+    "packageName": {
+      "id": "CV Lengkap",
+      "en": "Complete CV",
+      "zh": "完整 CV"
+    },
+    "price": 3500000,
+    "strikethroughPrice": 5468750,
+    "whatsappPhone": "628887127000",
+    "whatsappMessage": {
+      "id": "Halo MinGans! Aku mau konsultasi terkait Pembuatan CV nih!",
+      "en": "Halo MinGans! Aku mau konsultasi terkait Pembuatan CV nih!",
+      "zh": "Halo MinGans! Aku mau konsultasi terkait Pembuatan CV nih!"
+    },
+    "isActive": true,
+    "features": [
+      {
+        "id": "15-1",
+        "name": {
+          "id": "Akta Pendirian Perusahaan",
+          "en": "Company establishment deed",
+          "zh": "公司设立公证书"
+        }
+      },
+      {
+        "id": "15-2",
+        "name": {
+          "id": "Company Profil",
+          "en": "Company profile",
+          "zh": "公司简介"
+        }
+      },
+      {
+        "id": "15-3",
+        "name": {
+          "id": "Coretax Badan",
+          "en": "Corporate Coretax",
+          "zh": "企业 Coretax"
+        }
+      },
+      {
+        "id": "15-4",
+        "name": {
+          "id": "Free Konsultasi",
+          "en": "Free consultation",
+          "zh": "免费咨询"
+        }
+      },
+      {
+        "id": "15-5",
+        "name": {
+          "id": "Free Stempel Nama Perusahaan",
+          "en": "Free company stamp",
+          "zh": "免费公司印章"
+        }
+      },
+      {
+        "id": "15-6",
+        "name": {
+          "id": "Free Template Laporan Keuangan",
+          "en": "Free financial report template",
+          "zh": "免费财务报表模板"
+        }
+      },
+      {
+        "id": "15-7",
+        "name": {
+          "id": "Hak Akses OSS",
+          "en": "OSS access rights",
+          "zh": "OSS 访问权限"
+        }
+      },
+      {
+        "id": "15-8",
+        "name": {
+          "id": "Invoice",
+          "en": "Invoice",
+          "zh": "发票"
+        }
+      },
+      {
+        "id": "15-9",
+        "name": {
+          "id": "Kartu Nama",
+          "en": "Business cards",
+          "zh": "名片"
+        }
+      },
+      {
+        "id": "15-10",
+        "name": {
+          "id": "Kop Surat",
+          "en": "Letterhead",
+          "zh": "公司信纸"
+        }
+      },
+      {
+        "id": "15-11",
+        "name": {
+          "id": "Logo Perusahaan",
+          "en": "Company logo",
+          "zh": "公司标志"
+        }
+      },
+      {
+        "id": "15-12",
+        "name": {
+          "id": "NPWP Badan",
+          "en": "Company tax ID",
+          "zh": "公司税号"
+        }
+      },
+      {
+        "id": "15-13",
+        "name": {
+          "id": "Nomor Induk Berusaha (NIB)",
+          "en": "Business Identification Number (NIB)",
+          "zh": "营业识别号 (NIB)"
+        }
+      },
+      {
+        "id": "15-14",
+        "name": {
+          "id": "Pernyataan Mandiri OSS (K3L dan SPPL)",
+          "en": "OSS self-declaration (K3L and SPPL)",
+          "zh": "OSS 自我声明 (K3L 和 SPPL)"
+        }
+      },
+      {
+        "id": "15-15",
+        "name": {
+          "id": "Sertifikat Standar (Jika resiko KBLI Menengah Rendah)",
+          "en": "Standard certificate for medium-low risk KBLI",
+          "zh": "中低风险 KBLI 标准证书"
+        }
+      },
+      {
+        "id": "15-16",
+        "name": {
+          "id": "Surat Keputusan Kemenkumham",
+          "en": "Ministry of Law and Human Rights decree",
+          "zh": "法律与人权部批准书"
+        }
+      },
+      {
+        "id": "15-17",
+        "name": {
+          "id": "Surat Keterangan Terdaftar Pajak (SKT)",
+          "en": "Tax registration certificate (SKT)",
+          "zh": "税务登记证明 (SKT)"
+        }
+      }
+    ],
+    "createdAt": "2026-07-20T17:07:32.537Z",
+    "updatedAt": "2026-07-20T17:07:32.537Z"
+  },
+  {
+    "id": "16",
+    "brandId": "go-space",
+    "slug": "cv-dasar",
+    "serviceSlug": "pendirian-cv",
+    "category": "cv",
+    "highlighted": true,
+    "description": {
+      "id": "Paket dasar pendirian CV untuk legalitas inti dan dokumen wajib usaha.",
+      "en": "A basic CV establishment package for core legality and required business documents.",
+      "zh": "基础 CV 设立套餐，包含核心法务和必要业务文件。"
+    },
+    "service": {
+      "id": "Pendirian CV",
+      "en": "CV Establishment",
+      "zh": "CV 设立"
+    },
+    "packageName": {
+      "id": "CV Dasar",
+      "en": "Basic CV",
+      "zh": "基础 CV"
+    },
+    "price": 3000000,
+    "strikethroughPrice": 4687500,
+    "whatsappPhone": "628887127000",
+    "whatsappMessage": {
+      "id": "Halo MinGans! Aku mau konsultasi terkait Pembuatan CV nih!",
+      "en": "Halo MinGans! Aku mau konsultasi terkait Pembuatan CV nih!",
+      "zh": "Halo MinGans! Aku mau konsultasi terkait Pembuatan CV nih!"
+    },
+    "isActive": true,
+    "features": [
+      {
+        "id": "16-1",
+        "name": {
+          "id": "Akta Pendirian Perusahaan",
+          "en": "Company establishment deed",
+          "zh": "公司设立公证书"
+        }
+      },
+      {
+        "id": "16-2",
+        "name": {
+          "id": "Coretax Badan",
+          "en": "Corporate Coretax",
+          "zh": "企业 Coretax"
+        }
+      },
+      {
+        "id": "16-3",
+        "name": {
+          "id": "Free Konsultasi",
+          "en": "Free consultation",
+          "zh": "免费咨询"
+        }
+      },
+      {
+        "id": "16-4",
+        "name": {
+          "id": "Free Stempel Nama Perusahaan",
+          "en": "Free company stamp",
+          "zh": "免费公司印章"
+        }
+      },
+      {
+        "id": "16-5",
+        "name": {
+          "id": "Free Template Laporan Keuangan",
+          "en": "Free financial report template",
+          "zh": "免费财务报表模板"
+        }
+      },
+      {
+        "id": "16-6",
+        "name": {
+          "id": "Hak Akses OSS",
+          "en": "OSS access rights",
+          "zh": "OSS 访问权限"
+        }
+      },
+      {
+        "id": "16-7",
+        "name": {
+          "id": "NPWP Badan",
+          "en": "Company tax ID",
+          "zh": "公司税号"
+        }
+      },
+      {
+        "id": "16-8",
+        "name": {
+          "id": "Nomor Induk Berusaha (NIB)",
+          "en": "Business Identification Number (NIB)",
+          "zh": "营业识别号 (NIB)"
+        }
+      },
+      {
+        "id": "16-9",
+        "name": {
+          "id": "Pernyataan Mandiri OSS (K3L dan SPPL)",
+          "en": "OSS self-declaration (K3L and SPPL)",
+          "zh": "OSS 自我声明 (K3L 和 SPPL)"
+        }
+      },
+      {
+        "id": "16-10",
+        "name": {
+          "id": "Sertifikat Standar (Jika resiko KBLI Menengah Rendah)",
+          "en": "Standard certificate for medium-low risk KBLI",
+          "zh": "中低风险 KBLI 标准证书"
+        }
+      },
+      {
+        "id": "16-11",
+        "name": {
+          "id": "Surat Keputusan Kemenkumham",
+          "en": "Ministry of Law and Human Rights decree",
+          "zh": "法律与人权部批准书"
+        }
+      },
+      {
+        "id": "16-12",
+        "name": {
+          "id": "Surat Keterangan Terdaftar Pajak (SKT)",
+          "en": "Tax registration certificate (SKT)",
+          "zh": "税务登记证明 (SKT)"
+        }
+      }
+    ],
+    "createdAt": "2026-07-20T17:07:32.537Z",
+    "updatedAt": "2026-07-20T17:07:32.537Z"
+  },
+  {
+    "id": "17",
+    "brandId": "go-space",
+    "slug": "cv-lengkap-pkp-website",
+    "serviceSlug": "pendirian-cv",
+    "category": "cv",
+    "highlighted": false,
+    "description": {
+      "id": "Paket CV lengkap dengan PKP, sertifikat elektronik, dan website company.",
+      "en": "A complete CV package with PKP, electronic certificate, and a company website.",
+      "zh": "完整 CV 套餐，包含 PKP、电子证书和公司网站。"
+    },
+    "service": {
+      "id": "Pendirian CV",
+      "en": "CV Establishment",
+      "zh": "CV 设立"
+    },
+    "packageName": {
+      "id": "CV Lengkap + PKP + Website",
+      "en": "Complete CV + PKP + Website",
+      "zh": "完整 CV + PKP + 网站"
+    },
+    "price": 6000000,
+    "strikethroughPrice": 9375000,
+    "whatsappPhone": "628887127000",
+    "whatsappMessage": {
+      "id": "Halo MinGans! Aku mau konsultasi terkait Pembuatan CV nih!",
+      "en": "Halo MinGans! Aku mau konsultasi terkait Pembuatan CV nih!",
+      "zh": "Halo MinGans! Aku mau konsultasi terkait Pembuatan CV nih!"
+    },
+    "isActive": true,
+    "features": [
+      {
+        "id": "17-1",
+        "name": {
+          "id": "Akta Pendirian Perusahaan",
+          "en": "Company establishment deed",
+          "zh": "公司设立公证书"
+        }
+      },
+      {
+        "id": "17-2",
+        "name": {
+          "id": "Company Profil",
+          "en": "Company profile",
+          "zh": "公司简介"
+        }
+      },
+      {
+        "id": "17-3",
+        "name": {
+          "id": "Coretax Badan",
+          "en": "Corporate Coretax",
+          "zh": "企业 Coretax"
+        }
+      },
+      {
+        "id": "17-4",
+        "name": {
+          "id": "Free Konsultasi",
+          "en": "Free consultation",
+          "zh": "免费咨询"
+        }
+      },
+      {
+        "id": "17-5",
+        "name": {
+          "id": "Free Stempel Nama Perusahaan",
+          "en": "Free company stamp",
+          "zh": "免费公司印章"
+        }
+      },
+      {
+        "id": "17-6",
+        "name": {
+          "id": "Free Template Laporan Keuangan",
+          "en": "Free financial report template",
+          "zh": "免费财务报表模板"
+        }
+      },
+      {
+        "id": "17-7",
+        "name": {
+          "id": "Hak Akses OSS",
+          "en": "OSS access rights",
+          "zh": "OSS 访问权限"
+        }
+      },
+      {
+        "id": "17-8",
+        "name": {
+          "id": "Invoice",
+          "en": "Invoice",
+          "zh": "发票"
+        }
+      },
+      {
+        "id": "17-9",
+        "name": {
+          "id": "Kartu Nama",
+          "en": "Business cards",
+          "zh": "名片"
+        }
+      },
+      {
+        "id": "17-10",
+        "name": {
+          "id": "Kop Surat",
+          "en": "Letterhead",
+          "zh": "公司信纸"
+        }
+      },
+      {
+        "id": "17-11",
+        "name": {
+          "id": "Logo Perusahaan",
+          "en": "Company logo",
+          "zh": "公司标志"
+        }
+      },
+      {
+        "id": "17-12",
+        "name": {
+          "id": "NPWP Badan",
+          "en": "Company tax ID",
+          "zh": "公司税号"
+        }
+      },
+      {
+        "id": "17-13",
+        "name": {
+          "id": "Nomor Induk Berusaha (NIB)",
+          "en": "Business Identification Number (NIB)",
+          "zh": "营业识别号 (NIB)"
+        }
+      },
+      {
+        "id": "17-14",
+        "name": {
+          "id": "Pernyataan Mandiri OSS (K3L dan SPPL)",
+          "en": "OSS self-declaration (K3L and SPPL)",
+          "zh": "OSS 自我声明 (K3L 和 SPPL)"
+        }
+      },
+      {
+        "id": "17-15",
+        "name": {
+          "id": "Serifikat Elektronik",
+          "en": "Electronic certificate",
+          "zh": "电子证书"
+        }
+      },
+      {
+        "id": "17-16",
+        "name": {
+          "id": "Sertifikat Standar (Jika resiko KBLI Menengah Rendah)",
+          "en": "Standard certificate for medium-low risk KBLI",
+          "zh": "中低风险 KBLI 标准证书"
+        }
+      },
+      {
+        "id": "17-17",
+        "name": {
+          "id": "Surat Keputusan Kemenkumham",
+          "en": "Ministry of Law and Human Rights decree",
+          "zh": "法律与人权部批准书"
+        }
+      },
+      {
+        "id": "17-18",
+        "name": {
+          "id": "Surat Keterangan Terdaftar Pajak (SKT)",
+          "en": "Tax registration certificate (SKT)",
+          "zh": "税务登记证明 (SKT)"
+        }
+      },
+      {
+        "id": "17-19",
+        "name": {
+          "id": "Surat Pengukuhan Kena Pajak (SPPKP)",
+          "en": "Taxable entrepreneur confirmation letter (SPPKP)",
+          "zh": "应税企业确认书 (SPPKP)"
+        }
+      },
+      {
+        "id": "17-20",
+        "name": {
+          "id": "Website Company",
+          "en": "Company website",
+          "zh": "公司网站"
+        }
+      }
+    ],
+    "createdAt": "2026-07-20T17:07:32.538Z",
+    "updatedAt": "2026-07-20T17:07:32.538Z"
+  },
+  {
+    "id": "18",
+    "brandId": "go-space",
+    "slug": "cv-lengkap-pkp",
+    "serviceSlug": "pendirian-cv",
+    "category": "cv",
+    "highlighted": false,
+    "description": {
+      "id": "Paket CV lengkap dengan pengurusan PKP dan dokumen pajak terkait.",
+      "en": "A complete CV package with PKP processing and related tax documents.",
+      "zh": "完整 CV 套餐，包含 PKP 办理和相关税务文件。"
+    },
+    "service": {
+      "id": "Pendirian CV",
+      "en": "CV Establishment",
+      "zh": "CV 设立"
+    },
+    "packageName": {
+      "id": "CV Lengkap + PKP",
+      "en": "Complete CV + PKP",
+      "zh": "完整 CV + PKP"
+    },
+    "price": 4500000,
+    "strikethroughPrice": 7031250,
+    "whatsappPhone": "628887127000",
+    "whatsappMessage": {
+      "id": "Halo MinGans! Aku mau konsultasi terkait Pembuatan CV nih!",
+      "en": "Halo MinGans! Aku mau konsultasi terkait Pembuatan CV nih!",
+      "zh": "Halo MinGans! Aku mau konsultasi terkait Pembuatan CV nih!"
+    },
+    "isActive": true,
+    "features": [
+      {
+        "id": "18-1",
+        "name": {
+          "id": "Akta Pendirian Perusahaan",
+          "en": "Company establishment deed",
+          "zh": "公司设立公证书"
+        }
+      },
+      {
+        "id": "18-2",
+        "name": {
+          "id": "Company Profil",
+          "en": "Company profile",
+          "zh": "公司简介"
+        }
+      },
+      {
+        "id": "18-3",
+        "name": {
+          "id": "Coretax Badan",
+          "en": "Corporate Coretax",
+          "zh": "企业 Coretax"
+        }
+      },
+      {
+        "id": "18-4",
+        "name": {
+          "id": "Free Konsultasi",
+          "en": "Free consultation",
+          "zh": "免费咨询"
+        }
+      },
+      {
+        "id": "18-5",
+        "name": {
+          "id": "Free Stempel Nama Perusahaan",
+          "en": "Free company stamp",
+          "zh": "免费公司印章"
+        }
+      },
+      {
+        "id": "18-6",
+        "name": {
+          "id": "Free Template Laporan Keuangan",
+          "en": "Free financial report template",
+          "zh": "免费财务报表模板"
+        }
+      },
+      {
+        "id": "18-7",
+        "name": {
+          "id": "Hak Akses OSS",
+          "en": "OSS access rights",
+          "zh": "OSS 访问权限"
+        }
+      },
+      {
+        "id": "18-8",
+        "name": {
+          "id": "Invoice",
+          "en": "Invoice",
+          "zh": "发票"
+        }
+      },
+      {
+        "id": "18-9",
+        "name": {
+          "id": "Kartu Nama",
+          "en": "Business cards",
+          "zh": "名片"
+        }
+      },
+      {
+        "id": "18-10",
+        "name": {
+          "id": "Kop Surat",
+          "en": "Letterhead",
+          "zh": "公司信纸"
+        }
+      },
+      {
+        "id": "18-11",
+        "name": {
+          "id": "Logo Perusahaan",
+          "en": "Company logo",
+          "zh": "公司标志"
+        }
+      },
+      {
+        "id": "18-12",
+        "name": {
+          "id": "NPWP Badan",
+          "en": "Company tax ID",
+          "zh": "公司税号"
+        }
+      },
+      {
+        "id": "18-13",
+        "name": {
+          "id": "Nomor Induk Berusaha (NIB)",
+          "en": "Business Identification Number (NIB)",
+          "zh": "营业识别号 (NIB)"
+        }
+      },
+      {
+        "id": "18-14",
+        "name": {
+          "id": "Pernyataan Mandiri OSS (K3L dan SPPL)",
+          "en": "OSS self-declaration (K3L and SPPL)",
+          "zh": "OSS 自我声明 (K3L 和 SPPL)"
+        }
+      },
+      {
+        "id": "18-15",
+        "name": {
+          "id": "Serifikat Elektronik",
+          "en": "Electronic certificate",
+          "zh": "电子证书"
+        }
+      },
+      {
+        "id": "18-16",
+        "name": {
+          "id": "Sertifikat Standar (Jika resiko KBLI Menengah Rendah)",
+          "en": "Standard certificate for medium-low risk KBLI",
+          "zh": "中低风险 KBLI 标准证书"
+        }
+      },
+      {
+        "id": "18-17",
+        "name": {
+          "id": "Surat Keputusan Kemenkumham",
+          "en": "Ministry of Law and Human Rights decree",
+          "zh": "法律与人权部批准书"
+        }
+      },
+      {
+        "id": "18-18",
+        "name": {
+          "id": "Surat Keterangan Terdaftar Pajak (SKT)",
+          "en": "Tax registration certificate (SKT)",
+          "zh": "税务登记证明 (SKT)"
+        }
+      },
+      {
+        "id": "18-19",
+        "name": {
+          "id": "Surat Pengukuhan Kena Pajak (SPPKP)",
+          "en": "Taxable entrepreneur confirmation letter (SPPKP)",
+          "zh": "应税企业确认书 (SPPKP)"
+        }
+      }
+    ],
+    "createdAt": "2026-07-20T17:07:32.539Z",
+    "updatedAt": "2026-07-20T17:07:32.539Z"
+  },
+  {
+    "id": "19",
+    "brandId": "go-space",
+    "slug": "nib-cv",
+    "serviceSlug": "pendirian-cv",
+    "category": "cv",
+    "highlighted": false,
+    "description": {
+      "id": "Pengurusan NIB untuk bisnis yang membutuhkan nomor induk berusaha dan akses OSS.",
+      "en": "NIB processing for businesses that need a business identification number and OSS access.",
+      "zh": "适合需要营业识别号和 OSS 访问权限的企业办理 NIB。"
+    },
+    "service": {
+      "id": "Pendirian CV",
+      "en": "CV Establishment",
+      "zh": "CV 设立"
+    },
+    "packageName": {
+      "id": "Pengurusan NIB (Nomor Induk Berusaha)",
+      "en": "NIB Processing",
+      "zh": "NIB 办理"
+    },
+    "price": 500000,
+    "strikethroughPrice": 1000000,
+    "whatsappPhone": "628887127000",
+    "whatsappMessage": {
+      "id": "Halo MinGans! Aku mau konsultasi terkait Pengurusan NIB nih!",
+      "en": "Halo MinGans! Aku mau konsultasi terkait Pengurusan NIB nih!",
+      "zh": "Halo MinGans! Aku mau konsultasi terkait Pengurusan NIB nih!"
+    },
+    "isActive": true,
+    "features": [
+      {
+        "id": "19-1",
+        "name": {
+          "id": "Hak Akses OSS",
+          "en": "OSS access rights",
+          "zh": "OSS 访问权限"
+        }
+      },
+      {
+        "id": "19-2",
+        "name": {
+          "id": "NIB (Nomor Induk Berusaha)",
+          "en": "Business Identification Number (NIB)",
+          "zh": "营业识别号 (NIB)"
+        }
+      },
+      {
+        "id": "19-3",
+        "name": {
+          "id": "Pernyataan Mandiri (K3L, SPPL dan Tata Ruang)",
+          "en": "Self-declaration for K3L, SPPL, and spatial planning",
+          "zh": "K3L、SPPL 和空间规划自我声明"
+        }
+      },
+      {
+        "id": "19-4",
+        "name": {
+          "id": "Sertifikat Standar (Jika Skala Resiko Menengah Rendah)",
+          "en": "Standard certificate for medium-low risk scale",
+          "zh": "中低风险规模标准证书"
+        }
+      }
+    ],
+    "createdAt": "2026-07-20T17:07:32.540Z",
+    "updatedAt": "2026-07-20T17:07:32.540Z"
+  },
+  {
+    "id": "20",
+    "brandId": "go-space",
+    "slug": "website-starter",
+    "serviceSlug": "website-development",
+    "category": "website",
+    "highlighted": false,
+    "description": {
+      "id": "Untuk UMKM, personal brand, freelancer, jasa profesional, dan bisnis yang baru mulai online.",
+      "en": "For SMEs, personal brands, freelancers, professional services, and businesses starting online.",
+      "zh": "适合中小企业、个人品牌、自由职业者、专业服务和刚开始线上化的业务。"
+    },
+    "service": {
+      "id": "Website Development",
+      "en": "Website Development",
+      "zh": "网站开发"
+    },
+    "packageName": {
+      "id": "Starter",
+      "en": "Starter",
+      "zh": "Starter"
+    },
+    "price": 1350000,
+    "strikethroughPrice": 2129000,
+    "whatsappPhone": "628887127000",
+    "whatsappMessage": {
+      "id": "",
+      "en": "",
+      "zh": ""
+    },
+    "isActive": true,
+    "features": [
+      {
+        "id": "20-1",
+        "name": {
+          "id": "Website Landing Page Profesional",
+          "en": "Professional landing page website",
+          "zh": "专业落地页网站"
+        }
+      },
+      {
+        "id": "20-2",
+        "name": {
+          "id": "Hingga 1 Halaman Utama",
+          "en": "Up to 1 main page",
+          "zh": "最多 1 个主页面"
+        }
+      },
+      {
+        "id": "20-3",
+        "name": {
+          "id": "Desain Premium & Modern",
+          "en": "Premium modern design",
+          "zh": "高级现代设计"
+        }
+      },
+      {
+        "id": "20-4",
+        "name": {
+          "id": "Mobile Friendly (Responsive)",
+          "en": "Mobile friendly responsive layout",
+          "zh": "移动端友好响应式布局"
+        }
+      },
+      {
+        "id": "20-5",
+        "name": {
+          "id": "Domain .com / .id*",
+          "en": "Domain .com / .id*",
+          "zh": ".com / .id 域名*"
+        }
+      },
+      {
+        "id": "20-6",
+        "name": {
+          "id": "SSL & HTTPS Aktif",
+          "en": "Active SSL & HTTPS",
+          "zh": "启用 SSL 与 HTTPS"
+        }
+      },
+      {
+        "id": "20-7",
+        "name": {
+          "id": "Copywriting Dasar",
+          "en": "Basic copywriting",
+          "zh": "基础文案撰写"
+        }
+      },
+      {
+        "id": "20-8",
+        "name": {
+          "id": "Integrasi WhatsApp",
+          "en": "WhatsApp and social media integration",
+          "zh": "WhatsApp 与社交媒体整合"
+        }
+      },
+      {
+        "id": "20-9",
+        "name": {
+          "id": "Integrasi Social Media",
+          "en": "Lead / contact form",
+          "zh": "线索 / 联系表单"
+        }
+      },
+      {
+        "id": "20-10",
+        "name": {
+          "id": "Form Lead / Kontak",
+          "en": "Basic SEO setup",
+          "zh": "基础 SEO 设置"
+        }
+      },
+      {
+        "id": "20-11",
+        "name": {
+          "id": "SEO Basic Setup",
+          "en": "Website speed optimization",
+          "zh": "网站速度优化"
+        }
+      },
+      {
+        "id": "20-12",
+        "name": {
+          "id": "Optimasi Kecepatan Website",
+          "en": "2 revisions",
+          "zh": "2 次修改"
+        }
+      },
+      {
+        "id": "20-13",
+        "name": {
+          "id": "Revisi 2x",
+          "en": "Lifetime technical support",
+          "zh": "终身技术支持"
+        }
+      },
+      {
+        "id": "20-14",
+        "name": {
+          "id": "Lifetime Technical Support",
+          "en": "Suitable for consultants, agencies, freelancers, SMEs, and personal branding",
+          "zh": "适合顾问、机构、自由职业者、中小企业和个人品牌"
+        }
+      },
+      {
+        "id": "20-15",
+        "name": {
+          "id": "Cocok untuk konsultan, agency, freelancer, UMKM, dan personal branding",
+          "en": "Cocok untuk konsultan, agency, freelancer, UMKM, dan personal branding",
+          "zh": "Cocok untuk konsultan, agency, freelancer, UMKM, dan personal branding"
+        }
+      }
+    ],
+    "createdAt": "2026-07-20T17:07:32.541Z",
+    "updatedAt": "2026-07-20T17:07:32.541Z"
+  },
+  {
+    "id": "21",
+    "brandId": "go-space",
+    "slug": "website-professional",
+    "serviceSlug": "website-development",
+    "category": "website",
+    "highlighted": true,
+    "description": {
+      "id": "Paket paling populer untuk perusahaan yang membutuhkan website company profile profesional dan terpercaya.",
+      "en": "The most popular package for companies that need a professional and trusted company profile website.",
+      "zh": "最受欢迎的套餐，适合需要专业可信公司简介网站的企业。"
+    },
+    "service": {
+      "id": "Website Development",
+      "en": "Website Development",
+      "zh": "网站开发"
+    },
+    "packageName": {
+      "id": "Professional",
+      "en": "Professional",
+      "zh": "Professional"
+    },
+    "price": 3550000,
+    "strikethroughPrice": 5643000,
+    "whatsappPhone": "628887127000",
+    "whatsappMessage": {
+      "id": "",
+      "en": "",
+      "zh": ""
+    },
+    "isActive": true,
+    "features": [
+      {
+        "id": "21-1",
+        "name": {
+          "id": "Semua Fitur Starter",
+          "en": "All Starter features",
+          "zh": "包含 Starter 全部功能"
+        }
+      },
+      {
+        "id": "21-2",
+        "name": {
+          "id": "Struktur Company Profile Lengkap",
+          "en": "Complete company profile structure",
+          "zh": "完整公司简介结构"
+        }
+      },
+      {
+        "id": "21-3",
+        "name": {
+          "id": "Profil Perusahaan",
+          "en": "Company profile, services / products, portfolio / projects, career, basic blog, FAQ",
+          "zh": "公司简介、服务 / 产品、作品 / 项目、招聘、基础博客、FAQ"
+        }
+      },
+      {
+        "id": "21-4",
+        "name": {
+          "id": "Layanan / Produk",
+          "en": "Inquiry form",
+          "zh": "询盘表单"
+        }
+      },
+      {
+        "id": "21-5",
+        "name": {
+          "id": "Portfolio / Project",
+          "en": "Content writing assistance",
+          "zh": "内容撰写协助"
+        }
+      },
+      {
+        "id": "21-6",
+        "name": {
+          "id": "Karir",
+          "en": "SEO friendly structure",
+          "zh": "SEO 友好结构"
+        }
+      },
+      {
+        "id": "21-7",
+        "name": {
+          "id": "Blog Dasar",
+          "en": "Google Maps and Analytics integration",
+          "zh": "Google Maps 与 Analytics 整合"
+        }
+      },
+      {
+        "id": "21-8",
+        "name": {
+          "id": "FAQ",
+          "en": "Lead conversion optimization",
+          "zh": "线索转化优化"
+        }
+      },
+      {
+        "id": "21-9",
+        "name": {
+          "id": "Form Inquiry",
+          "en": "3 revisions",
+          "zh": "3 次修改"
+        }
+      },
+      {
+        "id": "21-10",
+        "name": {
+          "id": "Content Writing Assistance",
+          "en": "Lifetime technical support",
+          "zh": "终身技术支持"
+        }
+      },
+      {
+        "id": "21-11",
+        "name": {
+          "id": "SEO Friendly Structure",
+          "en": "Suitable for contractors, consultants, clinics, distributors, service companies, and startups",
+          "zh": "适合承包商、顾问、诊所、分销商、服务公司和初创企业"
+        }
+      },
+      {
+        "id": "21-12",
+        "name": {
+          "id": "Integrasi Google Maps",
+          "en": "Integrasi Google Maps",
+          "zh": "Integrasi Google Maps"
+        }
+      },
+      {
+        "id": "21-13",
+        "name": {
+          "id": "Integrasi Analytics",
+          "en": "Integrasi Analytics",
+          "zh": "Integrasi Analytics"
+        }
+      },
+      {
+        "id": "21-14",
+        "name": {
+          "id": "Optimasi Konversi Leads",
+          "en": "Optimasi Konversi Leads",
+          "zh": "Optimasi Konversi Leads"
+        }
+      },
+      {
+        "id": "21-15",
+        "name": {
+          "id": "Revisi 3x",
+          "en": "Revisi 3x",
+          "zh": "Revisi 3x"
+        }
+      },
+      {
+        "id": "21-16",
+        "name": {
+          "id": "Lifetime Technical Support",
+          "en": "Lifetime Technical Support",
+          "zh": "Lifetime Technical Support"
+        }
+      },
+      {
+        "id": "21-17",
+        "name": {
+          "id": "Cocok untuk kontraktor, konsultan, klinik, distributor, perusahaan jasa, dan startup",
+          "en": "Cocok untuk kontraktor, konsultan, klinik, distributor, perusahaan jasa, dan startup",
+          "zh": "Cocok untuk kontraktor, konsultan, klinik, distributor, perusahaan jasa, dan startup"
+        }
+      }
+    ],
+    "createdAt": "2026-07-20T17:07:32.542Z",
+    "updatedAt": "2026-07-20T17:07:32.542Z"
+  },
+  {
+    "id": "22",
+    "brandId": "go-space",
+    "slug": "website-business",
+    "serviceSlug": "website-development",
+    "category": "website",
+    "highlighted": false,
+    "description": {
+      "id": "Untuk bisnis yang membutuhkan pengelolaan konten secara mandiri dan website yang terus berkembang.",
+      "en": "For businesses that need independent content management and a website that keeps growing.",
+      "zh": "适合需要自主内容管理，并希望网站持续发展的业务。"
+    },
+    "service": {
+      "id": "Website Development",
+      "en": "Website Development",
+      "zh": "网站开发"
+    },
+    "packageName": {
+      "id": "Business",
+      "en": "Business",
+      "zh": "Business"
+    },
+    "price": 6950000,
+    "strikethroughPrice": 9930000,
+    "whatsappPhone": "628887127000",
+    "whatsappMessage": {
+      "id": "",
+      "en": "",
+      "zh": ""
+    },
+    "isActive": true,
+    "features": [
+      {
+        "id": "22-1",
+        "name": {
+          "id": "Semua Fitur Professional",
+          "en": "All Professional features",
+          "zh": "包含 Professional 全部功能"
+        }
+      },
+      {
+        "id": "22-2",
+        "name": {
+          "id": "CMS Admin Dashboard",
+          "en": "CMS admin dashboard",
+          "zh": "CMS 管理后台"
+        }
+      },
+      {
+        "id": "22-3",
+        "name": {
+          "id": "Dynamic Content Management",
+          "en": "Dynamic content management",
+          "zh": "动态内容管理"
+        }
+      },
+      {
+        "id": "22-4",
+        "name": {
+          "id": "Blog Management System",
+          "en": "Blog management system and SEO articles",
+          "zh": "博客管理系统和 SEO 文章"
+        }
+      },
+      {
+        "id": "22-5",
+        "name": {
+          "id": "Artikel SEO",
+          "en": "Product catalog and portfolio management",
+          "zh": "产品目录和作品管理"
+        }
+      },
+      {
+        "id": "22-6",
+        "name": {
+          "id": "Katalog Produk",
+          "en": "Dynamic landing pages",
+          "zh": "动态落地页"
+        }
+      },
+      {
+        "id": "22-7",
+        "name": {
+          "id": "Manajemen Portfolio",
+          "en": "Managed hosting & server",
+          "zh": "托管主机与服务器"
+        }
+      },
+      {
+        "id": "22-8",
+        "name": {
+          "id": "Dynamic Landing Pages",
+          "en": "1 professional email",
+          "zh": "1 个专业邮箱"
+        }
+      },
+      {
+        "id": "22-9",
+        "name": {
+          "id": "Managed Hosting & Server",
+          "en": "User access management",
+          "zh": "用户权限管理"
+        }
+      },
+      {
+        "id": "22-10",
+        "name": {
+          "id": "1 Professional Email",
+          "en": "Form database integration",
+          "zh": "表单数据库整合"
+        }
+      },
+      {
+        "id": "22-11",
+        "name": {
+          "id": "User Access Management",
+          "en": "On-page SEO optimization",
+          "zh": "站内 SEO 优化"
+        }
+      },
+      {
+        "id": "22-12",
+        "name": {
+          "id": "Integrasi Form Database",
+          "en": "4 revisions",
+          "zh": "4 次修改"
+        }
+      },
+      {
+        "id": "22-13",
+        "name": {
+          "id": "Optimasi SEO On-Page",
+          "en": "Lifetime technical support",
+          "zh": "终身技术支持"
+        }
+      },
+      {
+        "id": "22-14",
+        "name": {
+          "id": "Revisi 4x",
+          "en": "Suitable for national companies, property developers, distributors, manufacturers, corporate websites, media, and publishing",
+          "zh": "适合全国性公司、地产开发商、分销商、制造商、企业官网、媒体和出版"
+        }
+      },
+      {
+        "id": "22-15",
+        "name": {
+          "id": "Lifetime Technical Support",
+          "en": "Lifetime Technical Support",
+          "zh": "Lifetime Technical Support"
+        }
+      },
+      {
+        "id": "22-16",
+        "name": {
+          "id": "Cocok untuk perusahaan nasional, developer property, distributor, manufacturer, corporate website, media, dan publishing",
+          "en": "Cocok untuk perusahaan nasional, developer property, distributor, manufacturer, corporate website, media, dan publishing",
+          "zh": "Cocok untuk perusahaan nasional, developer property, distributor, manufacturer, corporate website, media, dan publishing"
+        }
+      }
+    ],
+    "createdAt": "2026-07-20T17:07:32.543Z",
+    "updatedAt": "2026-07-20T17:07:32.543Z"
+  },
+  {
+    "id": "23",
+    "brandId": "go-space",
+    "slug": "website-enterprise",
+    "serviceSlug": "website-development",
+    "category": "website",
+    "highlighted": false,
+    "description": {
+      "id": "Untuk perusahaan yang membutuhkan sistem digital dengan proses bisnis yang lebih kompleks.",
+      "en": "For companies that need a digital system with more complex business processes.",
+      "zh": "适合需要更复杂业务流程数字系统的企业。"
+    },
+    "service": {
+      "id": "Website Development",
+      "en": "Website Development",
+      "zh": "网站开发"
+    },
+    "packageName": {
+      "id": "Enterprise",
+      "en": "Enterprise",
+      "zh": "Enterprise"
+    },
+    "price": 0,
+    "strikethroughPrice": 0,
+    "whatsappPhone": "628887127000",
+    "whatsappMessage": {
+      "id": "",
+      "en": "",
+      "zh": ""
+    },
+    "isActive": true,
+    "features": [
+      {
+        "id": "23-1",
+        "name": {
+          "id": "Semua Fitur Business",
+          "en": "All Business features",
+          "zh": "包含 Business 全部功能"
+        }
+      },
+      {
+        "id": "23-2",
+        "name": {
+          "id": "Custom Feature Development",
+          "en": "Custom feature development",
+          "zh": "自定义功能开发"
+        }
+      },
+      {
+        "id": "23-3",
+        "name": {
+          "id": "Dashboard Internal",
+          "en": "Internal dashboard",
+          "zh": "内部仪表盘"
+        }
+      },
+      {
+        "id": "23-4",
+        "name": {
+          "id": "Multi User Role",
+          "en": "Multi user role",
+          "zh": "多用户角色"
+        }
+      },
+      {
+        "id": "23-5",
+        "name": {
+          "id": "Client Portal",
+          "en": "Client portal",
+          "zh": "客户门户"
+        }
+      },
+      {
+        "id": "23-6",
+        "name": {
+          "id": "Membership System",
+          "en": "Membership system",
+          "zh": "会员系统"
+        }
+      },
+      {
+        "id": "23-7",
+        "name": {
+          "id": "Payment Gateway",
+          "en": "Payment gateway",
+          "zh": "支付网关"
+        }
+      },
+      {
+        "id": "23-8",
+        "name": {
+          "id": "API Integration",
+          "en": "API integration",
+          "zh": "API 整合"
+        }
+      },
+      {
+        "id": "23-9",
+        "name": {
+          "id": "ERP / CRM Integration",
+          "en": "ERP / CRM integration",
+          "zh": "ERP / CRM 整合"
+        }
+      },
+      {
+        "id": "23-10",
+        "name": {
+          "id": "Multi Branch System",
+          "en": "Multi branch system",
+          "zh": "多分支系统"
+        }
+      },
+      {
+        "id": "23-11",
+        "name": {
+          "id": "Custom Workflow",
+          "en": "Custom workflow",
+          "zh": "自定义工作流"
+        }
+      },
+      {
+        "id": "23-12",
+        "name": {
+          "id": "Advanced Security Layer",
+          "en": "Advanced security layer",
+          "zh": "高级安全层"
+        }
+      },
+      {
+        "id": "23-13",
+        "name": {
+          "id": "Dedicated Project Manager",
+          "en": "Dedicated project manager",
+          "zh": "专属项目经理"
+        }
+      },
+      {
+        "id": "23-14",
+        "name": {
+          "id": "Priority Support",
+          "en": "Priority support",
+          "zh": "优先支持"
+        }
+      },
+      {
+        "id": "23-15",
+        "name": {
+          "id": "Scalability Consultation",
+          "en": "Scalability consultation",
+          "zh": "可扩展性咨询"
+        }
+      },
+      {
+        "id": "23-16",
+        "name": {
+          "id": "Cocok untuk e-commerce, SaaS platform, marketplace, internal system, ERP, dashboard monitoring, dan startup technology",
+          "en": "Suitable for e-commerce, SaaS platforms, marketplaces, internal systems, ERP, monitoring dashboards, and technology startups",
+          "zh": "适合电商、SaaS 平台、Marketplace、内部系统、ERP、监控仪表盘和科技初创企业"
+        }
+      }
+    ],
+    "createdAt": "2026-07-20T17:07:32.544Z",
+    "updatedAt": "2026-07-20T17:07:32.544Z"
+  }
+]

@@ -63,6 +63,7 @@ interface DockAppButtonProps {
   label: string;
   isActive?: boolean;
   onClick?: () => void;
+  disabled?: boolean;
   children: React.ReactNode;
 }
 
@@ -71,6 +72,7 @@ function DockAppButton({
   label,
   isActive = false,
   onClick,
+  disabled = false,
   children,
 }: DockAppButtonProps) {
   return (
@@ -88,8 +90,13 @@ function DockAppButton({
         <button
           type="button"
           aria-label={label}
-          className={SIDEBAR_DOCK_TRIGGER_CLASS}
+          aria-busy={disabled || undefined}
+          className={cn(
+            SIDEBAR_DOCK_TRIGGER_CLASS,
+            disabled && "pointer-events-none opacity-70",
+          )}
           onClick={onClick}
+          disabled={disabled}
         >
           {children}
         </button>
@@ -147,6 +154,7 @@ export function SidebarCollapsedDock({
     contentNavLinks,
     utilityNavLinks,
     openSwitcher,
+    isSwitchingBrand,
   } = useBrand();
   const { open, openAppearance } = useAppearanceDrawer();
   const { open: notificationsOpen, openNotificationCenter } =
@@ -159,7 +167,13 @@ export function SidebarCollapsedDock({
     <SidebarDock>
       {/* Matches expanded: brand + collapse, then Menu → Content → System → profile */}
       <SidebarDockItem index={index++}>
-        <DockAppButton label={brandLabel} onClick={openSwitcher}>
+        <DockAppButton
+          label={
+            isSwitchingBrand ? `Updating ${brandLabel}…` : brandLabel
+          }
+          onClick={openSwitcher}
+          disabled={isSwitchingBrand}
+        >
           {activeBrand?.logo ? (
             <BrandAppLogo src={activeBrand.logo} size="dock" />
           ) : (

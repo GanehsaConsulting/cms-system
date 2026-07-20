@@ -5,7 +5,7 @@ import { PriceStatusBadge } from "@/components/cms/prices/price-status-badge";
 import { CmsListTableRow } from "@/components/shared/cms-list-table-row";
 import { TableCell } from "@/components/ui/table";
 import { LIST_TABLE_CELL_CLASS } from "@/config/list-table";
-import { getPriceCategoryLabel } from "@/lib/prices/categories";
+import { getPriceCategoryTitleClass } from "@/config/price-category-styles";
 import {
   calculateDiscountPercent,
   formatPriceCurrency,
@@ -34,21 +34,22 @@ export function PriceListTableRow({
     price.price,
     price.strikethroughPrice,
   );
+  const categoryId = price.serviceSlug || price.category;
+  const knownIds = categories.map((category) => category.id);
+  const packageTitle = getPriceDisplayText(price.packageName);
 
   return (
     <CmsListTableRow isSelected={isSelected} onClick={() => onSelect(price.id)}>
       <TableCell className={LIST_TABLE_CELL_CLASS}>
-        <div className="min-w-[220px]">
-          <p className="truncate font-medium">
-            {getPriceDisplayText(price.packageName)}
-          </p>
-          <p className="truncate text-muted-foreground text-xs">
-            {getPriceCategoryLabel(price.serviceSlug, categories)}
-          </p>
-        </div>
-      </TableCell>
-      <TableCell className={LIST_TABLE_CELL_CLASS}>
-        <p className="truncate text-sm">{getPriceDisplayText(price.service)}</p>
+        <p
+          className={cn(
+            "min-w-[220px] truncate font-medium",
+            getPriceCategoryTitleClass(categoryId, knownIds),
+          )}
+          title={packageTitle}
+        >
+          {packageTitle}
+        </p>
       </TableCell>
       <TableCell className={LIST_TABLE_CELL_CLASS}>
         <p className="font-medium text-sm tabular-nums">

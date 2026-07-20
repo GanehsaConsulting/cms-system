@@ -23,6 +23,7 @@ export function SidebarBrandSwitchDialog() {
     brands,
     activeBrandId,
     setActiveBrandId,
+    isSwitchingBrand,
     switcherOpen,
     setSwitcherOpen,
     canAccessSettings,
@@ -41,9 +42,11 @@ export function SidebarBrandSwitchDialog() {
   );
 
   function handleSelect(id: string) {
+    if (isSwitchingBrand) {
+      return;
+    }
     setActiveBrandId(id);
     setSwitcherOpen(false);
-    router.refresh();
   }
 
   function handleOpenSettings() {

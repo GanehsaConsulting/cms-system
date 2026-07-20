@@ -1,1 +1,15 @@
-[]
+[
+  {
+    "id": "3c6192f9-f212-4671-a7ac-dbdb8d57016b",
+    "brandId": "go-space",
+    "name": "Mega Menu",
+    "key": "mega-menu",
+    "images": [
+      "https://res.cloudinary.com/dydm4uctz/image/upload/v1782196601/cms-gospace/mega-menu/banner.png"
+    ],
+    "redirectUrl": "",
+    "isActive": true,
+    "createdAt": "2026-07-20T17:07:32.546Z",
+    "updatedAt": "2026-07-20T17:07:32.546Z"
+  }
+]

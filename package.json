@@ -13,6 +13,7 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:seed:admin": "tsx scripts/seed-admin.ts",
+    "db:seed:gospace": "tsx scripts/seed-gospace-from-dump.ts",
     "db:migrate:articles": "tsx scripts/migrate-articles-json.ts",
     "db:migrate:media": "tsx scripts/migrate-media-json.ts"
   },

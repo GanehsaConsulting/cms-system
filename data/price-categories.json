@@ -1,1 +1,44 @@
-[]
+[
+  {
+    "id": "cv",
+    "brandId": "go-space",
+    "label": "CV",
+    "createdAt": "2026-07-20T17:07:32.481Z",
+    "updatedAt": "2026-07-20T17:07:32.481Z"
+  },
+  {
+    "id": "meeting-room",
+    "brandId": "go-space",
+    "label": "Meeting Room",
+    "createdAt": "2026-07-20T17:07:32.487Z",
+    "updatedAt": "2026-07-20T17:07:32.487Z"
+  },
+  {
+    "id": "pt",
+    "brandId": "go-space",
+    "label": "PT",
+    "createdAt": "2026-07-20T17:07:32.490Z",
+    "updatedAt": "2026-07-20T17:07:32.490Z"
+  },
+  {
+    "id": "pt-pma",
+    "brandId": "go-space",
+    "label": "PT PMA",
+    "createdAt": "2026-07-20T17:07:32.500Z",
+    "updatedAt": "2026-07-20T17:07:32.500Z"
+  },
+  {
+    "id": "virtual-office",
+    "brandId": "go-space",
+    "label": "Virtual Office",
+    "createdAt": "2026-07-20T17:07:32.501Z",
+    "updatedAt": "2026-07-20T17:07:32.501Z"
+  },
+  {
+    "id": "website",
+    "brandId": "go-space",
+    "label": "Website",
+    "createdAt": "2026-07-20T17:07:32.501Z",
+    "updatedAt": "2026-07-20T17:07:32.501Z"
+  }
+]

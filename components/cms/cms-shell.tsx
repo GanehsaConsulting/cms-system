@@ -3,7 +3,8 @@
 import { usePathname } from "next/navigation";
 import { CmsSidebar } from "@/components/cms/cms-sidebar";
 import { AppearanceDrawerProvider } from "@/components/shared/appearance-drawer-provider";
-import { BrandProvider } from "@/components/shared/brand-provider";
+import { BrandProvider, useBrand } from "@/components/shared/brand-provider";
+import { BrandSwitchPendingIndicator } from "@/components/shared/brand-switch-pending-indicator";
 import { CmsSidebarProvider } from "@/components/shared/cms-sidebar-provider";
 import { GlassPanel } from "@/components/shared/glass-panel";
 import { NotificationCenterProvider } from "@/components/shared/notification-center-provider";
@@ -22,6 +23,42 @@ interface CmsShellProps {
   canAccessAllPages?: boolean;
 }
 
+function CmsShellMain({
+  children,
+  user,
+}: {
+  children: React.ReactNode;
+  user?: CmsUser;
+}) {
+  const pathname = usePathname();
+  const isDashboard = pathname === "/";
+  const { isSwitchingBrand, activeBrandId } = useBrand();
+
+  return (
+    <>
+      <CmsSidebar user={user} />
+      <SidebarInset
+        className={cn(
+          "relative flex min-h-0 flex-1 flex-col overflow-hidden bg-transparent",
+          !isDashboard && DESKTOP_OUTER_GUTTER,
+        )}
+      >
+        <BrandSwitchPendingIndicator />
+        <div
+          key={activeBrandId ?? "brand"}
+          className={cn(
+            "flex min-h-0 flex-1 flex-col overflow-hidden transition-opacity duration-200",
+            isSwitchingBrand && "pointer-events-none opacity-45",
+          )}
+          aria-busy={isSwitchingBrand}
+        >
+          {isDashboard ? children : <GlassPanel>{children}</GlassPanel>}
+        </div>
+      </SidebarInset>
+    </>
+  );
+}
+
 export function CmsShell({
   children,
   brands,
@@ -29,9 +66,6 @@ export function CmsShell({
   canAccessSettings = false,
   canAccessAllPages = false,
 }: CmsShellProps) {
-  const pathname = usePathname();
-  const isDashboard = pathname === "/";
-
   return (
     <AppearanceDrawerProvider>
       <NotificationCenterProvider>
@@ -49,15 +83,7 @@ export function CmsShell({
               } as React.CSSProperties
             }
           >
-            <CmsSidebar user={user} />
-            <SidebarInset
-              className={cn(
-                "flex min-h-0 flex-1 flex-col overflow-hidden bg-transparent",
-                !isDashboard && DESKTOP_OUTER_GUTTER,
-              )}
-            >
-              {isDashboard ? children : <GlassPanel>{children}</GlassPanel>}
-            </SidebarInset>
+            <CmsShellMain user={user}>{children}</CmsShellMain>
           </CmsSidebarProvider>
         </BrandProvider>
       </NotificationCenterProvider>
