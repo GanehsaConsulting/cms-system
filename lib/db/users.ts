@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth/auth";
 import { db } from "@/lib/db/client";
 import { user as authUserTable, account as authAccountTable } from "@/lib/db/schema";
 import { slugify } from "@/lib/articles/slug";
+import { generateUserPassword } from "@/lib/users/password";
 import { normalizeUser } from "@/lib/users/normalize";
 import type { User, UserInput } from "@/types/user";
 
@@ -134,6 +135,7 @@ export async function getUserById(id: string): Promise<User | null> {
 
 export async function createUser(
   input: UserInput,
+  options: { password?: string } = {},
 ): Promise<{ user: User; username: string; password: string }> {
   const normalized = normalizeUser({
     id: "",
@@ -158,8 +160,9 @@ export async function createUser(
   const username = await findUniqueUsername(usernameBase);
 
   const password =
-    process.env.NEW_USER_TEMP_PASSWORD ??
-    `ChangeMe-${crypto.randomUUID().slice(0, 8)}!`;
+    options.password?.trim() ||
+    process.env.NEW_USER_TEMP_PASSWORD?.trim() ||
+    generateUserPassword();
 
   const ctx = await auth.$context;
   const passwordHash = await ctx.password.hash(password);

@@ -35,7 +35,7 @@ function CmsShellMain({
   const { isSwitchingBrand, activeBrandId } = useBrand();
 
   return (
-    <>
+    <div className="relative flex min-h-0 min-w-0 flex-1 overflow-hidden">
       <CmsSidebar user={user} />
       <SidebarInset
         className={cn(
@@ -43,19 +43,16 @@ function CmsShellMain({
           !isDashboard && DESKTOP_OUTER_GUTTER,
         )}
       >
-        <BrandSwitchPendingIndicator />
         <div
           key={activeBrandId ?? "brand"}
-          className={cn(
-            "flex min-h-0 flex-1 flex-col overflow-hidden transition-opacity duration-200",
-            isSwitchingBrand && "pointer-events-none opacity-45",
-          )}
+          className="flex min-h-0 flex-1 flex-col overflow-hidden"
           aria-busy={isSwitchingBrand}
         >
           {isDashboard ? children : <GlassPanel>{children}</GlassPanel>}
         </div>
       </SidebarInset>
-    </>
+      <BrandSwitchPendingIndicator />
+    </div>
   );
 }
 

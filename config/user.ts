@@ -4,6 +4,10 @@ export const USER_FORM_LIMITS = {
   position: 80,
 } as const;
 
+/** Prefill on create — admins can still edit the full address. */
+export const DEFAULT_USER_EMAIL_DOMAIN = "gbk.co.id";
+export const DEFAULT_NEW_USER_EMAIL = `@${DEFAULT_USER_EMAIL_DOMAIN}`;
+
 export const USER_ROLES = [
   {
     id: "super-admin",

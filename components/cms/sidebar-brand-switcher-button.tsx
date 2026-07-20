@@ -51,7 +51,7 @@ export function SidebarBrandSwitcherButton({
         </span>
         {isSwitchingBrand ? (
           <span
-            className="size-3.5 shrink-0 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-foreground"
+            className="size-3.5 shrink-0 rounded-full bg-muted-foreground/35"
             aria-hidden
           />
         ) : (

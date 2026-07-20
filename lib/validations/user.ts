@@ -1,7 +1,6 @@
 import { z } from "zod";
-import {
-  USER_FORM_LIMITS,
-} from "@/config/user";
+import { USER_FORM_LIMITS } from "@/config/user";
+import { USER_PASSWORD_LIMITS } from "@/lib/users/password";
 import type { UserInput } from "@/types/user";
 
 export const userFormSchema = z.object({
@@ -26,7 +25,18 @@ export const userFormSchema = z.object({
   avatarUrl: z.string(),
 });
 
+export const createUserFormSchema = userFormSchema.extend({
+  password: z
+    .string()
+    .min(
+      USER_PASSWORD_LIMITS.min,
+      `Password must be at least ${USER_PASSWORD_LIMITS.min} characters`,
+    )
+    .max(USER_PASSWORD_LIMITS.max, "Password is too long"),
+});
+
 export type UserFormValues = z.infer<typeof userFormSchema>;
+export type CreateUserFormValues = z.infer<typeof createUserFormSchema>;
 
 export function userFormToInput(values: UserFormValues): UserInput {
   return {
@@ -62,6 +72,7 @@ export function parseUserForm(formData: FormData): unknown {
     status: String(formData.get("status") ?? "active"),
     brandAccess: parseBrandAccess(formData.get("brandAccess")),
     avatarUrl: String(formData.get("avatarUrl") ?? ""),
+    password: String(formData.get("password") ?? ""),
   };
 }
 
@@ -70,8 +81,11 @@ export const adminSetPasswordSchema = z
   .object({
     newPassword: z
       .string()
-      .min(8, "Password must be at least 8 characters")
-      .max(128, "Password is too long"),
+      .min(
+        USER_PASSWORD_LIMITS.min,
+        `Password must be at least ${USER_PASSWORD_LIMITS.min} characters`,
+      )
+      .max(USER_PASSWORD_LIMITS.max, "Password is too long"),
     confirmPassword: z.string().min(1, "Confirm the new password"),
   })
   .refine((values) => values.newPassword === values.confirmPassword, {

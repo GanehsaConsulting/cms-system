@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { UserFormBrandsField } from "@/components/cms/settings/users/user-form-brands-field";
+import { UserFormPasswordField } from "@/components/cms/settings/users/user-form-password-field";
 import { UserFormPhotoField } from "@/components/cms/settings/users/user-form-photo-field";
 import { CmsAlert } from "@/components/shared/cms-alert";
 import {
@@ -24,6 +25,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  DEFAULT_NEW_USER_EMAIL,
+  DEFAULT_USER_EMAIL_DOMAIN,
   USER_FORM_LIMITS,
   USER_ROLES,
   USER_STATUSES,
@@ -33,6 +36,7 @@ import { DIALOG_FORM_CLASS } from "@/config/dialog";
 import { createUserAction, updateUserAction } from "@/lib/actions/users";
 import { notifyError, notifySuccess } from "@/lib/notify/action-toast";
 import { toSelectItems } from "@/lib/select-items";
+import { generateUserPassword } from "@/lib/users/password";
 import type { Brand } from "@/types/brand";
 import type { User } from "@/types/user";
 
@@ -66,7 +70,7 @@ export function UserFormDialog({
   const isEdit = Boolean(user);
   const [avatarUrl, setAvatarUrl] = useState(user?.avatarUrl ?? "");
   const [name, setName] = useState(user?.name ?? "");
-  const [email, setEmail] = useState(user?.email ?? "");
+  const [email, setEmail] = useState(user?.email ?? DEFAULT_NEW_USER_EMAIL);
   const [position, setPosition] = useState(user?.position ?? "");
   const [role, setRole] = useState<UserRoleId>(user?.role ?? "admin");
   const [status, setStatus] = useState<User["status"]>(
@@ -75,6 +79,7 @@ export function UserFormDialog({
   const [brandAccess, setBrandAccess] = useState<string[]>(
     getDefaultBrandAccess(brands, user),
   );
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const [createdCredentials, setCreatedCredentials] = useState<{
@@ -89,11 +94,12 @@ export function UserFormDialog({
 
     setAvatarUrl(user?.avatarUrl ?? "");
     setName(user?.name ?? "");
-    setEmail(user?.email ?? "");
+    setEmail(user?.email ?? DEFAULT_NEW_USER_EMAIL);
     setPosition(user?.position ?? "");
     setRole(user?.role ?? "admin");
     setStatus(user?.status ?? "active");
     setBrandAccess(getDefaultBrandAccess(brands, user));
+    setPassword(user ? "" : generateUserPassword());
     setError(null);
     setCreatedCredentials(null);
   }, [brands, open, user]);
@@ -118,6 +124,9 @@ export function UserFormDialog({
     formData.set("role", role);
     formData.set("status", status);
     formData.set("brandAccess", JSON.stringify(brandAccess));
+    if (!user) {
+      formData.set("password", password);
+    }
 
     startTransition(async () => {
       if (user) {
@@ -144,8 +153,6 @@ export function UserFormDialog({
       notifySuccess("User created.");
       onSaved(result.user);
 
-      // Creating a user generates a temporary password (UI currently
-      // doesn't ask for it). Show it once, then let admin close the dialog.
       if (result.password) {
         setCreatedCredentials({
           username: result.username ?? "",
@@ -198,11 +205,33 @@ export function UserFormDialog({
                 type="email"
                 value={email}
                 maxLength={USER_FORM_LIMITS.email}
-                placeholder="sarah@company.com"
+                placeholder={`name@${DEFAULT_USER_EMAIL_DOMAIN}`}
                 disabled={isPending}
                 onChange={(event) => setEmail(event.target.value)}
+                onFocus={(event) => {
+                  if (
+                    !isEdit &&
+                    event.currentTarget.value === DEFAULT_NEW_USER_EMAIL
+                  ) {
+                    event.currentTarget.setSelectionRange(0, 0);
+                  }
+                }}
               />
+              {!isEdit ? (
+                <p className="text-muted-foreground text-xs">
+                  Prefills @{DEFAULT_USER_EMAIL_DOMAIN}. Type the name before @,
+                  or replace the whole address.
+                </p>
+              ) : null}
             </div>
+
+            {!isEdit && !createdCredentials ? (
+              <UserFormPasswordField
+                value={password}
+                disabled={isPending}
+                onChange={setPassword}
+              />
+            ) : null}
 
             <div className="space-y-2">
               <Label htmlFor="user-position">Position</Label>
@@ -276,7 +305,7 @@ export function UserFormDialog({
             {createdCredentials ? (
               <div className="space-y-2 rounded-xl border-(--separator) border bg-muted/50 p-3">
                 <div>
-                  <p className="text-sm font-medium">Temporary credentials</p>
+                  <p className="text-sm font-medium">Login credentials</p>
                   <p className="text-muted-foreground text-xs">
                     Share these with the user. The password is shown once.
                   </p>

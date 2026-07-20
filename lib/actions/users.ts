@@ -10,6 +10,7 @@ import {
 import { requireCmsSettingsAccess } from "@/lib/users/require-settings-access";
 import {
   adminSetPasswordSchema,
+  createUserFormSchema,
   parseAdminSetPasswordForm,
   parseUserForm,
   userFormSchema,
@@ -26,7 +27,7 @@ export async function createUserAction(formData: FormData) {
     return { success: false as const, error: access.error };
   }
 
-  const parsed = userFormSchema.safeParse(parseUserForm(formData));
+  const parsed = createUserFormSchema.safeParse(parseUserForm(formData));
 
   if (!parsed.success) {
     return {
@@ -36,7 +37,8 @@ export async function createUserAction(formData: FormData) {
   }
 
   try {
-    const created = await createUser(userFormToInput(parsed.data));
+    const { password, ...profile } = parsed.data;
+    const created = await createUser(userFormToInput(profile), { password });
     revalidateUserPaths();
     return {
       success: true as const,
