@@ -32,7 +32,7 @@ export const articleFormSchema = z
     title: z
       .string()
       .trim()
-      .min(3, "Title must be at least 3 characters")
+      .min(1, "Title is required")
       .max(
         ARTICLE_FORM_LIMITS.title,
         `Title must be at most ${ARTICLE_FORM_LIMITS.title} characters`,
@@ -44,15 +44,7 @@ export const articleFormSchema = z
         ARTICLE_FORM_LIMITS.excerpt,
         `Excerpt must be at most ${ARTICLE_FORM_LIMITS.excerpt} characters`,
       ),
-    content: z
-      .string()
-      .trim()
-      .refine(
-        (value) =>
-          value !== "<p></p>" &&
-          value.replace(/<[^>]*>/g, "").trim().length > 0,
-        "Article content is required",
-      ),
+    content: z.string().trim(),
     status: articleStatusSchema,
     /** datetime-local value when status is scheduled; otherwise "". */
     scheduledAt: z.string(),
@@ -94,6 +86,29 @@ export const articleFormSchema = z
       ),
   })
   .superRefine((data, ctx) => {
+    const isDraft = data.status === "draft";
+    const plainContent = data.content.replace(/<[^>]*>/g, "").trim();
+    const hasContent =
+      data.content !== "<p></p>" && plainContent.length > 0;
+
+    if (!isDraft) {
+      if (data.title.trim().length < 3) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["title"],
+          message: "Title must be at least 3 characters",
+        });
+      }
+
+      if (!hasContent) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["content"],
+          message: "Article content is required",
+        });
+      }
+    }
+
     if (data.status !== "scheduled") {
       return;
     }

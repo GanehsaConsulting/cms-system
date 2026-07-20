@@ -34,12 +34,21 @@ export function ArticleListTableRow({
       isSelected={isSelected}
       onClick={() => onSelect(article.id)}
     >
-      <TableCell className={LIST_TABLE_CELL_CLASS}>
-        <div className="flex min-w-[260px] items-center gap-3">
-          <ArticleThumbnail articleId={article.id} title={article.title} />
-          <div className="min-w-0">
-            <p className="truncate font-medium">{article.title}</p>
-            <p className="truncate text-muted-foreground text-xs">
+      <TableCell className={cn(LIST_TABLE_CELL_CLASS, "max-w-56")}>
+        <div className="flex max-w-56 items-center gap-3">
+          <ArticleThumbnail
+            articleId={article.id}
+            title={article.title}
+            src={article.thumbnail}
+          />
+          <div className="min-w-0 flex-1">
+            <p className="truncate font-medium" title={article.title}>
+              {article.title}
+            </p>
+            <p
+              className="truncate text-muted-foreground text-xs"
+              title={article.slug}
+            >
               /{article.slug}
             </p>
           </div>

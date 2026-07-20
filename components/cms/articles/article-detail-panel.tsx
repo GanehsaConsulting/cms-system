@@ -49,6 +49,7 @@ export function ArticleDetailPanel({
         <ArticleThumbnail
           articleId={article.id}
           title={article.title}
+          src={article.thumbnail}
           size="md"
         />
 

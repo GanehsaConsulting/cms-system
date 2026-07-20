@@ -5,7 +5,6 @@ import {
   CmsDialog,
   CmsDialogContent,
   CmsDialogDescription,
-  CmsDialogHeader,
   CmsDialogTitle,
 } from "@/components/shared/cms-dialog";
 import type { ArticlePreviewData } from "@/types/article-preview";
@@ -27,18 +26,25 @@ export function ArticlePreviewDialog({
     <CmsDialog open={open} onOpenChange={onOpenChange}>
       <CmsDialogContent
         showCloseButton
-        size="2xl"
-        className="flex max-h-[min(92svh,56rem)] flex-col"
+        size="full"
+        className="flex flex-col"
       >
-        <CmsDialogHeader>
-          <CmsDialogTitle>Article Preview</CmsDialogTitle>
-          <CmsDialogDescription>
-            How this article will appear on your company profile site after
-            publishing.
-          </CmsDialogDescription>
-        </CmsDialogHeader>
+        <div className="flex shrink-0 items-center justify-between gap-3 border-(--separator) border-b bg-background/90 px-4 py-3 backdrop-blur-md sm:px-6">
+          <div className="min-w-0 pr-10">
+            <CmsDialogTitle className="truncate text-sm">
+              Article preview
+            </CmsDialogTitle>
+            <CmsDialogDescription className="sr-only">
+              Full-screen preview of how this article will appear on the public
+              site after publishing.
+            </CmsDialogDescription>
+            <p className="truncate text-muted-foreground text-xs">
+              Browse as on the live article page
+            </p>
+          </div>
+        </div>
 
-        <div className="min-h-0 flex-1 overflow-y-auto">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
           <ArticlePreviewPage article={article} publishedAt={publishedAt} />
         </div>
       </CmsDialogContent>

@@ -8,4 +8,5 @@ export interface ArticlePreviewData {
   tags: string[];
   authorName: string;
   slug: string;
+  thumbnail?: string;
 }

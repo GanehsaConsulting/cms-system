@@ -45,9 +45,12 @@ function DialogContent({
   className,
   children,
   showCloseButton = true,
+  fullscreen = false,
   ...props
 }: DialogPrimitive.Popup.Props & {
   showCloseButton?: boolean;
+  /** Edge-to-edge viewport panel (e.g. article preview). */
+  fullscreen?: boolean;
 }) {
   return (
     <DialogPortal>
@@ -56,8 +59,13 @@ function DialogContent({
         data-slot="dialog-content"
         className={cn(
           MODAL_PANEL_SURFACE,
-          "fixed top-1/2 left-1/2 z-50 flex max-h-[min(92svh,40rem)] w-full max-w-none -translate-x-1/2 -translate-y-1/2 flex-col gap-0 overflow-hidden rounded-[1.75rem] p-0 text-popover-foreground text-sm outline-none duration-100 sm:max-w-none",
-          "data-open:fade-in-0 data-open:zoom-in-95 data-open:animate-in data-closed:fade-out-0 data-closed:zoom-out-95 data-closed:animate-out",
+          "fixed z-50 flex flex-col gap-0 overflow-hidden p-0 text-popover-foreground text-sm outline-none duration-100",
+          fullscreen
+            ? "inset-0 h-svh max-h-svh w-screen max-w-none rounded-none data-open:fade-in-0 data-open:animate-in data-closed:fade-out-0 data-closed:animate-out"
+            : [
+                "top-1/2 left-1/2 max-h-[min(92svh,40rem)] w-full max-w-none -translate-x-1/2 -translate-y-1/2 rounded-[1.75rem] sm:max-w-none",
+                "data-open:fade-in-0 data-open:zoom-in-95 data-open:animate-in data-closed:fade-out-0 data-closed:zoom-out-95 data-closed:animate-out",
+              ],
           className,
         )}
         {...props}
@@ -69,7 +77,10 @@ function DialogContent({
             render={
               <Button
                 variant="ghost"
-                className="absolute top-3 right-3"
+                className={cn(
+                  "absolute top-3 right-3",
+                  fullscreen && "top-2.5 right-3 z-10",
+                )}
                 size="icon-sm"
               />
             }

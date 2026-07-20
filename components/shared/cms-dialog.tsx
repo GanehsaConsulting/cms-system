@@ -28,10 +28,14 @@ interface CmsDialogContentProps extends React.ComponentProps<
 function CmsDialogContent({
   className,
   size = DIALOG_DEFAULT_SIZE,
+  fullscreen,
   ...props
 }: CmsDialogContentProps) {
+  const isFullscreen = fullscreen ?? size === "full";
+
   return (
     <DialogContent
+      fullscreen={isFullscreen}
       className={cn(DIALOG_SIZE[size], className)}
       {...props}
     />

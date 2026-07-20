@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { ArticleFormContentField } from "@/components/cms/articles/article-form-content-field";
 import { ArticleFormDangerZone } from "@/components/cms/articles/article-form-danger-zone";
@@ -44,6 +44,7 @@ import {
   toDatetimeLocalValue,
 } from "@/lib/articles/schedule";
 import { slugifyArticleTitle } from "@/lib/articles/slug";
+import { notifyError, runNotifiedAction } from "@/lib/notify/action-toast";
 import { cn } from "@/lib/utils";
 import {
   type ArticleFormValues,
@@ -115,6 +116,10 @@ export function ArticleForm({
     useState<ArticleCategoryStyle[]>(categories);
   const [isPending, startTransition] = useTransition();
   const { requestConfirm, confirmDialog } = useConfirmDialog(isPending);
+
+  useEffect(() => {
+    setAvailableCategories(categories);
+  }, [categories]);
 
   const defaultValues = useMemo(
     () => buildDefaultValues(defaultAuthorName),
@@ -203,6 +208,8 @@ export function ArticleForm({
     ],
   );
 
+  const thumbnail = watchedValues.thumbnail;
+
   const previewArticle = useMemo<ArticlePreviewData>(
     () => ({
       title,
@@ -212,8 +219,9 @@ export function ArticleForm({
       tags,
       authorName,
       slug: derivedSlug,
+      thumbnail,
     }),
-    [title, excerpt, content, category, tags, authorName, derivedSlug],
+    [title, excerpt, content, category, tags, authorName, derivedSlug, thumbnail],
   );
 
   function buildFormData(values: ArticleFormValues) {
@@ -239,12 +247,18 @@ export function ArticleForm({
     setSuccess(null);
 
     startTransition(async () => {
-      const result = article
-        ? await updateArticleAction(article.id, buildFormData(values))
-        : await createArticleAction(buildFormData(values));
-
-      if (result && !result.success) {
-        setError(result.error);
+      const notified = await runNotifiedAction(
+        () =>
+          article
+            ? updateArticleAction(article.id, buildFormData(values))
+            : createArticleAction(buildFormData(values)),
+        {
+          success: "Article saved.",
+          errorFallback: "Failed to save article.",
+        },
+      );
+      if (!notified.ok) {
+        setError("Failed to save article.");
         return;
       }
 
@@ -257,15 +271,31 @@ export function ArticleForm({
   }
 
   function submitWithStatus(status: ArticleStatus) {
-    if (status === "scheduled" && !getValues("scheduledAt").trim()) {
-      setValue("scheduledAt", getDefaultScheduleDatetimeLocal(), {
-        shouldValidate: true,
-        shouldDirty: true,
-      });
-    }
+    const scheduledAt =
+      status === "scheduled"
+        ? getValues("scheduledAt").trim() || getDefaultScheduleDatetimeLocal()
+        : status === "draft"
+          ? ""
+          : getValues("scheduledAt");
 
-    setValue("status", status, { shouldValidate: true, shouldDirty: true });
-    void handleSubmit(onSubmit)();
+    // Set status before validate/submit so draft rules apply (content optional).
+    setValue("status", status, { shouldDirty: true, shouldValidate: false });
+    setValue("scheduledAt", scheduledAt, {
+      shouldDirty: true,
+      shouldValidate: false,
+    });
+
+    void handleSubmit(
+      (values) => onSubmit({ ...values, status, scheduledAt }),
+      onInvalid,
+    )();
+  }
+
+  function onInvalid() {
+    setSuccess(null);
+    const message = "Please fix the highlighted fields before saving.";
+    setError(message);
+    notifyError(message);
   }
 
   function handleDelete() {
@@ -278,9 +308,15 @@ export function ArticleForm({
       onConfirm: () => {
         setError(null);
         startTransition(async () => {
-          const result = await deleteArticleAction(article.id);
-          if (result && !result.success) {
-            setError(result.error);
+          const notified = await runNotifiedAction(
+            () => deleteArticleAction(article.id),
+            {
+              success: "Article deleted.",
+              errorFallback: "Failed to delete article.",
+            },
+          );
+          if (!notified.ok) {
+            setError("Failed to delete article.");
           }
         });
       },
@@ -304,7 +340,7 @@ export function ArticleForm({
       >
         <FormProvider {...form}>
           <form
-            onSubmit={handleSubmit(onSubmit)}
+            onSubmit={handleSubmit(onSubmit, onInvalid)}
             className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_20rem]"
           >
             <div className={cn("flex flex-col", STACK_GAP)}>
@@ -400,14 +436,7 @@ export function ArticleForm({
                 scheduledAtError={errors.scheduledAt?.message}
                 categories={availableCategories}
                 authors={authors}
-                allowCreateCategory={!article}
                 onCategoriesChange={setAvailableCategories}
-                onCategoryCreated={(createdCategory) => {
-                  setValue("category", createdCategory.id, {
-                    shouldValidate: true,
-                    shouldDirty: true,
-                  });
-                }}
               />
               <ArticleFormSeoPanel
                 metaTitle={metaTitle}

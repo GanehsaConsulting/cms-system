@@ -23,12 +23,12 @@ export function ArticlePreviewPage({
   const previewId = article.slug || "preview";
 
   return (
-    <article className="bg-background text-foreground">
-      <div className="border-[color:var(--separator)] border-b bg-card px-6 py-8 sm:px-10">
+    <article className="min-h-full bg-background/0 text-foreground">
+      <div className="border-(--separator) border-b bg-card/50 px-6 py-10 sm:px-10 sm:py-14">
         <div className="mx-auto max-w-3xl">
           <ArticleCategoryBadge categoryId={article.category} />
 
-          <h1 className="mt-4 font-semibold text-3xl tracking-tight sm:text-4xl">
+          <h1 className="mt-4 font-semibold text-3xl tracking-tight sm:text-4xl md:text-5xl">
             {title}
           </h1>
 
@@ -42,17 +42,18 @@ export function ArticlePreviewPage({
           </div>
 
           {article.excerpt ? (
-            <p className="mt-5 text-lg text-muted-foreground leading-relaxed">
+            <p className="mt-5 text-lg text-muted-foreground leading-relaxed sm:text-xl">
               {article.excerpt}
             </p>
           ) : null}
         </div>
       </div>
 
-      <div className="mx-auto max-w-3xl px-6 py-8 sm:px-10">
+      <div className="mx-auto max-w-3xl px-6 py-10 sm:px-10 sm:py-12">
         <ArticleThumbnail
           articleId={previewId}
           title={title}
+          src={article.thumbnail}
           size="md"
           className="aspect-video h-auto w-full"
         />
@@ -69,7 +70,7 @@ export function ArticlePreviewPage({
         )}
 
         {article.tags.length > 0 ? (
-          <div className="mt-10 border-[color:var(--separator)] border-t pt-6">
+          <div className="mt-10 border-(--separator) border-t pt-6 pb-16">
             <p className="mb-3 font-medium text-sm">Tags</p>
             <ArticleTagList tags={article.tags} maxVisible={10} />
           </div>
