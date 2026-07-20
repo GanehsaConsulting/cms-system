@@ -32,7 +32,10 @@ export function PricePreviewDialog({
           </CmsDialogDescription>
         </CmsDialogHeader>
 
-        <div className="relative flex min-h-0 flex-1 justify-center overflow-y-auto bg-[#f5f5f7]/80 p-6 dark:bg-black/40">
+        <div
+          data-dialog-scroll
+          className="relative flex min-h-0 flex-1 justify-center overflow-y-auto overflow-anchor-none bg-[#f5f5f7]/80 p-6 dark:bg-black/40"
+        >
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgb(255_255_255/0.55),transparent_70%)] dark:bg-[radial-gradient(ellipse_at_center,rgb(44_44_46/0.45),transparent_70%)]"

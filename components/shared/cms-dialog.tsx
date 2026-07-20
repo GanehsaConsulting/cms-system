@@ -1,6 +1,7 @@
 "use client";
 
 import type * as React from "react";
+import { useLayoutEffect, useRef } from "react";
 import {
   Dialog,
   DialogClose,
@@ -46,7 +47,25 @@ function CmsDialogBody({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  return <div className={cn(DIALOG_BODY_CLASS, className)} {...props} />;
+  const bodyRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    const node = bodyRef.current;
+    if (!node) {
+      return;
+    }
+    node.scrollTop = 0;
+    node.scrollLeft = 0;
+  }, []);
+
+  return (
+    <div
+      ref={bodyRef}
+      data-slot="dialog-body"
+      className={cn(DIALOG_BODY_CLASS, className)}
+      {...props}
+    />
+  );
 }
 
 export {

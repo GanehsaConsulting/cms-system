@@ -2,7 +2,7 @@
 
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import { XIcon } from "lucide-react";
-import type * as React from "react";
+import { useLayoutEffect, useRef, type ComponentProps } from "react";
 import { Button } from "@/components/ui/button";
 import { MODAL_PANEL_SURFACE } from "@/config/glass";
 import { cn } from "@/lib/utils";
@@ -41,22 +41,61 @@ function DialogOverlay({
   );
 }
 
+function resetDialogScrollContainers(root: HTMLElement) {
+  root
+    .querySelectorAll<HTMLElement>(
+      "[data-slot='dialog-body'], [data-dialog-scroll]",
+    )
+    .forEach((node) => {
+      node.scrollTop = 0;
+      node.scrollLeft = 0;
+    });
+}
+
 function DialogContent({
   className,
   children,
   showCloseButton = true,
   fullscreen = false,
+  initialFocus,
   ...props
 }: DialogPrimitive.Popup.Props & {
   showCloseButton?: boolean;
   /** Edge-to-edge viewport panel (e.g. article preview). */
   fullscreen?: boolean;
 }) {
+  const popupRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    const node = popupRef.current;
+    if (!node) {
+      return;
+    }
+
+    resetDialogScrollContainers(node);
+    const frame = window.requestAnimationFrame(() => {
+      resetDialogScrollContainers(node);
+    });
+    const timeout = window.setTimeout(() => {
+      resetDialogScrollContainers(node);
+    }, 120);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.clearTimeout(timeout);
+    };
+  }, []);
+
   return (
     <DialogPortal>
       <DialogOverlay />
       <DialogPrimitive.Popup
         data-slot="dialog-content"
+        {...props}
+        ref={popupRef}
+        // Focus the panel itself so deep tabbables (footer, late links, video)
+        // do not call scrollIntoView and jump the modal body to the bottom.
+        initialFocus={initialFocus ?? popupRef}
         className={cn(
           MODAL_PANEL_SURFACE,
           "fixed z-50 flex flex-col gap-0 overflow-hidden p-0 text-popover-foreground text-sm outline-none duration-100",
@@ -68,7 +107,6 @@ function DialogContent({
               ],
           className,
         )}
-        {...props}
       >
         {children}
         {showCloseButton && (
@@ -94,7 +132,7 @@ function DialogContent({
   );
 }
 
-function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
+function DialogHeader({ className, ...props }: ComponentProps<"div">) {
   return (
     <div
       data-slot="dialog-header"
@@ -112,7 +150,7 @@ function DialogFooter({
   showCloseButton = false,
   children,
   ...props
-}: React.ComponentProps<"div"> & {
+}: ComponentProps<"div"> & {
   showCloseButton?: boolean;
 }) {
   return (

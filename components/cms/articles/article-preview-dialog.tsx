@@ -1,5 +1,6 @@
 "use client";
 
+import { useLayoutEffect, useRef } from "react";
 import { ArticlePreviewPage } from "@/components/cms/articles/article-preview-page";
 import {
   CmsDialog,
@@ -22,6 +23,20 @@ export function ArticlePreviewDialog({
   article,
   publishedAt,
 }: ArticlePreviewDialogProps) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    if (!open) {
+      return;
+    }
+    const node = scrollRef.current;
+    if (!node) {
+      return;
+    }
+    node.scrollTop = 0;
+    node.scrollLeft = 0;
+  }, [open, article.slug, article.title]);
+
   return (
     <CmsDialog open={open} onOpenChange={onOpenChange}>
       <CmsDialogContent
@@ -44,7 +59,11 @@ export function ArticlePreviewDialog({
           </div>
         </div>
 
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+        <div
+          ref={scrollRef}
+          data-dialog-scroll
+          className="min-h-0 flex-1 overflow-y-auto overflow-anchor-none overscroll-contain"
+        >
           <ArticlePreviewPage article={article} publishedAt={publishedAt} />
         </div>
       </CmsDialogContent>
