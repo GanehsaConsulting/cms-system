@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
+import { CmsAlert } from "@/components/shared/cms-alert";
 import {
   CmsDialog,
   CmsDialogBody,
@@ -121,7 +122,7 @@ export function PriceCategoryFormDialog({
                 </p>
               ) : null}
               {error ? (
-                <p className="text-destructive text-xs">{error}</p>
+                <CmsAlert variant="error" size="sm" message={error} />
               ) : null}
             </div>
           </CmsDialogBody>

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { PencilSimpleIcon, PlusIcon, TrashIcon } from "@/lib/icons";
 import { PriceCategoryFormDialog } from "@/components/cms/prices/price-category-form-dialog";
 import { Button } from "@/components/ui/button";
+import { CmsAlert } from "@/components/shared/cms-alert";
 import {
   CmsDialog,
   CmsDialogBody,
@@ -123,9 +124,7 @@ export function PriceCategoriesManageDialog({
             </Button>
 
             {actionError ? (
-              <p className="text-destructive text-xs" role="alert">
-                {actionError}
-              </p>
+              <CmsAlert variant="error" size="sm" message={actionError} />
             ) : null}
 
             {sortedCategories.length === 0 ? (

@@ -3,6 +3,7 @@
 import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { CmsAlert } from "@/components/shared/cms-alert";
 import { MEDIA_LIBRARY_ACCEPT_ATTRIBUTE } from "@/config/media-library";
 import { uploadMediaLibraryFilesAction } from "@/lib/actions/media-files";
 import { UploadSimpleIcon } from "@/lib/icons";
@@ -73,7 +74,9 @@ export function MediaLibraryUploadButton({
         <UploadSimpleIcon className="size-3.5" />
         Upload
       </Button>
-      {error ? <p className="text-destructive text-xs">{error}</p> : null}
+      {error ? (
+        <CmsAlert variant="error" size="sm" message={error} />
+      ) : null}
     </div>
   );
 }

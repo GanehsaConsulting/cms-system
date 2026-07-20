@@ -3,6 +3,7 @@
 import { useEffect, useState, useTransition } from "react";
 import { UserFormBrandsField } from "@/components/cms/settings/users/user-form-brands-field";
 import { UserFormPhotoField } from "@/components/cms/settings/users/user-form-photo-field";
+import { CmsAlert } from "@/components/shared/cms-alert";
 import {
   CmsDialog,
   CmsDialogBody,
@@ -269,9 +270,7 @@ export function UserFormDialog({
             />
 
             {error ? (
-              <p className="text-destructive text-sm" role="alert">
-                {error}
-              </p>
+              <CmsAlert variant="error" message={error} />
             ) : null}
 
             {createdCredentials ? (

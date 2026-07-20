@@ -35,7 +35,7 @@ export function ArticleFormSeoPanel({
   metaDescriptionError,
 }: ArticleFormSeoPanelProps) {
   return (
-    <SolidSurface className="p-4">
+    <SolidSurface className="p-4 md:p-5">
       <Collapsible defaultOpen>
         <CollapsibleTrigger className="flex w-full items-start justify-between gap-2 text-left">
           <CmsFormSectionHeading

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useState, useTransition } from "react";
 import { BrandFormFeaturesField } from "@/components/cms/settings/brands/brand-form-features-field";
+import { CmsAlert } from "@/components/shared/cms-alert";
 import {
   CmsDialog,
   CmsDialogBody,
@@ -222,9 +223,7 @@ export function BrandFormDialog({
             />
 
             {error ? (
-              <p className="text-destructive text-sm" role="alert">
-                {error}
-              </p>
+              <CmsAlert variant="error" message={error} />
             ) : null}
           </CmsDialogBody>
 

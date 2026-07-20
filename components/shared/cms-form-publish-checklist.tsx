@@ -79,7 +79,7 @@ export function CmsFormPublishChecklist({
   checklist,
 }: CmsFormPublishChecklistProps) {
   return (
-    <SolidSurface className="space-y-4 p-4">
+    <SolidSurface className="space-y-4 p-4 md:p-5">
       <CmsFormSectionHeading
         title="Publish Checklist"
         description={`${checklist.completedCount} of ${checklist.totalCount} complete`}

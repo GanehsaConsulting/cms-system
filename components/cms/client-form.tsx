@@ -13,6 +13,7 @@ import { ClientFormLogoField } from "@/components/cms/clients/client-form-logo-f
 import { ClientFormPublishChecklist } from "@/components/cms/clients/client-form-publish-checklist";
 import { ClientFormSectionHeading } from "@/components/cms/clients/client-form-section-heading";
 import { ClientFormTestimonialsSection } from "@/components/cms/clients/client-form-testimonials-section";
+import { CmsAlert } from "@/components/shared/cms-alert";
 import { CmsPageShell } from "@/components/shared/cms-page-shell";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { SolidSurface } from "@/components/shared/solid-surface";
@@ -246,20 +247,16 @@ export function ClientForm({ client }: ClientFormProps) {
             ) : null}
           </aside>
 
-          {(error || success || firstError) && (
-            <div className="xl:col-span-2">
+          {(error || success || firstError) ? (
+            <div className="space-y-2 xl:col-span-2">
               {error || firstError ? (
-                <p className="text-destructive text-sm" role="alert">
-                  {error || firstError}
-                </p>
+                <CmsAlert variant="error" message={error || firstError} />
               ) : null}
               {success ? (
-                <p className="text-chart-3 text-sm" role="status">
-                  {success}
-                </p>
+                <CmsAlert variant="success" message={success} />
               ) : null}
             </div>
-          )}
+          ) : null}
         </form>
       </CmsPageShell>
 

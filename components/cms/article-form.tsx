@@ -29,7 +29,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ARTICLE_ACTION_CONFIRMATIONS } from "@/config/article-actions";
 import type { ArticleCategoryStyle } from "@/config/article-categories";
 import { ARTICLE_FORM_LIMITS } from "@/config/article-form";
-import { RADIUS_DEEP } from "@/config/shape";
+import { CmsAlert } from "@/components/shared/cms-alert";
 import { STACK_GAP } from "@/config/spacing";
 import { useConfirmDialog } from "@/hooks/use-confirm-dialog";
 import {
@@ -108,7 +108,6 @@ export function ArticleForm({
 }: ArticleFormProps) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [availableCategories, setAvailableCategories] =
     useState<ArticleCategoryStyle[]>(categories);
@@ -260,7 +259,6 @@ export function ArticleForm({
 
   function onSubmit(values: ArticleFormValues) {
     setError(null);
-    setSuccess(null);
 
     startTransition(async () => {
       const notified = await runNotifiedAction(
@@ -279,7 +277,6 @@ export function ArticleForm({
       }
 
       if (article) {
-        setSuccess("Article saved successfully.");
         reset(values);
         router.refresh();
       }
@@ -308,7 +305,6 @@ export function ArticleForm({
   }
 
   function onInvalid() {
-    setSuccess(null);
     const message = "Please fix the highlighted fields before saving.";
     setError(message);
     notifyError(message);
@@ -357,9 +353,11 @@ export function ArticleForm({
         <FormProvider {...form}>
           <form
             onSubmit={handleSubmit(onSubmit, onInvalid)}
-            className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_20rem]"
+            className="grid items-start gap-3 xl:grid-cols-[minmax(0,1fr)_20rem]"
           >
             <div className={cn("flex flex-col", STACK_GAP)}>
+              {error ? <CmsAlert variant="error" message={error} /> : null}
+
               <SolidSurface className="space-y-6 p-4 md:p-5">
                 <CmsFormSectionHeading
                   title="Article content"
@@ -436,7 +434,7 @@ export function ArticleForm({
             </div>
 
             <aside className={cn("flex flex-col", STACK_GAP)}>
-              <SolidSurface className="space-y-4 p-4">
+              <SolidSurface className="space-y-4 p-4 md:p-5">
                 <ArticleFormInfoPanel
                   article={article}
                   slug={derivedSlug || article?.slug}
@@ -472,28 +470,6 @@ export function ArticleForm({
                 />
               ) : null}
             </aside>
-
-            {error ? (
-              <p
-                className={cn(
-                  RADIUS_DEEP,
-                  "border border-destructive/30 bg-destructive/10 px-3 py-2 text-destructive text-sm xl:col-span-2",
-                )}
-              >
-                {error}
-              </p>
-            ) : null}
-
-            {success ? (
-              <p
-                className={cn(
-                  RADIUS_DEEP,
-                  "border border-border bg-muted px-3 py-2 text-muted-foreground text-sm xl:col-span-2",
-                )}
-              >
-                {success}
-              </p>
-            ) : null}
           </form>
         </FormProvider>
       </CmsPageShell>

@@ -44,7 +44,7 @@ export function ArticleFormReadingStats({
   const stats = useMemo(() => getArticleFormWordStats(values), [values]);
 
   return (
-    <SolidSurface className="space-y-4 p-4">
+    <SolidSurface className="space-y-4 p-4 md:p-5">
       <CmsFormSectionHeading
         title="Reading Time"
         description={`Estimated from title, excerpt, and article content at ${ARTICLE_READING_WPM} WPM.`}

@@ -205,7 +205,7 @@ export function PortfolioFormFields({
               onCheckedChange={(checked) => field.onChange(checked === true)}
             />
             <div className="min-w-0 space-y-0.5">
-              <Label htmlFor={featuredId} className="font-medium text-sm">
+              <Label htmlFor={featuredId}>
                 Featured work
               </Label>
               <p className="text-muted-foreground text-xs leading-relaxed">

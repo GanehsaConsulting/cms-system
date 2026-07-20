@@ -8,6 +8,7 @@ import {
   type BannerRedirectMode,
 } from "@/components/cms/banners/banner-form-redirect-field";
 import { BannerFormStatusField } from "@/components/cms/banners/banner-form-status-field";
+import { CmsAlert } from "@/components/shared/cms-alert";
 import {
   CmsDialog,
   CmsDialogBody,
@@ -313,7 +314,7 @@ export function BannerFormDialog({
             <BannerFormPublishChecklist values={publishChecklistValues} />
 
             {error ? (
-              <p className="text-destructive text-xs">{error}</p>
+              <CmsAlert variant="error" size="sm" message={error} />
             ) : null}
           </CmsDialogBody>
 

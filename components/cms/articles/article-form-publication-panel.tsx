@@ -63,7 +63,7 @@ export function ArticleFormPublicationPanel({
   }
 
   return (
-    <SolidSurface className="space-y-4 p-4">
+    <SolidSurface className="space-y-4 p-4 md:p-5">
       <CmsFormSectionHeading
         title="Publication"
         description="Schedule go-live, taxonomy, and author. Use Save Draft or Publish in the header to choose how this article is saved."
@@ -82,7 +82,7 @@ export function ArticleFormPublicationPanel({
         <div className="space-y-3 rounded-lg border border-border/60 px-3 py-3">
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0 space-y-0.5">
-              <Label htmlFor="schedule-toggle" className="font-medium text-sm">
+              <Label htmlFor="schedule-toggle">
                 Schedule for later
               </Label>
               <p className="text-muted-foreground text-xs leading-relaxed">

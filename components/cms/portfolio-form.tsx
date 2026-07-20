@@ -8,6 +8,7 @@ import { PortfolioFormCoverField } from "@/components/cms/portfolio/portfolio-fo
 import { PortfolioFormFields } from "@/components/cms/portfolio/portfolio-form-fields";
 import { PortfolioFormHeader } from "@/components/cms/portfolio/portfolio-form-header";
 import { PortfolioFormPublishChecklist } from "@/components/cms/portfolio/portfolio-form-publish-checklist";
+import { CmsAlert } from "@/components/shared/cms-alert";
 import { CmsPageShell } from "@/components/shared/cms-page-shell";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { SolidSurface } from "@/components/shared/solid-surface";
@@ -163,9 +164,11 @@ export function PortfolioForm({
               <PortfolioFormCoverField control={control} />
             </SolidSurface>
 
-            {error ? <p className="text-destructive text-sm">{error}</p> : null}
+            {error ? (
+              <CmsAlert variant="error" message={error} />
+            ) : null}
             {success ? (
-              <p className="text-emerald-600 text-sm">{success}</p>
+              <CmsAlert variant="success" message={success} />
             ) : null}
 
             {item ? (

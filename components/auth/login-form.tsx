@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
 import { LoginAppLogo } from "@/components/auth/login-app-logo";
+import { CmsAlert } from "@/components/shared/cms-alert";
 import { useAppearance } from "@/components/shared/appearance-provider";
 import { Input } from "@/components/ui/input";
 import { GLASS_SURFACE } from "@/config/glass";
@@ -151,15 +152,16 @@ export function LoginForm() {
       </div>
 
       {error ? (
-        <p
+        <CmsAlert
+          variant="error"
+          message={error}
           className={cn(
-            "mt-3 text-center text-sm",
-            resolvedDark ? "text-white/90" : "text-black/80",
+            "mt-3",
+            resolvedDark
+              ? "[&_[data-slot=alert-description]]:text-white/90"
+              : "[&_[data-slot=alert-description]]:text-black/80",
           )}
-          role="alert"
-        >
-          {error}
-        </p>
+        />
       ) : null}
     </form>
   );

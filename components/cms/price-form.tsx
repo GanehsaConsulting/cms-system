@@ -15,12 +15,12 @@ import { PriceFormPublishChecklist } from "@/components/cms/prices/price-form-pu
 import { PriceFormSectionHeading } from "@/components/cms/prices/price-form-section-heading";
 import { PriceFormStatusField } from "@/components/cms/prices/price-form-status-field";
 import { PricePreviewDialog } from "@/components/cms/prices/price-preview-dialog";
+import { CmsAlert } from "@/components/shared/cms-alert";
 import { CmsPageShell } from "@/components/shared/cms-page-shell";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { SolidSurface } from "@/components/shared/solid-surface";
 import { PRICE_ACTION_CONFIRMATIONS } from "@/config/price-actions";
 import { STACK_GAP } from "@/config/spacing";
-import { RADIUS_DEEP } from "@/config/shape";
 import {
   createPriceAction,
   deletePriceAction,
@@ -319,25 +319,19 @@ export function PriceForm({ price, categories }: PriceFormProps) {
           </aside>
 
           {error || firstError ? (
-            <p
-              className={cn(
-                RADIUS_DEEP,
-                "border border-destructive/30 bg-destructive/10 px-3 py-2 text-destructive text-sm xl:col-span-2",
-              )}
-            >
-              {error ?? firstError}
-            </p>
+            <CmsAlert
+              variant="error"
+              message={error ?? firstError}
+              className="xl:col-span-2"
+            />
           ) : null}
 
           {success ? (
-            <p
-              className={cn(
-                RADIUS_DEEP,
-                "border border-border bg-muted px-3 py-2 text-muted-foreground text-sm xl:col-span-2",
-              )}
-            >
-              {success}
-            </p>
+            <CmsAlert
+              variant="success"
+              message={success}
+              className="xl:col-span-2"
+            />
           ) : null}
         </form>
       </CmsPageShell>

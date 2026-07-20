@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { UploadSimpleIcon } from "@/lib/icons";
+import { CmsAlert } from "@/components/shared/cms-alert";
 import { useWallpaper } from "@/components/shared/wallpaper-provider";
 import {
   SETTINGS_ROW,
@@ -61,7 +62,9 @@ export function WallpaperUpload() {
         </p>
       ) : null}
       {uploadError ? (
-        <p className="px-4 py-2 text-destructive text-xs">{uploadError}</p>
+        <div className="px-4 py-2">
+          <CmsAlert variant="error" size="sm" message={uploadError} />
+        </div>
       ) : null}
     </>
   );

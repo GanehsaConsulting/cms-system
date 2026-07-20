@@ -13,6 +13,7 @@ export type SidebarSearchAction = "navigate" | "appearance";
 export interface SidebarSearchItem {
   id: string;
   title: string;
+  subtitle: string;
   keywords: string[];
   icon: Icon;
   tone: SidebarAppIconTone;
@@ -24,6 +25,7 @@ function toSearchItem(link: NavLink): SidebarSearchItem {
   return {
     id: link.href,
     title: link.title,
+    subtitle: link.href === "/" ? "Dashboard" : link.href,
     keywords: [link.title, link.href],
     icon: link.icon,
     tone: link.tone,
@@ -43,6 +45,7 @@ export function buildSidebarSearchItems(
     {
       id: "appearance",
       title: appearanceNavItem.title,
+      subtitle: "Theme, wallpaper, and accent settings",
       keywords: [appearanceNavItem.title, "theme", "wallpaper", "accent"],
       icon: appearanceNavItem.icon,
       tone: appearanceNavItem.tone,

@@ -12,6 +12,7 @@ import { ClientsWorksNewDataHeader } from "@/components/cms/clients/clients-work
 import { ClientsWorksPublishChecklist } from "@/components/cms/clients/clients-works-publish-checklist";
 import { PortfolioFormCoverField } from "@/components/cms/portfolio/portfolio-form-cover-field";
 import { PortfolioFormFields } from "@/components/cms/portfolio/portfolio-form-fields";
+import { CmsAlert } from "@/components/shared/cms-alert";
 import { CmsPageShell } from "@/components/shared/cms-page-shell";
 import { SolidSurface } from "@/components/shared/solid-surface";
 import { STACK_GAP } from "@/config/spacing";
@@ -201,9 +202,7 @@ export function ClientsWorksNewDataView() {
           </SolidSurface>
 
           {error ? (
-            <p className="text-destructive text-sm" role="alert">
-              {error}
-            </p>
+            <CmsAlert variant="error" message={error} />
           ) : null}
         </div>
 

@@ -67,6 +67,29 @@ export function SidebarSearchDialog({
     setActiveIndex(0);
   }, [query]);
 
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "/") {
+        const target = event.target;
+        if (
+          target instanceof HTMLElement &&
+          (target.isContentEditable ||
+            target.tagName === "INPUT" ||
+            target.tagName === "TEXTAREA" ||
+            target.tagName === "SELECT")
+        ) {
+          return;
+        }
+
+        event.preventDefault();
+        onOpenChange(true);
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onOpenChange]);
+
   function handleSelect(item: SidebarSearchItem) {
     onOpenChange(false);
 
@@ -141,6 +164,9 @@ export function SidebarSearchDialog({
               "dark:bg-transparent",
             )}
           />
+          <kbd className="hidden rounded-md bg-black/5 px-1.5 py-0.5 font-medium text-[10px] text-muted-foreground sm:inline dark:bg-white/10">
+            ⌘/
+          </kbd>
         </div>
 
         <div
@@ -166,6 +192,11 @@ export function SidebarSearchDialog({
               No results for “{query.trim()}”
             </p>
           )}
+        </div>
+
+        <div className="flex items-center justify-between gap-3 border-(--separator) border-t px-3 py-2 text-muted-foreground text-xs">
+          <span>Use arrow keys to navigate</span>
+          <span>Enter to open</span>
         </div>
       </CmsDialogContent>
     </CmsDialog>

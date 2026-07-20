@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArticleCategoryBadge } from "@/components/cms/articles/article-category-badge";
 import { ArticleCategoryFormDialog } from "@/components/cms/articles/article-category-form-dialog";
 import { Button } from "@/components/ui/button";
+import { CmsAlert } from "@/components/shared/cms-alert";
 import {
   CmsDialog,
   CmsDialogBody,
@@ -141,9 +142,7 @@ export function ArticleCategoriesManageDialog({
             </Button>
 
             {actionError ? (
-              <p className="text-destructive text-xs" role="alert">
-                {actionError}
-              </p>
+              <CmsAlert variant="error" size="sm" message={actionError} />
             ) : null}
 
             {sortedCategories.length === 0 ? (

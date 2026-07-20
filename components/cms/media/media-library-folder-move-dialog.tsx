@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { CmsAlert } from "@/components/shared/cms-alert";
 import {
   CmsDialog,
   CmsDialogBody,
@@ -246,9 +247,9 @@ export function MediaLibraryFolderMoveDialog({
               ) : null}
             </div>
 
-            {error ? (
-              <p className="text-destructive text-sm">{error}</p>
-            ) : null}
+              {error ? (
+                <CmsAlert variant="error" message={error} />
+              ) : null}
           </CmsDialogBody>
 
           <CmsDialogFooter>

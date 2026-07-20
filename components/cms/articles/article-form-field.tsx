@@ -24,7 +24,7 @@ export function ArticleFormField({
   return (
     <div className={cn("space-y-2", className)}>
       <div className="flex items-start justify-between gap-3">
-        <label htmlFor={id} className="font-medium text-sm">
+        <label htmlFor={id} className="font-semibold text-sm">
           {label}
           {required ? (
             <span className="text-destructive" aria-hidden>

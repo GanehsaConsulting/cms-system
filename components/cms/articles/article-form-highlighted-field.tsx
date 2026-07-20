@@ -25,7 +25,7 @@ export function ArticleFormHighlightedField({
             onCheckedChange={(checked) => field.onChange(checked === true)}
           />
           <div className="space-y-1">
-            <Label htmlFor="highlighted" className="font-medium text-sm">
+            <Label htmlFor="highlighted">
               Highlighted
             </Label>
             <p className="text-muted-foreground text-xs leading-relaxed">

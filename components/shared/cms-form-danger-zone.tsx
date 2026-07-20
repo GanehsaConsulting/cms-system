@@ -17,7 +17,7 @@ export function CmsFormDangerZone({
   onDelete,
 }: CmsFormDangerZoneProps) {
   return (
-    <SolidSurface className="space-y-3 border-destructive/40 bg-card p-4">
+    <SolidSurface className="space-y-3 border-destructive/40 bg-card p-4 md:p-5">
       <CmsFormSectionHeading
         title="Danger zone"
         description={description}

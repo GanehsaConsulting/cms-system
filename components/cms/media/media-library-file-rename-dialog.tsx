@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { CmsAlert } from "@/components/shared/cms-alert";
 import {
   CmsDialog,
   CmsDialogBody,
@@ -93,7 +94,7 @@ export function MediaLibraryFileRenameDialog({
                 disabled={isPending}
               />
               {error ? (
-                <p className="text-destructive text-sm">{error}</p>
+                <CmsAlert variant="error" message={error} />
               ) : null}
             </div>
           </CmsDialogBody>
