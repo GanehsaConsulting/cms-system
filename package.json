@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "analyze": "ANALYZE=true next build --webpack",
     "start": "next start",
     "lint": "biome check",
     "format": "biome format --write",
@@ -62,6 +63,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.0",
+    "@next/bundle-analyzer": "^16.2.10",
     "@tailwindcss/postcss": "^4",
     "@types/lodash.throttle": "^4.1.9",
     "@types/node": "^20",
