@@ -2,8 +2,6 @@
 
 import { useBrand } from "@/components/shared/brand-provider";
 import { MacActivityIndicator } from "@/components/shared/mac-activity-indicator";
-import { GLASS_BACKDROP } from "@/config/glass";
-import { RADIUS_INNER } from "@/config/shape";
 import { cn } from "@/lib/utils";
 
 export function BrandSwitchPendingIndicator() {
@@ -28,11 +26,7 @@ export function BrandSwitchPendingIndicator() {
       aria-live="polite"
       aria-busy="true"
     >
-      <div
-        className={cn(
-          "flex min-w-42 flex-col items-center gap-3 px-7 py-6 "
-        )}
-      >
+      <div className="flex min-w-42 flex-col items-center gap-3 px-7 py-6">
         <MacActivityIndicator className="size-17 text-foreground/40" />
         <p className="max-w-48 text-center font-medium text-[16px] text-foreground/50 leading-snug tracking-tight">
           {label}
