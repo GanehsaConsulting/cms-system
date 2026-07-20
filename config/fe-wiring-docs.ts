@@ -50,9 +50,11 @@ GET ${CMS_PUBLIC_API_BASE}/brands/{brandId}
 \`\`\`
 GET ${CMS_PUBLIC_API_BASE}/articles?brandId=
 GET ${CMS_PUBLIC_API_BASE}/articles/{slug}?brandId=
+GET ${CMS_PUBLIC_API_BASE}/articles/{slug}/related?brandId=
 GET ${CMS_PUBLIC_API_BASE}/article-categories?brandId=
 \`\`\`
-Query filters: \`highlighted=true|false\`, \`category=\`, \`tag=\`, \`q=\` or \`search=\`, \`sort=\`
+Query filters: \`highlighted=true|false\`, \`category=\`, \`tag=\`, \`q=\` or \`search=\`, \`sort=\`, \`page=\`, \`limit=\`, \`excludeSlug=\`  
+Detail preview (staging): \`preview=\` or \`Authorization: Bearer\` with \`CMS_PREVIEW_SECRET\`
 
 ### Prices
 \`\`\`
@@ -66,11 +68,12 @@ Query filters: \`category=\` (alias \`serviceSlug=\`), \`highlighted=true|false\
 \`\`\`
 GET ${CMS_PUBLIC_API_BASE}/clients?brandId=
 GET ${CMS_PUBLIC_API_BASE}/clients/{id}?brandId=
+GET ${CMS_PUBLIC_API_BASE}/clients/{id}/portfolio?brandId=
 GET ${CMS_PUBLIC_API_BASE}/portfolio?brandId=
 GET ${CMS_PUBLIC_API_BASE}/portfolio/{id}?brandId=
 \`\`\`
-Clients filters: \`featured=true|false\`, \`q=\`/\`search=\`, \`sort=\`  
-Portfolio filters: \`featured=true|false\`, \`workType=website|social-media\`, \`clientId=\`, \`q=\`/\`search=\`, \`sort=\`
+Clients filters: \`featured=true|false\`, \`q=\`/\`search=\`, \`sort=\`, \`page=\`, \`limit=\`  
+Portfolio filters: \`featured=true|false\`, \`workType=website|social-media\`, \`clientId=\`, \`excludeId=\`, \`q=\`/\`search=\`, \`sort=\`, \`page=\`, \`limit=\`
 
 ### Banners
 \`\`\`
@@ -85,9 +88,22 @@ No browse API — use URLs on content entities. Brand logos: \`${CMS_PUBLIC_ORIG
 ## Envelope
 \`\`\`ts
 type ApiOk<T> = { data: T };
-type ApiList<T> = { data: T[] };
 type ApiError = { error: string };
+
+type ApiPaginatedList<T> = {
+  data: T[];
+  meta: {
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    };
+  };
+};
 \`\`\`
+
+Article, client, and portfolio **lists** use \`ApiPaginatedList\`. Other collections return \`{ data: T[] }\`.
 
 ## Public visibility rules
 | Domain | Returned |
@@ -116,31 +132,55 @@ const ARTICLES_MARKDOWN = `# Articles — Complete Frontend Wiring
 \`\`\`
 GET ${CMS_PUBLIC_API_BASE}/articles?brandId={brandId}
 GET ${CMS_PUBLIC_API_BASE}/articles/{slug}?brandId={brandId}
+GET ${CMS_PUBLIC_API_BASE}/articles/{slug}/related?brandId={brandId}
 GET ${CMS_PUBLIC_API_BASE}/article-categories?brandId={brandId}
 \`\`\`
 
 Examples:
 \`\`\`
-${CMS_PUBLIC_API_BASE}/articles?brandId=gonline
+${CMS_PUBLIC_API_BASE}/articles?brandId=gonline&page=1&limit=12
 ${CMS_PUBLIC_API_BASE}/articles?brandId=gonline&highlighted=true
 ${CMS_PUBLIC_API_BASE}/articles?brandId=gonline&category=finance
 ${CMS_PUBLIC_API_BASE}/articles?brandId=gonline&tag=tax
 ${CMS_PUBLIC_API_BASE}/articles?brandId=gonline&q=investment
 ${CMS_PUBLIC_API_BASE}/articles?brandId=gonline&sort=title-asc
+${CMS_PUBLIC_API_BASE}/articles?brandId=gonline&excludeSlug=my-slug
 ${CMS_PUBLIC_API_BASE}/articles/my-slug?brandId=gonline
+${CMS_PUBLIC_API_BASE}/articles/my-slug/related?brandId=gonline&limit=3
+${CMS_PUBLIC_API_BASE}/articles/draft-slug?brandId=gonline&preview=YOUR_PREVIEW_SECRET
 ${CMS_PUBLIC_API_BASE}/article-categories?brandId=gonline
 \`\`\`
 
 Feature required: \`articles\`
 
+## List response (paginated, no HTML body)
+\`\`\`ts
+type ApiPaginatedList<T> = {
+  data: T[];
+  meta: {
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    };
+  };
+};
+\`\`\`
+
+Default: \`page=1\`, \`limit=20\` (max \`100\`). List items are **summaries** — fetch detail for \`content\`.
+
 ## List query params
 | Param | Values | Notes |
 |-------|--------|-------|
 | \`brandId\` | string | **required** |
+| \`page\` | number | default \`1\` |
+| \`limit\` | number | default \`20\`, max \`100\` |
 | \`highlighted\` | \`true\` \\| \`false\` | omit = all published |
 | \`category\` | category id | exact match |
 | \`tag\` | string | exact match (case-insensitive) on \`tags[]\` |
 | \`q\` or \`search\` | string | title, slug, excerpt, author, category, tags |
+| \`excludeSlug\` | slug | omit current article on detail sidebar |
 | \`sort\` | see below | default \`publishedAt-desc\` |
 
 ### Sort values
@@ -150,14 +190,29 @@ Feature required: \`articles\`
 - \`title-desc\`
 - \`updatedAt-desc\`
 
+## Related articles
+\`GET .../articles/{slug}/related?brandId=&limit=3\` (default \`limit=3\`, max \`100\`)
+
+Returns \`ArticleSummary[]\` ranked by shared category, then shared tags, then recency. Source must be **published**.
+
+## Draft / scheduled preview (staging)
+Set \`CMS_PREVIEW_SECRET\` on CMS. Then:
+
+\`\`\`
+GET .../articles/{slug}?brandId=...&preview=SECRET
+Authorization: Bearer SECRET
+\`\`\`
+
+Returns draft, scheduled, or archived articles that are hidden from public list. Response is \`Cache-Control: private, no-store\`. **Never expose the secret in production client bundles.**
+
 ## Types
 \`\`\`ts
-interface Article {
+interface ArticleSummary {
   id: string;
+  brandId: string;
   title: string;
   slug: string;
   excerpt: string;
-  content: string; // HTML
   status: "draft" | "scheduled" | "published" | "archived";
   authorName: string;
   category: string;
@@ -172,22 +227,36 @@ interface Article {
   updatedAt: string;
 }
 
+interface Article extends ArticleSummary {
+  content: string; // HTML — detail endpoint only
+}
+
 interface ArticleCategory {
   id: string;
   label: string;
-  badgeClassName: string;
   source: "built-in" | "custom";
 }
 \`\`\`
 
+Style category badges on the FE — \`badgeClassName\` is **not** exposed on the public API.
+
 ## Scheduled posts
-CMS can set \`status: "scheduled"\` with a future \`publishedAt\`. A **cron-job.org** job hits \`GET /api/cron/publish-scheduled\` every minute to promote due posts. Reads (public API / CMS) also promote as a fallback. The FE only consumes \`published\` articles.
+CMS can set \`status: "scheduled"\` with a future \`publishedAt\`. A **cron-job.org** job hits \`GET /api/cron/publish-scheduled\` every minute to promote due posts. Reads (public API / CMS) also promote as a fallback. The FE only consumes \`published\` articles in list/related.
+
+## CMS production checklist (affects data)
+1. Run \`npm run db:push\` (articles scoped per \`brandId\`)
+2. Backfill legacy rows: \`npx tsx scripts/migrate-brand-isolation.ts gec\`
+3. Set \`CRON_SECRET\` + cron-job.org URL for scheduled publish
+4. Set \`CMS_PREVIEW_SECRET\` on staging if preview is needed
+5. Always pass the correct \`brandId\` per public site (e.g. \`gec\`, \`gonline\`)
 
 ## Agent checklist
-- [ ] List + detail by slug
-- [ ] Category nav from \`/article-categories\`
-- [ ] Filters: highlighted, category, tag, search, sort
+- [ ] Paginated list (\`ArticleSummary\`) + full detail by slug
+- [ ] Related block from \`/articles/{slug}/related\`
+- [ ] Category nav from \`/article-categories\` (map labels to your own badge styles)
+- [ ] Filters: highlighted, category, tag, search, sort, pagination
 - [ ] Hide if brand lacks \`articles\`
+- [ ] Preview only on staging with server-side secret (optional)
 `;
 
 const PRICES_MARKDOWN = `# Prices — Complete Frontend Wiring
@@ -278,78 +347,132 @@ const CLIENTS_MARKDOWN = `# Clients & Works — Complete Frontend Wiring
 \`\`\`
 GET ${CMS_PUBLIC_API_BASE}/clients?brandId={brandId}
 GET ${CMS_PUBLIC_API_BASE}/clients/{id}?brandId={brandId}
+GET ${CMS_PUBLIC_API_BASE}/clients/{id}/portfolio?brandId={brandId}
 GET ${CMS_PUBLIC_API_BASE}/portfolio?brandId={brandId}
 GET ${CMS_PUBLIC_API_BASE}/portfolio/{id}?brandId={brandId}
 \`\`\`
 
 Examples:
 \`\`\`
-${CMS_PUBLIC_API_BASE}/clients?brandId=gonline
+${CMS_PUBLIC_API_BASE}/clients?brandId=gonline&page=1&limit=12
 ${CMS_PUBLIC_API_BASE}/clients?brandId=gonline&featured=true
 ${CMS_PUBLIC_API_BASE}/clients?brandId=gonline&featured=false
 ${CMS_PUBLIC_API_BASE}/clients?brandId=gonline&q=acme&sort=featured-first
 ${CMS_PUBLIC_API_BASE}/clients/client-123?brandId=gonline
-${CMS_PUBLIC_API_BASE}/portfolio?brandId=gonline
+${CMS_PUBLIC_API_BASE}/clients/client-123/portfolio?brandId=gonline&page=1
+${CMS_PUBLIC_API_BASE}/portfolio?brandId=gonline&page=1&limit=12
 ${CMS_PUBLIC_API_BASE}/portfolio?brandId=gonline&workType=website
 ${CMS_PUBLIC_API_BASE}/portfolio?brandId=gonline&workType=social-media
 ${CMS_PUBLIC_API_BASE}/portfolio?brandId=gonline&clientId=client-123
 ${CMS_PUBLIC_API_BASE}/portfolio?brandId=gonline&featured=true&q=landing
+${CMS_PUBLIC_API_BASE}/portfolio?brandId=gonline&excludeId=work-456
 ${CMS_PUBLIC_API_BASE}/portfolio/work-456?brandId=gonline
 \`\`\`
 
 Feature required: \`clients-works\`
 
+## List response (paginated)
+\`\`\`ts
+type ApiPaginatedList<T> = {
+  data: T[];
+  meta: {
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    };
+  };
+};
+\`\`\`
+
+Default: \`page=1\`, \`limit=20\` (max \`100\`). List items are **summaries** — fetch detail for full fields.
+
 ## Clients query params
 | Param | Values | Notes |
 |-------|--------|-------|
-| \`brandId\` | required | |
+| \`brandId\` | string | **required** |
+| \`page\` | number | default \`1\` |
+| \`limit\` | number | default \`20\`, max \`100\` |
 | \`featured\` | \`true\` \\| \`false\` | omit = all |
 | \`q\` / \`search\` | string | name, website, description, testimonials |
 | \`sort\` | \`name-asc\` (default), \`name-desc\`, \`featured-first\` | |
 
+## Client portfolio (works by client)
+\`GET .../clients/{id}/portfolio?brandId=\` — paginated \`PortfolioSummary[]\` for one client.
+
+Supports the same portfolio filters as the global list (\`workType\`, \`featured\`, \`q\`/\`search\`, \`sort\`, \`page\`, \`limit\`, \`excludeId\`) except \`clientId\` (fixed from path).
+
+Prefer this over \`portfolio?clientId=\` on client detail pages.
+
 ## Portfolio query params
 | Param | Values | Notes |
 |-------|--------|-------|
-| \`brandId\` | required | |
+| \`brandId\` | string | **required** |
+| \`page\` | number | default \`1\` |
+| \`limit\` | number | default \`20\`, max \`100\` |
 | \`featured\` | \`true\` \\| \`false\` | |
 | \`workType\` | \`website\` \\| \`social-media\` | |
-| \`clientId\` | string | join filter |
+| \`clientId\` | string | filter by client |
+| \`excludeId\` | work id | omit current work on detail sidebar |
 | \`q\` / \`search\` | string | title, description, url, workType, clientId |
 | \`sort\` | \`updatedAt-desc\` (default), \`title-asc\`, \`featured-first\` | |
 
 ## Types
 \`\`\`ts
-interface Client {
+interface ClientSummary {
   id: string;
+  brandId: string;
   name: string;
   logo: string;
   website: string;
-  description: string;
   featured: boolean;
-  testimonials: { id: string; quote: string; authorName: string; authorTitle: string }[];
-  photos: { id: string; url: string; caption: string }[];
   createdAt: string;
   updatedAt: string;
 }
 
-interface Portfolio {
+interface Client extends ClientSummary {
+  description: string;
+  testimonials: { id: string; quote: string; authorName: string; authorTitle: string }[];
+  photos: { id: string; url: string; caption: string }[];
+}
+
+interface ClientRef {
   id: string;
+  name: string;
+  logo: string;
+  website: string;
+}
+
+interface PortfolioSummary {
+  id: string;
+  brandId: string;
   title: string;
   clientId: string;
   workType: "social-media" | "website";
   coverImage: string;
-  description: string;
   url: string;
   featured: boolean;
   createdAt: string;
   updatedAt: string;
 }
+
+interface Portfolio extends PortfolioSummary {
+  description: string;
+  client: ClientRef; // detail endpoint only — embedded client name/logo
+}
 \`\`\`
 
+## CMS production checklist (affects data)
+1. JSON stores (\`data/clients.json\`, \`data/portfolio.json\`) must include \`brandId\` on each row
+2. Backfill legacy rows: \`npx tsx scripts/migrate-brand-isolation.ts gec\` (repeat per brand as needed)
+3. Orphan portfolio rows (missing \`clientId\`) return 404 on detail
+
 ## Agent checklist
-- [ ] Clients list + detail
-- [ ] Portfolio list + detail
-- [ ] featured / workType / clientId / search / sort
+- [ ] Clients list (summaries) + detail
+- [ ] Client portfolio via \`/clients/{id}/portfolio\`
+- [ ] Portfolio list (summaries) + detail with embedded \`client\`
+- [ ] Pagination + featured / workType / clientId / search / sort
 - [ ] Hide if brand lacks \`clients-works\`
 `;
 
@@ -528,7 +651,7 @@ export const FE_WIRING_DOC_SECTIONS: FeWiringDocSection[] = [
     id: "articles",
     title: "Articles",
     summary:
-      "List/detail/categories + highlighted, category, tag, search, sort.",
+      "Paginated list summaries, detail, related, categories, preview, filters.",
     markdown: ARTICLES_MARKDOWN,
   },
   {
@@ -542,7 +665,7 @@ export const FE_WIRING_DOC_SECTIONS: FeWiringDocSection[] = [
     id: "clients-works",
     title: "Clients & Works",
     summary:
-      "Clients + portfolio list/detail with featured, workType, clientId, search, sort.",
+      "Paginated summaries, detail, client portfolio, embedded client on work detail.",
     markdown: CLIENTS_MARKDOWN,
   },
   {

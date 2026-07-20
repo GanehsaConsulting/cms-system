@@ -11,6 +11,8 @@ export const PUBLIC_API_ENDPOINTS = {
   articles: `${CMS_PUBLIC_API_BASE}/articles`,
   articleBySlug: (slug: string) =>
     `${CMS_PUBLIC_API_BASE}/articles/${encodeURIComponent(slug)}`,
+  articleRelatedBySlug: (slug: string) =>
+    `${CMS_PUBLIC_API_BASE}/articles/${encodeURIComponent(slug)}/related`,
   articleCategories: `${CMS_PUBLIC_API_BASE}/article-categories`,
   prices: `${CMS_PUBLIC_API_BASE}/prices`,
   priceBySlug: (slug: string) =>
@@ -19,6 +21,8 @@ export const PUBLIC_API_ENDPOINTS = {
   clients: `${CMS_PUBLIC_API_BASE}/clients`,
   clientById: (id: string) =>
     `${CMS_PUBLIC_API_BASE}/clients/${encodeURIComponent(id)}`,
+  clientPortfolioById: (id: string) =>
+    `${CMS_PUBLIC_API_BASE}/clients/${encodeURIComponent(id)}/portfolio`,
   portfolio: `${CMS_PUBLIC_API_BASE}/portfolio`,
   portfolioById: (id: string) =>
     `${CMS_PUBLIC_API_BASE}/portfolio/${encodeURIComponent(id)}`,
