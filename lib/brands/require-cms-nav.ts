@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getNavFeatureForHref } from "@/config/brand-nav";
+import { getNavFeatureForPath } from "@/config/brand-nav";
 import { resolveCmsActiveBrand } from "@/lib/brands/active-brand";
 import type { Brand } from "@/types/brand";
 
@@ -11,7 +11,7 @@ export async function requireCmsNavHref(href: string): Promise<Brand> {
     notFound();
   }
 
-  const feature = getNavFeatureForHref(href);
+  const feature = getNavFeatureForPath(href);
 
   if (feature && !brand.features.includes(feature)) {
     notFound();

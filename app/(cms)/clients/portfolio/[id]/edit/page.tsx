@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { PortfolioForm } from "@/components/cms/portfolio-form";
-import { resolveCmsActiveBrandId } from "@/lib/brands/active-brand";
+import { requireCmsNavHref } from "@/lib/brands/require-cms-nav";
 import { getClients } from "@/lib/db/clients";
 import { getPortfolioById } from "@/lib/db/portfolio";
 
@@ -12,15 +12,10 @@ export default async function EditPortfolioPage({
   params,
 }: EditPortfolioPageProps) {
   const { id } = await params;
-  const brandId = await resolveCmsActiveBrandId();
-
-  if (!brandId) {
-    notFound();
-  }
-
+  const brand = await requireCmsNavHref("/clients");
   const [item, clients] = await Promise.all([
-    getPortfolioById(brandId, id),
-    getClients(brandId),
+    getPortfolioById(brand.id, id),
+    getClients(brand.id),
   ]);
 
   if (!item) {

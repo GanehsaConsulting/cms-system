@@ -1,10 +1,10 @@
 import { PriceForm } from "@/components/cms/price-form";
-import { resolveCmsActiveBrandId } from "@/lib/brands/active-brand";
+import { requireCmsNavHref } from "@/lib/brands/require-cms-nav";
 import { getPriceCategories } from "@/lib/db/price-categories";
 
 export default async function NewPricePage() {
-  const brandId = await resolveCmsActiveBrandId();
-  const categories = brandId ? await getPriceCategories(brandId) : [];
+  const brand = await requireCmsNavHref("/prices");
+  const categories = await getPriceCategories(brand.id);
 
   return <PriceForm categories={categories} />;
 }

@@ -1,10 +1,10 @@
 import { ClientsListView } from "@/components/cms/clients/clients-list-view";
-import { resolveCmsActiveBrandId } from "@/lib/brands/active-brand";
+import { requireCmsNavHref } from "@/lib/brands/require-cms-nav";
 import { getClients } from "@/lib/db/clients";
 
 export default async function ClientsListPage() {
-  const brandId = await resolveCmsActiveBrandId();
-  const clients = brandId ? await getClients(brandId) : [];
+  const brand = await requireCmsNavHref("/clients");
+  const clients = await getClients(brand.id);
 
   return <ClientsListView clients={clients} />;
 }

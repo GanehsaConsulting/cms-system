@@ -62,7 +62,7 @@ GET ${CMS_PUBLIC_API_BASE}/prices?brandId=
 GET ${CMS_PUBLIC_API_BASE}/prices/{slug}?brandId=
 GET ${CMS_PUBLIC_API_BASE}/price-categories?brandId=
 \`\`\`
-Query filters: \`category=\` (alias \`serviceSlug=\`), \`highlighted=true|false\`, \`q=\`/\`search=\`, \`sort=\`
+Query filters: \`category=\` (alias \`serviceSlug=\`), \`highlighted=true|false\`, \`q=\`/\`search=\`, \`sort=\`, \`page=\`, \`limit=\`
 
 ### Clients & portfolio
 \`\`\`
@@ -103,7 +103,7 @@ type ApiPaginatedList<T> = {
 };
 \`\`\`
 
-Article, client, and portfolio **lists** use \`ApiPaginatedList\`. Other collections return \`{ data: T[] }\`.
+Article, client, portfolio, and price **lists** use \`ApiPaginatedList\`. Category and banner lists return \`{ data: T[] }\` (small sets).
 
 ## Public visibility rules
 | Domain | Returned |
@@ -270,7 +270,7 @@ GET ${CMS_PUBLIC_API_BASE}/price-categories?brandId={brandId}
 
 Examples:
 \`\`\`
-${CMS_PUBLIC_API_BASE}/prices?brandId=gonline
+${CMS_PUBLIC_API_BASE}/prices?brandId=gonline&page=1&limit=12
 ${CMS_PUBLIC_API_BASE}/prices?brandId=gonline&category=consulting
 ${CMS_PUBLIC_API_BASE}/prices?brandId=gonline&serviceSlug=consulting
 ${CMS_PUBLIC_API_BASE}/prices?brandId=gonline&highlighted=true
@@ -282,10 +282,29 @@ ${CMS_PUBLIC_API_BASE}/price-categories?brandId=gonline&q=web
 
 Feature required: \`prices\` — **GEC returns empty / 404**. Do not render pricing UI.
 
+## List response (paginated)
+\`\`\`ts
+type ApiPaginatedList<T> = {
+  data: T[];
+  meta: {
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+    };
+  };
+};
+\`\`\`
+
+Default: \`page=1\`, \`limit=20\` (max \`100\`). List items are **summaries** — fetch detail for long descriptions, feature lists, and localized WhatsApp copy.
+
 ## List query params (prices)
 | Param | Values | Notes |
 |-------|--------|-------|
 | \`brandId\` | string | **required** |
+| \`page\` | number | default \`1\` |
+| \`limit\` | number | default \`20\`, max \`100\` |
 | \`category\` | id | matches \`category\` or \`serviceSlug\` |
 | \`serviceSlug\` | id | alias of \`category\` |
 | \`highlighted\` | \`true\` \\| \`false\` | |
@@ -309,21 +328,33 @@ Feature required: \`prices\` — **GEC returns empty / 404**. Do not render pric
 \`\`\`ts
 type LocalizedText = Record<"id" | "en" | "zh", string>;
 
-interface Price {
+interface PriceSummary {
   id: string;
+  brandId: string;
   slug: string;
   serviceSlug: string;
   category: string;
   highlighted: boolean;
-  description: LocalizedText;
   service: LocalizedText;
   packageName: LocalizedText;
   price: number;
   strikethroughPrice: number;
   whatsappPhone: string;
-  whatsappMessage: LocalizedText;
   isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface Price extends PriceSummary {
+  description: LocalizedText;
+  whatsappMessage: LocalizedText;
   features: { id: string; name: LocalizedText }[];
+}
+
+interface PriceCategory {
+  id: string;
+  brandId: string;
+  label: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -334,10 +365,15 @@ interface Price {
 const wa = \`https://wa.me/\${price.whatsappPhone}?text=\${encodeURIComponent(msg)}\`;
 \`\`\`
 
+## CMS production checklist (affects data)
+1. JSON stores (\`data/prices.json\`, \`data/price-categories.json\`) must include \`brandId\` on each row
+2. Backfill legacy rows: \`npx tsx scripts/backfill-json-brand-id.ts gec\` (repeat per brand as needed)
+3. GEC does not expose \`prices\` — gate the FE by brand \`features\`
+
 ## Agent checklist
-- [ ] List + detail by slug
+- [ ] Paginated list (\`PriceSummary\`) + full detail by slug
 - [ ] Categories for tabs/filters
-- [ ] All query filters above
+- [ ] Filters: category / serviceSlug, highlighted, search, sort, pagination
 - [ ] Hide for brands without \`prices\`
 `;
 
@@ -711,7 +747,7 @@ export const FE_WIRING_DOC_SECTIONS: FeWiringDocSection[] = [
     id: "prices",
     title: "Prices",
     summary:
-      "List/detail by slug + categories, category/serviceSlug, search, sort.",
+      "Paginated summaries, detail by slug, categories, filters, and WhatsApp CTA.",
     markdown: PRICES_MARKDOWN,
   },
   {

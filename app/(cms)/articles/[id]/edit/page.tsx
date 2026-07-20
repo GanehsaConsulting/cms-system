@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { ArticleForm } from "@/components/cms/article-form";
-import { resolveCmsActiveBrandId } from "@/lib/brands/active-brand";
+import { requireCmsNavHref } from "@/lib/brands/require-cms-nav";
 import {
   type ArticleAuthorOption,
   getArticleAuthorOptions,
@@ -38,15 +38,11 @@ export default async function EditArticlePage({
   params,
 }: EditArticlePageProps) {
   const { id } = await params;
-  const brandId = await resolveCmsActiveBrandId();
-
-  if (!brandId) {
-    notFound();
-  }
+  const brand = await requireCmsNavHref("/articles");
 
   const [article, customCategories, authors, currentUser] = await Promise.all([
-    getArticleById(brandId, id),
-    getCustomCategories(brandId),
+    getArticleById(brand.id, id),
+    getCustomCategories(brand.id),
     getArticleAuthorOptions(),
     getCurrentCmsUser(),
   ]);
