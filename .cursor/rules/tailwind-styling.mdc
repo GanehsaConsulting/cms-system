@@ -1,0 +1,54 @@
+---
+description: Tailwind-first styling — prefer classNames over custom CSS
+alwaysApply: true
+---
+
+# Tailwind-First Styling — Mandatory
+
+Style UI with **Tailwind utility classes** first. Custom CSS in `globals.css` or standalone stylesheets is **not allowed** for component-level layout, spacing, color, typography, or shadows unless an exception below applies.
+
+## Default approach
+
+1. **Component markup** — `className={cn("...", className)}` with Tailwind utilities and design tokens (`text-muted-foreground`, `bg-[var(--glass-fill)]`, `rounded-[1.25rem]`, etc.).
+2. **shadcn/ui & third-party wrappers** — override via `className` and `*Options.classNames` (e.g. Sonner `toastOptions.classNames`), **not** `unstyled: true` + bespoke CSS blocks.
+3. **Shared tokens** — reuse helpers from `config/` (`GLASS_SURFACE`, `STACK_GAP`, `RADIUS_DEEP`) instead of duplicating long class strings.
+4. **`cn()`** — merge conditional classes; extract repeated strings to `const` in the same file when a class list is reused.
+
+## Allowed custom CSS (exceptions only)
+
+- **Global design tokens** — `:root` / `.dark` CSS variables in `globals.css`
+- **Cross-cutting utilities** already in `@layer components` / `@layer utilities` (e.g. `.glass-backdrop`, sidebar shell) when Tailwind alone cannot express dynamic appearance settings
+- **`@keyframes`** only when no equivalent Tailwind/`tw-animate` utility exists — prefer `animate-spin`, `animate-in`, etc. first
+
+## Do not
+
+- Add new `.feature-name { ... }` blocks in `globals.css` for a single component or page
+- Use `unstyled: true` on Sonner (or similar) solely to avoid fighting default styles — override with Tailwind instead
+- Inline `<style>` tags or CSS modules for CMS admin UI unless explicitly requested
+
+## Examples
+
+```tsx
+// ❌ BAD — bespoke globals.css + unstyled
+toastOptions={{ unstyled: true, classNames: { toast: "macos-toast" } }}
+
+// ✅ GOOD — shadcn/Sonner pattern with Tailwind
+<Sonner
+  className="toaster group z-[9999]"
+  toastOptions={{
+    classNames: {
+      toast: cn("group toast rounded-[1.25rem] p-3.5", GLASS_BACKDROP, GLASS_FILL),
+      title: "text-sm font-semibold text-foreground",
+      description: "text-sm text-muted-foreground",
+    },
+  }}
+/>
+```
+
+```tsx
+// ❌ BAD — new globals.css block for one panel
+// .my-panel { display: flex; gap: 0.75rem; ... }
+
+// ✅ GOOD
+<div className="flex gap-3 rounded-xl border border-border p-4">...</div>
+```

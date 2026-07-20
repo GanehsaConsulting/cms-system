@@ -25,7 +25,7 @@ export function ArticleForm({ article }: ArticleFormProps) { ... }
 **Jangan di:** layout, page yang fetch data, static UI, komponen pure presentational.
 
 ## shadcn/ui — Wajib
-Install dulu via CLI. Wrap, jangan edit `components/ui/`. Pakai `cn()` untuk conditional classes.
+Install dulu via CLI. Wrap, jangan edit `components/ui/` kecuali override styling lewat Tailwind `className` / `classNames` (lihat rule **tailwind-styling**). Pakai `cn()` untuk conditional classes.
 
 Contoh komponen CMS yang umum dipakai: `button`, `input`, `textarea`, `table`, `card`, `dialog`, `form`, `badge`, `skeleton`, `dropdown-menu`.
 
