@@ -2,7 +2,7 @@ import { getSessionCookie } from "better-auth/cookies";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-const PUBLIC_PATHS = ["/login", "/api/auth"];
+const PUBLIC_PATHS = ["/login", "/api/auth", "/api/public", "/api/cron"];
 
 function isPublicPath(pathname: string) {
   return PUBLIC_PATHS.some(
@@ -13,6 +13,9 @@ function isPublicPath(pathname: string) {
 /**
  * Next.js 16 Proxy (formerly middleware) — runs on Node.js before the request
  * completes. Cookie presence only; full session checks stay in Server Components.
+ *
+ * Public API (`/api/public`) and cron (`/api/cron`) skip session gates —
+ * those routes enforce their own brand / secret checks.
  *
  * @see https://nextjs.org/docs/app/api-reference/file-conventions/proxy
  */
@@ -48,6 +51,6 @@ export function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|sw\\.js|favicon\\.ico|icon\\.png|apple-icon\\.png|system-logo\\.png|wallpapers/).*)",
+    "/((?!_next/static|_next/image|sw\\.js|favicon\\.ico|icon\\.png|apple-icon\\.png|system-logo\\.png|wallpapers/|api/public/|api/cron/).*)",
   ],
 };
