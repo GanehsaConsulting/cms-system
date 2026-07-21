@@ -12,6 +12,7 @@ import {
   updateArticle,
 } from "@/lib/db/articles";
 import { getCustomCategories } from "@/lib/db/categories";
+import { revalidateMediaLibraryCache } from "@/lib/media/cache";
 import { requireCmsContentAccess } from "@/lib/users/require-content-access";
 import {
   articleFormSchema,
@@ -116,6 +117,7 @@ export async function createArticleAction(formData: FormData) {
     );
     revalidatePath("/");
     revalidatePath("/articles");
+    revalidateMediaLibraryCache();
     redirect(`/articles/${article.id}/edit`);
   } catch (error) {
     return {
@@ -185,6 +187,7 @@ export async function updateArticleAction(id: string, formData: FormData) {
     revalidatePath("/");
     revalidatePath("/articles");
     revalidatePath(`/articles/${id}/edit`);
+    revalidateMediaLibraryCache();
     return { success: true as const };
   } catch (error) {
     return {
@@ -210,6 +213,7 @@ export async function deleteArticleAction(id: string) {
     await deleteArticle(brand.brandId, id);
     revalidatePath("/");
     revalidatePath("/articles");
+    revalidateMediaLibraryCache();
     redirect("/articles");
   } catch (error) {
     return {

@@ -7,11 +7,13 @@ import {
   deleteBanner,
   updateBanner,
 } from "@/lib/db/banners";
+import { revalidateMediaLibraryCache } from "@/lib/media/cache";
 import { bannerSchema } from "@/lib/validations/banner";
 import { requireCmsContentAccess } from "@/lib/users/require-content-access";
 
 function revalidateBannerPaths() {
   revalidatePath("/banners");
+  revalidateMediaLibraryCache();
 }
 
 function parseImages(formData: FormData): string[] {

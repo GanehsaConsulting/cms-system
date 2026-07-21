@@ -1,37 +1,19 @@
 import { MediaLibraryView } from "@/components/cms/media/media-library-view";
 import { resolveCmsActiveBrandId } from "@/lib/brands/active-brand";
-import { collectMediaLibrary } from "@/lib/media/collect";
-import { getArticles } from "@/lib/db/articles";
-import { getBanners } from "@/lib/db/banners";
-import { getBrands } from "@/lib/db/brands";
-import { getClients } from "@/lib/db/clients";
+import { getCachedMediaLibraryAssets } from "@/lib/media/cache";
 import { getMediaFolders } from "@/lib/db/media-folders";
 import { getMediaLibraryFiles } from "@/lib/db/media-files";
-import { getPortfolioItems } from "@/lib/db/portfolio";
-import { getUsers } from "@/lib/db/users";
 
 export default async function MediaLibraryPage() {
   const brandId = await resolveCmsActiveBrandId();
-  const [articles, banners, clients, portfolio, brands, users, folders, files] =
-    await Promise.all([
-      brandId ? getArticles(brandId) : Promise.resolve([]),
-      brandId ? getBanners(brandId) : Promise.resolve([]),
-      brandId ? getClients(brandId) : Promise.resolve([]),
-      brandId ? getPortfolioItems(brandId) : Promise.resolve([]),
-      getBrands(),
-      getUsers(),
-      getMediaFolders(),
-      getMediaLibraryFiles(),
-    ]);
 
-  const assets = collectMediaLibrary({
-    articles,
-    banners,
-    clients,
-    portfolio,
-    brands,
-    users,
-  });
+  console.time("media-library:data");
+  const [assets, folders, files] = await Promise.all([
+    brandId ? getCachedMediaLibraryAssets(brandId) : Promise.resolve([]),
+    getMediaFolders(),
+    getMediaLibraryFiles(),
+  ]);
+  console.timeEnd("media-library:data");
 
   return (
     <MediaLibraryView assets={assets} folders={folders} files={files} />

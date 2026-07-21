@@ -8,6 +8,7 @@ import {
   deletePortfolio,
   updatePortfolio,
 } from "@/lib/db/portfolio";
+import { revalidateMediaLibraryCache } from "@/lib/media/cache";
 import {
   parsePortfolioForm,
   portfolioFormSchema,
@@ -23,6 +24,7 @@ function revalidatePortfolioPaths(id?: string) {
   if (id) {
     revalidatePath(`/clients/portfolio/${id}/edit`);
   }
+  revalidateMediaLibraryCache();
 }
 
 export async function createPortfolioAction(formData: FormData) {

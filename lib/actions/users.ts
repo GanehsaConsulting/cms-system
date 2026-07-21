@@ -7,6 +7,7 @@ import {
   setUserPassword,
   updateUser,
 } from "@/lib/db/users";
+import { revalidateMediaLibraryCache } from "@/lib/media/cache";
 import { requireCmsSettingsAccess } from "@/lib/users/require-settings-access";
 import {
   adminSetPasswordSchema,
@@ -19,6 +20,7 @@ import {
 
 function revalidateUserPaths() {
   revalidatePath("/settings/users");
+  revalidateMediaLibraryCache();
 }
 
 export async function createUserAction(formData: FormData) {

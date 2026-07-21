@@ -9,6 +9,7 @@ import {
   updateClient,
 } from "@/lib/db/clients";
 import { deletePortfolioByClientId } from "@/lib/db/portfolio";
+import { revalidateMediaLibraryCache } from "@/lib/media/cache";
 import { requireCmsContentAccess } from "@/lib/users/require-content-access";
 import {
   clientFormSchema,
@@ -16,6 +17,16 @@ import {
   parseClientForm,
 } from "@/lib/validations/client";
 
+function revalidateClientPaths(id?: string) {
+  revalidatePath("/");
+  revalidatePath("/clients");
+  revalidatePath("/clients/clients");
+  revalidatePath("/clients/portfolio");
+  if (id) {
+    revalidatePath(`/clients/${id}/edit`);
+  }
+  revalidateMediaLibraryCache();
+}
 export async function createClientAction(formData: FormData) {
   const access = await requireCmsContentAccess();
   if (!access.ok) {
@@ -38,10 +49,7 @@ export async function createClientAction(formData: FormData) {
 
   try {
     const client = await createClient(brand.brandId, clientFormToInput(parsed.data));
-    revalidatePath("/");
-    revalidatePath("/clients");
-    revalidatePath("/clients/clients");
-    revalidatePath("/clients/portfolio");
+    revalidateClientPaths();
     redirect(`/clients/${client.id}/edit`);
   } catch (error) {
     return {
@@ -73,10 +81,7 @@ export async function updateClientAction(id: string, formData: FormData) {
 
   try {
     await updateClient(brand.brandId, id, clientFormToInput(parsed.data));
-    revalidatePath("/");
-    revalidatePath("/clients");
-    revalidatePath("/clients/clients");
-    revalidatePath(`/clients/${id}/edit`);
+    revalidateClientPaths(id);
     return { success: true as const };
   } catch (error) {
     return {
@@ -101,10 +106,7 @@ export async function deleteClientAction(id: string) {
   try {
     await deletePortfolioByClientId(brand.brandId, id);
     await deleteClient(brand.brandId, id);
-    revalidatePath("/");
-    revalidatePath("/clients");
-    revalidatePath("/clients/clients");
-    revalidatePath("/clients/portfolio");
+    revalidateClientPaths();
     redirect("/clients/clients");
   } catch (error) {
     return {

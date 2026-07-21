@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { requireCmsActiveBrandId } from "@/lib/brands/active-brand";
 import { createClient } from "@/lib/db/clients";
 import { createPortfolio } from "@/lib/db/portfolio";
+import { revalidateMediaLibraryCache } from "@/lib/media/cache";
 import {
   clientFormSchema,
   clientFormToInput,
@@ -21,6 +22,7 @@ function revalidateClientsPaths() {
   revalidatePath("/clients");
   revalidatePath("/clients/clients");
   revalidatePath("/clients/portfolio");
+  revalidateMediaLibraryCache();
 }
 
 export async function createClientWithPortfolioAction(formData: FormData) {

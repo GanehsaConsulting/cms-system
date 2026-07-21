@@ -6,6 +6,7 @@ import {
   deleteBrand,
   updateBrand,
 } from "@/lib/db/brands";
+import { revalidateMediaLibraryCache } from "@/lib/media/cache";
 import { requireCmsSettingsAccess } from "@/lib/users/require-settings-access";
 import {
   brandFormSchema,
@@ -16,6 +17,7 @@ import {
 function revalidateBrandPaths() {
   revalidatePath("/settings");
   revalidatePath("/settings/users");
+  revalidateMediaLibraryCache();
 }
 
 export async function createBrandAction(formData: FormData) {
