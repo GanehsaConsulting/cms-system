@@ -47,7 +47,7 @@ export function PriceForm({ price, categories }: PriceFormProps) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [activeLocale, setActiveLocale] = useState<SiteLocale>("en");
+  const [activeLocale, setActiveLocale] = useState<SiteLocale>("id");
   const [previewOpen, setPreviewOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [isPending, startTransition] = useTransition();

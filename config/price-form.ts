@@ -9,4 +9,4 @@ export const PRICE_FORM_LIMITS = {
   maxFeatures: 30,
 } as const;
 
-export const PRICE_LIST_DISPLAY_LOCALE = "en" as const;
+export const PRICE_LIST_DISPLAY_LOCALE = "id" as const;
