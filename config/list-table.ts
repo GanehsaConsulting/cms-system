@@ -5,7 +5,7 @@ export const LIST_DEFAULT_PAGE_SIZE = 10;
 export const LIST_PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
 
 export const LIST_TABLE_HEAD_CLASS =
-  "h-11 px-4 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground";
+  "sticky top-0 z-10 h-11 bg-[var(--glass-fill)] px-4 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground glass-backdrop shadow-[inset_0_-1px_0_0_var(--separator)]";
 
 export const LIST_TABLE_CELL_CLASS = "px-4 py-3.5";
 
