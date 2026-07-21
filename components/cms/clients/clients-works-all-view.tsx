@@ -22,7 +22,6 @@ export function ClientsWorksAllView({
 }: ClientsWorksAllViewProps) {
   const {
     allGroups,
-    groups,
     featuredFilter,
     setFeaturedFilter,
     portfolioFilter,
@@ -31,12 +30,17 @@ export function ClientsWorksAllView({
     setSearch,
     sort,
     setSort,
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
     selectedId,
     selectedGroup,
     selectClient,
     closePanel,
     hasActiveFilters,
     resetFilters,
+    pagination,
     clientCount,
     withWorksCount,
     portfolioCount,
@@ -95,16 +99,24 @@ export function ClientsWorksAllView({
 
       <ClientsWorksAllWorkspace
         className={CMS_FLEX_CHILD}
-        groups={groups}
+        groups={pagination.items}
         selectedId={selectedId}
         selectedGroup={selectedGroup}
         sort={sort}
+        page={pagination.page}
+        pageSize={pagination.pageSize}
+        total={pagination.total}
+        totalPages={pagination.totalPages}
+        rangeStart={pagination.rangeStart}
+        rangeEnd={pagination.rangeEnd}
         clientCount={clientCount}
         withWorksCount={withWorksCount}
         portfolioCount={portfolioCount}
         hasActiveFilters={hasActiveFilters}
         onSelect={selectClient}
         onClosePanel={closePanel}
+        onPageChange={setPage}
+        onPageSizeChange={setPageSize}
         onSortChange={setSort}
         onResetFilters={resetFilters}
       />

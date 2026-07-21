@@ -20,7 +20,12 @@ import { and, eq } from "drizzle-orm";
 import { getCustomCategoryBadgeClass } from "../config/article-category-styles";
 import { slugify, slugifyArticleTitle } from "../lib/articles/slug";
 import { createBanner, getBanners } from "../lib/db/banners";
-import { createClient, getClients } from "../lib/db/clients";
+import {
+  createClient,
+  getClients,
+  getClientById,
+  updateClient,
+} from "../lib/db/clients";
 import { db } from "../lib/db/client";
 import {
   createPriceCategory,
@@ -180,6 +185,20 @@ function inferWorkType(url: string): PortfolioWorkType {
 
 function normalizeCompanyKey(name: string): string {
   return name.trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+function isUsableCompanyName(name: string): boolean {
+  const normalized = normalizeCompanyKey(name);
+  if (!normalized) {
+    return false;
+  }
+  if (normalized === "-" || normalized === "—" || normalized === "–") {
+    return false;
+  }
+  if (normalized === "client photo" || normalized === "client photos") {
+    return false;
+  }
+  return true;
 }
 
 function whatsappFromLink(link: string) {
@@ -494,12 +513,14 @@ async function main() {
   );
   let clientsInserted = 0;
   let clientsSkipped = 0;
+  let clientsLogoPatched = 0;
 
   async function ensureClient(input: {
     name: string;
     logo: string;
     website?: string;
     description?: string;
+    photos?: { url: string; caption: string }[];
     testimonials?: {
       quote: string;
       authorName: string;
@@ -507,31 +528,57 @@ async function main() {
     }[];
   }): Promise<string | null> {
     const name = input.name.trim();
-    if (!name) {
+    if (!isUsableCompanyName(name)) {
       return null;
     }
 
     const key = normalizeCompanyKey(name);
     const existingId = clientIdByCompany.get(key);
+    const logo = input.logo.trim();
+    const photos = (input.photos ?? [])
+      .filter((photo) => photo.url.trim())
+      .map((photo) => ({
+        id: crypto.randomUUID(),
+        url: photo.url.trim(),
+        caption: photo.caption.trim(),
+      }));
+    const testimonials = (input.testimonials ?? [])
+      .filter((item) => item.quote.trim() && item.quote.trim() !== "-")
+      .map((item) => ({
+        id: crypto.randomUUID(),
+        quote: item.quote.trim(),
+        authorName: item.authorName.trim() || name,
+        authorTitle: item.authorTitle.trim(),
+      }));
+
     if (existingId) {
+      const existing = await getClientById(brandId, existingId);
+      if (existing && !existing.logo.trim() && logo) {
+        await updateClient(brandId, existingId, {
+          name: existing.name,
+          logo,
+          website: existing.website || input.website?.trim() || "",
+          description: existing.description || input.description?.trim() || "",
+          featured: existing.featured,
+          testimonials:
+            existing.testimonials.length > 0
+              ? existing.testimonials
+              : testimonials,
+          photos: existing.photos.length > 0 ? existing.photos : photos,
+        });
+        clientsLogoPatched += 1;
+      }
       return existingId;
     }
 
     const created = await createClient(brandId, {
       name,
-      logo: input.logo.trim(),
+      logo,
       website: input.website?.trim() ?? "",
       description: input.description?.trim() ?? "",
       featured: false,
-      testimonials: (input.testimonials ?? [])
-        .filter((item) => item.quote.trim() && item.quote.trim() !== "-")
-        .map((item) => ({
-          id: crypto.randomUUID(),
-          quote: item.quote.trim(),
-          authorName: item.authorName.trim() || name,
-          authorTitle: item.authorTitle.trim(),
-        })),
-      photos: [],
+      testimonials,
+      photos,
     });
     clientIdByCompany.set(key, created.id);
     clientsInserted += 1;
@@ -539,29 +586,35 @@ async function main() {
   }
 
   for (const row of testimonialRows) {
-    const companyName = (row[4] ?? row[3] ?? "").trim();
-    const logo = (row[2] ?? "").trim();
+    const companyLogo = (row[2] ?? "").trim();
+    const clientPhoto = (row[1] ?? "").trim();
+    // Old CMS: logo-only OR photo-only — prefer company logo, fall back to photo.
+    const logo = companyLogo || clientPhoto;
+    const companyName = (row[4] ?? "").trim();
     const clientName = (row[3] ?? "").trim();
     const review = (row[5] ?? "").trim();
+    const displayName = isUsableCompanyName(companyName)
+      ? companyName
+      : isUsableCompanyName(clientName)
+        ? clientName
+        : "";
 
-    if (!companyName) {
-      clientsSkipped += 1;
-      continue;
-    }
-
-    const key = normalizeCompanyKey(companyName);
-    if (clientIdByCompany.has(key)) {
+    if (!displayName || !logo) {
       clientsSkipped += 1;
       continue;
     }
 
     await ensureClient({
-      name: companyName,
+      name: displayName,
       logo,
+      photos:
+        clientPhoto && companyLogo && clientPhoto !== companyLogo
+          ? [{ url: clientPhoto, caption: clientName || displayName }]
+          : [],
       testimonials: [
         {
           quote: review,
-          authorName: clientName || companyName,
+          authorName: isUsableCompanyName(clientName) ? clientName : displayName,
           authorTitle: "",
         },
       ],
@@ -571,11 +624,7 @@ async function main() {
   for (const row of projectRows) {
     const companyName = (row[2] ?? "").trim();
     const preview = (row[4] ?? "").trim();
-    if (!companyName) {
-      continue;
-    }
-    const key = normalizeCompanyKey(companyName);
-    if (clientIdByCompany.has(key)) {
+    if (!isUsableCompanyName(companyName) || !preview) {
       continue;
     }
     await ensureClient({
@@ -675,7 +724,7 @@ async function main() {
   );
   console.log(`prices: inserted=${pricesInserted} skipped=${pricesSkipped}`);
   console.log(
-    `clients: inserted=${clientsInserted} skipped=${clientsSkipped}`,
+    `clients: inserted=${clientsInserted} skipped=${clientsSkipped} logosPatched=${clientsLogoPatched}`,
   );
   console.log(
     `portfolio: inserted=${portfolioInserted} skipped=${portfolioSkipped}`,

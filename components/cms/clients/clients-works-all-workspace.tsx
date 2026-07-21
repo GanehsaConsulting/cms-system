@@ -2,10 +2,11 @@
 
 import { ClientsWorksAllDetailPanel } from "@/components/cms/clients/clients-works-all-detail-panel";
 import { ClientsWorksAllTable } from "@/components/cms/clients/clients-works-all-table";
+import { CmsListPagination } from "@/components/shared/cms-list-pagination";
 import { GlassSurface } from "@/components/shared/glass-surface";
+import type { ClientsWorksAllListSort } from "@/config/clients-works-all";
 import { CMS_FLEX_CHILD, CMS_SCROLL_REGION } from "@/config/spacing";
 import type { ClientWithWorks } from "@/lib/clients/group-with-works";
-import type { ClientsWorksAllListSort } from "@/config/clients-works-all";
 import { cn } from "@/lib/utils";
 
 interface ClientsWorksAllWorkspaceProps {
@@ -13,12 +14,20 @@ interface ClientsWorksAllWorkspaceProps {
   selectedId: string | null;
   selectedGroup: ClientWithWorks | null;
   sort: ClientsWorksAllListSort;
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+  rangeStart: number;
+  rangeEnd: number;
   clientCount: number;
   withWorksCount: number;
   portfolioCount: number;
   hasActiveFilters?: boolean;
   onSelect: (id: string) => void;
   onClosePanel: () => void;
+  onPageChange: (page: number) => void;
+  onPageSizeChange: (pageSize: number) => void;
   onSortChange: (sort: ClientsWorksAllListSort) => void;
   onResetFilters?: () => void;
   className?: string;
@@ -29,12 +38,20 @@ export function ClientsWorksAllWorkspace({
   selectedId,
   selectedGroup,
   sort,
+  page,
+  pageSize,
+  total,
+  totalPages,
+  rangeStart,
+  rangeEnd,
   clientCount,
   withWorksCount,
   portfolioCount,
   hasActiveFilters = false,
   onSelect,
   onClosePanel,
+  onPageChange,
+  onPageSizeChange,
   onSortChange,
   onResetFilters,
   className,
@@ -57,35 +74,48 @@ export function ClientsWorksAllWorkspace({
             </p>
           </div>
         </div>
-        <div className={CMS_SCROLL_REGION}>
-          {groups.length > 0 ? (
-            <ClientsWorksAllTable
-              groups={groups}
-              selectedId={selectedId}
-              sort={sort}
-              onSelect={onSelect}
-              onSortChange={onSortChange}
-            />
-          ) : (
-            <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
-              <p className="font-medium text-sm">No matching clients</p>
-              <p className="mt-1 max-w-sm text-muted-foreground text-sm leading-relaxed">
-                {hasActiveFilters
-                  ? "Try adjusting your search or filters."
-                  : "No clients to display."}
-              </p>
-              {hasActiveFilters && onResetFilters ? (
-                <button
-                  type="button"
-                  onClick={onResetFilters}
-                  className="mt-3 text-primary text-sm hover:underline"
-                >
-                  Reset filters
-                </button>
-              ) : null}
+        {groups.length > 0 ? (
+          <>
+            <div className={CMS_SCROLL_REGION}>
+              <ClientsWorksAllTable
+                groups={groups}
+                selectedId={selectedId}
+                sort={sort}
+                onSelect={onSelect}
+                onSortChange={onSortChange}
+              />
             </div>
-          )}
-        </div>
+            <CmsListPagination
+              page={page}
+              pageSize={pageSize}
+              total={total}
+              totalPages={totalPages}
+              rangeStart={rangeStart}
+              rangeEnd={rangeEnd}
+              itemLabel="clients"
+              onPageChange={onPageChange}
+              onPageSizeChange={onPageSizeChange}
+            />
+          </>
+        ) : (
+          <div className="flex flex-1 flex-col items-center justify-center px-6 py-16 text-center">
+            <p className="font-medium text-sm">No matching clients</p>
+            <p className="mt-1 max-w-sm text-muted-foreground text-sm leading-relaxed">
+              {hasActiveFilters
+                ? "Try adjusting your search or filters."
+                : "No clients to display."}
+            </p>
+            {hasActiveFilters && onResetFilters ? (
+              <button
+                type="button"
+                onClick={onResetFilters}
+                className="mt-3 text-primary text-sm hover:underline"
+              >
+                Reset filters
+              </button>
+            ) : null}
+          </div>
+        )}
       </GlassSurface>
 
       {selectedGroup ? (

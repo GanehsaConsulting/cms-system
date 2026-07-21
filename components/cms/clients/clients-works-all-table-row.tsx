@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { ClientContentBadges } from "@/components/cms/clients/client-content-badges";
 import { ClientFeaturedBadge } from "@/components/cms/clients/client-featured-badge";
 import { ClientsWorksAllWorksPreview } from "@/components/cms/clients/clients-works-all-works-preview";
 import { CmsListTableRow } from "@/components/shared/cms-list-table-row";
@@ -9,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { TableCell } from "@/components/ui/table";
 import { LIST_TABLE_CELL_CLASS } from "@/config/list-table";
 import { RADIUS_DEEP } from "@/config/shape";
+import { getClientContentKinds } from "@/lib/clients/content-kinds";
 import type { ClientWithWorks } from "@/lib/clients/group-with-works";
 import { formatClientDateParts } from "@/lib/clients/list";
 import { PlusIcon } from "@/lib/icons";
@@ -27,6 +29,7 @@ export function ClientsWorksAllTableRow({
 }: ClientsWorksAllTableRowProps) {
   const { client, works } = group;
   const updated = formatClientDateParts(client.updatedAt);
+  const contentKinds = getClientContentKinds(client, works);
 
   return (
     <CmsListTableRow
@@ -62,6 +65,10 @@ export function ClientsWorksAllTableRow({
             </p>
           </div>
         </div>
+      </TableCell>
+
+      <TableCell className={LIST_TABLE_CELL_CLASS}>
+        <ClientContentBadges kinds={contentKinds} />
       </TableCell>
 
       <TableCell className={LIST_TABLE_CELL_CLASS}>

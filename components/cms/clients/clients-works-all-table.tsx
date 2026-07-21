@@ -37,6 +37,7 @@ export function ClientsWorksAllTable({
             sortMap={CLIENTS_WORKS_ALL_TABLE_SORT_MAP}
             onSortChange={onSortChange}
           />
+          <TableHead className={LIST_TABLE_HEAD_CLASS}>Contents</TableHead>
           <CmsListTableSortHead
             label="Portfolio"
             column="portfolio"

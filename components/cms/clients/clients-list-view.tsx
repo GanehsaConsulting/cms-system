@@ -12,9 +12,20 @@ import { cn } from "@/lib/utils";
 
 interface ClientsListViewProps {
   clients: Client[];
+  description?: string;
+  emptyTitle?: string;
+  emptyDescription?: string;
 }
 
-export function ClientsListView({ clients }: ClientsListViewProps) {
+const DEFAULT_DESCRIPTION =
+  "Central source of truth for client logos, testimonials, and gallery assets.";
+
+export function ClientsListView({
+  clients,
+  description = DEFAULT_DESCRIPTION,
+  emptyTitle,
+  emptyDescription,
+}: ClientsListViewProps) {
   const {
     featuredFilter,
     setFeaturedFilter,
@@ -44,10 +55,13 @@ export function ClientsListView({ clients }: ClientsListViewProps) {
         )}
       >
         <ClientsWorksPageHeader
-          description="Central source of truth for client logos, testimonials, and gallery assets."
+          description={description}
           actions={<ClientsWorksNewDataButton />}
         />
-        <ClientsListEmptyState />
+        <ClientsListEmptyState
+          title={emptyTitle}
+          description={emptyDescription}
+        />
       </div>
     );
   }
@@ -60,7 +74,7 @@ export function ClientsListView({ clients }: ClientsListViewProps) {
       )}
     >
       <ClientsWorksPageHeader
-        description="Central source of truth for client logos, testimonials, and gallery assets."
+        description={description}
         actions={
           <ClientsListToolbar
             search={search}

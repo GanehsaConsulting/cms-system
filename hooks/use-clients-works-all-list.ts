@@ -6,6 +6,7 @@ import type {
   ClientsWorksAllListSort,
   ClientsWorksAllPortfolioFilter,
 } from "@/config/clients-works-all";
+import { CLIENTS_WORKS_ALL_PAGE_SIZE } from "@/config/clients-works-all";
 import {
   groupClientsWithWorks,
 } from "@/lib/clients/group-with-works";
@@ -13,6 +14,7 @@ import {
   filterClientsWorksAllGroups,
   sortClientsWorksAllGroups,
 } from "@/lib/clients/works-all-list";
+import { paginateList } from "@/lib/list/pagination";
 import type { Client } from "@/types/client";
 import type { Portfolio } from "@/types/portfolio";
 
@@ -26,6 +28,8 @@ export function useClientsWorksAllList(
     useState<ClientsWorksAllPortfolioFilter>("all");
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<ClientsWorksAllListSort>("updated-desc");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(CLIENTS_WORKS_ALL_PAGE_SIZE);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [panelDismissed, setPanelDismissed] = useState(false);
 
@@ -48,6 +52,11 @@ export function useClientsWorksAllList(
     [allGroups, featuredFilter, portfolioFilter, search, sort],
   );
 
+  const pagination = useMemo(
+    () => paginateList(groups, page, pageSize),
+    [groups, page, pageSize],
+  );
+
   const selectedGroup =
     groups.find((group) => group.client.id === selectedId) ?? null;
 
@@ -64,24 +73,31 @@ export function useClientsWorksAllList(
   );
 
   useEffect(() => {
+    setPage(1);
     setPanelDismissed(false);
-  }, [featuredFilter, portfolioFilter, search, sort]);
+  }, [featuredFilter, portfolioFilter, search, sort, pageSize]);
 
   useEffect(() => {
-    if (groups.length === 0) {
+    setPanelDismissed(false);
+  }, [page]);
+
+  useEffect(() => {
+    if (pagination.items.length === 0) {
       setSelectedId(null);
       return;
     }
 
-    const stillVisible = groups.some((group) => group.client.id === selectedId);
+    const stillVisible = pagination.items.some(
+      (group) => group.client.id === selectedId,
+    );
     if (stillVisible) {
       return;
     }
 
     if (!panelDismissed) {
-      setSelectedId(groups[0]?.client.id ?? null);
+      setSelectedId(pagination.items[0]?.client.id ?? null);
     }
-  }, [groups, panelDismissed, selectedId]);
+  }, [pagination.items, panelDismissed, selectedId]);
 
   function selectClient(id: string) {
     setSelectedId(id);
@@ -98,6 +114,7 @@ export function useClientsWorksAllList(
     setPortfolioFilter("all");
     setSearch("");
     setSort("updated-desc");
+    setPage(1);
     setPanelDismissed(false);
   }
 
@@ -112,12 +129,17 @@ export function useClientsWorksAllList(
     setSearch,
     sort,
     setSort,
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
     selectedId,
     selectedGroup,
     selectClient,
     closePanel,
     hasActiveFilters,
     resetFilters,
+    pagination,
     clientCount: groups.length,
     withWorksCount,
     portfolioCount,
