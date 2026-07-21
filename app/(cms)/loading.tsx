@@ -1,5 +1,5 @@
-import { CmsDashboardSkeleton } from "@/components/skeletons/cms-dashboard-skeleton";
+import { CmsDashboardBodySkeleton } from "@/components/skeletons/cms-dashboard-body-skeleton";
 
 export default function Loading() {
-  return <CmsDashboardSkeleton />;
+  return <CmsDashboardBodySkeleton />;
 }

@@ -13,6 +13,9 @@ export const APP_GAP = "gap-3";
 /** Inner padding inside glass shells. */
 export const SHELL_PADDING = "p-3";
 
+/** Body under a section layout header (title/tabs already padded). */
+export const SECTION_BODY_PADDING = "px-3 pb-3";
+
 /** Top padding for page body below a fixed header. */
 export const CMS_PAGE_BODY_TOP_PADDING = "pt-3";
 

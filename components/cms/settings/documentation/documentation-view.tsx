@@ -3,16 +3,18 @@
 import { useState } from "react";
 import { DocumentationCopyButton } from "@/components/cms/settings/documentation/documentation-copy-button";
 import { DocumentationSidebar } from "@/components/cms/settings/documentation/documentation-sidebar";
-import { SettingsPageHeader } from "@/components/cms/settings/settings-page-header";
-import { GlassSurface } from "@/components/shared/glass-surface";
+import { SolidSurface } from "@/components/shared/solid-surface";
 import { Badge } from "@/components/ui/badge";
 import {
-  FE_WIRING_DOCS_INTRO,
   FE_WIRING_DOC_SECTIONS,
+  FE_WIRING_DOCS_INTRO,
 } from "@/config/fe-wiring-docs";
-import { CMS_FLEX_CHILD, CMS_SCROLL_REGION, SHELL_PADDING } from "@/config/spacing";
+import {
+  CMS_FLEX_CHILD,
+  CMS_SCROLL_REGION,
+  SECTION_BODY_PADDING,
+} from "@/config/spacing";
 import { cn } from "@/lib/utils";
-import { SolidSurface } from "@/components/shared/solid-surface";
 
 export function DocumentationView() {
   const [activeId, setActiveId] = useState(
@@ -33,11 +35,9 @@ export function DocumentationView() {
     <div
       className={cn(
         "flex min-h-0 flex-1 flex-col overflow-hidden",
-        SHELL_PADDING,
+        SECTION_BODY_PADDING,
       )}
     >
-      <SettingsPageHeader />
-
       <div className={cn("flex min-h-0 gap-4", CMS_FLEX_CHILD)}>
         <DocumentationSidebar
           sections={FE_WIRING_DOC_SECTIONS}

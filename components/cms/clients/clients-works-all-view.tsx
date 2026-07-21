@@ -4,12 +4,11 @@ import { ClientsListCreateButton } from "@/components/cms/clients/clients-list-c
 import { ClientsWorksAllToolbar } from "@/components/cms/clients/clients-works-all-toolbar";
 import { ClientsWorksAllWorkspace } from "@/components/cms/clients/clients-works-all-workspace";
 import { ClientsWorksNewDataButton } from "@/components/cms/clients/clients-works-new-data-button";
-import { ClientsWorksPageHeader } from "@/components/cms/clients/clients-works-page-header";
-import { CMS_FLEX_CHILD, SHELL_PADDING } from "@/config/spacing";
+import { CMS_FLEX_CHILD, SECTION_BODY_PADDING } from "@/config/spacing";
 import { useClientsWorksAllList } from "@/hooks/use-clients-works-all-list";
+import { cn } from "@/lib/utils";
 import type { Client } from "@/types/client";
 import type { Portfolio } from "@/types/portfolio";
-import { cn } from "@/lib/utils";
 
 interface ClientsWorksAllViewProps {
   clients: Client[];
@@ -51,13 +50,12 @@ export function ClientsWorksAllView({
       <div
         className={cn(
           "flex min-h-0 flex-1 flex-col overflow-hidden",
-          SHELL_PADDING,
+          SECTION_BODY_PADDING,
         )}
       >
-        <ClientsWorksPageHeader
-          description="Clients with linked social media and website works in one table."
-          actions={<ClientsWorksNewDataButton />}
-        />
+        <div className="mb-4 flex shrink-0 justify-end">
+          <ClientsWorksNewDataButton />
+        </div>
         <div className="flex flex-1 flex-col items-center justify-center p-10 text-center">
           <p className="font-medium text-sm">No clients yet</p>
           <p className="mt-1 max-w-sm text-muted-foreground text-sm leading-relaxed">
@@ -76,26 +74,23 @@ export function ClientsWorksAllView({
     <div
       className={cn(
         "flex min-h-0 flex-1 flex-col overflow-hidden",
-        SHELL_PADDING,
+        SECTION_BODY_PADDING,
       )}
     >
-      <ClientsWorksPageHeader
-        description="Clients with linked social media and website works in one table."
-        actions={
-          <ClientsWorksAllToolbar
-            search={search}
-            featuredFilter={featuredFilter}
-            portfolioFilter={portfolioFilter}
-            sort={sort}
-            hasActiveFilters={hasActiveFilters}
-            onSearchChange={setSearch}
-            onFeaturedFilterChange={setFeaturedFilter}
-            onPortfolioFilterChange={setPortfolioFilter}
-            onSortChange={setSort}
-            onResetFilters={resetFilters}
-          />
-        }
-      />
+      <div className="mb-4 flex shrink-0 justify-end">
+        <ClientsWorksAllToolbar
+          search={search}
+          featuredFilter={featuredFilter}
+          portfolioFilter={portfolioFilter}
+          sort={sort}
+          hasActiveFilters={hasActiveFilters}
+          onSearchChange={setSearch}
+          onFeaturedFilterChange={setFeaturedFilter}
+          onPortfolioFilterChange={setPortfolioFilter}
+          onSortChange={setSort}
+          onResetFilters={resetFilters}
+        />
+      </div>
 
       <ClientsWorksAllWorkspace
         className={CMS_FLEX_CHILD}

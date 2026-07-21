@@ -1,5 +1,5 @@
-import { CmsFormPageSkeleton } from "@/components/skeletons/cms-form-page-skeleton";
+import { CmsFormBodySkeleton } from "@/components/skeletons/cms-form-body-skeleton";
 
 export default function Loading() {
-  return <CmsFormPageSkeleton />;
+  return <CmsFormBodySkeleton />;
 }

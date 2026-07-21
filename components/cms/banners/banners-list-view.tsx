@@ -4,11 +4,10 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BannerFormDialog } from "@/components/cms/banners/banner-form-dialog";
 import { BannersGlobalPanel } from "@/components/cms/banners/banners-global-panel";
-import { BannersListHeader } from "@/components/cms/banners/banners-list-header";
 import { BannersListToolbar } from "@/components/cms/banners/banners-list-toolbar";
 import { BannersPlacementsSection } from "@/components/cms/banners/banners-placements-section";
 import type { BannerPlacement } from "@/config/banner-placements";
-import { CMS_FLEX_CHILD, SHELL_PADDING } from "@/config/spacing";
+import { CMS_FLEX_CHILD } from "@/config/spacing";
 import { useBannersList } from "@/hooks/use-banners-list";
 import type { Banner } from "@/types/banner";
 import { cn } from "@/lib/utils";
@@ -84,28 +83,20 @@ export function BannersListView({ banners }: BannersListViewProps) {
   }
 
   return (
-    <div
-      className={cn(
-        "flex min-h-0 flex-1 flex-col overflow-hidden",
-        SHELL_PADDING,
-      )}
-    >
-      <header className="mb-4 shrink-0">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-          <BannersListHeader />
-          <BannersListToolbar
-            search={search}
-            statusFilter={statusFilter}
-            sort={sort}
-            hasActiveFilters={hasActiveFilters}
-            onSearchChange={setSearch}
-            onStatusFilterChange={setStatusFilter}
-            onSortChange={setSort}
-            onResetFilters={resetFilters}
-            onCreate={() => openCreate()}
-          />
-        </div>
-      </header>
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+      <div className="mb-4 flex shrink-0 justify-end">
+        <BannersListToolbar
+          search={search}
+          statusFilter={statusFilter}
+          sort={sort}
+          hasActiveFilters={hasActiveFilters}
+          onSearchChange={setSearch}
+          onStatusFilterChange={setStatusFilter}
+          onSortChange={setSort}
+          onResetFilters={resetFilters}
+          onCreate={() => openCreate()}
+        />
+      </div>
 
       <div
         className={cn(

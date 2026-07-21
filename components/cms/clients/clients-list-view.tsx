@@ -4,25 +4,19 @@ import { ClientsListEmptyState } from "@/components/cms/clients/clients-list-emp
 import { ClientsListToolbar } from "@/components/cms/clients/clients-list-toolbar";
 import { ClientsListWorkspace } from "@/components/cms/clients/clients-list-workspace";
 import { ClientsWorksNewDataButton } from "@/components/cms/clients/clients-works-new-data-button";
-import { ClientsWorksPageHeader } from "@/components/cms/clients/clients-works-page-header";
+import { CMS_FLEX_CHILD, SECTION_BODY_PADDING } from "@/config/spacing";
 import { useClientsList } from "@/hooks/use-clients-list";
-import { CMS_FLEX_CHILD, SHELL_PADDING } from "@/config/spacing";
-import type { Client } from "@/types/client";
 import { cn } from "@/lib/utils";
+import type { Client } from "@/types/client";
 
 interface ClientsListViewProps {
   clients: Client[];
-  description?: string;
   emptyTitle?: string;
   emptyDescription?: string;
 }
 
-const DEFAULT_DESCRIPTION =
-  "Central source of truth for client logos, testimonials, and gallery assets.";
-
 export function ClientsListView({
   clients,
-  description = DEFAULT_DESCRIPTION,
   emptyTitle,
   emptyDescription,
 }: ClientsListViewProps) {
@@ -51,13 +45,12 @@ export function ClientsListView({
       <div
         className={cn(
           "flex min-h-0 flex-1 flex-col overflow-hidden",
-          SHELL_PADDING,
+          SECTION_BODY_PADDING,
         )}
       >
-        <ClientsWorksPageHeader
-          description={description}
-          actions={<ClientsWorksNewDataButton />}
-        />
+        <div className="mb-4 flex shrink-0 justify-end">
+          <ClientsWorksNewDataButton />
+        </div>
         <ClientsListEmptyState
           title={emptyTitle}
           description={emptyDescription}
@@ -70,24 +63,21 @@ export function ClientsListView({
     <div
       className={cn(
         "flex min-h-0 flex-1 flex-col overflow-hidden",
-        SHELL_PADDING,
+        SECTION_BODY_PADDING,
       )}
     >
-      <ClientsWorksPageHeader
-        description={description}
-        actions={
-          <ClientsListToolbar
-            search={search}
-            featuredFilter={featuredFilter}
-            sort={sort}
-            hasActiveFilters={hasActiveFilters}
-            onSearchChange={setSearch}
-            onFeaturedFilterChange={setFeaturedFilter}
-            onSortChange={setSort}
-            onResetFilters={resetFilters}
-          />
-        }
-      />
+      <div className="mb-4 flex shrink-0 justify-end">
+        <ClientsListToolbar
+          search={search}
+          featuredFilter={featuredFilter}
+          sort={sort}
+          hasActiveFilters={hasActiveFilters}
+          onSearchChange={setSearch}
+          onFeaturedFilterChange={setFeaturedFilter}
+          onSortChange={setSort}
+          onResetFilters={resetFilters}
+        />
+      </div>
 
       <ClientsListWorkspace
         className={CMS_FLEX_CHILD}

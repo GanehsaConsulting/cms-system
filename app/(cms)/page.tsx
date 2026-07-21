@@ -1,4 +1,6 @@
+import { Suspense } from "react";
 import { DashboardView } from "@/components/cms/dashboard/dashboard-view";
+import { CmsDashboardBodySkeleton } from "@/components/skeletons/cms-dashboard-body-skeleton";
 import { resolveCmsActiveBrandId } from "@/lib/brands/active-brand";
 import { getArticlesSummary } from "@/lib/db/articles";
 import { getBanners } from "@/lib/db/banners";
@@ -6,7 +8,15 @@ import { getClients } from "@/lib/db/clients";
 import { getMediaLibraryFilesCount } from "@/lib/db/media-files";
 import { getPrices } from "@/lib/db/prices";
 
-export default async function DashboardPage() {
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<CmsDashboardBodySkeleton />}>
+      <DashboardPageContent />
+    </Suspense>
+  );
+}
+
+async function DashboardPageContent() {
   const brandId = await resolveCmsActiveBrandId();
   const [articles, clients, prices, banners, mediaFilesCount] =
     await Promise.all([

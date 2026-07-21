@@ -1,5 +1,16 @@
-import { CmsSettingsPageSkeleton } from "@/components/skeletons/cms-settings-page-skeleton";
+import { CmsSettingsBodySkeleton } from "@/components/skeletons/cms-settings-body-skeleton";
+import { SECTION_BODY_PADDING } from "@/config/spacing";
+import { cn } from "@/lib/utils";
 
 export default function Loading() {
-  return <CmsSettingsPageSkeleton />;
+  return (
+    <div
+      className={cn(
+        "flex min-h-0 flex-1 flex-col overflow-hidden",
+        SECTION_BODY_PADDING,
+      )}
+    >
+      <CmsSettingsBodySkeleton />
+    </div>
+  );
 }

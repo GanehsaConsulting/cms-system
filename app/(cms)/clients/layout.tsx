@@ -1,7 +1,14 @@
+import { ClientsWorksPageHeader } from "@/components/cms/clients/clients-works-page-header";
+import { CmsSectionLayout } from "@/components/shared/cms-section-layout";
+
 export default function ClientsLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <div className="flex min-h-0 flex-1 flex-col overflow-hidden">{children}</div>;
+  return (
+    <CmsSectionLayout header={<ClientsWorksPageHeader />}>
+      {children}
+    </CmsSectionLayout>
+  );
 }

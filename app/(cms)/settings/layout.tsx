@@ -1,4 +1,6 @@
 import { redirect } from "next/navigation";
+import { SettingsPageHeader } from "@/components/cms/settings/settings-page-header";
+import { CmsSectionLayout } from "@/components/shared/cms-section-layout";
 import { getCurrentCmsUser } from "@/lib/users/current";
 import { canAccessCmsSettings } from "@/lib/users/permissions";
 
@@ -14,8 +16,8 @@ export default async function SettingsLayout({
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+    <CmsSectionLayout header={<SettingsPageHeader />}>
       {children}
-    </div>
+    </CmsSectionLayout>
   );
 }

@@ -5,20 +5,26 @@ import { UserFormDialog } from "@/components/cms/settings/users/user-form-dialog
 import { UserListEmptyState } from "@/components/cms/settings/users/user-list-empty-state";
 import { UserListTable } from "@/components/cms/settings/users/user-list-table";
 import { UserListToolbar } from "@/components/cms/settings/users/user-list-toolbar";
-import { SettingsPageHeader } from "@/components/cms/settings/settings-page-header";
 import { GlassSurface } from "@/components/shared/glass-surface";
+import {
+  CMS_FLEX_CHILD,
+  CMS_SCROLL_REGION,
+  SECTION_BODY_PADDING,
+} from "@/config/spacing";
 import { useUserList } from "@/hooks/use-user-list";
-import { CMS_FLEX_CHILD, CMS_SCROLL_REGION, SHELL_PADDING } from "@/config/spacing";
+import { cn } from "@/lib/utils";
 import type { Brand } from "@/types/brand";
 import type { User } from "@/types/user";
-import { cn } from "@/lib/utils";
 
 interface UserListViewProps {
   users: User[];
   brands: Brand[];
 }
 
-export function UserListView({ users: initialUsers, brands }: UserListViewProps) {
+export function UserListView({
+  users: initialUsers,
+  brands,
+}: UserListViewProps) {
   const [users, setUsers] = useState(initialUsers);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
@@ -65,31 +71,31 @@ export function UserListView({ users: initialUsers, brands }: UserListViewProps)
     });
   }
 
+  const toolbar = (
+    <UserListToolbar
+      search={search}
+      statusFilter={statusFilter}
+      roleFilter={roleFilter}
+      sort={sort}
+      hasActiveFilters={hasActiveFilters}
+      onSearchChange={setSearch}
+      onStatusFilterChange={setStatusFilter}
+      onRoleFilterChange={setRoleFilter}
+      onSortChange={setSort}
+      onResetFilters={resetFilters}
+      onCreate={openCreate}
+    />
+  );
+
   if (users.length === 0) {
     return (
       <div
         className={cn(
           "flex min-h-0 flex-1 flex-col overflow-hidden",
-          SHELL_PADDING,
+          SECTION_BODY_PADDING,
         )}
       >
-        <SettingsPageHeader
-          actions={
-            <UserListToolbar
-              search={search}
-              statusFilter={statusFilter}
-              roleFilter={roleFilter}
-              sort={sort}
-              hasActiveFilters={hasActiveFilters}
-              onSearchChange={setSearch}
-              onStatusFilterChange={setStatusFilter}
-              onRoleFilterChange={setRoleFilter}
-              onSortChange={setSort}
-              onResetFilters={resetFilters}
-              onCreate={openCreate}
-            />
-          }
-        />
+        <div className="mb-4 flex shrink-0 justify-end">{toolbar}</div>
         <UserListEmptyState onCreate={openCreate} />
         <UserFormDialog
           open={dialogOpen}
@@ -106,28 +112,14 @@ export function UserListView({ users: initialUsers, brands }: UserListViewProps)
     <div
       className={cn(
         "flex min-h-0 flex-1 flex-col overflow-hidden",
-        SHELL_PADDING,
+        SECTION_BODY_PADDING,
       )}
     >
-      <SettingsPageHeader
-        actions={
-          <UserListToolbar
-            search={search}
-            statusFilter={statusFilter}
-            roleFilter={roleFilter}
-            sort={sort}
-            hasActiveFilters={hasActiveFilters}
-            onSearchChange={setSearch}
-            onStatusFilterChange={setStatusFilter}
-            onRoleFilterChange={setRoleFilter}
-            onSortChange={setSort}
-            onResetFilters={resetFilters}
-            onCreate={openCreate}
-          />
-        }
-      />
+      <div className="mb-4 flex shrink-0 justify-end">{toolbar}</div>
 
-      <GlassSurface className={cn("flex min-h-0 flex-col overflow-hidden", CMS_FLEX_CHILD)}>
+      <GlassSurface
+        className={cn("flex min-h-0 flex-col overflow-hidden", CMS_FLEX_CHILD)}
+      >
         <div className="flex shrink-0 items-center justify-between gap-2 border-(--separator) border-b px-4 py-3">
           <div>
             <h2 className="font-semibold text-sm">Team members</h2>
@@ -140,7 +132,11 @@ export function UserListView({ users: initialUsers, brands }: UserListViewProps)
 
         {visibleUsers.length > 0 ? (
           <div className={CMS_SCROLL_REGION}>
-            <UserListTable users={visibleUsers} brands={brands} onEdit={openEdit} />
+            <UserListTable
+              users={visibleUsers}
+              brands={brands}
+              onEdit={openEdit}
+            />
           </div>
         ) : (
           <div className="flex flex-1 flex-col items-center justify-center p-10 text-center">

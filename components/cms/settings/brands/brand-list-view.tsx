@@ -5,12 +5,15 @@ import { BrandFormDialog } from "@/components/cms/settings/brands/brand-form-dia
 import { BrandListEmptyState } from "@/components/cms/settings/brands/brand-list-empty-state";
 import { BrandListGrid } from "@/components/cms/settings/brands/brand-list-grid";
 import { BrandListToolbar } from "@/components/cms/settings/brands/brand-list-toolbar";
-import { SettingsPageHeader } from "@/components/cms/settings/settings-page-header";
 import { GlassSurface } from "@/components/shared/glass-surface";
+import {
+  CMS_FLEX_CHILD,
+  CMS_SCROLL_REGION,
+  SECTION_BODY_PADDING,
+} from "@/config/spacing";
 import { useBrandList } from "@/hooks/use-brand-list";
-import { CMS_FLEX_CHILD, CMS_SCROLL_REGION, SHELL_PADDING } from "@/config/spacing";
-import type { Brand } from "@/types/brand";
 import { cn } from "@/lib/utils";
+import type { Brand } from "@/types/brand";
 
 interface BrandListViewProps {
   brands: Brand[];
@@ -61,27 +64,29 @@ export function BrandListView({ brands: initialBrands }: BrandListViewProps) {
     });
   }
 
+  const toolbar = (
+    <BrandListToolbar
+      search={search}
+      statusFilter={statusFilter}
+      sort={sort}
+      hasActiveFilters={hasActiveFilters}
+      onSearchChange={setSearch}
+      onStatusFilterChange={setStatusFilter}
+      onSortChange={setSort}
+      onResetFilters={resetFilters}
+      onCreate={openCreate}
+    />
+  );
+
   if (brands.length === 0) {
     return (
       <div
         className={cn(
           "flex min-h-0 flex-1 flex-col overflow-hidden",
-          SHELL_PADDING,
+          SECTION_BODY_PADDING,
         )}
       >
-        <SettingsPageHeader
-          actions={<BrandListToolbar
-            search={search}
-            statusFilter={statusFilter}
-            sort={sort}
-            hasActiveFilters={hasActiveFilters}
-            onSearchChange={setSearch}
-            onStatusFilterChange={setStatusFilter}
-            onSortChange={setSort}
-            onResetFilters={resetFilters}
-            onCreate={openCreate}
-          />}
-        />
+        <div className="mb-4 flex shrink-0 justify-end">{toolbar}</div>
         <BrandListEmptyState onCreate={openCreate} />
         <BrandFormDialog
           open={dialogOpen}
@@ -97,26 +102,14 @@ export function BrandListView({ brands: initialBrands }: BrandListViewProps) {
     <div
       className={cn(
         "flex min-h-0 flex-1 flex-col overflow-hidden",
-        SHELL_PADDING,
+        SECTION_BODY_PADDING,
       )}
     >
-      <SettingsPageHeader
-        actions={
-          <BrandListToolbar
-            search={search}
-            statusFilter={statusFilter}
-            sort={sort}
-            hasActiveFilters={hasActiveFilters}
-            onSearchChange={setSearch}
-            onStatusFilterChange={setStatusFilter}
-            onSortChange={setSort}
-            onResetFilters={resetFilters}
-            onCreate={openCreate}
-          />
-        }
-      />
+      <div className="mb-4 flex shrink-0 justify-end">{toolbar}</div>
 
-      <GlassSurface className={cn("flex min-h-0 flex-col overflow-hidden", CMS_FLEX_CHILD)}>
+      <GlassSurface
+        className={cn("flex min-h-0 flex-col overflow-hidden", CMS_FLEX_CHILD)}
+      >
         <div className="flex shrink-0 items-center justify-between gap-2 border-(--separator) border-b px-4 py-3">
           <div>
             <h2 className="font-semibold text-sm">Registered brands</h2>

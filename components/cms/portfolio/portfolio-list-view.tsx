@@ -2,15 +2,14 @@
 
 import { useMemo } from "react";
 import { ClientsWorksNewDataButton } from "@/components/cms/clients/clients-works-new-data-button";
-import { ClientsWorksPageHeader } from "@/components/cms/clients/clients-works-page-header";
 import { PortfolioListEmptyState } from "@/components/cms/portfolio/portfolio-list-empty-state";
 import { PortfolioListToolbar } from "@/components/cms/portfolio/portfolio-list-toolbar";
 import { PortfolioListWorkspace } from "@/components/cms/portfolio/portfolio-list-workspace";
-import { CMS_FLEX_CHILD, SHELL_PADDING } from "@/config/spacing";
+import { CMS_FLEX_CHILD, SECTION_BODY_PADDING } from "@/config/spacing";
 import { usePortfolioList } from "@/hooks/use-portfolio-list";
+import { cn } from "@/lib/utils";
 import type { Client } from "@/types/client";
 import type { Portfolio } from "@/types/portfolio";
-import { cn } from "@/lib/utils";
 
 interface PortfolioListViewProps {
   items: Portfolio[];
@@ -33,9 +32,7 @@ export function PortfolioListView({ items, clients }: PortfolioListViewProps) {
     setSearch,
     sort,
     setSort,
-    page,
     setPage,
-    pageSize,
     setPageSize,
     selectedId,
     selectItem,
@@ -51,13 +48,12 @@ export function PortfolioListView({ items, clients }: PortfolioListViewProps) {
       <div
         className={cn(
           "flex min-h-0 flex-1 flex-col overflow-hidden",
-          SHELL_PADDING,
+          SECTION_BODY_PADDING,
         )}
       >
-        <ClientsWorksPageHeader
-          description="Social media and website works linked to each client."
-          actions={<ClientsWorksNewDataButton />}
-        />
+        <div className="mb-4 flex shrink-0 justify-end">
+          <ClientsWorksNewDataButton />
+        </div>
         <PortfolioListEmptyState />
       </div>
     );
@@ -67,24 +63,21 @@ export function PortfolioListView({ items, clients }: PortfolioListViewProps) {
     <div
       className={cn(
         "flex min-h-0 flex-1 flex-col overflow-hidden",
-        SHELL_PADDING,
+        SECTION_BODY_PADDING,
       )}
     >
-      <ClientsWorksPageHeader
-        description="Social media and website works linked to each client."
-        actions={
-          <PortfolioListToolbar
-            search={search}
-            workTypeFilter={workTypeFilter}
-            sort={sort}
-            hasActiveFilters={hasActiveFilters}
-            onSearchChange={setSearch}
-            onWorkTypeFilterChange={setWorkTypeFilter}
-            onSortChange={setSort}
-            onResetFilters={resetFilters}
-          />
-        }
-      />
+      <div className="mb-4 flex shrink-0 justify-end">
+        <PortfolioListToolbar
+          search={search}
+          workTypeFilter={workTypeFilter}
+          sort={sort}
+          hasActiveFilters={hasActiveFilters}
+          onSearchChange={setSearch}
+          onWorkTypeFilterChange={setWorkTypeFilter}
+          onSortChange={setSort}
+          onResetFilters={resetFilters}
+        />
+      </div>
 
       <PortfolioListWorkspace
         className={CMS_FLEX_CHILD}

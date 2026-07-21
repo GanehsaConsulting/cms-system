@@ -1,5 +1,5 @@
-import type { NextConfig } from "next";
 import bundleAnalyzer from "@next/bundle-analyzer";
+import type { NextConfig } from "next";
 
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === "true",
@@ -21,6 +21,11 @@ const nextConfig: NextConfig = {
   experimental: {
     serverActions: {
       bodySizeLimit: "10mb",
+    },
+    // Client router cache — revisited CMS pages feel instant without refetch flash.
+    staleTimes: {
+      dynamic: 30,
+      static: 180,
     },
     // Aggressive tree-shaking for large barrel packages used across the CMS.
     optimizePackageImports: [
