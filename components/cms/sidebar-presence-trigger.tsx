@@ -9,22 +9,14 @@ interface SidebarPresenceTriggerProps {
   onOpen: () => void;
   children: ReactNode;
   className?: string;
-  /** Avatar box size — must match the child avatar. */
-  size?: "sm" | "dock";
 }
 
-const SIZE_CLASS = {
-  sm: "size-8",
-  dock: "size-9",
-} as const;
-
-/** Avatar + online count badge. Badge is an overlay — avatar stays fully visible. */
+/** Avatar stays as-is; online count floats on the corner. */
 export function SidebarPresenceTrigger({
   count,
   onOpen,
   children,
   className,
-  size = "sm",
 }: SidebarPresenceTriggerProps) {
   return (
     <button
@@ -35,19 +27,16 @@ export function SidebarPresenceTrigger({
         onOpen();
       }}
       className={cn(
-        "relative isolate shrink-0 overflow-visible rounded-full",
+        "relative shrink-0 rounded-full",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
-        SIZE_CLASS[size],
         className,
       )}
       aria-label={`Team presence, ${count} online`}
     >
-      <span className="pointer-events-none block size-full overflow-hidden rounded-[inherit]">
-        {children}
-      </span>
+      {children}
       <SidebarPresenceCountBadge
         count={count}
-        className="absolute top-0 right-0 z-10 translate-x-1/3 -translate-y-1/3"
+        className="absolute top-0 right-0 z-10 translate-x-1/4 -translate-y-1/4"
       />
     </button>
   );

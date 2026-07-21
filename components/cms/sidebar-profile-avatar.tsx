@@ -24,7 +24,8 @@ export function SidebarProfileAvatar({
   className,
 }: SidebarProfileAvatarProps) {
   const initials = getAuthorInitials(name);
-  const hasPhoto = Boolean(avatarUrl?.trim());
+  const photo = avatarUrl?.trim() ?? "";
+  const hasPhoto = photo.length > 0 && !photo.startsWith("data:");
 
   if (size === "dock") {
     if (hasPhoto) {
@@ -38,7 +39,7 @@ export function SidebarProfileAvatar({
           )}
         >
           <Image
-            src={avatarUrl!}
+            src={photo}
             alt=""
             fill
             unoptimized
@@ -68,13 +69,13 @@ export function SidebarProfileAvatar({
       <span
         aria-hidden
         className={cn(
-          "relative shrink-0 overflow-hidden bg-muted",
+          "relative block shrink-0 overflow-hidden bg-muted",
           sizeClasses[size],
           className,
         )}
       >
         <Image
-          src={avatarUrl!}
+          src={photo}
           alt=""
           fill
           unoptimized

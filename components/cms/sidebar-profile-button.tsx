@@ -25,25 +25,31 @@ export function SidebarProfileButton({
   return (
     <div
       className={cn(
-        RADIUS_DEEP,
-        "flex w-full items-center gap-2.5 overflow-visible px-2 py-2",
+        "flex w-full items-center gap-1 overflow-visible p-1",
         className,
       )}
     >
-      <SidebarPresenceTrigger count={onlineCount} onOpen={onOpenPresence}>
+      <SidebarPresenceTrigger
+        count={onlineCount}
+        onOpen={onOpenPresence}
+        className={cn(
+          RADIUS_DEEP,
+          "p-1 transition-colors hover:bg-black/5 dark:hover:bg-white/8",
+        )}
+      >
         <SidebarProfileAvatar
           name={user.name}
           avatarUrl={user.avatarUrl}
           size="sm"
-          className="size-full"
         />
       </SidebarPresenceTrigger>
       <button
         type="button"
         onClick={onOpen}
         className={cn(
-          "flex min-w-0 flex-1 items-center gap-2.5 text-left transition-colors",
-          "rounded-lg py-0.5 hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
+          RADIUS_DEEP,
+          "flex min-w-0 flex-1 items-center gap-2 px-2 py-1.5 text-left transition-colors",
+          "hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
           "dark:hover:bg-white/8",
         )}
         aria-label={`Open profile for ${user.name}`}

@@ -15,9 +15,8 @@ export function SidebarPresenceCountBadge({
     <span
       aria-hidden
       className={cn(
-        "pointer-events-none flex h-4 min-w-4 items-center justify-center rounded-full",
-        "bg-emerald-500 px-1 font-semibold text-[10px] leading-none text-white",
-        "shadow-sm ring-2 ring-[rgb(var(--glass-fill-rgb))]",
+        "pointer-events-none flex h-3.5 min-w-3.5 items-center justify-center rounded-full",
+        "bg-emerald-500 px-1 font-semibold text-[9px] leading-none text-white shadow-sm",
         className,
       )}
     >

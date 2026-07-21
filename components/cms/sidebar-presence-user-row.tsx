@@ -21,8 +21,8 @@ export function SidebarPresenceUserRow({ user }: SidebarPresenceUserRowProps) {
         <span
           aria-hidden
           className={cn(
-            "absolute right-0 bottom-0 size-2.5 rounded-full ring-2 ring-(--glass-fill)",
-            user.online ? "bg-emerald-500" : "bg-muted-foreground/40",
+            "absolute right-0 bottom-0 size-2.5 rounded-full ring-1 ring-background/10",
+            user.online ? "bg-emerald-500" : "hidden",
           )}
         />
       </div>

@@ -7,10 +7,11 @@ import type { CmsPresenceSnapshot, CmsPresenceUser } from "@/types/presence";
 
 function toAvatarUrl(image: string | null): string {
   const trimmed = image?.trim() ?? "";
-  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
-    return trimmed;
+  // Skip empty / in-memory data URLs (too large for list payloads).
+  if (!trimmed || trimmed.startsWith("data:")) {
+    return "";
   }
-  return "";
+  return trimmed;
 }
 
 function toRoleLabel(role: string): string {
