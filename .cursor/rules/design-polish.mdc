@@ -1,0 +1,31 @@
+---
+description: Incremental UI polish with Hallmark — improve UX without full redesigns
+alwaysApply: true
+---
+
+# Design Polish — Incremental Only
+
+Use the **Hallmark** skill (`hallmark`) for visual/UX quality when building or refining CMS UI. Prefer small, targeted improvements over greenfield redesigns.
+
+## Default mode for this repo
+
+- **Polish in place** — tighten hierarchy, spacing, contrast, badge/status color, empty states, motion restraint.
+- **Keep the shell** — glass surfaces, sidebar, shadcn/ui, Tailwind tokens, and existing list/form layouts stay.
+- **Do not** swap the whole CMS look (new theme catalog, new hero rhythm, global font/color overhaul) unless the user explicitly asks for a redesign or `hallmark redesign`.
+
+## When Hallmark is appropriate
+
+- New screens that still must match the current CMS language
+- `hallmark audit <target>` — ranked punch list only, no edits
+- Scoped polish (badges, tables, panels, forms) called out by the user
+- Landing/marketing pages only if the user asks for that surface
+
+## Hard stops
+
+- Do not delete route trees or rewrite `components/ui/`
+- Do not replace established patterns (CmsList*, GlassSurface, action toasts) with a new design system
+- If a “redesign” would touch many unrelated files, stop and confirm scope first
+
+## Stack constraints (still apply)
+
+Next.js App Router · shadcn/ui · Tailwind v4 · English UI copy · Tailwind-first styling

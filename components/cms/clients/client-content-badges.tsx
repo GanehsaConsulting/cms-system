@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import {
+  CLIENT_CONTENT_KIND_BADGE_CLASSES,
   CLIENT_CONTENT_KIND_LABELS,
   type ClientContentKind,
 } from "@/config/client-content-kinds";
@@ -23,7 +24,11 @@ export function ClientContentBadges({
   return (
     <div className={cn("flex flex-wrap gap-1", className)}>
       {kinds.map((kind) => (
-        <Badge key={kind} variant="secondary" className="rounded-md">
+        <Badge
+          key={kind}
+          variant="outline"
+          className={cn("rounded-md", CLIENT_CONTENT_KIND_BADGE_CLASSES[kind])}
+        >
           {CLIENT_CONTENT_KIND_LABELS[kind]}
         </Badge>
       ))}
