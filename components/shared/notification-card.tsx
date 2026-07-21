@@ -37,10 +37,9 @@ export function NotificationCard({
     <div
       className={cn(
         NOTIFICATION_CARD_SURFACE,
-        "flex w-full items-start gap-3 transition-colors",
-        isUnread
-          ? "bg-white/70 ring-1 ring-primary/15 dark:bg-white/14 dark:ring-primary/25"
-          : "opacity-90",
+        "group relative flex w-full items-start gap-3 transition-colors hover:bg-white/70 dark:hover:bg-white/14",
+        isUnread &&
+          "bg-white/70 ring-1 ring-primary/15 dark:bg-white/14 dark:ring-primary/25",
       )}
     >
       <button
@@ -57,6 +56,7 @@ export function NotificationCard({
             />
           ) : null}
         </span>
+
         <span className="min-w-0 flex-1">
           <span className="flex items-start justify-between gap-2">
             <span
@@ -67,7 +67,13 @@ export function NotificationCard({
             >
               {notification.title}
             </span>
-            <span className="shrink-0 text-[11px] text-muted-foreground tabular-nums">
+            <span
+              className={cn(
+                "shrink-0 text-[11px] text-muted-foreground tabular-nums transition-opacity",
+                onToggleRead &&
+                  "group-hover:opacity-0 group-focus-within:opacity-0",
+              )}
+            >
               {notification.timeLabel}
             </span>
           </span>
@@ -85,11 +91,10 @@ export function NotificationCard({
             onToggleRead(notification);
           }}
           className={cn(
-            "mt-0.5 shrink-0 rounded-full px-2 py-1 text-[11px] font-medium transition-colors",
-            "hover:bg-black/5 dark:hover:bg-white/10",
-            isUnread
-              ? "text-primary"
-              : "text-muted-foreground",
+            "absolute top-3 right-3 text-[11px] font-medium",
+            "opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100",
+            "hover:underline focus-visible:opacity-100 focus-visible:outline-none",
+            isUnread ? "text-primary" : "text-muted-foreground",
           )}
           aria-label={
             isUnread

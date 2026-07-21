@@ -110,18 +110,13 @@ export function NotificationCenterDrawer() {
           </div>
         </SheetHeader>
 
-        <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden px-4 pb-4">
-          <section
-            aria-label="Notifications"
-            className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden"
-          >
-            <div className="min-h-0 flex-1 overflow-y-auto pr-0.5">
-              <NotificationCenterList
-                notifications={visible}
-                onSelect={handleSelect}
-                onToggleRead={handleToggleRead}
-              />
-            </div>
+        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 pb-4">
+          <section aria-label="Notifications" className="space-y-2">
+            <NotificationCenterList
+              notifications={visible}
+              onSelect={handleSelect}
+              onToggleRead={handleToggleRead}
+            />
             <NotificationCenterMoreButton
               remainingCount={remaining}
               expanded={expanded}
