@@ -25,6 +25,7 @@ interface CmsListPaginationProps {
   rangeStart: number;
   rangeEnd: number;
   itemLabel: string;
+  pageSizeOptions?: readonly number[];
   onPageChange: (page: number) => void;
   onPageSizeChange: (pageSize: number) => void;
 }
@@ -37,6 +38,7 @@ export function CmsListPagination({
   rangeStart,
   rangeEnd,
   itemLabel,
+  pageSizeOptions = LIST_PAGE_SIZE_OPTIONS,
   onPageChange,
   onPageSizeChange,
 }: CmsListPaginationProps) {
@@ -47,7 +49,7 @@ export function CmsListPagination({
       <div className="justify-self-start">
         <Select
           value={String(pageSize)}
-          items={LIST_PAGE_SIZE_OPTIONS.map((option) => ({
+          items={pageSizeOptions.map((option) => ({
             value: String(option),
             label: `${option} / page`,
           }))}
@@ -57,7 +59,7 @@ export function CmsListPagination({
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {LIST_PAGE_SIZE_OPTIONS.map((option) => (
+            {pageSizeOptions.map((option) => (
               <SelectItem key={option} value={String(option)}>
                 {option} / page
               </SelectItem>

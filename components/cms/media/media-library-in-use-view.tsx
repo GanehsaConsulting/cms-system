@@ -6,7 +6,9 @@ import { MediaLibraryInUseDetailDialog } from "@/components/cms/media/media-libr
 import { MediaLibraryTable } from "@/components/cms/media/media-library-table";
 import { MediaLibraryToolbar } from "@/components/cms/media/media-library-toolbar";
 import { MediaLibraryTypeTabs } from "@/components/cms/media/media-library-type-tabs";
+import { CmsListPagination } from "@/components/shared/cms-list-pagination";
 import { GlassSurface } from "@/components/shared/glass-surface";
+import { MEDIA_LIBRARY_IN_USE_PAGE_SIZE_OPTIONS } from "@/config/media-library";
 import { useMediaLibraryList } from "@/hooks/use-media-library-list";
 import { countMediaAssetsByKind } from "@/lib/media/list";
 import { CMS_FLEX_CHILD, CMS_SCROLL_REGION } from "@/config/spacing";
@@ -27,6 +29,11 @@ export function MediaLibraryInUseView({ assets: initialAssets }: MediaLibraryInU
     setSearch,
     viewMode,
     setViewMode,
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    pagination,
     hasActiveFilters,
     resetFilters,
     totalCount,
@@ -69,13 +76,27 @@ export function MediaLibraryInUseView({ assets: initialAssets }: MediaLibraryInU
         </div>
 
         {assets.length > 0 ? (
-          <div className={CMS_SCROLL_REGION}>
-            {viewMode === "grid" ? (
-              <MediaLibraryGrid assets={assets} onAssetSelect={handleAssetSelect} />
-            ) : (
-              <MediaLibraryTable assets={assets} onAssetSelect={handleAssetSelect} />
-            )}
-          </div>
+          <>
+            <div className={CMS_SCROLL_REGION}>
+              {viewMode === "grid" ? (
+                <MediaLibraryGrid assets={assets} onAssetSelect={handleAssetSelect} />
+              ) : (
+                <MediaLibraryTable assets={assets} onAssetSelect={handleAssetSelect} />
+              )}
+            </div>
+            <CmsListPagination
+              page={page}
+              pageSize={pageSize}
+              total={pagination.total}
+              totalPages={pagination.totalPages}
+              rangeStart={pagination.rangeStart}
+              rangeEnd={pagination.rangeEnd}
+              itemLabel="files"
+              pageSizeOptions={MEDIA_LIBRARY_IN_USE_PAGE_SIZE_OPTIONS}
+              onPageChange={setPage}
+              onPageSizeChange={setPageSize}
+            />
+          </>
         ) : (
           <div className="flex flex-1 flex-col items-center justify-center p-10 text-center">
             <p className="font-medium text-sm">

@@ -1,4 +1,6 @@
 import type { MediaKind, MediaTypeFilter, MediaUsage } from "@/types/media";
+import { MEDIA_LIBRARY_IN_USE_PAGE_SIZE } from "@/config/media-library";
+import { paginateList } from "@/lib/list/pagination";
 
 export function filterMediaAssetsByType<T extends { kind: MediaKind }>(
   assets: T[],
@@ -36,6 +38,14 @@ export function filterMediaAssetsBySearch<T extends { filename: string; url: str
 
     return haystack.includes(normalized);
   });
+}
+
+export function paginateMediaAssets<T>(
+  assets: T[],
+  page: number,
+  pageSize: number = MEDIA_LIBRARY_IN_USE_PAGE_SIZE,
+) {
+  return paginateList(assets, page, pageSize);
 }
 
 export function filterMediaLibraryFilesBySearch<

@@ -71,6 +71,11 @@ export const MEDIA_LIBRARY_VIEW_MODES: {
 
 export const MEDIA_LIBRARY_DEFAULT_VIEW: MediaViewMode = "grid";
 
+/** In-use assets grid — filter first, then paginate. */
+export const MEDIA_LIBRARY_IN_USE_PAGE_SIZE = 36;
+
+export const MEDIA_LIBRARY_IN_USE_PAGE_SIZE_OPTIONS = [24, 36, 48] as const;
+
 /** Default 5 columns on xl+; scales down on smaller viewports. */
 export const MEDIA_LIBRARY_GRID_CLASS =
   "grid grid-cols-2 gap-3 p-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5";
