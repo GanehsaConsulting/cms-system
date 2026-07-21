@@ -25,6 +25,7 @@ import {
   SEPARATED_SIDEBAR_GUTTER,
   SIDEBAR_COLLAPSED_DOCK_WRAPPER,
 } from "@/config/sidebar";
+import { useCmsPresence } from "@/hooks/use-cms-presence";
 import { cn } from "@/lib/utils";
 import type { CmsProfileFormValues } from "@/lib/validations/cms-user";
 
@@ -52,6 +53,14 @@ const SidebarProfileDialog = dynamic(
   { ssr: false },
 );
 
+const SidebarPresenceDialog = dynamic(
+  () =>
+    import("@/components/cms/sidebar-presence-dialog").then((mod) => ({
+      default: mod.SidebarPresenceDialog,
+    })),
+  { ssr: false },
+);
+
 interface CmsSidebarProps {
   user?: CmsUser;
 }
@@ -64,7 +73,14 @@ export function CmsSidebar({
   const isCollapsed = state === "collapsed";
   const [searchOpen, setSearchOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [presenceOpen, setPresenceOpen] = useState(false);
   const [user, setUser] = useState<CmsUser>(initialUser);
+  const {
+    onlineCount,
+    users: presenceUsers,
+    isLoading: presenceLoading,
+    refresh: refreshPresence,
+  } = useCmsPresence();
 
   useEffect(() => {
     setUser(initialUser);
@@ -77,6 +93,11 @@ export function CmsSidebar({
       email: values.email,
       avatarUrl: values.avatarUrl,
     }));
+  }
+
+  function handleOpenPresence() {
+    setPresenceOpen(true);
+    void refreshPresence();
   }
 
   return (
@@ -94,7 +115,9 @@ export function CmsSidebar({
           <div className={SIDEBAR_COLLAPSED_DOCK_WRAPPER}>
             <SidebarCollapsedDock
               user={user}
+              onlineCount={onlineCount}
               onOpenProfile={() => setProfileOpen(true)}
+              onOpenPresence={handleOpenPresence}
               isProfileOpen={profileOpen}
               onOpenSearch={() => setSearchOpen(true)}
               isSearchOpen={searchOpen}
@@ -122,7 +145,9 @@ export function CmsSidebar({
               <SidebarSeparator className="mx-0 mb-2 bg-(--separator)" />
               <SidebarProfileButton
                 user={user}
+                onlineCount={onlineCount}
                 onOpen={() => setProfileOpen(true)}
+                onOpenPresence={handleOpenPresence}
               />
             </SidebarFooter>
           </>
@@ -140,6 +165,15 @@ export function CmsSidebar({
           open={profileOpen}
           onOpenChange={setProfileOpen}
           onUserUpdate={handleUserUpdate}
+        />
+      ) : null}
+      {presenceOpen ? (
+        <SidebarPresenceDialog
+          open={presenceOpen}
+          onOpenChange={setPresenceOpen}
+          users={presenceUsers}
+          onlineCount={onlineCount}
+          isLoading={presenceLoading}
         />
       ) : null}
     </>

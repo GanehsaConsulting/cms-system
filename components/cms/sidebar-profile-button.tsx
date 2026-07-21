@@ -1,5 +1,6 @@
 "use client";
 
+import { SidebarPresenceTrigger } from "@/components/cms/sidebar-presence-trigger";
 import { SidebarProfileAvatar } from "@/components/cms/sidebar-profile-avatar";
 import type { CmsUser } from "@/config/cms-user";
 import { RADIUS_DEEP } from "@/config/shape";
@@ -8,38 +9,54 @@ import { cn } from "@/lib/utils";
 
 interface SidebarProfileButtonProps {
   user: CmsUser;
+  onlineCount: number;
   onOpen: () => void;
+  onOpenPresence: () => void;
   className?: string;
 }
 
 export function SidebarProfileButton({
   user,
+  onlineCount,
   onOpen,
+  onOpenPresence,
   className,
 }: SidebarProfileButtonProps) {
   return (
-    <button
-      type="button"
-      onClick={onOpen}
+    <div
       className={cn(
         RADIUS_DEEP,
-        "flex w-full items-center gap-2.5 px-2 py-2 text-left transition-colors",
-        "hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
-        "dark:hover:bg-white/8",
+        "flex w-full items-center gap-2.5 px-2 py-2",
         className,
       )}
-      aria-label={`Open profile for ${user.name}`}
     >
-      <SidebarProfileAvatar name={user.name} avatarUrl={user.avatarUrl} size="sm" />
-      <span className="min-w-0 flex-1">
-        <span className="block truncate font-medium text-sm leading-tight">
-          {user.name}
+      <SidebarPresenceTrigger count={onlineCount} onOpen={onOpenPresence}>
+        <SidebarProfileAvatar
+          name={user.name}
+          avatarUrl={user.avatarUrl}
+          size="sm"
+        />
+      </SidebarPresenceTrigger>
+      <button
+        type="button"
+        onClick={onOpen}
+        className={cn(
+          "flex min-w-0 flex-1 items-center gap-2.5 text-left transition-colors",
+          "rounded-lg py-0.5 hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
+          "dark:hover:bg-white/8",
+        )}
+        aria-label={`Open profile for ${user.name}`}
+      >
+        <span className="min-w-0 flex-1">
+          <span className="block truncate font-medium text-sm leading-tight">
+            {user.name}
+          </span>
+          <span className="mt-0.5 block truncate text-muted-foreground text-xs leading-tight">
+            {user.role}
+          </span>
         </span>
-        <span className="mt-0.5 block truncate text-muted-foreground text-xs leading-tight">
-          {user.role}
-        </span>
-      </span>
-      <CaretRightIcon className="size-3 shrink-0 text-muted-foreground opacity-60" />
-    </button>
+        <CaretRightIcon className="size-3 shrink-0 text-muted-foreground opacity-60" />
+      </button>
+    </div>
   );
 }

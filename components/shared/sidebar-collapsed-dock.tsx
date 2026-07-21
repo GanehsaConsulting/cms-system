@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { SidebarPresenceCountBadge } from "@/components/cms/sidebar-presence-count-badge";
 import { SidebarProfileAvatar } from "@/components/cms/sidebar-profile-avatar";
 import { BrandAppLogo } from "@/components/shared/brand-app-logo";
 import { useAppearanceDrawer } from "@/components/shared/appearance-drawer-provider";
@@ -133,7 +134,9 @@ function isDockItemActive(href: string, pathname: string) {
 
 interface SidebarCollapsedDockProps {
   user?: CmsUser;
+  onlineCount?: number;
   onOpenProfile?: () => void;
+  onOpenPresence?: () => void;
   isProfileOpen?: boolean;
   onOpenSearch?: () => void;
   isSearchOpen?: boolean;
@@ -141,7 +144,9 @@ interface SidebarCollapsedDockProps {
 
 export function SidebarCollapsedDock({
   user = CURRENT_CMS_USER,
+  onlineCount = 0,
   onOpenProfile,
+  onOpenPresence,
   isProfileOpen = false,
   onOpenSearch,
   isSearchOpen = false,
@@ -282,17 +287,29 @@ export function SidebarCollapsedDock({
       })}
 
       <SidebarDockItem index={index++}>
-        <DockAppButton
-          label={user.name}
-          isActive={isProfileOpen}
-          onClick={onOpenProfile}
-        >
-          <SidebarProfileAvatar
-            name={user.name}
-            avatarUrl={user.avatarUrl}
-            size="dock"
-          />
-        </DockAppButton>
+        <div className="relative flex items-center justify-center">
+          <DockAppButton
+            label={user.name}
+            isActive={isProfileOpen}
+            onClick={onOpenProfile}
+          >
+            <SidebarProfileAvatar
+              name={user.name}
+              avatarUrl={user.avatarUrl}
+              size="dock"
+            />
+          </DockAppButton>
+          {onOpenPresence ? (
+            <button
+              type="button"
+              onClick={onOpenPresence}
+              className="absolute -top-0.5 -right-0.5 z-10 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+              aria-label={`Team presence, ${onlineCount} online`}
+            >
+              <SidebarPresenceCountBadge count={onlineCount} />
+            </button>
+          ) : null}
+        </div>
       </SidebarDockItem>
     </SidebarDock>
   );
