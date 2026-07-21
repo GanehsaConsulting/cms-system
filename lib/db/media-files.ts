@@ -101,6 +101,7 @@ export async function createMediaLibraryFiles(
   folderId: string,
   uploads: {
     url: string;
+    publicId?: string | null;
     filename: string;
     mimeType: string;
     kind: MediaKind;
@@ -118,21 +119,30 @@ export async function createMediaLibraryFiles(
     throw new Error("No files to upload");
   }
 
+  const expectedFolderPrefix = `cms-system/media/${folderId}`;
   const now = new Date();
   const createdRows = [];
 
   for (const upload of uploads) {
-    const resourceType =
-      upload.kind === "video"
-        ? "video"
-        : upload.kind === "image"
-          ? "image"
-          : "auto";
-    const url = await resolveImageAsset(
-      upload.url,
-      `cms-system/media/${folderId}`,
-      resourceType,
-    );
+    let url = upload.url.trim();
+    let publicId = upload.publicId?.trim() || null;
+
+    const alreadyHosted =
+      url.startsWith("https://") || url.startsWith("http://");
+
+    if (alreadyHosted) {
+      if (publicId && !publicId.startsWith(expectedFolderPrefix)) {
+        throw new Error("Uploaded file is not in the expected Cloudinary folder");
+      }
+    } else {
+      const resourceType =
+        upload.kind === "video"
+          ? "video"
+          : upload.kind === "image"
+            ? "image"
+            : "auto";
+      url = await resolveImageAsset(url, expectedFolderPrefix, resourceType);
+    }
 
     const [row] = await db
       .insert(mediaFiles)
@@ -140,7 +150,7 @@ export async function createMediaLibraryFiles(
         id: crypto.randomUUID(),
         folderId,
         url,
-        publicId: null,
+        publicId,
         filename: upload.filename,
         mimeType: upload.mimeType,
         kind: upload.kind,

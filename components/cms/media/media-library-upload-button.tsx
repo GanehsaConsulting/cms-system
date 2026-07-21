@@ -5,9 +5,21 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { CmsAlert } from "@/components/shared/cms-alert";
 import { MEDIA_LIBRARY_ACCEPT_ATTRIBUTE } from "@/config/media-library";
-import { uploadMediaLibraryFilesAction } from "@/lib/actions/media-files";
+import {
+  createMediaUploadSignaturesAction,
+  saveMediaLibraryUploadsAction,
+} from "@/lib/actions/media-files";
 import { UploadSimpleIcon } from "@/lib/icons";
-import { notifyFromActionResult } from "@/lib/notify/action-toast";
+import { uploadFileToCloudinary } from "@/lib/media/direct-upload";
+import {
+  getMediaUploadMeta,
+  normalizeUploadBatch,
+  validateMediaUploadFile,
+} from "@/lib/media/upload";
+import {
+  notifyError,
+  notifyFromActionResult,
+} from "@/lib/notify/action-toast";
 
 interface MediaLibraryUploadButtonProps {
   folderId: string | null;
@@ -33,25 +45,60 @@ export function MediaLibraryUploadButton({
       return;
     }
 
-    const formData = new FormData();
-    for (const file of Array.from(fileList)) {
-      formData.append("files", file);
+    const batch = normalizeUploadBatch(Array.from(fileList));
+    event.target.value = "";
+
+    for (const file of batch) {
+      const validationError = validateMediaUploadFile(file);
+      if (validationError) {
+        setError(validationError);
+        notifyError(validationError);
+        return;
+      }
     }
 
     setError(null);
     startTransition(async () => {
-      const result = await uploadMediaLibraryFilesAction(folderId, formData);
-      if (!notifyFromActionResult(result, "Files uploaded.")) {
-        if (!result.success) {
-          setError(result.error);
-        }
+      const metas = batch.map(getMediaUploadMeta);
+      const signed = await createMediaUploadSignaturesAction(folderId, metas);
+      if (!signed.success) {
+        setError(signed.error);
+        notifyError(signed.error);
         return;
       }
 
-      router.refresh();
-    });
+      try {
+        const uploads = [];
 
-    event.target.value = "";
+        for (const file of batch) {
+          const meta = getMediaUploadMeta(file);
+          const uploaded = await uploadFileToCloudinary(file, signed.params);
+          uploads.push({
+            ...meta,
+            url: uploaded.url,
+            publicId: uploaded.publicId,
+            sizeBytes: uploaded.sizeBytes,
+          });
+        }
+
+        const result = await saveMediaLibraryUploadsAction(folderId, uploads);
+        if (!notifyFromActionResult(result, "Files uploaded.")) {
+          if (!result.success) {
+            setError(result.error);
+          }
+          return;
+        }
+
+        router.refresh();
+      } catch (uploadError) {
+        const message =
+          uploadError instanceof Error
+            ? uploadError.message
+            : "Failed to upload files";
+        setError(message);
+        notifyError(message);
+      }
+    });
   }
 
   return (

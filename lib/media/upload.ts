@@ -5,9 +5,10 @@ import {
   MEDIA_LIBRARY_MAX_UPLOAD_BATCH,
 } from "@/config/media-library";
 import { classifyMediaUrl } from "@/lib/media/classify";
+import type { MediaUploadMeta } from "@/types/media-upload";
 
-function getFileExtension(file: File): string | null {
-  const extension = file.name.split(".").pop()?.toLowerCase();
+function getFileExtension(filename: string): string | null {
+  const extension = filename.split(".").pop()?.toLowerCase();
   if (!extension) {
     return null;
   }
@@ -20,16 +21,26 @@ function getFileExtension(file: File): string | null {
 }
 
 export function isAcceptedMediaFile(file: File): boolean {
+  return isAcceptedMediaUpload({
+    filename: file.name,
+    mimeType: file.type,
+  });
+}
+
+export function isAcceptedMediaUpload(input: {
+  filename: string;
+  mimeType: string;
+}): boolean {
   if (
-    file.type &&
+    input.mimeType &&
     MEDIA_LIBRARY_ACCEPTED_TYPES.includes(
-      file.type as (typeof MEDIA_LIBRARY_ACCEPTED_TYPES)[number],
+      input.mimeType as (typeof MEDIA_LIBRARY_ACCEPTED_TYPES)[number],
     )
   ) {
     return true;
   }
 
-  return getFileExtension(file) !== null;
+  return getFileExtension(input.filename) !== null;
 }
 
 export function getMediaFileSizeLimitBytes(): number {
@@ -37,48 +48,48 @@ export function getMediaFileSizeLimitBytes(): number {
 }
 
 export function validateMediaUploadFile(file: File): string | null {
-  if (!isAcceptedMediaFile(file)) {
+  return validateMediaUploadMeta({
+    filename: file.name,
+    mimeType: file.type,
+    sizeBytes: file.size,
+  });
+}
+
+/** Server-side mirror of {@link validateMediaUploadFile} for metadata-only checks. */
+export function validateMediaUploadMeta(input: {
+  filename: string;
+  mimeType: string;
+  sizeBytes: number;
+}): string | null {
+  if (
+    !isAcceptedMediaUpload({
+      filename: input.filename,
+      mimeType: input.mimeType,
+    })
+  ) {
     return "File type is not supported.";
   }
 
-  if (file.size > getMediaFileSizeLimitBytes()) {
+  if (input.sizeBytes > getMediaFileSizeLimitBytes()) {
     return `Each file must be at most ${MEDIA_LIBRARY_MAX_FILE_SIZE_MB} MB.`;
   }
 
   return null;
 }
 
-export async function readMediaUploadFile(file: File): Promise<{
-  url: string;
-  filename: string;
-  mimeType: string;
-  kind: ReturnType<typeof classifyMediaUrl>["kind"];
-  sizeBytes: number;
-}> {
-  const validationError = validateMediaUploadFile(file);
-  if (validationError) {
-    throw new Error(validationError);
-  }
-
-  const buffer = Buffer.from(await file.arrayBuffer());
-  const mimeType =
-    file.type ||
-    classifyMediaUrl(file.name).mimeType ||
-    "application/octet-stream";
-
-  // Keep a data URL for the server action — createMediaLibraryFiles uploads to Cloudinary.
-  const url = `data:${mimeType};base64,${buffer.toString("base64")}`;
+export function getMediaUploadMeta(file: File): MediaUploadMeta {
   const classified = classifyMediaUrl(file.name);
+  const mimeType =
+    file.type || classified.mimeType || "application/octet-stream";
 
   return {
-    url,
     filename: file.name.trim() || classified.filename,
     mimeType,
-    kind: classified.kind,
     sizeBytes: file.size,
+    kind: classified.kind,
   };
 }
 
-export function normalizeUploadBatch(files: File[]): File[] {
+export function normalizeUploadBatch<T>(files: T[]): T[] {
   return files.slice(0, MEDIA_LIBRARY_MAX_UPLOAD_BATCH);
 }

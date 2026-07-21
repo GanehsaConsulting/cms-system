@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { createSignedMediaUploadParams } from "@/lib/cloudinary/sign-upload";
 import {
   createMediaLibraryFiles,
   deleteMediaLibraryFile,
@@ -8,10 +9,11 @@ import {
   moveMediaLibraryFiles,
   updateMediaLibraryFile,
 } from "@/lib/db/media-files";
+import { getMediaFolders } from "@/lib/db/media-folders";
+import { getFolderById } from "@/lib/media/folders";
 import {
   normalizeUploadBatch,
-  readMediaUploadFile,
-  validateMediaUploadFile,
+  validateMediaUploadMeta,
 } from "@/lib/media/upload";
 import { requireCmsContentAccess } from "@/lib/users/require-content-access";
 import {
@@ -20,51 +22,114 @@ import {
   mediaLibraryFileRenameSchema,
   parseMediaLibraryFileRenameForm,
 } from "@/lib/validations/media-file";
+import {
+  mediaCloudinaryUploadBatchSchema,
+  mediaUploadMetaBatchSchema,
+} from "@/lib/validations/media-upload";
 
 function revalidateMediaLibrary() {
   revalidatePath("/media");
 }
 
-export async function uploadMediaLibraryFilesAction(
+async function assertMediaFolderExists(folderId: string) {
+  const folders = await getMediaFolders();
+  if (!getFolderById(folders, folderId)) {
+    throw new Error("Folder not found");
+  }
+}
+
+/** Issue signed Cloudinary upload params after validating file metadata. */
+export async function createMediaUploadSignaturesAction(
   folderId: string,
-  formData: FormData,
+  metas: unknown,
 ) {
   const access = await requireCmsContentAccess();
   if (!access.ok) {
     return { success: false as const, error: access.error };
   }
 
-  const entries = formData.getAll("files");
-  const files = entries.filter((entry): entry is File => entry instanceof File);
-
-  if (files.length === 0) {
+  const parsed = mediaUploadMetaBatchSchema.safeParse(metas);
+  if (!parsed.success) {
     return {
       success: false as const,
-      error: "No files selected",
+      error: parsed.error.issues[0]?.message ?? "Invalid upload request",
     };
   }
 
-  const batch = normalizeUploadBatch(files);
+  const batch = normalizeUploadBatch(parsed.data);
+
+  for (const meta of batch) {
+    const validationError = validateMediaUploadMeta(meta);
+    if (validationError) {
+      return { success: false as const, error: validationError };
+    }
+  }
 
   try {
-    const uploads = [];
+    await assertMediaFolderExists(folderId);
+    const params = createSignedMediaUploadParams(folderId);
+    return { success: true as const, params };
+  } catch (error) {
+    return {
+      success: false as const,
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to prepare media upload",
+    };
+  }
+}
 
-    for (const file of batch) {
-      const validationError = validateMediaUploadFile(file);
-      if (validationError) {
-        return { success: false as const, error: validationError };
-      }
+/** Persist Cloudinary upload results into the media library DB. */
+export async function saveMediaLibraryUploadsAction(
+  folderId: string,
+  uploads: unknown,
+) {
+  const access = await requireCmsContentAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
 
-      uploads.push(await readMediaUploadFile(file));
+  const parsed = mediaCloudinaryUploadBatchSchema.safeParse(uploads);
+  if (!parsed.success) {
+    return {
+      success: false as const,
+      error: parsed.error.issues[0]?.message ?? "Invalid upload result",
+    };
+  }
+
+  const batch = normalizeUploadBatch(parsed.data);
+  const expectedFolderPrefix = `cms-system/media/${folderId}`;
+
+  for (const upload of batch) {
+    const validationError = validateMediaUploadMeta(upload);
+    if (validationError) {
+      return { success: false as const, error: validationError };
     }
 
-    const created = await createMediaLibraryFiles(folderId, uploads);
+    if (!upload.publicId.startsWith(expectedFolderPrefix)) {
+      return {
+        success: false as const,
+        error: "Uploaded file is not in the expected Cloudinary folder",
+      };
+    }
+
+    if (!upload.url.includes("res.cloudinary.com")) {
+      return {
+        success: false as const,
+        error: "Uploaded file URL is not a Cloudinary asset",
+      };
+    }
+  }
+
+  try {
+    const created = await createMediaLibraryFiles(folderId, batch);
     revalidateMediaLibrary();
     return { success: true as const, files: created };
   } catch (error) {
     return {
       success: false as const,
-      error: error instanceof Error ? error.message : "Failed to upload files",
+      error: error instanceof Error ? error.message : "Failed to save files",
     };
   }
 }
