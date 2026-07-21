@@ -18,6 +18,7 @@ import {
 import type { CmsUser } from "@/config/cms-user";
 import { RADIUS_INNER } from "@/config/shape";
 import { authClient } from "@/lib/auth/client";
+import { resolveProfileAvatarAction } from "@/lib/actions/profile";
 import { KeyIcon, LogoutIcon, PencilSimpleIcon } from "@/lib/icons";
 import { notifyError, notifySuccess } from "@/lib/notify/action-toast";
 import type {
@@ -67,9 +68,24 @@ export function SidebarProfileDialog({
       // Better Auth separates "update profile" vs "change email".
       // - updateUser: name + image
       // - changeEmail: newEmail
+      // Resolve data-URL avatars to Cloudinary first so the session cookie stays small.
+      let image: string | null = values.avatarUrl || null;
+      if (image?.startsWith("data:")) {
+        const resolved = await resolveProfileAvatarAction(image);
+        if (!resolved.success) {
+          notifyError(resolved.error);
+          setNotice({
+            title: "Could not update profile",
+            description: resolved.error,
+          });
+          return;
+        }
+        image = resolved.url || null;
+      }
+
       const updateResult = await authClient.updateUser({
         name: values.name,
-        image: values.avatarUrl || null,
+        image,
       });
 
       if (updateResult.error) {
@@ -98,7 +114,10 @@ export function SidebarProfileDialog({
         return;
       }
 
-      onUserUpdate(values);
+      onUserUpdate({
+        ...values,
+        avatarUrl: image ?? "",
+      });
       notifySuccess("Profile updated.");
       setNotice({
         title: "Profile updated",

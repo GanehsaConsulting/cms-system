@@ -122,8 +122,6 @@ async function resolveArticleMedia(input: ArticleInput): Promise<{
 }
 
 export async function getArticles(brandId: string): Promise<Article[]> {
-  await promoteDueScheduledArticles();
-
   const rows = await db
     .select({
       article: articles,
@@ -139,12 +137,66 @@ export async function getArticles(brandId: string): Promise<Article[]> {
   );
 }
 
+/**
+ * CMS list/dashboard rows — omits `content` (body HTML is the heavy column).
+ * Preview/edit fetch full rows via getArticleById.
+ */
+export async function getArticlesList(brandId: string): Promise<Article[]> {
+  const rows = await db
+    .select({
+      id: articles.id,
+      brandId: articles.brandId,
+      title: articles.title,
+      slug: articles.slug,
+      excerpt: articles.excerpt,
+      status: articles.status,
+      authorName: articles.authorName,
+      category: articles.category,
+      tags: articles.tags,
+      metaTitle: articles.metaTitle,
+      metaDescription: articles.metaDescription,
+      highlighted: articles.highlighted,
+      gallery: articles.gallery,
+      thumbnail: articles.thumbnail,
+      publishedAt: articles.publishedAt,
+      createdAt: articles.createdAt,
+      updatedAt: articles.updatedAt,
+      authorImage: user.image,
+    })
+    .from(articles)
+    .leftJoin(user, eq(articles.authorId, user.id))
+    .where(eq(articles.brandId, brandId))
+    .orderBy(desc(articles.updatedAt));
+
+  return rows.map((row) =>
+    normalizeArticle({
+      id: row.id,
+      brandId: row.brandId,
+      title: row.title,
+      slug: row.slug,
+      excerpt: row.excerpt,
+      content: "",
+      status: row.status as ArticleStatus,
+      authorName: row.authorName,
+      authorImage: row.authorImage ?? null,
+      category: row.category,
+      tags: Array.isArray(row.tags) ? row.tags : [],
+      metaTitle: row.metaTitle,
+      metaDescription: row.metaDescription,
+      highlighted: row.highlighted,
+      gallery: Array.isArray(row.gallery) ? row.gallery : [],
+      thumbnail: row.thumbnail,
+      publishedAt: toIso(row.publishedAt),
+      createdAt: row.createdAt.toISOString(),
+      updatedAt: row.updatedAt.toISOString(),
+    }),
+  );
+}
+
 /** Dashboard-oriented query — omits heavy columns like `content`. */
 export async function getArticlesSummary(
   brandId: string,
 ): Promise<ArticleSummary[]> {
-  await promoteDueScheduledArticles();
-
   const rows = await db
     .select({
       id: articles.id,
@@ -179,8 +231,6 @@ export async function getArticleById(
   brandId: string,
   id: string,
 ): Promise<Article | null> {
-  await promoteDueScheduledArticles();
-
   const rows = await db
     .select({
       article: articles,
@@ -202,8 +252,6 @@ export async function getArticleBySlug(
   brandId: string,
   slug: string,
 ): Promise<Article | null> {
-  await promoteDueScheduledArticles();
-
   const rows = await db
     .select({
       article: articles,

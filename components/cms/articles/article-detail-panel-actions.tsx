@@ -8,8 +8,11 @@ import { ArticlePreviewDialog } from "@/components/cms/articles/article-preview-
 import { Button } from "@/components/ui/button";
 import { ARTICLE_ACTION_CONFIRMATIONS } from "@/config/article-actions";
 import { useConfirmDialog } from "@/hooks/use-confirm-dialog";
-import { deleteArticleAction } from "@/lib/actions/articles";
-import { runNotifiedAction } from "@/lib/notify/action-toast";
+import {
+  deleteArticleAction,
+  getArticlePreviewAction,
+} from "@/lib/actions/articles";
+import { notifyError, runNotifiedAction } from "@/lib/notify/action-toast";
 import type { ArticlePreviewData } from "@/types/article-preview";
 import type { Article } from "@/types/article";
 
@@ -17,27 +20,32 @@ interface ArticleDetailPanelActionsProps {
   article: Article;
 }
 
-function toPreviewData(article: Article): ArticlePreviewData {
-  return {
-    title: article.title,
-    excerpt: article.excerpt,
-    content: article.content,
-    category: article.category,
-    tags: article.tags,
-    authorName: article.authorName,
-    authorImage: article.authorImage,
-    slug: article.slug,
-    thumbnail: article.thumbnail,
-  };
-}
-
 export function ArticleDetailPanelActions({
   article,
 }: ArticleDetailPanelActionsProps) {
   const router = useRouter();
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [preview, setPreview] = useState<ArticlePreviewData | null>(null);
+  const [previewPublishedAt, setPreviewPublishedAt] = useState(
+    article.publishedAt ?? article.updatedAt,
+  );
   const [isPending, startTransition] = useTransition();
+  const [isPreviewPending, startPreview] = useTransition();
   const { requestConfirm, confirmDialog } = useConfirmDialog(isPending);
+
+  function handlePreview() {
+    startPreview(async () => {
+      const result = await getArticlePreviewAction(article.id);
+      if (!result.success) {
+        notifyError(result.error);
+        return;
+      }
+
+      setPreview(result.preview);
+      setPreviewPublishedAt(result.publishedAt);
+      setPreviewOpen(true);
+    });
+  }
 
   function handleDelete() {
     const confirmation = ARTICLE_ACTION_CONFIRMATIONS.delete(article.title);
@@ -62,34 +70,37 @@ export function ArticleDetailPanelActions({
 
   return (
     <>
-      <div className="flex items-center gap-1.5 border-(--separator) border-t p-3">
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className="gap-1"
-          onClick={() => setPreviewOpen(true)}
-        >
-          <DesktopIcon className="size-3.5" />
-          Preview
-        </Button>
+      <div className="flex items-center justify-between gap-1.5 border-(--separator) border-t p-3">
+        <div className="flex items-center gap-1.5">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="gap-1"
+            disabled={isPreviewPending}
+            onClick={handlePreview}
+          >
+            <DesktopIcon className="size-3.5" />
+            {isPreviewPending ? "Loading..." : "Preview"}
+          </Button>
 
-        <Button
-          variant="outline"
-          size="sm"
-          className="gap-1"
-          nativeButton={false}
-          render={<Link href={`/articles/${article.id}/edit`} />}
-        >
-          <PencilSimpleIcon className="size-3.5" />
-          Edit
-        </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-1"
+            nativeButton={false}
+            render={<Link href={`/articles/${article.id}/edit`} />}
+          >
+            <PencilSimpleIcon className="size-3.5" />
+            Edit
+          </Button>
+        </div>
 
         <Button
           type="button"
           variant="ghost"
           size="sm"
-          className="ml-auto gap-1 text-destructive hover:bg-destructive/10 hover:text-destructive"
+          className="gap-1 text-destructive hover:bg-destructive/10 hover:text-destructive"
           disabled={isPending}
           onClick={handleDelete}
         >
@@ -98,12 +109,14 @@ export function ArticleDetailPanelActions({
         </Button>
       </div>
 
-      <ArticlePreviewDialog
-        open={previewOpen}
-        onOpenChange={setPreviewOpen}
-        article={toPreviewData(article)}
-        publishedAt={article.publishedAt ?? article.updatedAt}
-      />
+      {preview ? (
+        <ArticlePreviewDialog
+          open={previewOpen}
+          onOpenChange={setPreviewOpen}
+          article={preview}
+          publishedAt={previewPublishedAt}
+        />
+      ) : null}
 
       {confirmDialog}
     </>

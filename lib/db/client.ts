@@ -15,7 +15,7 @@ function createClient() {
   return postgres(DATABASE_URL, {
     max: isServerless ? 1 : 10,
     idle_timeout: 20,
-    connect_timeout: 30,
+    connect_timeout: 10,
     // Filess.io / some managed PG hosts reject forced TLS — let the URL control SSL.
     prepare: false,
     connection: {

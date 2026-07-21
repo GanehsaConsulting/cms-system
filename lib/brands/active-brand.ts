@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { cookies } from "next/headers";
 import { ACTIVE_BRAND_COOKIE_KEY } from "@/config/brand-context";
 import { filterBrandsByUserAccess } from "@/lib/brands/access";
@@ -6,7 +7,7 @@ import { getBrands } from "@/lib/db/brands";
 import { getCurrentCmsUser } from "@/lib/users/current";
 import type { Brand } from "@/types/brand";
 
-async function resolveAccessibleActiveBrand(): Promise<Brand | null> {
+const resolveAccessibleActiveBrand = cache(async (): Promise<Brand | null> => {
   const [brands, user] = await Promise.all([getBrands(), getCurrentCmsUser()]);
   const accessibleBrands = filterBrandsByUserAccess(brands, user);
 
@@ -18,7 +19,7 @@ async function resolveAccessibleActiveBrand(): Promise<Brand | null> {
   const storedId = cookieStore.get(ACTIVE_BRAND_COOKIE_KEY)?.value ?? null;
 
   return resolveActiveBrand(accessibleBrands, storedId);
-}
+});
 
 /** Resolves the active brand record for CMS reads and mutations. */
 export async function resolveCmsActiveBrand(): Promise<Brand | null> {

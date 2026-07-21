@@ -1,16 +1,20 @@
+import { cache } from "react";
 import { eq } from "drizzle-orm";
 import { getServerSession, toCmsUser } from "@/lib/auth/session";
 import { db } from "@/lib/db/client";
 import { user as authUserTable } from "@/lib/db/schema";
+import { persistResolvedUserAvatar } from "@/lib/users/avatar";
 import type { User } from "@/types/user";
 
 /**
  * Signed-in CMS user.
- * Authorization fields (role, status, brandAccess, position) are read from
+ * Authorization fields (role, status, brandAccess) are read from
  * Postgres — Better Auth session/cookie cache often omits additionalFields,
  * which would incorrectly demote Super Admin to Viewer.
+ *
+ * Wrapped in React.cache() so layout + page share one lookup per request.
  */
-export async function getCurrentCmsUser(): Promise<User | null> {
+export const getCurrentCmsUser = cache(async (): Promise<User | null> => {
   const session = await getServerSession();
   const sessionUser = session?.user;
   if (!sessionUser?.id) {
@@ -38,5 +42,10 @@ export async function getCurrentCmsUser(): Promise<User | null> {
     return toCmsUser(sessionUser);
   }
 
-  return toCmsUser(row);
-}
+  const image = await persistResolvedUserAvatar(row.id, row.image);
+
+  return toCmsUser({
+    ...row,
+    image,
+  });
+});

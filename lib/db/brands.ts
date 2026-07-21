@@ -1,7 +1,9 @@
+import { cache } from "react";
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { slugify } from "@/lib/articles/slug";
 import { normalizeBrand } from "@/lib/brands/normalize";
+import { resolveImageAsset } from "@/lib/cloudinary/assets";
 import type { Brand, BrandInput } from "@/types/brand";
 
 const DATA_PATH = path.join(process.cwd(), "data/brands.json");
@@ -28,33 +30,33 @@ async function writeBrands(brands: Brand[]): Promise<void> {
   await writeFile(DATA_PATH, `${JSON.stringify(brands, null, 2)}\n`, "utf-8");
 }
 
-function normalizeInput(input: BrandInput): BrandInput {
+async function normalizeInput(input: BrandInput): Promise<BrandInput> {
   return {
     name: input.name.trim(),
     slug: slugify(input.slug.trim() || input.name),
-    logo: input.logo.trim(),
+    logo: await resolveImageAsset(input.logo.trim(), "cms-system/brands"),
     description: input.description.trim(),
     status: input.status === "inactive" ? "inactive" : "active",
     features: input.features,
   };
 }
 
-export async function getBrands(): Promise<Brand[]> {
+export const getBrands = cache(async (): Promise<Brand[]> => {
   const brands = await readBrands();
   return brands.sort(
     (left, right) =>
       new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime(),
   );
-}
+});
 
 export async function getBrandById(id: string): Promise<Brand | null> {
-  const brands = await readBrands();
+  const brands = await getBrands();
   return brands.find((brand) => brand.id === id) ?? null;
 }
 
 export async function createBrand(input: BrandInput): Promise<Brand> {
   const brands = await readBrands();
-  const normalized = normalizeInput(input);
+  const normalized = await normalizeInput(input);
   const id = normalized.slug;
 
   if (!id) {
@@ -89,7 +91,7 @@ export async function updateBrand(
     throw new Error("Brand not found");
   }
 
-  const normalized = normalizeInput(input);
+  const normalized = await normalizeInput(input);
 
   if (
     brands.some(

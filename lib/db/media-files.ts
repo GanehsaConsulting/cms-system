@@ -1,4 +1,4 @@
-import { and, desc, eq, inArray, ne } from "drizzle-orm";
+import { and, count, desc, eq, inArray, ne } from "drizzle-orm";
 import {
   resolveImageAsset,
   tryDeleteCloudinaryUrl,
@@ -47,6 +47,11 @@ export async function getMediaLibraryFiles(): Promise<MediaLibraryFile[]> {
     .from(mediaFiles)
     .orderBy(desc(mediaFiles.updatedAt));
   return rows.map(rowToFile);
+}
+
+export async function getMediaLibraryFilesCount(): Promise<number> {
+  const [row] = await db.select({ value: count() }).from(mediaFiles);
+  return Number(row?.value ?? 0);
 }
 
 export async function getMediaLibraryFilesByFolderId(

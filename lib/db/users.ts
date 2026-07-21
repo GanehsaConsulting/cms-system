@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth/auth";
 import { db } from "@/lib/db/client";
 import { user as authUserTable, account as authAccountTable } from "@/lib/db/schema";
 import { slugify } from "@/lib/articles/slug";
+import { resolveUserAvatarUrl, persistResolvedUserAvatar } from "@/lib/users/avatar";
 import { generateUserPassword } from "@/lib/users/password";
 import { normalizeUser } from "@/lib/users/normalize";
 import type { User, UserInput } from "@/types/user";
@@ -76,6 +77,8 @@ async function getUserByRowId(id: string): Promise<User | null> {
     return null;
   }
 
+  const avatarUrl = await persistResolvedUserAvatar(row.id, row.avatarUrl);
+
   const user: User = normalizeUser({
     id: row.id,
     name: row.name,
@@ -84,7 +87,7 @@ async function getUserByRowId(id: string): Promise<User | null> {
     role: row.role,
     status: row.status,
     brandAccess: parseBrandAccess(row.brandAccess),
-    avatarUrl: row.avatarUrl ?? "",
+    avatarUrl,
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
   });
@@ -108,9 +111,14 @@ export async function getUsers(): Promise<User[]> {
     })
     .from(authUserTable);
 
-  return rows
-    .map((row) =>
-      normalizeUser({
+  const users = await Promise.all(
+    rows.map(async (row) => {
+      const avatarUrl = await persistResolvedUserAvatar(
+        row.id,
+        row.avatarUrl,
+      );
+
+      return normalizeUser({
         id: row.id,
         name: row.name,
         email: row.email,
@@ -118,15 +126,17 @@ export async function getUsers(): Promise<User[]> {
         role: row.role,
         status: row.status,
         brandAccess: parseBrandAccess(row.brandAccess),
-        avatarUrl: row.avatarUrl ?? "",
+        avatarUrl,
         createdAt: row.createdAt.toISOString(),
         updatedAt: row.updatedAt.toISOString(),
-      }),
-    )
-    .sort(
-      (left, right) =>
-        new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime(),
-    );
+      });
+    }),
+  );
+
+  return users.sort(
+    (left, right) =>
+      new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime(),
+  );
 }
 
 export async function getUserById(id: string): Promise<User | null> {
@@ -169,13 +179,14 @@ export async function createUser(
 
   const now = new Date();
   const userId = crypto.randomUUID();
+  const avatarUrl = await resolveUserAvatarUrl(normalized.avatarUrl);
 
   await db.insert(authUserTable).values({
     id: userId,
     name: normalized.name,
     email,
     emailVerified: true,
-    image: normalized.avatarUrl,
+    image: avatarUrl || null,
     username,
     displayUsername: username,
     position: normalized.position,
@@ -225,13 +236,14 @@ export async function updateUser(id: string, input: UserInput): Promise<User> {
   }
 
   const now = new Date();
+  const avatarUrl = await resolveUserAvatarUrl(normalized.avatarUrl);
 
   await db
     .update(authUserTable)
     .set({
       name: normalized.name,
       email,
-      image: normalized.avatarUrl,
+      image: avatarUrl || null,
       position: normalized.position,
       role: normalized.role,
       status: normalized.status,

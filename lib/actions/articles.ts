@@ -18,6 +18,7 @@ import {
   articleFormSchema,
   articleFormToInput,
 } from "@/lib/validations/article";
+import type { ArticlePreviewData } from "@/types/article-preview";
 
 function parseTags(value: FormDataEntryValue | null): string[] {
   if (!value) {
@@ -220,6 +221,50 @@ export async function deleteArticleAction(id: string) {
       success: false as const,
       error:
         error instanceof Error ? error.message : "Failed to delete article",
+    };
+  }
+}
+
+/** Lazy-load body HTML for list preview (list page omits `content`). */
+export async function getArticlePreviewAction(id: string) {
+  const access = await requireCmsContentAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
+  const brand = await requireCmsActiveBrandId();
+  if (!brand.ok) {
+    return { success: false as const, error: brand.error };
+  }
+
+  try {
+    const article = await getArticleById(brand.brandId, id);
+    if (!article) {
+      return { success: false as const, error: "Article not found" };
+    }
+
+    const preview: ArticlePreviewData = {
+      title: article.title,
+      excerpt: article.excerpt,
+      content: article.content,
+      category: article.category,
+      tags: article.tags,
+      authorName: article.authorName,
+      authorImage: article.authorImage,
+      slug: article.slug,
+      thumbnail: article.thumbnail,
+    };
+
+    return {
+      success: true as const,
+      preview,
+      publishedAt: article.publishedAt ?? article.updatedAt,
+    };
+  } catch (error) {
+    return {
+      success: false as const,
+      error:
+        error instanceof Error ? error.message : "Failed to load preview",
     };
   }
 }

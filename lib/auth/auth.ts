@@ -70,8 +70,10 @@ export const auth = betterAuth({
     cookieCache: {
       enabled: true,
       maxAge: 5 * 60,
+      strategy: "compact",
       // Bump when CMS auth fields change so stale cookie cache is dropped.
-      version: "cms-user-fields-v1",
+      // v2: avatars must be URLs (not base64) so cookie cache fits.
+      version: "cms-user-fields-v2",
     },
   },
   rateLimit: {
