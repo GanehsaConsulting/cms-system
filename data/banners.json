@@ -11,5 +11,32 @@
     "isActive": true,
     "createdAt": "2026-07-20T17:07:32.546Z",
     "updatedAt": "2026-07-20T17:07:32.546Z"
+  },
+  {
+    "id": "1e7ae8a4-273c-4a24-860d-2ab580d3e109",
+    "brandId": "ganesha-consulting",
+    "name": "Buat PT Diskon Website 1 Juta",
+    "key": "promo-20",
+    "images": [
+      "https://res.cloudinary.com/dzrh2ogbn/image/upload/v1773021624/ganesha_cms_promos/mobile/3177703e0c087667b3d5064d069e6cbe.jpg"
+    ],
+    "redirectUrl": "https://www.ganeshaconsulting.co.id/pendirian-pt",
+    "isActive": true,
+    "createdAt": "2026-07-21T03:02:48.537Z",
+    "updatedAt": "2026-07-21T03:02:48.537Z"
+  },
+  {
+    "id": "12c66155-b02d-4bb5-a8bb-18a3cef3242e",
+    "brandId": "ganesha-consulting",
+    "name": "Perubahan PT",
+    "key": "promo-21",
+    "images": [
+      "https://res.cloudinary.com/dzrh2ogbn/image/upload/v1781259904/ganesha_cms_promos/desktop/995cc83d8535c023837fca09dec971db.jpg",
+      "https://res.cloudinary.com/dzrh2ogbn/image/upload/v1781259904/ganesha_cms_promos/mobile/995cc83d8535c023837fca09dec971db.jpg"
+    ],
+    "redirectUrl": "https://api.whatsapp.com/send?phone=628887127000",
+    "isActive": true,
+    "createdAt": "2026-07-21T03:02:48.537Z",
+    "updatedAt": "2026-07-21T03:02:48.537Z"
   }
 ]

@@ -40,5 +40,82 @@
     "label": "Website",
     "createdAt": "2026-07-20T17:07:32.501Z",
     "updatedAt": "2026-07-20T17:07:32.501Z"
+  },
+  {
+    "id": "pendirian-pt",
+    "brandId": "ganesha-consulting",
+    "label": "Pendirian PT",
+    "createdAt": "2026-07-21T03:02:48.329Z",
+    "updatedAt": "2026-07-21T03:02:48.329Z"
+  },
+  {
+    "id": "pendirian-cv",
+    "brandId": "ganesha-consulting",
+    "label": "Pendirian CV",
+    "createdAt": "2026-07-21T03:02:48.331Z",
+    "updatedAt": "2026-07-21T03:02:48.331Z"
+  },
+  {
+    "id": "website-development",
+    "brandId": "ganesha-consulting",
+    "label": "Website Development",
+    "createdAt": "2026-07-21T03:02:48.332Z",
+    "updatedAt": "2026-07-21T03:02:48.332Z"
+  },
+  {
+    "id": "pendirian-badan-usaha",
+    "brandId": "ganesha-consulting",
+    "label": "Pendirian Badan Usaha",
+    "createdAt": "2026-07-21T03:02:48.333Z",
+    "updatedAt": "2026-07-21T03:02:48.333Z"
+  },
+  {
+    "id": "hak-kekayaan-intelektual",
+    "brandId": "ganesha-consulting",
+    "label": "Hak Kekayaan Intelektual",
+    "createdAt": "2026-07-21T03:02:48.333Z",
+    "updatedAt": "2026-07-21T03:02:48.333Z"
+  },
+  {
+    "id": "perizinan-tambahan",
+    "brandId": "ganesha-consulting",
+    "label": "Perizinan Tambahan",
+    "createdAt": "2026-07-21T03:02:48.334Z",
+    "updatedAt": "2026-07-21T03:02:48.334Z"
+  },
+  {
+    "id": "social-media-management",
+    "brandId": "ganesha-consulting",
+    "label": "Social Media Management",
+    "createdAt": "2026-07-21T03:02:48.334Z",
+    "updatedAt": "2026-07-21T03:02:48.334Z"
+  },
+  {
+    "id": "konsultan-pajak",
+    "brandId": "ganesha-consulting",
+    "label": "konsultan pajak",
+    "createdAt": "2026-07-21T03:02:48.350Z",
+    "updatedAt": "2026-07-21T03:02:48.350Z"
+  },
+  {
+    "id": "pelayanan-akuntansi",
+    "brandId": "ganesha-consulting",
+    "label": "Pelayanan Akuntansi",
+    "createdAt": "2026-07-21T03:02:48.352Z",
+    "updatedAt": "2026-07-21T03:02:48.352Z"
+  },
+  {
+    "id": "virtual-office",
+    "brandId": "ganesha-consulting",
+    "label": "Virtual Office",
+    "createdAt": "2026-07-21T03:02:48.353Z",
+    "updatedAt": "2026-07-21T03:02:48.353Z"
+  },
+  {
+    "id": "go-space",
+    "brandId": "ganesha-consulting",
+    "label": "Go Space",
+    "createdAt": "2026-07-21T03:02:48.354Z",
+    "updatedAt": "2026-07-21T03:02:48.354Z"
   }
 ]
