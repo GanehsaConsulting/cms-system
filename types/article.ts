@@ -26,6 +26,21 @@ export interface Article {
   updatedAt: string;
 }
 
+/** Lightweight article row for dashboard / list summaries (no body content). */
+export type ArticleSummary = Pick<
+  Article,
+  | "id"
+  | "title"
+  | "slug"
+  | "status"
+  | "thumbnail"
+  | "authorName"
+  | "updatedAt"
+  | "publishedAt"
+> & {
+  authorImage?: string | null;
+};
+
 export interface ArticleInput {
   title: string;
   slug: string;

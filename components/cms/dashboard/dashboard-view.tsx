@@ -32,13 +32,13 @@ import { getDraftsNeedingAttention } from "@/lib/dashboard/drafts";
 import { buildDashboardRecentItems } from "@/lib/dashboard/recent";
 import { FileTextIcon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
-import type { Article } from "@/types/article";
+import type { ArticleSummary } from "@/types/article";
 import type { Banner } from "@/types/banner";
 import type { Client } from "@/types/client";
 import type { Price } from "@/types/price";
 
 interface DashboardViewProps {
-  articles: Article[];
+  articles: ArticleSummary[];
   clients: Client[];
   prices: Price[];
   banners: Banner[];

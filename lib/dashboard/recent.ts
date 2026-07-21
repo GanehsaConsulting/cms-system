@@ -1,4 +1,4 @@
-import type { Article } from "@/types/article";
+import type { ArticleSummary } from "@/types/article";
 import type { Banner } from "@/types/banner";
 import type { Client } from "@/types/client";
 import type { LocalizedText } from "@/types/locale";
@@ -27,7 +27,7 @@ function pickLocalized(text: LocalizedText): string {
 }
 
 export function buildDashboardRecentItems(input: {
-  articles: Article[];
+  articles: ArticleSummary[];
   clients: Client[];
   prices: Price[];
   banners: Banner[];

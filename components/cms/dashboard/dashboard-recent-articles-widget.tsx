@@ -5,10 +5,10 @@ import { DASHBOARD_RECENT_WIDGET_HEIGHT } from "@/config/dashboard";
 import { statusLabels } from "@/lib/articles/list";
 import { formatClientDateParts } from "@/lib/clients/list";
 import { cn } from "@/lib/utils";
-import type { Article } from "@/types/article";
+import type { ArticleSummary } from "@/types/article";
 
 interface DashboardRecentArticlesWidgetProps {
-  articles: Article[];
+  articles: ArticleSummary[];
   className?: string;
 }
 

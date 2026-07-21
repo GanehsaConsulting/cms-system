@@ -1,10 +1,10 @@
-import type { Article } from "@/types/article";
+import type { ArticleSummary } from "@/types/article";
 
 /** Drafts that still need work — oldest updates first. */
 export function getDraftsNeedingAttention(
-  articles: Article[],
+  articles: ArticleSummary[],
   limit: number,
-): Article[] {
+): ArticleSummary[] {
   return articles
     .filter((article) => article.status === "draft")
     .sort(

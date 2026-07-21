@@ -4,7 +4,12 @@ import { normalizeArticle } from "@/lib/articles/list";
 import { resolveImageAsset, resolveImageAssets } from "@/lib/cloudinary/assets";
 import { db } from "@/lib/db/client";
 import { articles, user } from "@/lib/db/schema";
-import type { Article, ArticleInput, ArticleStatus } from "@/types/article";
+import type {
+  Article,
+  ArticleInput,
+  ArticleStatus,
+  ArticleSummary,
+} from "@/types/article";
 
 function toIso(value: Date | null | undefined): string | null {
   if (!value) {
@@ -132,6 +137,42 @@ export async function getArticles(brandId: string): Promise<Article[]> {
   return rows.map(({ article, authorImage }) =>
     rowToArticle(article, authorImage ?? null),
   );
+}
+
+/** Dashboard-oriented query — omits heavy columns like `content`. */
+export async function getArticlesSummary(
+  brandId: string,
+): Promise<ArticleSummary[]> {
+  await promoteDueScheduledArticles();
+
+  const rows = await db
+    .select({
+      id: articles.id,
+      title: articles.title,
+      slug: articles.slug,
+      status: articles.status,
+      thumbnail: articles.thumbnail,
+      authorName: articles.authorName,
+      updatedAt: articles.updatedAt,
+      publishedAt: articles.publishedAt,
+      authorImage: user.image,
+    })
+    .from(articles)
+    .leftJoin(user, eq(articles.authorId, user.id))
+    .where(eq(articles.brandId, brandId))
+    .orderBy(desc(articles.updatedAt));
+
+  return rows.map((row) => ({
+    id: row.id,
+    title: row.title,
+    slug: row.slug,
+    status: row.status as ArticleStatus,
+    thumbnail: row.thumbnail,
+    authorName: row.authorName,
+    authorImage: row.authorImage ?? null,
+    publishedAt: toIso(row.publishedAt),
+    updatedAt: row.updatedAt.toISOString(),
+  }));
 }
 
 export async function getArticleById(

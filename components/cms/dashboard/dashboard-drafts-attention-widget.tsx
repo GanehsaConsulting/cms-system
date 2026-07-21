@@ -6,11 +6,11 @@ import {
   formatDaysSinceUpdate,
   getDaysSinceUpdate,
 } from "@/lib/dashboard/drafts";
-import type { Article } from "@/types/article";
+import type { ArticleSummary } from "@/types/article";
 import { cn } from "@/lib/utils";
 
 interface DashboardDraftsAttentionWidgetProps {
-  drafts: Article[];
+  drafts: ArticleSummary[];
   className?: string;
 }
 
