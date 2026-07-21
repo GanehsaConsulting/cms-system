@@ -26,7 +26,7 @@ export function SidebarProfileButton({
     <div
       className={cn(
         RADIUS_DEEP,
-        "flex w-full items-center gap-2.5 px-2 py-2",
+        "flex w-full items-center gap-2.5 overflow-visible px-2 py-2",
         className,
       )}
     >
@@ -35,6 +35,7 @@ export function SidebarProfileButton({
           name={user.name}
           avatarUrl={user.avatarUrl}
           size="sm"
+          className="size-full"
         />
       </SidebarPresenceTrigger>
       <button

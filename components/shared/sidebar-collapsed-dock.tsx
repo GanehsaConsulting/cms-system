@@ -287,7 +287,7 @@ export function SidebarCollapsedDock({
       })}
 
       <SidebarDockItem index={index++}>
-        <div className="relative flex items-center justify-center">
+        <div className="relative size-9 overflow-visible">
           <DockAppButton
             label={user.name}
             isActive={isProfileOpen}
@@ -302,8 +302,16 @@ export function SidebarCollapsedDock({
           {onOpenPresence ? (
             <button
               type="button"
-              onClick={onOpenPresence}
-              className="absolute -top-0.5 -right-0.5 z-10 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                onOpenPresence();
+              }}
+              className={cn(
+                "absolute top-0 right-0 z-30 flex size-5 translate-x-1/4 -translate-y-1/4",
+                "items-center justify-center rounded-full",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
+              )}
               aria-label={`Team presence, ${onlineCount} online`}
             >
               <SidebarPresenceCountBadge count={onlineCount} />

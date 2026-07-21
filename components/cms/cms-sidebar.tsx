@@ -141,7 +141,7 @@ export function CmsSidebar({
               <SidebarNav />
             </SidebarContent>
 
-            <SidebarFooter className="gap-0 p-0">
+            <SidebarFooter className="gap-0 overflow-visible p-0">
               <SidebarSeparator className="mx-0 mb-2 bg-(--separator)" />
               <SidebarProfileButton
                 user={user}
