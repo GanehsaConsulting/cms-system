@@ -1,4 +1,5 @@
 import { ClientsWorksPageHeader } from "@/components/cms/clients/clients-works-page-header";
+import { CmsPageHeaderActionsProvider } from "@/components/shared/cms-page-header-actions";
 import { CmsSectionLayout } from "@/components/shared/cms-section-layout";
 
 export default function ClientsLayout({
@@ -7,8 +8,10 @@ export default function ClientsLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <CmsSectionLayout header={<ClientsWorksPageHeader />}>
-      {children}
-    </CmsSectionLayout>
+    <CmsPageHeaderActionsProvider>
+      <CmsSectionLayout header={<ClientsWorksPageHeader />}>
+        {children}
+      </CmsSectionLayout>
+    </CmsPageHeaderActionsProvider>
   );
 }

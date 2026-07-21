@@ -16,31 +16,45 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { NOTIFICATION_CENTER_SURFACE } from "@/config/notification-center";
-import {
-  MOCK_NOTIFICATIONS,
-  NOTIFICATION_CENTER_VISIBLE_COUNT,
-} from "@/config/notifications";
-import { XIcon } from "@/lib/icons";
+import { NOTIFICATION_CENTER_VISIBLE_COUNT } from "@/config/notifications";
+import { CheckIcon, XIcon } from "@/lib/icons";
 import type { CmsNotification } from "@/types/notification";
 
 export function NotificationCenterDrawer() {
   const router = useRouter();
-  const { open, setOpen } = useNotificationCenter();
+  const {
+    open,
+    setOpen,
+    notifications,
+    unreadCount,
+    markRead,
+    markUnread,
+    markAllRead,
+  } = useNotificationCenter();
   const [expanded, setExpanded] = useState(false);
 
   const visible = expanded
-    ? MOCK_NOTIFICATIONS
-    : MOCK_NOTIFICATIONS.slice(0, NOTIFICATION_CENTER_VISIBLE_COUNT);
+    ? notifications
+    : notifications.slice(0, NOTIFICATION_CENTER_VISIBLE_COUNT);
   const remaining = Math.max(
     0,
-    MOCK_NOTIFICATIONS.length - NOTIFICATION_CENTER_VISIBLE_COUNT,
+    notifications.length - NOTIFICATION_CENTER_VISIBLE_COUNT,
   );
 
   function handleSelect(notification: CmsNotification) {
+    markRead(notification.id);
     if (notification.href) {
       setOpen(false);
       router.push(notification.href);
     }
+  }
+
+  function handleToggleRead(notification: CmsNotification) {
+    if (notification.read) {
+      markUnread(notification.id);
+      return;
+    }
+    markRead(notification.id);
   }
 
   return (
@@ -61,31 +75,53 @@ export function NotificationCenterDrawer() {
         <SheetHeader className="flex-row items-center justify-between gap-3 space-y-0 px-5 py-4 text-left">
           <div className="min-w-0">
             <SheetTitle className="text-[15px]">Notification Center</SheetTitle>
-            <SheetDescription className="sr-only">
-              Recent CMS activity and widgets.
+            <SheetDescription className="text-xs">
+              {unreadCount > 0
+                ? `${unreadCount} unread`
+                : "You're all caught up"}
             </SheetDescription>
           </div>
-          <SheetClose
-            render={
+          <div className="flex shrink-0 items-center gap-1.5">
+            {unreadCount > 0 ? (
               <Button
                 type="button"
                 variant="secondary"
-                size="icon-sm"
-                className="size-8 shrink-0 rounded-full bg-white/45 dark:bg-secondary"
-                aria-label="Close notification center"
-              />
-            }
-          >
-            <XIcon className="size-3.5" />
-          </SheetClose>
+                size="sm"
+                className="h-8 gap-1.5 rounded-full bg-white/45 px-3 text-xs dark:bg-secondary"
+                onClick={markAllRead}
+              >
+                <CheckIcon className="size-3.5" />
+                Read all
+              </Button>
+            ) : null}
+            <SheetClose
+              render={
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="icon-sm"
+                  className="size-8 shrink-0 rounded-full bg-white/45 dark:bg-secondary"
+                  aria-label="Close notification center"
+                />
+              }
+            >
+              <XIcon className="size-3.5" />
+            </SheetClose>
+          </div>
         </SheetHeader>
 
-        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 pb-4">
-          <section aria-label="Notifications" className="space-y-2">
-            <NotificationCenterList
-              notifications={visible}
-              onSelect={handleSelect}
-            />
+        <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden px-4 pb-4">
+          <section
+            aria-label="Notifications"
+            className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden"
+          >
+            <div className="min-h-0 flex-1 overflow-y-auto pr-0.5">
+              <NotificationCenterList
+                notifications={visible}
+                onSelect={handleSelect}
+                onToggleRead={handleToggleRead}
+              />
+            </div>
             <NotificationCenterMoreButton
               remainingCount={remaining}
               expanded={expanded}

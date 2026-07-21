@@ -3,14 +3,10 @@ import { GlassSurface } from "@/components/shared/glass-surface";
 import { CMS_FLEX_CHILD } from "@/config/spacing";
 import { cn } from "@/lib/utils";
 
-/** Settings table/docs body — title/tabs stay in the settings layout. */
+/** Settings table/docs body — title/tabs/filters stay in the settings layout. */
 export function CmsSettingsBodySkeleton() {
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-      <div className="mb-4 flex shrink-0 flex-wrap justify-end gap-2">
-        <Skeleton className="h-8 w-40" />
-        <Skeleton className="h-8 w-28" />
-      </div>
       <GlassSurface
         className={cn("flex min-h-0 flex-col overflow-hidden", CMS_FLEX_CHILD)}
       >

@@ -1,3 +1,4 @@
+import { CmsPageHeaderActionsSlot } from "@/components/shared/cms-page-header-actions";
 import {
   MEDIA_LIBRARY_PAGE_DESCRIPTION,
   MEDIA_LIBRARY_PAGE_TITLE,
@@ -19,7 +20,7 @@ export function MediaLibraryPageHeader({ actions }: MediaLibraryPageHeaderProps)
             {MEDIA_LIBRARY_PAGE_DESCRIPTION}
           </p>
         </div>
-        {actions ? <div className="shrink-0">{actions}</div> : null}
+        {actions ?? <CmsPageHeaderActionsSlot />}
       </div>
     </header>
   );

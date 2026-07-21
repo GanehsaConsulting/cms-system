@@ -13,6 +13,7 @@ export const MOCK_NOTIFICATIONS: CmsNotification[] = [
     timeLabel: "1m ago",
     href: "/articles",
     tone: "articles",
+    read: false,
   },
   {
     id: "n2",
@@ -22,6 +23,7 @@ export const MOCK_NOTIFICATIONS: CmsNotification[] = [
     timeLabel: "12m ago",
     href: "/prices",
     tone: "prices",
+    read: false,
   },
   {
     id: "n3",
@@ -31,6 +33,7 @@ export const MOCK_NOTIFICATIONS: CmsNotification[] = [
     timeLabel: "1h ago",
     href: "/clients",
     tone: "clients",
+    read: false,
   },
   {
     id: "n4",
@@ -39,6 +42,7 @@ export const MOCK_NOTIFICATIONS: CmsNotification[] = [
     body: "Wallpaper and glass settings synced.",
     timeLabel: "Yesterday",
     tone: "settings",
+    read: true,
   },
   {
     id: "n5",
@@ -48,6 +52,7 @@ export const MOCK_NOTIFICATIONS: CmsNotification[] = [
     timeLabel: "Yesterday",
     href: "/articles",
     tone: "articles",
+    read: true,
   },
   {
     id: "n6",
@@ -57,5 +62,6 @@ export const MOCK_NOTIFICATIONS: CmsNotification[] = [
     timeLabel: "2d ago",
     href: "/prices",
     tone: "prices",
+    read: true,
   },
 ];

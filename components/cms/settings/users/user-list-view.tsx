@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { UserFormDialog } from "@/components/cms/settings/users/user-form-dialog";
 import { UserListEmptyState } from "@/components/cms/settings/users/user-list-empty-state";
 import { UserListTable } from "@/components/cms/settings/users/user-list-table";
 import { UserListToolbar } from "@/components/cms/settings/users/user-list-toolbar";
+import { CmsPageHeaderActions } from "@/components/shared/cms-page-header-actions";
 import { GlassSurface } from "@/components/shared/glass-surface";
 import {
   CMS_FLEX_CHILD,
@@ -71,42 +72,35 @@ export function UserListView({
     });
   }
 
-  const toolbar = (
-    <UserListToolbar
-      search={search}
-      statusFilter={statusFilter}
-      roleFilter={roleFilter}
-      sort={sort}
-      hasActiveFilters={hasActiveFilters}
-      onSearchChange={setSearch}
-      onStatusFilterChange={setStatusFilter}
-      onRoleFilterChange={setRoleFilter}
-      onSortChange={setSort}
-      onResetFilters={resetFilters}
-      onCreate={openCreate}
-    />
+  const headerActions = useMemo(
+    () => (
+      <UserListToolbar
+        search={search}
+        statusFilter={statusFilter}
+        roleFilter={roleFilter}
+        sort={sort}
+        hasActiveFilters={hasActiveFilters}
+        onSearchChange={setSearch}
+        onStatusFilterChange={setStatusFilter}
+        onRoleFilterChange={setRoleFilter}
+        onSortChange={setSort}
+        onResetFilters={resetFilters}
+        onCreate={openCreate}
+      />
+    ),
+    [
+      hasActiveFilters,
+      resetFilters,
+      roleFilter,
+      search,
+      setRoleFilter,
+      setSearch,
+      setSort,
+      setStatusFilter,
+      sort,
+      statusFilter,
+    ],
   );
-
-  if (users.length === 0) {
-    return (
-      <div
-        className={cn(
-          "flex min-h-0 flex-1 flex-col overflow-hidden",
-          SECTION_BODY_PADDING,
-        )}
-      >
-        <div className="mb-4 flex shrink-0 justify-end">{toolbar}</div>
-        <UserListEmptyState onCreate={openCreate} />
-        <UserFormDialog
-          open={dialogOpen}
-          onOpenChange={setDialogOpen}
-          user={editingUser}
-          brands={brands}
-          onSaved={handleSaved}
-        />
-      </div>
-    );
-  }
 
   return (
     <div
@@ -115,38 +109,45 @@ export function UserListView({
         SECTION_BODY_PADDING,
       )}
     >
-      <div className="mb-4 flex shrink-0 justify-end">{toolbar}</div>
+      <CmsPageHeaderActions>{headerActions}</CmsPageHeaderActions>
 
-      <GlassSurface
-        className={cn("flex min-h-0 flex-col overflow-hidden", CMS_FLEX_CHILD)}
-      >
-        <div className="flex shrink-0 items-center justify-between gap-2 border-(--separator) border-b px-4 py-3">
-          <div>
-            <h2 className="font-semibold text-sm">Team members</h2>
-            <p className="text-muted-foreground text-xs">
-              {filteredCount} of {users.length} user
-              {users.length === 1 ? "" : "s"} · manage roles and brand access
-            </p>
+      {users.length === 0 ? (
+        <UserListEmptyState onCreate={openCreate} />
+      ) : (
+        <GlassSurface
+          className={cn(
+            "flex min-h-0 flex-col overflow-hidden",
+            CMS_FLEX_CHILD,
+          )}
+        >
+          <div className="flex shrink-0 items-center justify-between gap-2 border-(--separator) border-b px-4 py-3">
+            <div>
+              <h2 className="font-semibold text-sm">Team members</h2>
+              <p className="text-muted-foreground text-xs">
+                {filteredCount} of {users.length} user
+                {users.length === 1 ? "" : "s"} · manage roles and brand access
+              </p>
+            </div>
           </div>
-        </div>
 
-        {visibleUsers.length > 0 ? (
-          <div className={CMS_SCROLL_REGION}>
-            <UserListTable
-              users={visibleUsers}
-              brands={brands}
-              onEdit={openEdit}
-            />
-          </div>
-        ) : (
-          <div className="flex flex-1 flex-col items-center justify-center p-10 text-center">
-            <p className="font-medium text-sm">No users found</p>
-            <p className="mt-1 text-muted-foreground text-sm">
-              Try changing filters or search keywords.
-            </p>
-          </div>
-        )}
-      </GlassSurface>
+          {visibleUsers.length > 0 ? (
+            <div className={CMS_SCROLL_REGION}>
+              <UserListTable
+                users={visibleUsers}
+                brands={brands}
+                onEdit={openEdit}
+              />
+            </div>
+          ) : (
+            <div className="flex flex-1 flex-col items-center justify-center p-10 text-center">
+              <p className="font-medium text-sm">No users found</p>
+              <p className="mt-1 text-muted-foreground text-sm">
+                Try changing filters or search keywords.
+              </p>
+            </div>
+          )}
+        </GlassSurface>
+      )}
 
       <UserFormDialog
         open={dialogOpen}

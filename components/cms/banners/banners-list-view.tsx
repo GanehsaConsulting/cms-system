@@ -6,6 +6,7 @@ import { BannerFormDialog } from "@/components/cms/banners/banner-form-dialog";
 import { BannersGlobalPanel } from "@/components/cms/banners/banners-global-panel";
 import { BannersListToolbar } from "@/components/cms/banners/banners-list-toolbar";
 import { BannersPlacementsSection } from "@/components/cms/banners/banners-placements-section";
+import { CmsPageHeaderActions } from "@/components/shared/cms-page-header-actions";
 import type { BannerPlacement } from "@/config/banner-placements";
 import { CMS_FLEX_CHILD } from "@/config/spacing";
 import { useBannersList } from "@/hooks/use-banners-list";
@@ -82,21 +83,35 @@ export function BannersListView({ banners }: BannersListViewProps) {
     router.refresh();
   }
 
+  const headerActions = useMemo(
+    () => (
+      <BannersListToolbar
+        search={search}
+        statusFilter={statusFilter}
+        sort={sort}
+        hasActiveFilters={hasActiveFilters}
+        onSearchChange={setSearch}
+        onStatusFilterChange={setStatusFilter}
+        onSortChange={setSort}
+        onResetFilters={resetFilters}
+        onCreate={() => openCreate()}
+      />
+    ),
+    [
+      hasActiveFilters,
+      resetFilters,
+      search,
+      setSearch,
+      setSort,
+      setStatusFilter,
+      sort,
+      statusFilter,
+    ],
+  );
+
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-      <div className="mb-4 flex shrink-0 justify-end">
-        <BannersListToolbar
-          search={search}
-          statusFilter={statusFilter}
-          sort={sort}
-          hasActiveFilters={hasActiveFilters}
-          onSearchChange={setSearch}
-          onStatusFilterChange={setStatusFilter}
-          onSortChange={setSort}
-          onResetFilters={resetFilters}
-          onCreate={() => openCreate()}
-        />
-      </div>
+      <CmsPageHeaderActions>{headerActions}</CmsPageHeaderActions>
 
       <div
         className={cn(

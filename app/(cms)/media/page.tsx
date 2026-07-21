@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { MediaLibraryPageHeader } from "@/components/cms/media/media-library-page-header";
 import { MediaLibraryView } from "@/components/cms/media/media-library-view";
+import { CmsPageHeaderActionsProvider } from "@/components/shared/cms-page-header-actions";
 import { CmsMediaBodySkeleton } from "@/components/skeletons/cms-media-body-skeleton";
 import { CmsSectionLayout } from "@/components/shared/cms-section-layout";
 import { SECTION_BODY_PADDING } from "@/config/spacing";
@@ -12,17 +13,19 @@ import { cn } from "@/lib/utils";
 
 export default function MediaLibraryPage() {
   return (
-    <CmsSectionLayout header={<MediaLibraryPageHeader />}>
-      <Suspense
-        fallback={
-          <BodyFrame>
-            <CmsMediaBodySkeleton />
-          </BodyFrame>
-        }
-      >
-        <MediaLibraryPageContent />
-      </Suspense>
-    </CmsSectionLayout>
+    <CmsPageHeaderActionsProvider>
+      <CmsSectionLayout header={<MediaLibraryPageHeader />}>
+        <Suspense
+          fallback={
+            <BodyFrame>
+              <CmsMediaBodySkeleton />
+            </BodyFrame>
+          }
+        >
+          <MediaLibraryPageContent />
+        </Suspense>
+      </CmsSectionLayout>
+    </CmsPageHeaderActionsProvider>
   );
 }
 

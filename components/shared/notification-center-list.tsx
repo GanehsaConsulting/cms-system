@@ -6,11 +6,13 @@ import type { CmsNotification } from "@/types/notification";
 interface NotificationCenterListProps {
   notifications: CmsNotification[];
   onSelect: (notification: CmsNotification) => void;
+  onToggleRead: (notification: CmsNotification) => void;
 }
 
 export function NotificationCenterList({
   notifications,
   onSelect,
+  onToggleRead,
 }: NotificationCenterListProps) {
   if (notifications.length === 0) {
     return (
@@ -27,7 +29,11 @@ export function NotificationCenterList({
     <ul className="space-y-2">
       {notifications.map((notification) => (
         <li key={notification.id}>
-          <NotificationCard notification={notification} onSelect={onSelect} />
+          <NotificationCard
+            notification={notification}
+            onSelect={onSelect}
+            onToggleRead={onToggleRead}
+          />
         </li>
       ))}
     </ul>

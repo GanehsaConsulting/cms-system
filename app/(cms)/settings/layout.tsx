@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { SettingsPageHeader } from "@/components/cms/settings/settings-page-header";
+import { CmsPageHeaderActionsProvider } from "@/components/shared/cms-page-header-actions";
 import { CmsSectionLayout } from "@/components/shared/cms-section-layout";
 import { getCurrentCmsUser } from "@/lib/users/current";
 import { canAccessCmsSettings } from "@/lib/users/permissions";
@@ -16,8 +17,10 @@ export default async function SettingsLayout({
   }
 
   return (
-    <CmsSectionLayout header={<SettingsPageHeader />}>
-      {children}
-    </CmsSectionLayout>
+    <CmsPageHeaderActionsProvider>
+      <CmsSectionLayout header={<SettingsPageHeader />}>
+        {children}
+      </CmsSectionLayout>
+    </CmsPageHeaderActionsProvider>
   );
 }

@@ -1,4 +1,5 @@
 import { ClientsWorksTabs } from "@/components/cms/clients/clients-works-tabs";
+import { CmsPageHeaderActionsSlot } from "@/components/shared/cms-page-header-actions";
 import {
   CLIENTS_WORKS_PAGE_DESCRIPTION,
   CLIENTS_WORKS_PAGE_TITLE,
@@ -6,6 +7,7 @@ import {
 
 interface ClientsWorksPageHeaderProps {
   description?: string;
+  /** Optional inline actions when not using the shared header actions slot. */
   actions?: React.ReactNode;
 }
 
@@ -22,7 +24,7 @@ export function ClientsWorksPageHeader({
           </h1>
           <p className="mt-1 text-muted-foreground text-sm">{description}</p>
         </div>
-        {actions ? <div className="shrink-0">{actions}</div> : null}
+        {actions ?? <CmsPageHeaderActionsSlot />}
       </div>
       <ClientsWorksTabs />
     </header>

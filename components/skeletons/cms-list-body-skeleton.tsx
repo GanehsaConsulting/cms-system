@@ -6,17 +6,17 @@ import { cn } from "@/lib/utils";
 interface CmsListBodySkeletonProps {
   /** When true, show a detail panel column (articles / clients workspace). */
   withDetailPanel?: boolean;
-  /** Slim toolbar placeholder above the table (filters stay in the data view). */
+  /** Rare: body-level toolbar when filters are not in the page header. */
   withToolbar?: boolean;
 }
 
 /**
- * Content-only list placeholder — title/tabs live in layout or page chrome
+ * Content-only list placeholder — title/tabs/filters live in layout or page chrome
  * so navigation does not flash a full-page skeleton.
  */
 export function CmsListBodySkeleton({
   withDetailPanel = true,
-  withToolbar = true,
+  withToolbar = false,
 }: CmsListBodySkeletonProps) {
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">

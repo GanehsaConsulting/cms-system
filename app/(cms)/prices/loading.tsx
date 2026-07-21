@@ -1,6 +1,7 @@
 import { PricesListHeader } from "@/components/cms/prices/prices-list-header";
-import { CmsListBodySkeleton } from "@/components/skeletons/cms-list-body-skeleton";
 import { CmsSectionLayout } from "@/components/shared/cms-section-layout";
+import { CmsHeaderToolbarSkeleton } from "@/components/skeletons/cms-header-toolbar-skeleton";
+import { CmsListBodySkeleton } from "@/components/skeletons/cms-list-body-skeleton";
 import { SECTION_BODY_PADDING } from "@/config/spacing";
 import { cn } from "@/lib/utils";
 
@@ -9,7 +10,7 @@ export default function Loading() {
     <CmsSectionLayout
       header={
         <header className="mb-4 shrink-0">
-          <PricesListHeader />
+          <PricesListHeader actions={<CmsHeaderToolbarSkeleton />} />
         </header>
       }
     >
@@ -19,7 +20,7 @@ export default function Loading() {
           SECTION_BODY_PADDING,
         )}
       >
-        <CmsListBodySkeleton withDetailPanel={false} />
+        <CmsListBodySkeleton withDetailPanel={false} withToolbar={false} />
       </div>
     </CmsSectionLayout>
   );

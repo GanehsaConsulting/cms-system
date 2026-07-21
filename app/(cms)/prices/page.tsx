@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { PricesListHeader } from "@/components/cms/prices/prices-list-header";
 import { PricesListView } from "@/components/cms/prices/prices-list-view";
+import { CmsPageHeaderActionsProvider } from "@/components/shared/cms-page-header-actions";
 import { CmsSectionLayout } from "@/components/shared/cms-section-layout";
 import { CmsListBodySkeleton } from "@/components/skeletons/cms-list-body-skeleton";
 import { SECTION_BODY_PADDING } from "@/config/spacing";
@@ -11,23 +12,28 @@ import { cn } from "@/lib/utils";
 
 export default function PricesPage() {
   return (
-    <CmsSectionLayout
-      header={
-        <header className="mb-4 shrink-0">
-          <PricesListHeader />
-        </header>
-      }
-    >
-      <Suspense
-        fallback={
-          <BodyFrame>
-            <CmsListBodySkeleton withDetailPanel={false} />
-          </BodyFrame>
+    <CmsPageHeaderActionsProvider>
+      <CmsSectionLayout
+        header={
+          <header className="mb-4 shrink-0">
+            <PricesListHeader />
+          </header>
         }
       >
-        <PricesPageContent />
-      </Suspense>
-    </CmsSectionLayout>
+        <Suspense
+          fallback={
+            <BodyFrame>
+              <CmsListBodySkeleton
+                withDetailPanel={false}
+                withToolbar={false}
+              />
+            </BodyFrame>
+          }
+        >
+          <PricesPageContent />
+        </Suspense>
+      </CmsSectionLayout>
+    </CmsPageHeaderActionsProvider>
   );
 }
 

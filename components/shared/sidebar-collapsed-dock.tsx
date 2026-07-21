@@ -9,6 +9,7 @@ import { useAppearanceDrawer } from "@/components/shared/appearance-drawer-provi
 import { useBrand } from "@/components/shared/brand-provider";
 import { useNotificationCenter } from "@/components/shared/notification-center-provider";
 import { SidebarAppIcon } from "@/components/shared/sidebar-app-icon";
+import { SidebarCountBadge } from "@/components/shared/sidebar-count-badge";
 import {
   SidebarDock,
   SidebarDockItem,
@@ -162,8 +163,11 @@ export function SidebarCollapsedDock({
     isSwitchingBrand,
   } = useBrand();
   const { open, openAppearance } = useAppearanceDrawer();
-  const { open: notificationsOpen, openNotificationCenter } =
-    useNotificationCenter();
+  const {
+    open: notificationsOpen,
+    openNotificationCenter,
+    unreadCount,
+  } = useNotificationCenter();
   const brandLabel = activeBrand?.name ?? CMS_NAME;
 
   let index = 0;
@@ -242,17 +246,27 @@ export function SidebarCollapsedDock({
       })}
 
       <SidebarDockItem index={index++}>
-        <DockAppButton
-          label={notificationsNavItem.title}
-          isActive={notificationsOpen}
-          onClick={openNotificationCenter}
-        >
-          <SidebarAppIcon
-            icon={notificationsNavItem.icon}
-            tone={notificationsNavItem.tone}
-            size="dock"
+        <div className="relative size-9 overflow-visible">
+          <DockAppButton
+            label={
+              unreadCount > 0
+                ? `${notificationsNavItem.title} (${unreadCount} new)`
+                : notificationsNavItem.title
+            }
+            isActive={notificationsOpen}
+            onClick={openNotificationCenter}
+          >
+            <SidebarAppIcon
+              icon={notificationsNavItem.icon}
+              tone={notificationsNavItem.tone}
+              size="dock"
+            />
+          </DockAppButton>
+          <SidebarCountBadge
+            count={unreadCount}
+            className="absolute top-0 right-0 z-30 translate-x-1/4 -translate-y-1/4"
           />
-        </DockAppButton>
+        </div>
       </SidebarDockItem>
 
       <SidebarDockItem index={index++}>

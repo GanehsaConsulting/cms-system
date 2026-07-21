@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { ArticlesListHeader } from "@/components/cms/articles/articles-list-header";
 import { ArticlesListView } from "@/components/cms/articles/articles-list-view";
+import { CmsPageHeaderActionsProvider } from "@/components/shared/cms-page-header-actions";
 import { CmsSectionLayout } from "@/components/shared/cms-section-layout";
 import { CmsListBodySkeleton } from "@/components/skeletons/cms-list-body-skeleton";
 import { SECTION_BODY_PADDING } from "@/config/spacing";
@@ -12,23 +13,25 @@ import { cn } from "@/lib/utils";
 
 export default function ArticlesPage() {
   return (
-    <CmsSectionLayout
-      header={
-        <header className="mb-4 shrink-0">
-          <ArticlesListHeader />
-        </header>
-      }
-    >
-      <Suspense
-        fallback={
-          <BodyFrame>
-            <CmsListBodySkeleton />
-          </BodyFrame>
+    <CmsPageHeaderActionsProvider>
+      <CmsSectionLayout
+        header={
+          <header className="mb-4 shrink-0">
+            <ArticlesListHeader />
+          </header>
         }
       >
-        <ArticlesPageContent />
-      </Suspense>
-    </CmsSectionLayout>
+        <Suspense
+          fallback={
+            <BodyFrame>
+              <CmsListBodySkeleton withToolbar={false} />
+            </BodyFrame>
+          }
+        >
+          <ArticlesPageContent />
+        </Suspense>
+      </CmsSectionLayout>
+    </CmsPageHeaderActionsProvider>
   );
 }
 

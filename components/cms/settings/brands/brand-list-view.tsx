@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { BrandFormDialog } from "@/components/cms/settings/brands/brand-form-dialog";
 import { BrandListEmptyState } from "@/components/cms/settings/brands/brand-list-empty-state";
 import { BrandListGrid } from "@/components/cms/settings/brands/brand-list-grid";
 import { BrandListToolbar } from "@/components/cms/settings/brands/brand-list-toolbar";
+import { CmsPageHeaderActions } from "@/components/shared/cms-page-header-actions";
 import { GlassSurface } from "@/components/shared/glass-surface";
 import {
   CMS_FLEX_CHILD,
@@ -64,39 +65,31 @@ export function BrandListView({ brands: initialBrands }: BrandListViewProps) {
     });
   }
 
-  const toolbar = (
-    <BrandListToolbar
-      search={search}
-      statusFilter={statusFilter}
-      sort={sort}
-      hasActiveFilters={hasActiveFilters}
-      onSearchChange={setSearch}
-      onStatusFilterChange={setStatusFilter}
-      onSortChange={setSort}
-      onResetFilters={resetFilters}
-      onCreate={openCreate}
-    />
+  const headerActions = useMemo(
+    () => (
+      <BrandListToolbar
+        search={search}
+        statusFilter={statusFilter}
+        sort={sort}
+        hasActiveFilters={hasActiveFilters}
+        onSearchChange={setSearch}
+        onStatusFilterChange={setStatusFilter}
+        onSortChange={setSort}
+        onResetFilters={resetFilters}
+        onCreate={openCreate}
+      />
+    ),
+    [
+      hasActiveFilters,
+      resetFilters,
+      search,
+      setSearch,
+      setSort,
+      setStatusFilter,
+      sort,
+      statusFilter,
+    ],
   );
-
-  if (brands.length === 0) {
-    return (
-      <div
-        className={cn(
-          "flex min-h-0 flex-1 flex-col overflow-hidden",
-          SECTION_BODY_PADDING,
-        )}
-      >
-        <div className="mb-4 flex shrink-0 justify-end">{toolbar}</div>
-        <BrandListEmptyState onCreate={openCreate} />
-        <BrandFormDialog
-          open={dialogOpen}
-          onOpenChange={setDialogOpen}
-          brand={editingBrand}
-          onSaved={handleSaved}
-        />
-      </div>
-    );
-  }
 
   return (
     <div
@@ -105,34 +98,41 @@ export function BrandListView({ brands: initialBrands }: BrandListViewProps) {
         SECTION_BODY_PADDING,
       )}
     >
-      <div className="mb-4 flex shrink-0 justify-end">{toolbar}</div>
+      <CmsPageHeaderActions>{headerActions}</CmsPageHeaderActions>
 
-      <GlassSurface
-        className={cn("flex min-h-0 flex-col overflow-hidden", CMS_FLEX_CHILD)}
-      >
-        <div className="flex shrink-0 items-center justify-between gap-2 border-(--separator) border-b px-4 py-3">
-          <div>
-            <h2 className="font-semibold text-sm">Registered brands</h2>
-            <p className="text-muted-foreground text-xs">
-              {filteredCount} of {brands.length} brand
-              {brands.length === 1 ? "" : "s"} · configure modules per brand
-            </p>
+      {brands.length === 0 ? (
+        <BrandListEmptyState onCreate={openCreate} />
+      ) : (
+        <GlassSurface
+          className={cn(
+            "flex min-h-0 flex-col overflow-hidden",
+            CMS_FLEX_CHILD,
+          )}
+        >
+          <div className="flex shrink-0 items-center justify-between gap-2 border-(--separator) border-b px-4 py-3">
+            <div>
+              <h2 className="font-semibold text-sm">Registered brands</h2>
+              <p className="text-muted-foreground text-xs">
+                {filteredCount} of {brands.length} brand
+                {brands.length === 1 ? "" : "s"} · configure modules per brand
+              </p>
+            </div>
           </div>
-        </div>
 
-        {visibleBrands.length > 0 ? (
-          <div className={CMS_SCROLL_REGION}>
-            <BrandListGrid brands={visibleBrands} onEdit={openEdit} />
-          </div>
-        ) : (
-          <div className="flex flex-1 flex-col items-center justify-center p-10 text-center">
-            <p className="font-medium text-sm">No brands found</p>
-            <p className="mt-1 text-muted-foreground text-sm">
-              Try changing filters or search keywords.
-            </p>
-          </div>
-        )}
-      </GlassSurface>
+          {visibleBrands.length > 0 ? (
+            <div className={CMS_SCROLL_REGION}>
+              <BrandListGrid brands={visibleBrands} onEdit={openEdit} />
+            </div>
+          ) : (
+            <div className="flex flex-1 flex-col items-center justify-center p-10 text-center">
+              <p className="font-medium text-sm">No brands found</p>
+              <p className="mt-1 text-muted-foreground text-sm">
+                Try changing filters or search keywords.
+              </p>
+            </div>
+          )}
+        </GlassSurface>
+      )}
 
       <BrandFormDialog
         open={dialogOpen}

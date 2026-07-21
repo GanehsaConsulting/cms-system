@@ -11,4 +11,6 @@ export interface CmsNotification {
   timeLabel: string;
   href?: string;
   tone: SidebarAppIconTone;
+  /** False until the user opens or marks the item. */
+  read: boolean;
 }

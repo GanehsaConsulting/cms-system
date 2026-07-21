@@ -1,9 +1,11 @@
 "use client";
 
+import { useMemo } from "react";
 import { ClientsListCreateButton } from "@/components/cms/clients/clients-list-create-button";
 import { ClientsWorksAllToolbar } from "@/components/cms/clients/clients-works-all-toolbar";
 import { ClientsWorksAllWorkspace } from "@/components/cms/clients/clients-works-all-workspace";
 import { ClientsWorksNewDataButton } from "@/components/cms/clients/clients-works-new-data-button";
+import { CmsPageHeaderActions } from "@/components/shared/cms-page-header-actions";
 import { CMS_FLEX_CHILD, SECTION_BODY_PADDING } from "@/config/spacing";
 import { useClientsWorksAllList } from "@/hooks/use-clients-works-all-list";
 import { cn } from "@/lib/utils";
@@ -45,17 +47,49 @@ export function ClientsWorksAllView({
     portfolioCount,
   } = useClientsWorksAllList(clients, portfolio);
 
-  if (allGroups.length === 0) {
+  const headerActions = useMemo(() => {
+    if (allGroups.length === 0) {
+      return <ClientsWorksNewDataButton />;
+    }
+
     return (
-      <div
-        className={cn(
-          "flex min-h-0 flex-1 flex-col overflow-hidden",
-          SECTION_BODY_PADDING,
-        )}
-      >
-        <div className="mb-4 flex shrink-0 justify-end">
-          <ClientsWorksNewDataButton />
-        </div>
+      <ClientsWorksAllToolbar
+        search={search}
+        featuredFilter={featuredFilter}
+        portfolioFilter={portfolioFilter}
+        sort={sort}
+        hasActiveFilters={hasActiveFilters}
+        onSearchChange={setSearch}
+        onFeaturedFilterChange={setFeaturedFilter}
+        onPortfolioFilterChange={setPortfolioFilter}
+        onSortChange={setSort}
+        onResetFilters={resetFilters}
+      />
+    );
+  }, [
+    allGroups.length,
+    featuredFilter,
+    hasActiveFilters,
+    portfolioFilter,
+    resetFilters,
+    search,
+    setFeaturedFilter,
+    setPortfolioFilter,
+    setSearch,
+    setSort,
+    sort,
+  ]);
+
+  return (
+    <div
+      className={cn(
+        "flex min-h-0 flex-1 flex-col overflow-hidden",
+        SECTION_BODY_PADDING,
+      )}
+    >
+      <CmsPageHeaderActions>{headerActions}</CmsPageHeaderActions>
+
+      {allGroups.length === 0 ? (
         <div className="flex flex-1 flex-col items-center justify-center p-10 text-center">
           <p className="font-medium text-sm">No clients yet</p>
           <p className="mt-1 max-w-sm text-muted-foreground text-sm leading-relaxed">
@@ -66,55 +100,31 @@ export function ClientsWorksAllView({
             <ClientsListCreateButton />
           </div>
         </div>
-      </div>
-    );
-  }
-
-  return (
-    <div
-      className={cn(
-        "flex min-h-0 flex-1 flex-col overflow-hidden",
-        SECTION_BODY_PADDING,
-      )}
-    >
-      <div className="mb-4 flex shrink-0 justify-end">
-        <ClientsWorksAllToolbar
-          search={search}
-          featuredFilter={featuredFilter}
-          portfolioFilter={portfolioFilter}
+      ) : (
+        <ClientsWorksAllWorkspace
+          className={CMS_FLEX_CHILD}
+          groups={pagination.items}
+          selectedId={selectedId}
+          selectedGroup={selectedGroup}
           sort={sort}
+          page={pagination.page}
+          pageSize={pagination.pageSize}
+          total={pagination.total}
+          totalPages={pagination.totalPages}
+          rangeStart={pagination.rangeStart}
+          rangeEnd={pagination.rangeEnd}
+          clientCount={clientCount}
+          withWorksCount={withWorksCount}
+          portfolioCount={portfolioCount}
           hasActiveFilters={hasActiveFilters}
-          onSearchChange={setSearch}
-          onFeaturedFilterChange={setFeaturedFilter}
-          onPortfolioFilterChange={setPortfolioFilter}
+          onSelect={selectClient}
+          onClosePanel={closePanel}
+          onPageChange={setPage}
+          onPageSizeChange={setPageSize}
           onSortChange={setSort}
           onResetFilters={resetFilters}
         />
-      </div>
-
-      <ClientsWorksAllWorkspace
-        className={CMS_FLEX_CHILD}
-        groups={pagination.items}
-        selectedId={selectedId}
-        selectedGroup={selectedGroup}
-        sort={sort}
-        page={pagination.page}
-        pageSize={pagination.pageSize}
-        total={pagination.total}
-        totalPages={pagination.totalPages}
-        rangeStart={pagination.rangeStart}
-        rangeEnd={pagination.rangeEnd}
-        clientCount={clientCount}
-        withWorksCount={withWorksCount}
-        portfolioCount={portfolioCount}
-        hasActiveFilters={hasActiveFilters}
-        onSelect={selectClient}
-        onClosePanel={closePanel}
-        onPageChange={setPage}
-        onPageSizeChange={setPageSize}
-        onSortChange={setSort}
-        onResetFilters={resetFilters}
-      />
+      )}
     </div>
   );
 }

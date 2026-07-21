@@ -1,6 +1,7 @@
 import { ArticlesListHeader } from "@/components/cms/articles/articles-list-header";
-import { CmsListBodySkeleton } from "@/components/skeletons/cms-list-body-skeleton";
 import { CmsSectionLayout } from "@/components/shared/cms-section-layout";
+import { CmsHeaderToolbarSkeleton } from "@/components/skeletons/cms-header-toolbar-skeleton";
+import { CmsListBodySkeleton } from "@/components/skeletons/cms-list-body-skeleton";
 import { SECTION_BODY_PADDING } from "@/config/spacing";
 import { cn } from "@/lib/utils";
 
@@ -9,7 +10,7 @@ export default function Loading() {
     <CmsSectionLayout
       header={
         <header className="mb-4 shrink-0">
-          <ArticlesListHeader />
+          <ArticlesListHeader actions={<CmsHeaderToolbarSkeleton />} />
         </header>
       }
     >
@@ -19,7 +20,7 @@ export default function Loading() {
           SECTION_BODY_PADDING,
         )}
       >
-        <CmsListBodySkeleton />
+        <CmsListBodySkeleton withToolbar={false} />
       </div>
     </CmsSectionLayout>
   );

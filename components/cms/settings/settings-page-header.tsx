@@ -1,8 +1,9 @@
+import { SettingsTabs } from "@/components/cms/settings/settings-tabs";
+import { CmsPageHeaderActionsSlot } from "@/components/shared/cms-page-header-actions";
 import {
   SETTINGS_PAGE_DESCRIPTION,
   SETTINGS_PAGE_TITLE,
 } from "@/config/settings";
-import { SettingsTabs } from "@/components/cms/settings/settings-tabs";
 
 interface SettingsPageHeaderProps {
   actions?: React.ReactNode;
@@ -20,7 +21,7 @@ export function SettingsPageHeader({ actions }: SettingsPageHeaderProps) {
             {SETTINGS_PAGE_DESCRIPTION}
           </p>
         </div>
-        {actions ? <div className="shrink-0">{actions}</div> : null}
+        {actions ?? <CmsPageHeaderActionsSlot />}
       </div>
       <SettingsTabs />
     </header>
