@@ -7,6 +7,8 @@ alwaysApply: true
 
 Use the **Hallmark** skill (`hallmark`) for visual/UX quality when building or refining CMS UI. Prefer small, targeted improvements over greenfield redesigns.
 
+**Locked system:** read `design.md` at the project root first — it overrides Hallmark's default theme rotation for this repo.
+
 ## Default mode for this repo
 
 - **Polish in place** — tighten hierarchy, spacing, contrast, badge/status color, empty states, motion restraint.
