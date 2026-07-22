@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { XIcon } from "@/lib/icons";
+import { ActivityLogPanel } from "@/components/shared/activity-log-panel";
 import { ClientDetailPanelActions } from "@/components/cms/clients/client-detail-panel-actions";
 import { ClientDetailTabDetail } from "@/components/cms/clients/client-detail-tab-detail";
 import { ClientFeaturedBadge } from "@/components/cms/clients/client-featured-badge";
@@ -64,6 +65,11 @@ export function ClientDetailPanel({ client, onClose }: ClientDetailPanelProps) {
 
       <div className="min-h-0 flex-1 overflow-y-auto p-4">
         <ClientDetailTabDetail client={client} />
+        <ActivityLogPanel
+          entityType="client"
+          entityId={client.id}
+          className="mt-6"
+        />
       </div>
 
       <ClientDetailPanelActions client={client} />

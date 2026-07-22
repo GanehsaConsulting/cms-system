@@ -3,9 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireCmsActiveBrandId } from "@/lib/brands/active-brand";
+import { recordActivityEvent } from "@/lib/activity/record";
 import {
   createPortfolio,
   deletePortfolio,
+  getPortfolioById,
   updatePortfolio,
 } from "@/lib/db/portfolio";
 import { revalidateMediaLibraryCache } from "@/lib/media/cache";
@@ -52,6 +54,14 @@ export async function createPortfolioAction(formData: FormData) {
       brand.brandId,
       portfolioFormToInput(parsed.data),
     );
+    await recordActivityEvent({
+      brandId: brand.brandId,
+      entityType: "portfolio",
+      entityId: item.id,
+      action: "created",
+      actor: access.user,
+      entityTitle: item.title,
+    });
     revalidatePortfolioPaths(item.id);
     redirect(`/clients/portfolio/${item.id}/edit`);
   } catch (error) {
@@ -84,11 +94,20 @@ export async function updatePortfolioAction(id: string, formData: FormData) {
   }
 
   try {
+    const current = await getPortfolioById(brand.brandId, id);
     await updatePortfolio(
       brand.brandId,
       id,
       portfolioFormToInput(parsed.data),
     );
+    await recordActivityEvent({
+      brandId: brand.brandId,
+      entityType: "portfolio",
+      entityId: id,
+      action: "updated",
+      actor: access.user,
+      entityTitle: parsed.data.title.trim() || current?.title || "Portfolio item",
+    });
     revalidatePortfolioPaths(id);
     return { success: true as const };
   } catch (error) {
@@ -112,7 +131,18 @@ export async function deletePortfolioAction(id: string) {
   }
 
   try {
+    const current = await getPortfolioById(brand.brandId, id);
     await deletePortfolio(brand.brandId, id);
+    if (current) {
+      await recordActivityEvent({
+        brandId: brand.brandId,
+        entityType: "portfolio",
+        entityId: id,
+        action: "deleted",
+        actor: access.user,
+        entityTitle: current.title,
+      });
+    }
     revalidatePortfolioPaths();
     redirect("/clients/portfolio");
   } catch (error) {

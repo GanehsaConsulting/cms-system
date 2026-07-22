@@ -1,9 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { requireCmsActiveBrandId } from "@/lib/brands/active-brand";
+import { recordActivityEvent } from "@/lib/activity/record";
 import {
   createMediaFolder,
   deleteMediaFolder,
+  getMediaFolderById,
   moveMediaFolders,
   updateMediaFolder,
 } from "@/lib/db/media-folders";
@@ -37,6 +40,18 @@ export async function createMediaFolderAction(formData: FormData) {
 
   try {
     const folder = await createMediaFolder(parsed.data);
+    const brand = await requireCmsActiveBrandId();
+    if (brand.ok) {
+      await recordActivityEvent({
+        brandId: brand.brandId,
+        entityType: "media",
+        entityId: folder.id,
+        action: "created",
+        actor: access.user,
+        entityTitle: folder.name,
+        href: "/media",
+      });
+    }
     revalidateMediaLibrary();
     return { success: true as const, folder };
   } catch (error) {
@@ -66,6 +81,18 @@ export async function updateMediaFolderAction(id: string, formData: FormData) {
 
   try {
     const folder = await updateMediaFolder(id, parsed.data);
+    const brand = await requireCmsActiveBrandId();
+    if (brand.ok) {
+      await recordActivityEvent({
+        brandId: brand.brandId,
+        entityType: "media",
+        entityId: id,
+        action: "updated",
+        actor: access.user,
+        entityTitle: folder.name,
+        href: "/media",
+      });
+    }
     revalidateMediaLibrary();
     return { success: true as const, folder };
   } catch (error) {
@@ -83,7 +110,20 @@ export async function deleteMediaFolderAction(id: string) {
   }
 
   try {
+    const current = await getMediaFolderById(id);
     await deleteMediaFolder(id);
+    const brand = await requireCmsActiveBrandId();
+    if (brand.ok && current) {
+      await recordActivityEvent({
+        brandId: brand.brandId,
+        entityType: "media",
+        entityId: id,
+        action: "deleted",
+        actor: access.user,
+        entityTitle: current.name,
+        href: "/media",
+      });
+    }
     revalidateMediaLibrary();
     return { success: true as const };
   } catch (error) {

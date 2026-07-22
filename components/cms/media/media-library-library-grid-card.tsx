@@ -43,7 +43,7 @@ export function MediaLibraryLibraryGridCard({
         }
       }}
       className={cn(
-        "group cursor-pointer rounded-[var(--radius-inner)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+        "group cursor-pointer rounded-(--radius-inner) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
         isSelected && "ring-2 ring-primary/40",
       )}
     >
@@ -56,7 +56,7 @@ export function MediaLibraryLibraryGridCard({
         <div
           className={cn(
             RADIUS_DEEP,
-            "relative aspect-[4/3] overflow-hidden bg-muted",
+            "relative aspect-4/3 overflow-hidden bg-muted",
           )}
         >
           <div

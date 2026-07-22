@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 const PANEL_TABS: { id: ArticleDetailPanelTab; label: string }[] = [
   { id: "detail", label: "Detail" },
   { id: "seo", label: "SEO" },
+  { id: "activity", label: "Activity" },
 ];
 
 interface ArticleDetailPanelTabsProps {

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { XIcon } from "@/lib/icons";
+import { ActivityLogPanel } from "@/components/shared/activity-log-panel";
 import { PortfolioDetailPanelActions } from "@/components/cms/portfolio/portfolio-detail-panel-actions";
 import { PortfolioDetailTabDetail } from "@/components/cms/portfolio/portfolio-detail-tab-detail";
 import { PortfolioFeaturedBadge } from "@/components/cms/portfolio/portfolio-featured-badge";
@@ -69,6 +70,11 @@ export function PortfolioDetailPanel({
 
       <div className="min-h-0 flex-1 overflow-y-auto p-4">
         <PortfolioDetailTabDetail item={item} clientName={clientName} />
+        <ActivityLogPanel
+          entityType="portfolio"
+          entityId={item.id}
+          className="mt-6"
+        />
       </div>
 
       <PortfolioDetailPanelActions item={item} />

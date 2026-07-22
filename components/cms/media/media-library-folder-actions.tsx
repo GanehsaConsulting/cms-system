@@ -15,8 +15,7 @@ import { LIST_TOOLBAR_BUTTON_CLASS } from "@/config/list-toolbar";
 import { canCreateChildFolder } from "@/lib/media/folders";
 import { MEDIA_LIBRARY_ALL_FILES_ID } from "@/config/media-library";
 import {
-  CaretDownIcon,
-  FolderOpenIcon,
+  DotsThreeIcon,
   PencilSimpleIcon,
   PlusIcon,
   TrashIcon,
@@ -65,15 +64,14 @@ export function MediaLibraryFolderActions({
             <Button
               type="button"
               variant="ghost"
-              className={cn(LIST_TOOLBAR_BUTTON_CLASS, "h-8 gap-1.5")}
+              size="icon-sm"
+              className={cn(LIST_TOOLBAR_BUTTON_CLASS, "size-8 shrink-0")}
               aria-label="Folder actions"
               disabled={!selectedFolder}
             />
           }
         >
-          <FolderOpenIcon className="size-3.5" />
-          Folder
-          <CaretDownIcon className="size-3 opacity-80" />
+          <DotsThreeIcon className="size-4" />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="min-w-44">
           <DropdownMenuItem

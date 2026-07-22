@@ -3,8 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireCmsActiveBrandId } from "@/lib/brands/active-brand";
+import { recordActivityEvent } from "@/lib/activity/record";
 import { getPriceCategoryById } from "@/lib/db/price-categories";
-import { createPrice, deletePrice, updatePrice } from "@/lib/db/prices";
+import { createPrice, deletePrice, getPriceById, updatePrice } from "@/lib/db/prices";
+import { getPriceDisplayText } from "@/lib/prices/normalize";
 import { requireCmsContentAccess } from "@/lib/users/require-content-access";
 import {
   parsePriceForm,
@@ -54,6 +56,14 @@ export async function createPriceAction(formData: FormData) {
 
   try {
     const price = await createPrice(brand.brandId, priceFormToInput(parsed.data));
+    await recordActivityEvent({
+      brandId: brand.brandId,
+      entityType: "price",
+      entityId: price.id,
+      action: "created",
+      actor: access.user,
+      entityTitle: getPriceDisplayText(price.packageName),
+    });
     revalidatePath("/");
     revalidatePath("/prices");
     redirect(`/prices/${price.id}/edit`);
@@ -94,7 +104,18 @@ export async function updatePriceAction(id: string, formData: FormData) {
   }
 
   try {
+    const current = await getPriceById(brand.brandId, id);
     await updatePrice(brand.brandId, id, priceFormToInput(parsed.data));
+    await recordActivityEvent({
+      brandId: brand.brandId,
+      entityType: "price",
+      entityId: id,
+      action: "updated",
+      actor: access.user,
+      entityTitle: getPriceDisplayText(
+        parsed.data.packageName ?? current?.packageName ?? { id: "", en: "", zh: "" },
+      ),
+    });
     revalidatePath("/");
     revalidatePath("/prices");
     revalidatePath(`/prices/${id}/edit`);
@@ -120,7 +141,18 @@ export async function deletePriceAction(id: string) {
   }
 
   try {
+    const current = await getPriceById(brand.brandId, id);
     await deletePrice(brand.brandId, id);
+    if (current) {
+      await recordActivityEvent({
+        brandId: brand.brandId,
+        entityType: "price",
+        entityId: id,
+        action: "deleted",
+        actor: access.user,
+        entityTitle: getPriceDisplayText(current.packageName),
+      });
+    }
     revalidatePath("/");
     revalidatePath("/prices");
     redirect("/prices");

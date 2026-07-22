@@ -3,9 +3,11 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireCmsActiveBrandId } from "@/lib/brands/active-brand";
+import { recordActivityEvent } from "@/lib/activity/record";
 import {
   createClient,
   deleteClient,
+  getClientById,
   updateClient,
 } from "@/lib/db/clients";
 import { deletePortfolioByClientId } from "@/lib/db/portfolio";
@@ -49,6 +51,14 @@ export async function createClientAction(formData: FormData) {
 
   try {
     const client = await createClient(brand.brandId, clientFormToInput(parsed.data));
+    await recordActivityEvent({
+      brandId: brand.brandId,
+      entityType: "client",
+      entityId: client.id,
+      action: "created",
+      actor: access.user,
+      entityTitle: client.name,
+    });
     revalidateClientPaths();
     redirect(`/clients/${client.id}/edit`);
   } catch (error) {
@@ -80,7 +90,16 @@ export async function updateClientAction(id: string, formData: FormData) {
   }
 
   try {
+    const current = await getClientById(brand.brandId, id);
     await updateClient(brand.brandId, id, clientFormToInput(parsed.data));
+    await recordActivityEvent({
+      brandId: brand.brandId,
+      entityType: "client",
+      entityId: id,
+      action: "updated",
+      actor: access.user,
+      entityTitle: parsed.data.name.trim() || current?.name || "Client",
+    });
     revalidateClientPaths(id);
     return { success: true as const };
   } catch (error) {
@@ -104,8 +123,19 @@ export async function deleteClientAction(id: string) {
   }
 
   try {
+    const current = await getClientById(brand.brandId, id);
     await deletePortfolioByClientId(brand.brandId, id);
     await deleteClient(brand.brandId, id);
+    if (current) {
+      await recordActivityEvent({
+        brandId: brand.brandId,
+        entityType: "client",
+        entityId: id,
+        action: "deleted",
+        actor: access.user,
+        entityTitle: current.name,
+      });
+    }
     revalidateClientPaths();
     redirect("/clients/clients");
   } catch (error) {

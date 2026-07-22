@@ -72,24 +72,10 @@ export function validateGalleryImageFile(file: File): string | null {
 }
 
 export async function readArticleImageFile(file: File): Promise<string> {
-  const validationError = validateArticleImageFile(file);
-  if (validationError) {
-    throw new Error(validationError);
-  }
-
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result !== "string") {
-        reject(new Error("Failed to read image file."));
-        return;
-      }
-
-      resolve(reader.result);
-    };
-    reader.onerror = () => reject(new Error("Failed to read image file."));
-    reader.readAsDataURL(file);
-  });
+  const { prepareArticleImageDataUrl } = await import(
+    "@/lib/articles/prepare-image-data-url"
+  );
+  return prepareArticleImageDataUrl(file);
 }
 
 /** @deprecated Use readArticleImageFile */

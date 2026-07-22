@@ -1,6 +1,13 @@
 import type { SidebarAppIconTone } from "@/config/sidebar";
 
-export type NotificationKind = "article" | "price" | "client" | "system";
+export type NotificationKind =
+  | "article"
+  | "price"
+  | "client"
+  | "banner"
+  | "portfolio"
+  | "media"
+  | "system";
 
 export interface CmsNotification {
   id: string;

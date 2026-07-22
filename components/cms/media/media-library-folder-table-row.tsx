@@ -60,7 +60,7 @@ export function MediaLibraryFolderTableRow({
         />
       </TableCell>
       <TableCell className={LIST_TABLE_CELL_CLASS}>
-        <div className="flex min-w-[220px] items-center gap-3">
+        <div className="flex min-w-55 items-center gap-3">
           <MacOsFolderIcon size={32} />
           <div className="min-w-0">
             <p className="truncate font-medium">{folder.name}</p>

@@ -65,13 +65,13 @@ export function CmsShell({
 }: CmsShellProps) {
   return (
     <AppearanceDrawerProvider>
-      <NotificationCenterProvider>
-        <BrandProvider
-          brands={brands}
-          userName={user?.name}
-          canAccessSettings={canAccessSettings}
-          canAccessAllPages={canAccessAllPages}
-        >
+      <BrandProvider
+        brands={brands}
+        userName={user?.name}
+        canAccessSettings={canAccessSettings}
+        canAccessAllPages={canAccessAllPages}
+      >
+        <NotificationCenterProvider userId={user?.id}>
           <CmsSidebarProvider
             className="relative z-10 flex h-svh max-h-svh min-h-0 w-full overflow-hidden bg-transparent"
             style={
@@ -82,8 +82,8 @@ export function CmsShell({
           >
             <CmsShellMain user={user}>{children}</CmsShellMain>
           </CmsSidebarProvider>
-        </BrandProvider>
-      </NotificationCenterProvider>
+        </NotificationCenterProvider>
+      </BrandProvider>
     </AppearanceDrawerProvider>
   );
 }

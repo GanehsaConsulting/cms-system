@@ -1,7 +1,4 @@
-import {
-  readArticleImageFile,
-  validateArticleImageFile,
-} from "@/lib/articles/gallery";
+import { prepareArticleImageDataUrl } from "@/lib/articles/prepare-image-data-url";
 
 export { ARTICLE_IMAGE_ACCEPT_ATTRIBUTE } from "@/lib/articles/gallery";
 
@@ -18,14 +15,9 @@ export async function uploadArticleEditorImage(
     throw new Error("Upload cancelled");
   }
 
-  const validationError = validateArticleImageFile(file);
-  if (validationError) {
-    throw new Error(validationError);
-  }
-
   onProgress?.({ progress: 25 });
 
-  const dataUrl = await readArticleImageFile(file);
+  const dataUrl = await prepareArticleImageDataUrl(file);
 
   if (abortSignal?.aborted) {
     throw new Error("Upload cancelled");

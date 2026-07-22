@@ -4,6 +4,10 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getCurrentArticleAuthor } from "@/lib/articles/authors";
 import { isKnownArticleCategory } from "@/lib/articles/categories";
+import {
+  recordActivityEvent,
+  resolveArticleActivityAction,
+} from "@/lib/activity/record";
 import { requireCmsActiveBrandId } from "@/lib/brands/active-brand";
 import {
   createArticle,
@@ -116,6 +120,17 @@ export async function createArticleAction(formData: FormData) {
         authorId: author.id,
       },
     );
+    await recordActivityEvent({
+      brandId: brand.brandId,
+      entityType: "article",
+      entityId: article.id,
+      action: resolveArticleActivityAction({
+        nextStatus: parsed.data.status,
+        isCreate: true,
+      }),
+      actor: access.user,
+      entityTitle: article.title,
+    });
     revalidatePath("/");
     revalidatePath("/articles");
     revalidateMediaLibraryCache();
@@ -185,6 +200,18 @@ export async function updateArticleAction(id: string, formData: FormData) {
         authorId: author.id,
       },
     );
+    await recordActivityEvent({
+      brandId: brand.brandId,
+      entityType: "article",
+      entityId: id,
+      action: resolveArticleActivityAction({
+        previousStatus: current.status,
+        nextStatus: parsed.data.status,
+        isCreate: false,
+      }),
+      actor: access.user,
+      entityTitle: parsed.data.title.trim() || current.title,
+    });
     revalidatePath("/");
     revalidatePath("/articles");
     revalidatePath(`/articles/${id}/edit`);
@@ -211,7 +238,18 @@ export async function deleteArticleAction(id: string) {
   }
 
   try {
+    const current = await getArticleById(brand.brandId, id);
     await deleteArticle(brand.brandId, id);
+    if (current) {
+      await recordActivityEvent({
+        brandId: brand.brandId,
+        entityType: "article",
+        entityId: id,
+        action: "deleted",
+        actor: access.user,
+        entityTitle: current.title,
+      });
+    }
     revalidatePath("/");
     revalidatePath("/articles");
     revalidateMediaLibraryCache();

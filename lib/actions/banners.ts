@@ -2,9 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 import { requireCmsActiveBrandId } from "@/lib/brands/active-brand";
+import { recordActivityEvent } from "@/lib/activity/record";
 import {
   createBanner,
   deleteBanner,
+  getBannerById,
   updateBanner,
 } from "@/lib/db/banners";
 import { revalidateMediaLibraryCache } from "@/lib/media/cache";
@@ -66,6 +68,14 @@ export async function createBannerAction(formData: FormData) {
 
   try {
     const banner = await createBanner(brand.brandId, parsed.data);
+    await recordActivityEvent({
+      brandId: brand.brandId,
+      entityType: "banner",
+      entityId: banner.id,
+      action: "created",
+      actor: access.user,
+      entityTitle: banner.name,
+    });
     revalidateBannerPaths();
     return { success: true as const, banner };
   } catch (error) {
@@ -98,6 +108,14 @@ export async function updateBannerAction(id: string, formData: FormData) {
 
   try {
     const banner = await updateBanner(brand.brandId, id, parsed.data);
+    await recordActivityEvent({
+      brandId: brand.brandId,
+      entityType: "banner",
+      entityId: id,
+      action: "updated",
+      actor: access.user,
+      entityTitle: banner.name,
+    });
     revalidateBannerPaths();
     return { success: true as const, banner };
   } catch (error) {
@@ -120,7 +138,18 @@ export async function deleteBannerAction(id: string) {
   }
 
   try {
+    const current = await getBannerById(brand.brandId, id);
     await deleteBanner(brand.brandId, id);
+    if (current) {
+      await recordActivityEvent({
+        brandId: brand.brandId,
+        entityType: "banner",
+        entityId: id,
+        action: "deleted",
+        actor: access.user,
+        entityTitle: current.name,
+      });
+    }
     revalidateBannerPaths();
     return { success: true as const };
   } catch (error) {

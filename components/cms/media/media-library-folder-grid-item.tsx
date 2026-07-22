@@ -30,7 +30,7 @@ export function MediaLibraryFolderGridItem({
   return (
     <div
       className={cn(
-        "group relative flex w-[88px] flex-col items-center gap-2 rounded-lg px-1 py-2 text-center transition-colors",
+        "group relative flex w-22 flex-col items-center gap-2 rounded-lg px-1 py-2 text-center transition-colors",
         "hover:bg-primary/6",
         isChecked && "bg-primary/10 ring-2 ring-primary/40",
       )}

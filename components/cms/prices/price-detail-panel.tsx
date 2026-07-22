@@ -1,6 +1,7 @@
 "use client";
 
 import { XIcon } from "@/lib/icons";
+import { ActivityLogPanel } from "@/components/shared/activity-log-panel";
 import { PriceDetailPanelActions } from "@/components/cms/prices/price-detail-panel-actions";
 import { PriceDetailTabDetail } from "@/components/cms/prices/price-detail-tab-detail";
 import { PriceStatusBadge } from "@/components/cms/prices/price-status-badge";
@@ -53,6 +54,11 @@ export function PriceDetailPanel({
 
       <div className="min-h-0 flex-1 overflow-y-auto p-4">
         <PriceDetailTabDetail price={price} categories={categories} />
+        <ActivityLogPanel
+          entityType="price"
+          entityId={price.id}
+          className="mt-6"
+        />
       </div>
 
       <PriceDetailPanelActions price={price} />

@@ -5,13 +5,14 @@ import { XIcon } from "@/lib/icons";
 import { ArticleDetailPanelActions } from "@/components/cms/articles/article-detail-panel-actions";
 import { ArticleDetailPanelTabs } from "@/components/cms/articles/article-detail-panel-tabs";
 import { ArticleDetailTabDetail } from "@/components/cms/articles/article-detail-tab-detail";
+import { ArticleDetailTabActivity } from "@/components/cms/articles/article-detail-tab-activity";
 import { ArticleDetailTabSeo } from "@/components/cms/articles/article-detail-tab-seo";
 import { ArticleStatusBadge } from "@/components/cms/articles/article-status-badge";
 import { ArticleThumbnail } from "@/components/cms/articles/article-thumbnail";
 import { Button } from "@/components/ui/button";
 import type { Article } from "@/types/article";
 
-export type ArticleDetailPanelTab = "detail" | "seo";
+export type ArticleDetailPanelTab = "detail" | "seo" | "activity";
 
 interface ArticleDetailPanelProps {
   article: Article;
@@ -26,7 +27,7 @@ export function ArticleDetailPanel({
 
   return (
     <aside className="flex min-h-0 w-full flex-1 flex-col overflow-hidden">
-      <div className="flex items-start justify-between gap-3 border-[color:var(--separator)] border-b p-4">
+      <div className="flex items-start justify-between gap-3 border-(--separator) border-b p-4">
         <div className="min-w-0 space-y-2">
           <h2 className="line-clamp-2 font-semibold text-sm leading-snug">
             {article.title}
@@ -62,6 +63,9 @@ export function ArticleDetailPanel({
           <ArticleDetailTabDetail article={article} />
         ) : null}
         {activeTab === "seo" ? <ArticleDetailTabSeo article={article} /> : null}
+        {activeTab === "activity" ? (
+          <ArticleDetailTabActivity articleId={article.id} />
+        ) : null}
       </div>
 
       <ArticleDetailPanelActions article={article} />

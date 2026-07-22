@@ -3,11 +3,14 @@
 import { SidebarAppIcon } from "@/components/shared/sidebar-app-icon";
 import { NOTIFICATION_CARD_SURFACE } from "@/config/notification-center";
 import {
+  Building2Icon,
   DollarSignIcon,
   FileTextIcon,
+  FolderOpenIcon,
   GearSixIcon,
-  type Icon,
   Person2Icon,
+  PhotoIcon,
+  type Icon,
 } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import type { CmsNotification, NotificationKind } from "@/types/notification";
@@ -16,6 +19,9 @@ const KIND_ICON: Record<NotificationKind, Icon> = {
   article: FileTextIcon,
   price: DollarSignIcon,
   client: Person2Icon,
+  banner: PhotoIcon,
+  portfolio: Building2Icon,
+  media: FolderOpenIcon,
   system: GearSixIcon,
 };
 
