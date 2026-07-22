@@ -1,5 +1,6 @@
 "use server";
 
+import { toActionError } from "@/lib/actions/action-error";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireCmsActiveBrandId } from "@/lib/brands/active-brand";
@@ -62,10 +63,7 @@ export async function createClientAction(formData: FormData) {
     revalidateClientPaths();
     redirect(`/clients/${client.id}/edit`);
   } catch (error) {
-    return {
-      success: false as const,
-      error: error instanceof Error ? error.message : "Failed to save client",
-    };
+    return toActionError(error, "Failed to save client");
   }
 }
 
@@ -103,11 +101,7 @@ export async function updateClientAction(id: string, formData: FormData) {
     revalidateClientPaths(id);
     return { success: true as const };
   } catch (error) {
-    return {
-      success: false as const,
-      error:
-        error instanceof Error ? error.message : "Failed to update client",
-    };
+    return toActionError(error, "Failed to update client");
   }
 }
 
@@ -139,10 +133,6 @@ export async function deleteClientAction(id: string) {
     revalidateClientPaths();
     redirect("/clients/clients");
   } catch (error) {
-    return {
-      success: false as const,
-      error:
-        error instanceof Error ? error.message : "Failed to delete client",
-    };
+    return toActionError(error, "Failed to delete client");
   }
 }

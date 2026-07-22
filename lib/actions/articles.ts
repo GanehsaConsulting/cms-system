@@ -1,5 +1,6 @@
 "use server";
 
+import { toActionError } from "@/lib/actions/action-error";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getCurrentArticleAuthor } from "@/lib/articles/authors";
@@ -136,10 +137,7 @@ export async function createArticleAction(formData: FormData) {
     revalidateMediaLibraryCache();
     redirect(`/articles/${article.id}/edit`);
   } catch (error) {
-    return {
-      success: false as const,
-      error: error instanceof Error ? error.message : "Failed to save article",
-    };
+    return toActionError(error, "Failed to save article");
   }
 }
 
@@ -218,11 +216,7 @@ export async function updateArticleAction(id: string, formData: FormData) {
     revalidateMediaLibraryCache();
     return { success: true as const };
   } catch (error) {
-    return {
-      success: false as const,
-      error:
-        error instanceof Error ? error.message : "Failed to update article",
-    };
+    return toActionError(error, "Failed to update article");
   }
 }
 
@@ -255,11 +249,7 @@ export async function deleteArticleAction(id: string) {
     revalidateMediaLibraryCache();
     redirect("/articles");
   } catch (error) {
-    return {
-      success: false as const,
-      error:
-        error instanceof Error ? error.message : "Failed to delete article",
-    };
+    return toActionError(error, "Failed to delete article");
   }
 }
 
@@ -299,10 +289,6 @@ export async function getArticlePreviewAction(id: string) {
       publishedAt: article.publishedAt ?? article.updatedAt,
     };
   } catch (error) {
-    return {
-      success: false as const,
-      error:
-        error instanceof Error ? error.message : "Failed to load preview",
-    };
+    return toActionError(error, "Failed to load preview");
   }
 }

@@ -1,5 +1,6 @@
 "use server";
 
+import { toActionError } from "@/lib/actions/action-error";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireCmsActiveBrandId } from "@/lib/brands/active-brand";
@@ -68,10 +69,7 @@ export async function createPriceAction(formData: FormData) {
     revalidatePath("/prices");
     redirect(`/prices/${price.id}/edit`);
   } catch (error) {
-    return {
-      success: false as const,
-      error: error instanceof Error ? error.message : "Failed to save price plan",
-    };
+    return toActionError(error, "Failed to save price plan");
   }
 }
 
@@ -121,11 +119,7 @@ export async function updatePriceAction(id: string, formData: FormData) {
     revalidatePath(`/prices/${id}/edit`);
     return { success: true as const };
   } catch (error) {
-    return {
-      success: false as const,
-      error:
-        error instanceof Error ? error.message : "Failed to update price plan",
-    };
+    return toActionError(error, "Failed to update price plan");
   }
 }
 
@@ -157,10 +151,6 @@ export async function deletePriceAction(id: string) {
     revalidatePath("/prices");
     redirect("/prices");
   } catch (error) {
-    return {
-      success: false as const,
-      error:
-        error instanceof Error ? error.message : "Failed to delete price plan",
-    };
+    return toActionError(error, "Failed to delete price plan");
   }
 }

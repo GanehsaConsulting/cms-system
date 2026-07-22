@@ -1,5 +1,6 @@
 "use server";
 
+import { toActionError } from "@/lib/actions/action-error";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireCmsActiveBrandId } from "@/lib/brands/active-brand";
@@ -65,11 +66,7 @@ export async function createPortfolioAction(formData: FormData) {
     revalidatePortfolioPaths(item.id);
     redirect(`/clients/portfolio/${item.id}/edit`);
   } catch (error) {
-    return {
-      success: false as const,
-      error:
-        error instanceof Error ? error.message : "Failed to create portfolio",
-    };
+    return toActionError(error, "Failed to create portfolio");
   }
 }
 
@@ -111,11 +108,7 @@ export async function updatePortfolioAction(id: string, formData: FormData) {
     revalidatePortfolioPaths(id);
     return { success: true as const };
   } catch (error) {
-    return {
-      success: false as const,
-      error:
-        error instanceof Error ? error.message : "Failed to update portfolio",
-    };
+    return toActionError(error, "Failed to update portfolio");
   }
 }
 
@@ -146,10 +139,6 @@ export async function deletePortfolioAction(id: string) {
     revalidatePortfolioPaths();
     redirect("/clients/portfolio");
   } catch (error) {
-    return {
-      success: false as const,
-      error:
-        error instanceof Error ? error.message : "Failed to delete portfolio",
-    };
+    return toActionError(error, "Failed to delete portfolio");
   }
 }

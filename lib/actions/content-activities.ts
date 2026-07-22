@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { toActionError } from "@/lib/actions/action-error";
 import { getCurrentArticleAuthor } from "@/lib/articles/authors";
 import { recordActivityEvent } from "@/lib/activity/record";
 import { requireCmsActiveBrandId } from "@/lib/brands/active-brand";
@@ -80,10 +81,7 @@ export async function createContentActivityAction(formData: FormData) {
     revalidateContentActivityPaths(item.id);
     redirect(`/activities/${item.id}/edit`);
   } catch (error) {
-    return {
-      success: false as const,
-      error: error instanceof Error ? error.message : "Failed to save activity",
-    };
+    return toActionError(error, "Failed to save activity");
   }
 }
 
@@ -156,11 +154,7 @@ export async function updateContentActivityAction(
     revalidateContentActivityPaths(id);
     return { success: true as const };
   } catch (error) {
-    return {
-      success: false as const,
-      error:
-        error instanceof Error ? error.message : "Failed to update activity",
-    };
+    return toActionError(error, "Failed to update activity");
   }
 }
 
@@ -203,13 +197,7 @@ export async function setContentActivityStatusAction(
     revalidateContentActivityPaths(id);
     return { success: true as const };
   } catch (error) {
-    return {
-      success: false as const,
-      error:
-        error instanceof Error
-          ? error.message
-          : "Failed to update activity status",
-    };
+    return toActionError(error, "Failed to update activity status");
   }
 }
 
@@ -240,10 +228,6 @@ export async function deleteContentActivityAction(id: string) {
     revalidateContentActivityPaths();
     redirect("/activities");
   } catch (error) {
-    return {
-      success: false as const,
-      error:
-        error instanceof Error ? error.message : "Failed to delete activity",
-    };
+    return toActionError(error, "Failed to delete activity");
   }
 }
