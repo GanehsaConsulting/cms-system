@@ -28,13 +28,13 @@ export function MediaLibraryViewToggle({
         onClick={() => onChange("table")}
         className={cn(
           LIST_TOOLBAR_SEGMENTED_ITEM,
+          "min-w-7 px-1.5",
           value === "table"
             ? LIST_TOOLBAR_SEGMENTED_ITEM_ACTIVE
             : LIST_TOOLBAR_SEGMENTED_ITEM_INACTIVE,
         )}
       >
         <ListIcon className="size-3.5" />
-        List
       </button>
       <button
         type="button"
@@ -43,13 +43,13 @@ export function MediaLibraryViewToggle({
         onClick={() => onChange("grid")}
         className={cn(
           LIST_TOOLBAR_SEGMENTED_ITEM,
+          "min-w-7 px-1.5",
           value === "grid"
             ? LIST_TOOLBAR_SEGMENTED_ITEM_ACTIVE
             : LIST_TOOLBAR_SEGMENTED_ITEM_INACTIVE,
         )}
       >
         <SquaresFourIcon className="size-3.5" />
-        Grid
       </button>
     </div>
   );
