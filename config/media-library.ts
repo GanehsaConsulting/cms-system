@@ -22,28 +22,122 @@ export const MEDIA_LIBRARY_MAX_FILE_SIZE_MB = 5;
 
 export const MEDIA_LIBRARY_MAX_UPLOAD_BATCH = 20;
 
-export const MEDIA_LIBRARY_ACCEPTED_TYPES = [
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-  "image/gif",
-  "image/svg+xml",
-  "video/mp4",
-  "video/webm",
-  "application/pdf",
+export const MEDIA_LIBRARY_IMAGE_EXTENSIONS = [
+  "avif",
+  "bmp",
+  "gif",
+  "heic",
+  "heif",
+  "ico",
+  "jpeg",
+  "jpg",
+  "png",
+  "svg",
+  "tif",
+  "tiff",
+  "webp",
+] as const;
+
+export const MEDIA_LIBRARY_VIDEO_EXTENSIONS = [
+  "avi",
+  "m4v",
+  "mkv",
+  "mov",
+  "mp4",
+  "ogv",
+  "webm",
+] as const;
+
+export const MEDIA_LIBRARY_DOCUMENT_EXTENSIONS = [
+  "csv",
+  "doc",
+  "docx",
+  "odp",
+  "ods",
+  "odt",
+  "pdf",
+  "ppt",
+  "pptx",
+  "rtf",
+  "txt",
+  "xls",
+  "xlsx",
+] as const;
+
+export const MEDIA_LIBRARY_AUDIO_EXTENSIONS = [
+  "aac",
+  "flac",
+  "m4a",
+  "mp3",
+  "ogg",
+  "wav",
+] as const;
+
+export const MEDIA_LIBRARY_ARCHIVE_EXTENSIONS = [
+  "7z",
+  "rar",
+  "zip",
 ] as const;
 
 export const MEDIA_LIBRARY_ACCEPTED_EXTENSIONS = [
-  "jpg",
-  "jpeg",
-  "png",
-  "webp",
-  "gif",
-  "svg",
-  "mp4",
-  "webm",
-  "pdf",
+  ...MEDIA_LIBRARY_IMAGE_EXTENSIONS,
+  ...MEDIA_LIBRARY_VIDEO_EXTENSIONS,
+  ...MEDIA_LIBRARY_DOCUMENT_EXTENSIONS,
+  ...MEDIA_LIBRARY_AUDIO_EXTENSIONS,
+  ...MEDIA_LIBRARY_ARCHIVE_EXTENSIONS,
 ] as const;
+
+export const MEDIA_LIBRARY_ACCEPTED_TYPES = [
+  "image/avif",
+  "image/bmp",
+  "image/gif",
+  "image/heic",
+  "image/heif",
+  "image/jpeg",
+  "image/png",
+  "image/svg+xml",
+  "image/tiff",
+  "image/webp",
+  "image/x-icon",
+  "image/vnd.microsoft.icon",
+  "video/avi",
+  "video/mp4",
+  "video/quicktime",
+  "video/webm",
+  "video/x-matroska",
+  "video/x-msvideo",
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/vnd.ms-excel",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "application/vnd.ms-powerpoint",
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  "application/vnd.oasis.opendocument.text",
+  "application/vnd.oasis.opendocument.spreadsheet",
+  "application/vnd.oasis.opendocument.presentation",
+  "application/rtf",
+  "text/plain",
+  "text/csv",
+  "text/rtf",
+  "audio/aac",
+  "audio/flac",
+  "audio/m4a",
+  "audio/mpeg",
+  "audio/mp4",
+  "audio/ogg",
+  "audio/wav",
+  "audio/x-wav",
+  "application/zip",
+  "application/x-7z-compressed",
+  "application/vnd.rar",
+  "application/x-rar-compressed",
+] as const;
+
+export const MEDIA_LIBRARY_FORMATS_LABEL =
+  "images, videos, documents, audio, and archives";
+
+export const MEDIA_LIBRARY_UPLOAD_HINT = `Upload ${MEDIA_LIBRARY_FORMATS_LABEL} (max ${MEDIA_LIBRARY_MAX_FILE_SIZE_MB} MB each).`;
 
 export const MEDIA_LIBRARY_ACCEPT_ATTRIBUTE = [
   ...MEDIA_LIBRARY_ACCEPTED_TYPES,

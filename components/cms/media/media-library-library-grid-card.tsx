@@ -61,11 +61,14 @@ export function MediaLibraryLibraryGridCard({
         >
           <div
             className={cn(
-              "absolute top-1.5 left-1.5 z-10 transition-opacity",
+              "absolute top-1.5 left-1.5 z-20 transition-opacity",
               showSelectControl
                 ? "opacity-100"
                 : "pointer-events-none opacity-0 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100",
             )}
+            onClick={(event) => event.stopPropagation()}
+            onMouseDown={(event) => event.stopPropagation()}
+            onPointerDown={(event) => event.stopPropagation()}
           >
             <MediaLibraryLibraryFileSelectCheckbox
               checked={isSelected}

@@ -37,11 +37,14 @@ export function MediaLibraryFolderGridItem({
     >
       <div
         className={cn(
-          "absolute top-1 left-1 z-10 transition-opacity",
+          "absolute top-1 left-1 z-20 transition-opacity",
           showSelectControl
             ? "opacity-100"
             : "pointer-events-none opacity-0 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100",
         )}
+        onClick={(event) => event.stopPropagation()}
+        onMouseDown={(event) => event.stopPropagation()}
+        onPointerDown={(event) => event.stopPropagation()}
       >
         <MediaLibraryLibraryFileSelectCheckbox
           checked={isChecked}

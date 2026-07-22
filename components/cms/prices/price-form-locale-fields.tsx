@@ -39,7 +39,7 @@ export function PriceFormLocaleFields({
     name: "features",
   });
 
-  const serviceValue = watch(`service.${locale}`);
+  const packageNameValue = watch(`packageName.${locale}`);
   const whatsappPhone = watch("whatsappPhone");
   const whatsappMessage = watch(`whatsappMessage.${locale}`);
   const generatedLink = buildWhatsAppUrl(whatsappPhone, whatsappMessage);
@@ -79,7 +79,7 @@ export function PriceFormLocaleFields({
             )}
           />
           <p className="text-muted-foreground text-xs leading-relaxed">
-            Prefill chat text for {serviceValue || "this service"} in{" "}
+            Prefill chat text for {packageNameValue || "this package"} in{" "}
             {locale.toUpperCase()}.
           </p>
           {generatedLink ? (
@@ -95,48 +95,25 @@ export function PriceFormLocaleFields({
         description="Names and description shown on the public pricing card."
         accent="content"
       >
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="space-y-2">
-            <Label
-              htmlFor={`service-${locale}`}
-              className="text-chart-1"
-            >
-              Service
-              <RequiredMark />
-            </Label>
-            <Controller
-              control={control}
-              name={`service.${locale}`}
-              render={({ field }) => (
-                <Input
-                  id={`service-${locale}`}
-                  placeholder="Virtual Office"
-                  {...field}
-                />
-              )}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label
-              htmlFor={`packageName-${locale}`}
-              className="text-chart-1"
-            >
-              Package name
-              <RequiredMark />
-            </Label>
-            <Controller
-              control={control}
-              name={`packageName.${locale}`}
-              render={({ field }) => (
-                <Input
-                  id={`packageName-${locale}`}
-                  placeholder="Virtual Office Space Lite"
-                  {...field}
-                />
-              )}
-            />
-          </div>
+        <div className="space-y-2">
+          <Label
+            htmlFor={`packageName-${locale}`}
+            className="text-chart-1"
+          >
+            Package name
+            <RequiredMark />
+          </Label>
+          <Controller
+            control={control}
+            name={`packageName.${locale}`}
+            render={({ field }) => (
+              <Input
+                id={`packageName-${locale}`}
+                placeholder="Virtual Office Space Lite"
+                {...field}
+              />
+            )}
+          />
         </div>
 
         <div className="space-y-2">

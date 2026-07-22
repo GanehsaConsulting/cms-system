@@ -8,3 +8,4 @@ export {
   verification,
 } from "./auth";
 export { mediaFiles, mediaFolders } from "./media";
+export { priceCategories, prices } from "./prices";

@@ -8,6 +8,13 @@
       "when": 1784563823342,
       "tag": "0000_conscious_guardian",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1784700000000,
+      "tag": "0001_prices",
+      "breakpoints": true
     }
   ]
 }

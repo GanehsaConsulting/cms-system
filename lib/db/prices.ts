@@ -1,27 +1,41 @@
-import { readFile, writeFile } from "node:fs/promises";
-import path from "node:path";
-import { slugifyArticleTitle } from "@/lib/articles/slug";
-import { assertBrandMatch, filterByBrand } from "@/lib/brands/content-scope";
+import { and, desc, eq, ne } from "drizzle-orm";
 import { PRICE_FORM_LIMITS } from "@/config/price-form";
+import { slugify, slugifyArticleTitle } from "@/lib/articles/slug";
+import { assertBrandMatch } from "@/lib/brands/content-scope";
+import { db } from "@/lib/db/client";
+import { prices } from "@/lib/db/schema";
 import {
   isLocalizedTextComplete,
   trimLocalized,
 } from "@/lib/locale";
 import { normalizePrice } from "@/lib/prices/normalize";
-import type { Price, PriceFeature, PriceInput } from "@/types/price";
 import type { LocalizedText } from "@/types/locale";
-import { slugify } from "@/lib/articles/slug";
+import type { Price, PriceFeature, PriceInput } from "@/types/price";
 
-const DATA_PATH = path.join(process.cwd(), "data/prices.json");
-
-async function readPrices(): Promise<Price[]> {
-  const raw = await readFile(DATA_PATH, "utf-8");
-  const prices = JSON.parse(raw) as Price[];
-  return prices.map(normalizePrice);
+function toIso(value: Date): string {
+  return value.toISOString();
 }
 
-async function writePrices(prices: Price[]): Promise<void> {
-  await writeFile(DATA_PATH, `${JSON.stringify(prices, null, 2)}\n`, "utf-8");
+function rowToPrice(row: typeof prices.$inferSelect): Price {
+  return normalizePrice({
+    id: row.id,
+    brandId: row.brandId,
+    slug: row.slug,
+    serviceSlug: row.serviceSlug,
+    category: row.category,
+    highlighted: row.highlighted,
+    description: row.description,
+    service: row.service,
+    packageName: row.packageName,
+    price: row.price,
+    strikethroughPrice: row.strikethroughPrice,
+    whatsappPhone: row.whatsappPhone,
+    whatsappMessage: row.whatsappMessage,
+    isActive: row.isActive,
+    features: Array.isArray(row.features) ? row.features : [],
+    createdAt: toIso(row.createdAt),
+    updatedAt: toIso(row.updatedAt),
+  });
 }
 
 function trimOptionalLocalized(text: LocalizedText): LocalizedText {
@@ -69,30 +83,27 @@ function normalizeInput(input: PriceInput): PriceInput {
   };
 }
 
-function nextPriceId(prices: Price[]): string {
-  const maxId = prices.reduce((max, price) => {
-    const numericId = Number.parseInt(price.id, 10);
-    return Number.isNaN(numericId) ? max : Math.max(max, numericId);
-  }, 0);
-
-  return String(maxId + 1);
-}
-
 export async function getPrices(brandId: string): Promise<Price[]> {
-  const prices = filterByBrand(await readPrices(), brandId);
-  return prices.sort(
-    (left, right) =>
-      new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime(),
-  );
+  const rows = await db
+    .select()
+    .from(prices)
+    .where(eq(prices.brandId, brandId))
+    .orderBy(desc(prices.updatedAt));
+
+  return rows.map(rowToPrice);
 }
 
 export async function getPriceById(
   brandId: string,
   id: string,
 ): Promise<Price | null> {
-  const prices = await readPrices();
-  const price = prices.find((item) => item.id === id) ?? null;
+  const rows = await db
+    .select()
+    .from(prices)
+    .where(eq(prices.id, id))
+    .limit(1);
 
+  const price = rows[0] ? rowToPrice(rows[0]) : null;
   if (!price) {
     return null;
   }
@@ -109,36 +120,39 @@ export async function getPriceBySlug(
   brandId: string,
   slug: string,
 ): Promise<Price | null> {
-  const prices = filterByBrand(await readPrices(), brandId);
-  return prices.find((price) => price.slug === slug) ?? null;
+  const rows = await db
+    .select()
+    .from(prices)
+    .where(and(eq(prices.brandId, brandId), eq(prices.slug, slug)))
+    .limit(1);
+
+  return rows[0] ? rowToPrice(rows[0]) : null;
 }
 
 export async function createPrice(
   brandId: string,
   input: PriceInput,
 ): Promise<Price> {
-  const prices = await readPrices();
   const normalized = normalizeInput(input);
-  const existing = filterByBrand(prices, brandId).find(
-    (price) => price.slug === normalized.slug,
-  );
+  const existing = await getPriceBySlug(brandId, normalized.slug);
 
   if (existing) {
     throw new Error("Slug is already in use");
   }
 
-  const now = new Date().toISOString();
-  const price: Price = {
-    id: nextPriceId(prices),
-    brandId,
-    ...normalized,
-    createdAt: now,
-    updatedAt: now,
-  };
+  const now = new Date();
+  const [row] = await db
+    .insert(prices)
+    .values({
+      id: crypto.randomUUID(),
+      brandId,
+      ...normalized,
+      createdAt: now,
+      updatedAt: now,
+    })
+    .returning();
 
-  prices.push(price);
-  await writePrices(prices);
-  return price;
+  return rowToPrice(row);
 }
 
 export async function updatePrice(
@@ -146,47 +160,54 @@ export async function updatePrice(
   id: string,
   input: PriceInput,
 ): Promise<Price> {
-  const prices = await readPrices();
-  const index = prices.findIndex((price) => price.id === id);
+  const current = await getPriceById(brandId, id);
 
-  if (index === -1) {
+  if (!current) {
     throw new Error("Price plan not found");
   }
 
-  assertBrandMatch(prices[index], brandId, "Price plan not found");
-
   const normalized = normalizeInput(input);
-  const slugTaken = filterByBrand(prices, brandId).some(
-    (price) => price.slug === normalized.slug && price.id !== id,
-  );
+  const slugTaken = await db
+    .select({ id: prices.id })
+    .from(prices)
+    .where(
+      and(
+        eq(prices.brandId, brandId),
+        eq(prices.slug, normalized.slug),
+        ne(prices.id, id),
+      ),
+    )
+    .limit(1);
 
-  if (slugTaken) {
+  if (slugTaken.length > 0) {
     throw new Error("Slug is already in use");
   }
 
-  const updated: Price = {
-    ...prices[index],
-    ...normalized,
-    brandId,
-    updatedAt: new Date().toISOString(),
-  };
+  const [row] = await db
+    .update(prices)
+    .set({
+      ...normalized,
+      brandId,
+      updatedAt: new Date(),
+    })
+    .where(and(eq(prices.id, id), eq(prices.brandId, brandId)))
+    .returning();
 
-  prices[index] = updated;
-  await writePrices(prices);
-  return updated;
-}
-
-export async function deletePrice(brandId: string, id: string): Promise<void> {
-  const prices = await readPrices();
-  const target = prices.find((price) => price.id === id);
-
-  if (!target) {
+  if (!row) {
     throw new Error("Price plan not found");
   }
 
-  assertBrandMatch(target, brandId, "Price plan not found");
+  return rowToPrice(row);
+}
 
-  const nextPrices = prices.filter((price) => price.id !== id);
+export async function deletePrice(brandId: string, id: string): Promise<void> {
+  const current = await getPriceById(brandId, id);
 
-  await writePrices(nextPrices);
+  if (!current) {
+    throw new Error("Price plan not found");
+  }
+
+  await db
+    .delete(prices)
+    .where(and(eq(prices.id, id), eq(prices.brandId, brandId)));
 }

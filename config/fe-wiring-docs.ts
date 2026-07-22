@@ -366,8 +366,8 @@ const wa = \`https://wa.me/\${price.whatsappPhone}?text=\${encodeURIComponent(ms
 \`\`\`
 
 ## CMS production checklist (affects data)
-1. JSON stores (\`data/prices.json\`, \`data/price-categories.json\`) must include \`brandId\` on each row
-2. Backfill legacy rows: \`npx tsx scripts/backfill-json-brand-id.ts gec\` (repeat per brand as needed)
+1. Prices live in Postgres (\`cms.prices\`, \`cms.price_categories\`) — not JSON files on disk
+2. Seed/import from legacy JSON if needed: \`npm run db:migrate:prices\`
 3. GEC does not expose \`prices\` — gate the FE by brand \`features\`
 
 ## Agent checklist

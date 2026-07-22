@@ -8,14 +8,18 @@ import { Superscript } from "@tiptap/extension-superscript";
 import { TextAlign } from "@tiptap/extension-text-align";
 import { Typography } from "@tiptap/extension-typography";
 import { Selection } from "@tiptap/extensions";
+import type { Editor } from "@tiptap/react";
 import { EditorContent, EditorContext, useEditor } from "@tiptap/react";
 import { StarterKit } from "@tiptap/starter-kit";
 import { useEffect, useRef, useState } from "react";
+import {
+  ArticleEditorImageButton,
+  insertArticleEditorImage,
+} from "@/components/cms/articles/article-editor-image-button";
 import { ArrowLeftIcon } from "@/components/tiptap-icons/arrow-left-icon";
 import { HighlighterIcon } from "@/components/tiptap-icons/highlighter-icon";
 import { LinkIcon } from "@/components/tiptap-icons/link-icon";
 import { HorizontalRule } from "@/components/tiptap-node/horizontal-rule-node/horizontal-rule-node-extension";
-import { ImageUploadNode } from "@/components/tiptap-node/image-upload-node/image-upload-node-extension";
 import "@/components/tiptap-node/blockquote-node/blockquote-node.scss";
 import "@/components/tiptap-node/code-block-node/code-block-node.scss";
 import "@/components/tiptap-node/horizontal-rule-node/horizontal-rule-node.scss";
@@ -31,7 +35,6 @@ import {
   ColorHighlightPopoverContent,
 } from "@/components/tiptap-ui/color-highlight-popover";
 import { HeadingDropdownMenu } from "@/components/tiptap-ui/heading-dropdown-menu";
-import { ImageUploadButton } from "@/components/tiptap-ui/image-upload-button";
 import {
   LinkButton,
   LinkContent,
@@ -51,7 +54,7 @@ import {
 import { useCursorVisibility } from "@/hooks/use-cursor-visibility";
 import { useIsBreakpoint } from "@/hooks/use-is-breakpoint";
 import { useWindowSize } from "@/hooks/use-window-size";
-import { handleImageUpload, MAX_FILE_SIZE } from "@/lib/tiptap-utils";
+import { isArticleImageFile } from "@/lib/articles/gallery";
 import "@/components/tiptap-templates/simple/simple-editor.scss";
 import "@/components/cms/article-editor.scss";
 
@@ -115,7 +118,7 @@ function MainToolbarContent({
       </ToolbarGroup>
       <ToolbarSeparator />
       <ToolbarGroup>
-        <ImageUploadButton text="Gambar" />
+        <ArticleEditorImageButton />
       </ToolbarGroup>
       <Spacer />
     </>
@@ -151,10 +154,42 @@ function MobileToolbarContent({
   );
 }
 
+function getImageFileFromDataTransfer(
+  dataTransfer: DataTransfer | null,
+): File | null {
+  if (!dataTransfer) {
+    return null;
+  }
+
+  const files = Array.from(dataTransfer.files);
+  return files.find((file) => isArticleImageFile(file)) ?? null;
+}
+
+function getImageFileFromClipboard(
+  clipboardData: DataTransfer | null,
+): File | null {
+  if (!clipboardData) {
+    return null;
+  }
+
+  for (const item of Array.from(clipboardData.items)) {
+    if (item.kind !== "file" || !item.type.startsWith("image/")) {
+      continue;
+    }
+
+    const file = item.getAsFile();
+    if (file && isArticleImageFile(file)) {
+      return file;
+    }
+  }
+
+  return getImageFileFromDataTransfer(clipboardData);
+}
+
 export function ArticleEditor({
   value,
   onChange,
-  placeholder = "Tulis konten artikel di sini...",
+  placeholder = "Write article content here...",
 }: ArticleEditorProps) {
   const isMobile = useIsBreakpoint();
   const { height } = useWindowSize();
@@ -163,6 +198,7 @@ export function ArticleEditor({
   );
   const toolbarRef = useRef<HTMLDivElement>(null);
   const isInternalUpdate = useRef(false);
+  const editorRef = useRef<Editor | null>(null);
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -171,9 +207,29 @@ export function ArticleEditor({
         autocomplete: "off",
         autocorrect: "off",
         autocapitalize: "off",
-        "aria-label": "Editor konten artikel",
+        "aria-label": "Article content editor",
         class: "simple-editor",
         "data-placeholder": placeholder,
+      },
+      handleDrop(_view, event) {
+        const file = getImageFileFromDataTransfer(event.dataTransfer);
+        if (!file || !editorRef.current) {
+          return false;
+        }
+
+        event.preventDefault();
+        void insertArticleEditorImage(editorRef.current, file);
+        return true;
+      },
+      handlePaste(_view, event) {
+        const file = getImageFileFromClipboard(event.clipboardData);
+        if (!file || !editorRef.current) {
+          return false;
+        }
+
+        event.preventDefault();
+        void insertArticleEditorImage(editorRef.current, file);
+        return true;
       },
     },
     extensions: [
@@ -189,18 +245,17 @@ export function ArticleEditor({
       TaskList,
       TaskItem.configure({ nested: true }),
       Highlight.configure({ multicolor: true }),
-      Image,
+      Image.configure({
+        inline: true,
+        allowBase64: true,
+        HTMLAttributes: {
+          class: "article-inline-image",
+        },
+      }),
       Typography,
       Superscript,
       Subscript,
       Selection,
-      ImageUploadNode.configure({
-        accept: "image/*",
-        maxSize: MAX_FILE_SIZE,
-        limit: 3,
-        upload: handleImageUpload,
-        onError: () => undefined,
-      }),
     ],
     content: value || "<p></p>",
     onUpdate: ({ editor: currentEditor }) => {
@@ -208,6 +263,10 @@ export function ArticleEditor({
       onChange(currentEditor.getHTML());
     },
   });
+
+  useEffect(() => {
+    editorRef.current = editor ?? null;
+  }, [editor]);
 
   useEffect(() => {
     if (!editor) return;

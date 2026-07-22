@@ -4,7 +4,7 @@ import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { CmsAlert } from "@/components/shared/cms-alert";
-import { MEDIA_LIBRARY_ACCEPT_ATTRIBUTE } from "@/config/media-library";
+import { MEDIA_LIBRARY_ACCEPT_ATTRIBUTE, MEDIA_LIBRARY_UPLOAD_HINT } from "@/config/media-library";
 import {
   createMediaUploadSignaturesAction,
   saveMediaLibraryUploadsAction,
@@ -117,6 +117,7 @@ export function MediaLibraryUploadButton({
         className="h-8 gap-1.5"
         onClick={openPicker}
         disabled={disabled || !folderId || isPending}
+        title={MEDIA_LIBRARY_UPLOAD_HINT}
       >
         <UploadSimpleIcon className="size-3.5" />
         Upload

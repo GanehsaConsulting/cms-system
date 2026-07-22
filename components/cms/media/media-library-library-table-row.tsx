@@ -35,7 +35,12 @@ export function MediaLibraryLibraryTableRow({
       isSelected={isSelected}
       onClick={() => onToggleSelect(file.id)}
     >
-      <TableCell className={cn(LIST_TABLE_CELL_CLASS, "w-10")}>
+      <TableCell
+        className={cn(LIST_TABLE_CELL_CLASS, "w-10")}
+        onClick={(event) => event.stopPropagation()}
+        onMouseDown={(event) => event.stopPropagation()}
+        onPointerDown={(event) => event.stopPropagation()}
+      >
         <MediaLibraryLibraryFileSelectCheckbox
           checked={isSelected}
           visible

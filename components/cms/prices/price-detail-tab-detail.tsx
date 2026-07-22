@@ -32,9 +32,6 @@ export function PriceDetailTabDetail({
   return (
     <div className="space-y-4">
       <CmsDetailMetaGroup label="Overview">
-        <CmsDetailMetaRow label="Service">
-          {getPriceDisplayText(price.service)}
-        </CmsDetailMetaRow>
         <CmsDetailMetaRow label="Category">
           {getPriceCategoryLabel(price.serviceSlug, categories)}
         </CmsDetailMetaRow>

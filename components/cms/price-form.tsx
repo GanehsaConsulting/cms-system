@@ -67,11 +67,45 @@ export function PriceForm({ price, categories }: PriceFormProps) {
     control,
     handleSubmit,
     reset,
+    setValue,
     watch,
     formState: { errors, isDirty },
   } = form;
 
   const watchedValues = watch();
+
+  useEffect(() => {
+    const category = availableCategories.find(
+      (item) => item.id === watchedValues.serviceSlug,
+    );
+    if (!category) {
+      return;
+    }
+
+    const nextService = {
+      id: category.label,
+      en: category.label,
+      zh: category.label,
+    };
+    const current = watchedValues.service;
+    if (
+      current.id === nextService.id &&
+      current.en === nextService.en &&
+      current.zh === nextService.zh
+    ) {
+      return;
+    }
+
+    setValue("service", nextService, {
+      shouldDirty: false,
+      shouldValidate: true,
+    });
+  }, [
+    availableCategories,
+    setValue,
+    watchedValues.service,
+    watchedValues.serviceSlug,
+  ]);
 
   const baselineValues = useMemo(
     () => (price ? priceToFormInput(price) : createEmptyPriceInput()),
@@ -91,7 +125,6 @@ export function PriceForm({ price, categories }: PriceFormProps) {
   const incompleteLocales = useMemo(() => {
     return SITE_LOCALES.filter((locale) => {
       const hasCoreFields =
-        isLocaleTabComplete(watchedValues.service, locale) &&
         isLocaleTabComplete(watchedValues.packageName, locale) &&
         isLocaleTabComplete(watchedValues.whatsappMessage, locale);
 
@@ -109,7 +142,6 @@ export function PriceForm({ price, categories }: PriceFormProps) {
     () => ({
       serviceSlug: watchedValues.serviceSlug,
       description: watchedValues.description,
-      service: watchedValues.service,
       packageName: watchedValues.packageName,
       price: watchedValues.price,
       whatsappPhone: watchedValues.whatsappPhone,
@@ -119,7 +151,6 @@ export function PriceForm({ price, categories }: PriceFormProps) {
     [
       watchedValues.serviceSlug,
       watchedValues.description,
-      watchedValues.service,
       watchedValues.packageName,
       watchedValues.price,
       watchedValues.whatsappPhone,
@@ -133,13 +164,13 @@ export function PriceForm({ price, categories }: PriceFormProps) {
       watchedValues.packageName[activeLocale].trim() ||
       watchedValues.packageName.en.trim() ||
       watchedValues.packageName.id.trim();
-    const serviceName =
-      watchedValues.service[activeLocale].trim() ||
-      watchedValues.service.en.trim() ||
-      watchedValues.service.id.trim();
+    const categoryLabel =
+      availableCategories.find(
+        (category) => category.id === watchedValues.serviceSlug,
+      )?.label ?? "";
 
     return {
-      title: packageName || serviceName,
+      title: packageName || categoryLabel,
       price: watchedValues.price,
       strikethroughPrice: watchedValues.strikethroughPrice,
       features: watchedValues.features
@@ -151,7 +182,7 @@ export function PriceForm({ price, categories }: PriceFormProps) {
       ),
       highlighted: watchedValues.highlighted,
     };
-  }, [activeLocale, watchedValues]);
+  }, [activeLocale, availableCategories, watchedValues]);
 
   function buildFormData(values: PriceFormValues) {
     const formData = new FormData();

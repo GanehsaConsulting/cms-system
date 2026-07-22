@@ -42,14 +42,23 @@ export function MediaLibraryFolderActions({
   const [deleteOpen, setDeleteOpen] = useState(false);
 
   const parentId =
-    activeFolderId === MEDIA_LIBRARY_ALL_FILES_ID
-      ? null
-      : activeFolderId;
+    activeFolderId === MEDIA_LIBRARY_ALL_FILES_ID ? null : activeFolderId;
 
   const canCreate = canCreateChildFolder(selectedFolder);
 
   return (
     <>
+      <Button
+        type="button"
+        variant="ghost"
+        className={cn(LIST_TOOLBAR_BUTTON_CLASS, "h-8 gap-1.5")}
+        disabled={!canCreate}
+        onClick={() => setCreateOpen(true)}
+      >
+        <PlusIcon className="size-3.5" />
+        New folder
+      </Button>
+
       <DropdownMenu>
         <DropdownMenuTrigger
           render={
@@ -58,6 +67,7 @@ export function MediaLibraryFolderActions({
               variant="ghost"
               className={cn(LIST_TOOLBAR_BUTTON_CLASS, "h-8 gap-1.5")}
               aria-label="Folder actions"
+              disabled={!selectedFolder}
             />
           }
         >
@@ -66,13 +76,6 @@ export function MediaLibraryFolderActions({
           <CaretDownIcon className="size-3 opacity-80" />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="min-w-44">
-          <DropdownMenuItem
-            disabled={!canCreate}
-            onClick={() => setCreateOpen(true)}
-          >
-            <PlusIcon />
-            New folder
-          </DropdownMenuItem>
           <DropdownMenuItem
             disabled={!selectedFolder}
             onClick={() => setRenameOpen(true)}

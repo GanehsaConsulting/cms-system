@@ -26,3 +26,17 @@
   height: 0;
   pointer-events: none;
 }
+
+.article-editor-wrapper .tiptap.ProseMirror img.article-inline-image {
+  display: inline-block;
+  max-width: 100%;
+  height: auto;
+  margin: 0.25rem 0;
+  vertical-align: bottom;
+  border-radius: var(--radius-deep);
+}
+
+.article-editor-wrapper .tiptap.ProseMirror img.article-inline-image.ProseMirror-selectednode {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}

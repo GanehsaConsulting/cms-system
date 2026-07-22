@@ -1,6 +1,7 @@
 import { and, desc, eq, isNotNull, lte, ne } from "drizzle-orm";
 import { assertBrandMatch } from "@/lib/brands/content-scope";
 import { normalizeArticle } from "@/lib/articles/list";
+import { resolveArticleContentImages } from "@/lib/articles/resolve-content-images";
 import { resolveImageAsset, resolveImageAssets } from "@/lib/cloudinary/assets";
 import { db } from "@/lib/db/client";
 import { articles, user } from "@/lib/db/schema";
@@ -112,13 +113,15 @@ function resolveStatusAndPublishedAt(
 async function resolveArticleMedia(input: ArticleInput): Promise<{
   thumbnail: string;
   gallery: string[];
+  content: string;
 }> {
-  const [thumbnail, gallery] = await Promise.all([
+  const [thumbnail, gallery, content] = await Promise.all([
     resolveImageAsset(input.thumbnail, "cms-system/articles/thumbnails"),
     resolveImageAssets(input.gallery, "cms-system/articles/gallery"),
+    resolveArticleContentImages(input.content),
   ]);
 
-  return { thumbnail, gallery };
+  return { thumbnail, gallery, content };
 }
 
 export async function getArticles(brandId: string): Promise<Article[]> {
@@ -292,7 +295,7 @@ export async function createArticle(
       title: input.title,
       slug: input.slug,
       excerpt: input.excerpt,
-      content: input.content,
+      content: media.content,
       status: resolved.status,
       authorName: input.authorName,
       authorId: options.authorId ?? null,
@@ -349,7 +352,7 @@ export async function updateArticle(
       title: input.title,
       slug: input.slug,
       excerpt: input.excerpt,
-      content: input.content,
+      content: media.content,
       status: resolved.status,
       authorName: input.authorName,
       authorId: options.authorId ?? null,

@@ -1,28 +1,17 @@
 import type { MediaKind } from "@/types/media";
+import {
+  MEDIA_LIBRARY_ARCHIVE_EXTENSIONS,
+  MEDIA_LIBRARY_AUDIO_EXTENSIONS,
+  MEDIA_LIBRARY_DOCUMENT_EXTENSIONS,
+  MEDIA_LIBRARY_IMAGE_EXTENSIONS,
+  MEDIA_LIBRARY_VIDEO_EXTENSIONS,
+} from "@/config/media-library";
 
-const IMAGE_EXTENSIONS = new Set([
-  "avif",
-  "gif",
-  "jpeg",
-  "jpg",
-  "png",
-  "svg",
-  "webp",
-]);
-
-const VIDEO_EXTENSIONS = new Set(["avi", "mov", "mp4", "webm"]);
-
-const DOCUMENT_EXTENSIONS = new Set([
-  "csv",
-  "doc",
-  "docx",
-  "pdf",
-  "ppt",
-  "pptx",
-  "txt",
-  "xls",
-  "xlsx",
-]);
+const IMAGE_EXTENSIONS = new Set<string>(MEDIA_LIBRARY_IMAGE_EXTENSIONS);
+const VIDEO_EXTENSIONS = new Set<string>(MEDIA_LIBRARY_VIDEO_EXTENSIONS);
+const DOCUMENT_EXTENSIONS = new Set<string>(MEDIA_LIBRARY_DOCUMENT_EXTENSIONS);
+const AUDIO_EXTENSIONS = new Set<string>(MEDIA_LIBRARY_AUDIO_EXTENSIONS);
+const ARCHIVE_EXTENSIONS = new Set<string>(MEDIA_LIBRARY_ARCHIVE_EXTENSIONS);
 
 function extensionFromPath(value: string): string | null {
   const basename = value.split("/").pop()?.split("?")[0]?.split("#")[0] ?? "";
@@ -51,9 +40,22 @@ function kindFromMime(mime: string | null): MediaKind {
     mime.startsWith("application/pdf") ||
     mime.startsWith("application/msword") ||
     mime.startsWith("application/vnd.") ||
+    mime.startsWith("application/rtf") ||
     mime.startsWith("text/")
   ) {
     return "document";
+  }
+
+  if (mime.startsWith("audio/")) {
+    return "other";
+  }
+
+  if (
+    mime.startsWith("application/zip") ||
+    mime.includes("rar") ||
+    mime.includes("7z")
+  ) {
+    return "other";
   }
 
   return "other";
@@ -74,6 +76,10 @@ function kindFromExtension(extension: string | null): MediaKind {
 
   if (DOCUMENT_EXTENSIONS.has(extension)) {
     return "document";
+  }
+
+  if (AUDIO_EXTENSIONS.has(extension) || ARCHIVE_EXTENSIONS.has(extension)) {
+    return "other";
   }
 
   return "other";

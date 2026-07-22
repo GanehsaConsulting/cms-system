@@ -13,7 +13,6 @@ export type PricePublishChecklistValues = Pick<
   PriceFormValues,
   | "serviceSlug"
   | "description"
-  | "service"
   | "packageName"
   | "price"
   | "whatsappPhone"
@@ -41,14 +40,6 @@ export function getPricePublishChecklist(
       completed: values.serviceSlug.trim().length > 0,
       required: true,
       weight: 10,
-    },
-    {
-      id: "service",
-      label: "Service name",
-      hint: "Fill in all languages (ID, EN, 中文)",
-      completed: isLocalizedTextComplete(values.service),
-      required: true,
-      weight: 15,
     },
     {
       id: "packageName",

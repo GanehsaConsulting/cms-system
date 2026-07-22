@@ -1,6 +1,7 @@
 import {
   MEDIA_LIBRARY_ACCEPTED_EXTENSIONS,
   MEDIA_LIBRARY_ACCEPTED_TYPES,
+  MEDIA_LIBRARY_FORMATS_LABEL,
   MEDIA_LIBRARY_MAX_FILE_SIZE_MB,
   MEDIA_LIBRARY_MAX_UPLOAD_BATCH,
 } from "@/config/media-library";
@@ -67,7 +68,7 @@ export function validateMediaUploadMeta(input: {
       mimeType: input.mimeType,
     })
   ) {
-    return "File type is not supported.";
+    return `Only ${MEDIA_LIBRARY_FORMATS_LABEL} are supported.`;
   }
 
   if (input.sizeBytes > getMediaFileSizeLimitBytes()) {

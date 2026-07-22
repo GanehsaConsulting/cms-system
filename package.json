@@ -17,7 +17,8 @@
     "db:seed:ganesha": "tsx scripts/seed-ganesha-from-dump.ts",
     "db:seed:staff": "tsx scripts/seed-staff-users.ts",
     "db:migrate:articles": "tsx scripts/migrate-articles-json.ts",
-    "db:migrate:media": "tsx scripts/migrate-media-json.ts"
+    "db:migrate:media": "tsx scripts/migrate-media-json.ts",
+    "db:migrate:prices": "tsx scripts/migrate-prices-json.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",

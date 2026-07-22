@@ -32,10 +32,6 @@ export function getPriceFormChangedSections(
     sections.push("Plan details");
   }
 
-  if (!localizedEqual(baseline.service, current.service)) {
-    sections.push("Service name");
-  }
-
   if (!localizedEqual(baseline.packageName, current.packageName)) {
     sections.push("Package name");
   }

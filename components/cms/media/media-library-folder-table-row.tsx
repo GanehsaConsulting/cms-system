@@ -46,7 +46,12 @@ export function MediaLibraryFolderTableRow({
         onOpen(folder.id);
       }}
     >
-      <TableCell className={cn(LIST_TABLE_CELL_CLASS, "w-10")}>
+      <TableCell
+        className={cn(LIST_TABLE_CELL_CLASS, "w-10")}
+        onClick={(event) => event.stopPropagation()}
+        onMouseDown={(event) => event.stopPropagation()}
+        onPointerDown={(event) => event.stopPropagation()}
+      >
         <MediaLibraryLibraryFileSelectCheckbox
           checked={isChecked}
           visible
