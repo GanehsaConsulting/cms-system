@@ -2,6 +2,7 @@
 
 import {
   sfArrowUpRight,
+  sfArchiveboxFill,
   sfBellFill,
   sfBuilding2Fill,
   sfCalendar,
@@ -85,6 +86,7 @@ function createSFIcon(symbol: IconDefinition, displayName: string): Icon {
   return IconComponent;
 }
 
+export const ArchiveIcon = createSFIcon(sfArchiveboxFill, "ArchiveIcon");
 export const ArrowUpRightIcon = createSFIcon(
   sfArrowUpRight,
   "ArrowUpRightIcon",

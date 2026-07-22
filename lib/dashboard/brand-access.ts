@@ -11,6 +11,7 @@ const QUICK_ACTION_FEATURE: Record<string, BrandFeatureId> = {
   price: "prices",
   client: "clients-works",
   banner: "banners",
+  activity: "activities",
 };
 
 /**
@@ -20,12 +21,12 @@ const QUICK_ACTION_FEATURE: Record<string, BrandFeatureId> = {
  */
 const WIDGET_FEATURES: Record<DashboardWidgetId, BrandFeatureId[]> = {
   greeting: [],
-  "quick-actions": ["articles", "prices", "clients-works", "banners"],
+  "quick-actions": ["articles", "prices", "clients-works", "banners", "activities"],
   "content-health": [],
   "article-stats": ["articles"],
   "recent-articles": ["articles"],
   "drafts-attention": ["articles"],
-  "recent-activity": ["articles", "prices", "clients-works", "banners"],
+  "recent-activity": ["articles", "prices", "clients-works", "banners", "activities"],
   "articles-focus": ["articles"],
   browse: [],
 };
@@ -83,6 +84,7 @@ export function brandSupportsHrefFeature(
     "/prices": "prices",
     "/clients": "clients-works",
     "/banners": "banners",
+    "/activities": "activities",
   };
 
   const match = Object.entries(featureByHref).find(

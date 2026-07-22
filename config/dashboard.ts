@@ -4,6 +4,7 @@ import {
   type Icon,
   Person2Icon,
   PhotoIcon,
+  SparkleIcon,
 } from "@/lib/icons";
 
 export interface DashboardQuickAction {
@@ -54,6 +55,13 @@ export const DASHBOARD_QUICK_ACTIONS: DashboardQuickAction[] = [
     href: "/banners",
     icon: PhotoIcon,
     surface: tintedSurface("from-[#C77DFF]", "to-[#AF52DE]", "175 82 222"),
+  },
+  {
+    id: "activity",
+    label: "New Activity",
+    href: "/activities/new",
+    icon: SparkleIcon,
+    surface: tintedSurface("from-[#FFD60A]", "to-[#FF9500]", "255 149 0"),
   },
 ];
 

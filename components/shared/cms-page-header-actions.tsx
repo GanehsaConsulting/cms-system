@@ -13,6 +13,8 @@ import {
 interface CmsPageHeaderActionsContextValue {
   actions: ReactNode;
   setActions: (actions: ReactNode) => void;
+  subnav: ReactNode;
+  setSubnav: (subnav: ReactNode) => void;
 }
 
 const CmsPageHeaderActionsContext =
@@ -24,13 +26,17 @@ export function CmsPageHeaderActionsProvider({
   children: ReactNode;
 }) {
   const [actions, setActionsState] = useState<ReactNode>(null);
+  const [subnav, setSubnavState] = useState<ReactNode>(null);
   const setActions = useCallback((next: ReactNode) => {
     setActionsState(next);
   }, []);
+  const setSubnav = useCallback((next: ReactNode) => {
+    setSubnavState(next);
+  }, []);
 
   const value = useMemo(
-    () => ({ actions, setActions }),
-    [actions, setActions],
+    () => ({ actions, setActions, subnav, setSubnav }),
+    [actions, setActions, subnav, setSubnav],
   );
 
   return (
@@ -70,6 +76,27 @@ export function CmsPageHeaderActions({ children }: { children: ReactNode }) {
     setActions(children);
     return () => setActions(null);
   }, [children, setActions]);
+
+  return null;
+}
+
+/** Renders subnav (tabs) registered below the title row in the section header. */
+export function CmsPageHeaderSubnavSlot() {
+  const { subnav } = useCmsPageHeaderActionsContext();
+  if (!subnav) {
+    return null;
+  }
+  return <div className="w-full">{subnav}</div>;
+}
+
+/** Registers header subnav from a list view (e.g. Activity / Promo tabs). */
+export function CmsPageHeaderSubnav({ children }: { children: ReactNode }) {
+  const { setSubnav } = useCmsPageHeaderActionsContext();
+
+  useLayoutEffect(() => {
+    setSubnav(children);
+    return () => setSubnav(null);
+  }, [children, setSubnav]);
 
   return null;
 }

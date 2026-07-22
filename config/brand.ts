@@ -30,6 +30,11 @@ export const BRAND_FEATURES = [
     label: "Banners",
     description: "Marketing banners and placements.",
   },
+  {
+    id: "activities",
+    label: "Activities",
+    description: "Activity and promo cards for the public site.",
+  },
 ] as const;
 
 export type BrandFeatureId = (typeof BRAND_FEATURES)[number]["id"];

@@ -7,6 +7,7 @@ export const NAV_FEATURE_BY_HREF: Record<string, BrandFeatureId> = {
   "/prices": "prices",
   "/clients": "clients-works",
   "/banners": "banners",
+  "/activities": "activities",
 };
 
 export function getNavFeatureForHref(href: string): BrandFeatureId | null {

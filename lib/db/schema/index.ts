@@ -1,5 +1,6 @@
 export { activityEvents, activityReads } from "./activity";
 export { articleCategories, articles } from "./articles";
+export { contentActivities } from "./content-activities";
 export {
   account,
   authSchema,

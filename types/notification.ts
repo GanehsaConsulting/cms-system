@@ -7,6 +7,7 @@ export type NotificationKind =
   | "banner"
   | "portfolio"
   | "media"
+  | "activity"
   | "system";
 
 export interface CmsNotification {

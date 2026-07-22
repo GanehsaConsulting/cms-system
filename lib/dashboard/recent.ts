@@ -1,10 +1,16 @@
 import type { ArticleSummary } from "@/types/article";
 import type { Banner } from "@/types/banner";
 import type { Client } from "@/types/client";
+import type { ContentActivity } from "@/types/content-activity";
 import type { LocalizedText } from "@/types/locale";
 import type { Price } from "@/types/price";
 
-export type DashboardRecentKind = "article" | "client" | "price" | "banner";
+export type DashboardRecentKind =
+  | "article"
+  | "client"
+  | "price"
+  | "banner"
+  | "activity";
 
 export interface DashboardRecentItem {
   id: string;
@@ -20,6 +26,7 @@ const KIND_LABEL: Record<DashboardRecentKind, string> = {
   client: "Client",
   price: "Price",
   banner: "Banner",
+  activity: "Activity",
 };
 
 function pickLocalized(text: LocalizedText): string {
@@ -31,6 +38,7 @@ export function buildDashboardRecentItems(input: {
   clients: Client[];
   prices: Price[];
   banners: Banner[];
+  activities: ContentActivity[];
   limit: number;
 }): DashboardRecentItem[] {
   const articles: DashboardRecentItem[] = input.articles.map((article) => ({
@@ -69,7 +77,18 @@ export function buildDashboardRecentItems(input: {
     updatedAt: banner.updatedAt,
   }));
 
-  return [...articles, ...clients, ...prices, ...banners]
+  const activities: DashboardRecentItem[] = input.activities.map(
+    (activity) => ({
+      id: `activity:${activity.id}`,
+      kind: "activity",
+      title: activity.title.trim() || "Untitled",
+      subtitle: KIND_LABEL.activity,
+      href: `/activities/${activity.id}/edit`,
+      updatedAt: activity.updatedAt,
+    }),
+  );
+
+  return [...articles, ...clients, ...prices, ...banners, ...activities]
     .sort(
       (left, right) =>
         new Date(right.updatedAt).getTime() -

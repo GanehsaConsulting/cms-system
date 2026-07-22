@@ -4,7 +4,8 @@ export type ActivityEntityType =
   | "client"
   | "banner"
   | "portfolio"
-  | "media";
+  | "media"
+  | "content_activity";
 
 export type ActivityAction = "created" | "updated" | "deleted" | "published";
 

@@ -10,6 +10,7 @@ import {
   PaintpaletteIcon,
   Person2Icon,
   PhotoIcon,
+  SparkleIcon,
   SquaresFourIcon,
 } from "@/lib/icons";
 
@@ -62,6 +63,12 @@ export const contentNavLinks: NavLink[] = [
     href: "/banners",
     icon: PhotoIcon,
     tone: "banners",
+  },
+  {
+    title: "Activities",
+    href: "/activities",
+    icon: SparkleIcon,
+    tone: "activities",
   },
   {
     title: "Files & Media",

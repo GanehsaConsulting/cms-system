@@ -10,6 +10,7 @@ import {
   GearSixIcon,
   Person2Icon,
   PhotoIcon,
+  SparkleIcon,
   type Icon,
 } from "@/lib/icons";
 import { cn } from "@/lib/utils";
@@ -22,6 +23,7 @@ const KIND_ICON: Record<NotificationKind, Icon> = {
   banner: PhotoIcon,
   portfolio: Building2Icon,
   media: FolderOpenIcon,
+  activity: SparkleIcon,
   system: GearSixIcon,
 };
 

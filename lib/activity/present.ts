@@ -21,6 +21,7 @@ const ENTITY_SINGULAR: Record<ActivityEntityType, string> = {
   banner: "banner",
   portfolio: "portfolio item",
   media: "media item",
+  content_activity: "activity item",
 };
 
 const ENTITY_MODULE_LABEL: Record<ActivityEntityType, string> = {
@@ -30,6 +31,7 @@ const ENTITY_MODULE_LABEL: Record<ActivityEntityType, string> = {
   banner: "Banners",
   portfolio: "Portfolio",
   media: "Media",
+  content_activity: "Activities",
 };
 
 const ENTITY_TONE: Record<ActivityEntityType, SidebarAppIconTone> = {
@@ -39,6 +41,7 @@ const ENTITY_TONE: Record<ActivityEntityType, SidebarAppIconTone> = {
   banner: "banners",
   portfolio: "clients",
   media: "media",
+  content_activity: "activities",
 };
 
 export function entityTypeToNotificationKind(
@@ -58,6 +61,10 @@ export function entityTypeToNotificationKind(
 
   if (entityType === "portfolio") {
     return "portfolio";
+  }
+
+  if (entityType === "content_activity") {
+    return "activity";
   }
 
   return "media";
@@ -106,5 +113,7 @@ export function getEntityActivityHref(
       return `/clients/portfolio/${entityId}/edit`;
     case "media":
       return "/media";
+    case "content_activity":
+      return `/activities/${entityId}/edit`;
   }
 }

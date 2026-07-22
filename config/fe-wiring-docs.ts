@@ -34,7 +34,7 @@ All routes below are **live GET APIs** with CORS (\`Access-Control-Allow-Origin:
 | \`ganesha-consulting\` | ALL |
 | \`go-space\` | ALL |
 | \`gonline\` | ALL |
-| \`gec\` | articles, clients-works, banners (**no prices**) |
+| \`gec\` | articles, clients-works, banners (**no prices, no activities**) |
 
 Always pass \`?brandId=\`. Disabled modules return \`{ data: [] }\` (detail → 404).
 
@@ -82,6 +82,15 @@ GET ${CMS_PUBLIC_API_BASE}/banners/by-key/{key}?brandId=
 \`\`\`
 List filters: \`key=\`, \`q=\`/\`search=\`, \`sort=\`
 
+### Activities (Activity / Promo cards)
+\`\`\`
+GET ${CMS_PUBLIC_API_BASE}/activities?brandId=
+GET ${CMS_PUBLIC_API_BASE}/activities/{id}?brandId=
+GET ${CMS_PUBLIC_API_BASE}/activities/{id}/click?brandId=
+\`\`\`
+List filters: \`kind=activity|promo\`, \`showTitle=true|false\`, \`q=\`/\`search=\`, \`sort=\`, \`page=\`, \`limit=\`  
+Click endpoint increments \`clickCount\` (fire on card CTA click).
+
 ### Media
 No browse API — use URLs on content entities. Brand logos: \`${CMS_PUBLIC_ORIGIN}/brands/...\`
 
@@ -110,6 +119,7 @@ Article, client, portfolio, and price **lists** use \`ApiPaginatedList\`. Catego
 |--------|----------|
 | Articles | published only (scheduled posts auto-promote via cron + on read) |
 | Prices / banners | active only |
+| Activities | published only |
 | Clients / portfolio | all (filter with query) |
 | Brands | active only |
 
@@ -619,6 +629,90 @@ interface Banner {
 - [ ] Cache keys include \`brandId\` + placement key
 `;
 
+const ACTIVITIES_MARKDOWN = `# Activities — Complete Frontend Wiring
+
+## Endpoints
+\`\`\`
+GET ${CMS_PUBLIC_API_BASE}/activities?brandId={brandId}
+GET ${CMS_PUBLIC_API_BASE}/activities/{id}?brandId={brandId}
+GET ${CMS_PUBLIC_API_BASE}/activities/{id}/click?brandId={brandId}
+\`\`\`
+
+Examples:
+\`\`\`
+${CMS_PUBLIC_API_BASE}/activities?brandId=gonline&page=1&limit=12
+${CMS_PUBLIC_API_BASE}/activities?brandId=gonline&kind=promo
+${CMS_PUBLIC_API_BASE}/activities?brandId=gonline&showTitle=true
+${CMS_PUBLIC_API_BASE}/activities?brandId=gonline&q=summer&sort=displayAt-desc
+${CMS_PUBLIC_API_BASE}/activities/abc-123?brandId=gonline
+${CMS_PUBLIC_API_BASE}/activities/abc-123/click?brandId=gonline
+\`\`\`
+
+Feature required: \`activities\` · Only \`status: "published"\` items are returned.
+
+## List query params
+| Param | Values | Notes |
+|-------|--------|-------|
+| \`brandId\` | string | **required** |
+| \`page\` | number | default \`1\` |
+| \`limit\` | number | default \`20\`, max \`100\` |
+| \`kind\` | \`activity\` \\| \`promo\` | omit = both |
+| \`showTitle\` | \`true\` \\| \`false\` | filter cards that show/hide title |
+| \`q\` / \`search\` | string | title, excerpt, content, linkUrl |
+| \`sort\` | see below | default \`displayAt-desc\` |
+
+### Sort values
+- \`displayAt-desc\` (default)
+- \`displayAt-asc\`
+- \`title-asc\`
+- \`clicks-desc\`
+- \`updatedAt-desc\`
+
+## Click tracking
+Call \`GET .../activities/{id}/click?brandId=\` when the user taps the card CTA (Instagram link, promo URL, etc.). Response:
+\`\`\`ts
+{ data: { id: string; clickCount: number } }
+\`\`\`
+
+## Type
+\`\`\`ts
+type ContentActivityKind = "activity" | "promo";
+
+interface ContentActivity {
+  id: string;
+  brandId: string;
+  title: string;
+  excerpt: string;
+  content: string; // HTML
+  displayAt: string; // ISO
+  showTitle: boolean;
+  kind: ContentActivityKind;
+  linkUrl: string;
+  status: "draft" | "published" | "archived";
+  images: string[];
+  authorName: string;
+  authorId: string | null;
+  clickCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+\`\`\`
+
+## Card rendering
+- \`images[]\` — carousel when length > 1
+- \`showTitle\` — when \`true\`, render \`title\` and require \`linkUrl\` for CTA
+- \`kind: "promo"\` — promo card; \`kind: "activity"\` — activity card (often Instagram)
+- Sort feed by \`displayAt\` descending for timeline UX
+
+## Agent checklist
+- [ ] Paginated list + detail fetch
+- [ ] Filter by \`kind\` and \`showTitle\` if needed
+- [ ] Carousel for multiple images
+- [ ] CTA opens \`linkUrl\`; fire click endpoint on interaction
+- [ ] Hide section when brand lacks \`activities\` or list is empty
+- [ ] Cache keys include \`brandId\` + filters
+`;
+
 const MEDIA_MARKDOWN = `# Media / Files — Frontend Wiring
 
 ## No public browse API (intentional)
@@ -628,6 +722,7 @@ Use asset URLs already on content:
 |--------|--------|
 | Articles | \`thumbnail\`, \`gallery[]\` |
 | Banners | \`images[]\` |
+| Activities | \`images[]\` |
 | Clients | \`logo\`, \`photos[].url\` |
 | Portfolio | \`coverImage\` |
 | Brands | \`logo\` |
@@ -668,7 +763,8 @@ type BrandFeatureId =
   | "articles"
   | "prices"
   | "clients-works"
-  | "banners";
+  | "banners"
+  | "activities";
 
 interface PublicBrand {
   id: string;
@@ -692,6 +788,7 @@ interface PublicBrand {
 | \`prices\` | Pricing |
 | \`clients-works\` | Clients + Portfolio |
 | \`banners\` | Hero / popup |
+| \`activities\` | Activity / promo feed |
 | \`dashboard\` | CMS-only |
 
 ## Agent checklist
@@ -710,6 +807,8 @@ const FULL_PACK_MARKDOWN = [
   CLIENTS_MARKDOWN,
   "---",
   BANNERS_MARKDOWN,
+  "---",
+  ACTIVITIES_MARKDOWN,
   "---",
   MEDIA_MARKDOWN,
   "---",
@@ -763,6 +862,13 @@ export const FE_WIRING_DOC_SECTIONS: FeWiringDocSection[] = [
     summary:
       "By-key placements (homepage, popup, mega-menu, bottom), list filters, carousel.",
     markdown: BANNERS_MARKDOWN,
+  },
+  {
+    id: "activities",
+    title: "Activities",
+    summary:
+      "Activity and promo cards with images, display date, click tracking, and filters.",
+    markdown: ACTIVITIES_MARKDOWN,
   },
   {
     id: "media",

@@ -35,6 +35,7 @@ import { cn } from "@/lib/utils";
 import type { ArticleSummary } from "@/types/article";
 import type { Banner } from "@/types/banner";
 import type { Client } from "@/types/client";
+import type { ContentActivity } from "@/types/content-activity";
 import type { Price } from "@/types/price";
 
 interface DashboardViewProps {
@@ -42,6 +43,7 @@ interface DashboardViewProps {
   clients: Client[];
   prices: Price[];
   banners: Banner[];
+  activities: ContentActivity[];
   mediaFilesCount: number;
 }
 
@@ -50,6 +52,7 @@ export function DashboardView({
   clients,
   prices,
   banners,
+  activities,
   mediaFilesCount,
 }: DashboardViewProps) {
   const { featureBrand } = useBrand();
@@ -88,6 +91,9 @@ export function DashboardView({
     clients: brandSupportsHrefFeature(featureBrand, "/clients") ? clients : [],
     prices: brandSupportsHrefFeature(featureBrand, "/prices") ? prices : [],
     banners: brandSupportsHrefFeature(featureBrand, "/banners") ? banners : [],
+    activities: brandSupportsHrefFeature(featureBrand, "/activities")
+      ? activities
+      : [],
     limit: DASHBOARD_RECENT_ACTIVITY_LIMIT,
   });
 
