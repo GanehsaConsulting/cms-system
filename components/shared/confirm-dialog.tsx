@@ -1,6 +1,8 @@
 "use client";
 
+import { CMS_DELETE_BUTTON_CLASS } from "@/config/cms-actions";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   CmsDialog,
   CmsDialogContent,
@@ -61,6 +63,9 @@ export function ConfirmDialog({
           <Button
             type="button"
             variant={variant === "destructive" ? "destructive" : "default"}
+            className={cn(
+              variant === "destructive" ? CMS_DELETE_BUTTON_CLASS : undefined,
+            )}
             disabled={isPending}
             onClick={onConfirm}
           >

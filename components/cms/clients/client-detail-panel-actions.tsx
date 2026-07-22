@@ -4,6 +4,7 @@ import { PencilSimpleIcon, TrashIcon } from "@/lib/icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
+import { CmsDeleteButton } from "@/components/shared/cms-delete-button";
 import { Button } from "@/components/ui/button";
 import { CLIENT_ACTION_CONFIRMATIONS } from "@/config/client-actions";
 import { useConfirmDialog } from "@/hooks/use-confirm-dialog";
@@ -57,17 +58,15 @@ export function ClientDetailPanelActions({
           Edit
         </Button>
 
-        <Button
+        <CmsDeleteButton
           type="button"
-          variant="secondary"
-          size="sm"
-          className="ml-auto gap-1 bg-white/45 text-destructive hover:bg-destructive/15 hover:text-destructive dark:bg-secondary"
+          className="ml-auto"
           disabled={isPending}
           onClick={handleDelete}
         >
           <TrashIcon className="size-3.5" />
           {isPending ? "Deleting..." : "Delete"}
-        </Button>
+        </CmsDeleteButton>
       </div>
 
       {confirmDialog}

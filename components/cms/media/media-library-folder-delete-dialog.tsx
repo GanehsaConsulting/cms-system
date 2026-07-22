@@ -11,6 +11,7 @@ import {
   CmsDialogHeader,
   CmsDialogTitle,
 } from "@/components/shared/cms-dialog";
+import { CmsDeleteButton } from "@/components/shared/cms-delete-button";
 import { Button } from "@/components/ui/button";
 import { deleteMediaFolderAction } from "@/lib/actions/media-folders";
 import { getFolderDeleteImpact } from "@/lib/media/folders";
@@ -122,14 +123,13 @@ export function MediaLibraryFolderDeleteDialog({
           >
             Cancel
           </Button>
-          <Button
+          <CmsDeleteButton
             type="button"
-            variant="destructive"
             disabled={isPending}
             onClick={handleDelete}
           >
             {isPending ? "Deleting..." : "Delete folder"}
-          </Button>
+          </CmsDeleteButton>
         </CmsDialogFooter>
       </CmsDialogContent>
     </CmsDialog>

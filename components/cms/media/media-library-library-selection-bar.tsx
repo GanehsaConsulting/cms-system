@@ -1,5 +1,6 @@
 "use client";
 
+import { CmsDeleteButton } from "@/components/shared/cms-delete-button";
 import { Button } from "@/components/ui/button";
 import { FolderOpenIcon, TrashIcon, XIcon } from "@/lib/icons";
 
@@ -40,17 +41,15 @@ export function MediaLibraryLibrarySelectionBar({
         Move
       </Button>
 
-      <Button
+      <CmsDeleteButton
         type="button"
-        variant="outline"
-        size="sm"
-        className="h-8 text-destructive hover:text-destructive"
+        className="h-8"
         disabled={disabled}
         onClick={onDelete}
       >
         <TrashIcon className="size-3.5" />
         Delete
-      </Button>
+      </CmsDeleteButton>
 
       <Button
         type="button"

@@ -5,6 +5,7 @@ import { DesktopIcon, PencilSimpleIcon, TrashIcon } from "@/lib/icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArticlePreviewDialog } from "@/components/cms/articles/article-preview-dialog";
+import { CmsDeleteButton } from "@/components/shared/cms-delete-button";
 import { Button } from "@/components/ui/button";
 import { ARTICLE_ACTION_CONFIRMATIONS } from "@/config/article-actions";
 import { useConfirmDialog } from "@/hooks/use-confirm-dialog";
@@ -96,17 +97,14 @@ export function ArticleDetailPanelActions({
           </Button>
         </div>
 
-        <Button
+        <CmsDeleteButton
           type="button"
-          variant="ghost"
-          size="sm"
-          className="gap-1 text-destructive hover:bg-destructive/10 hover:text-destructive"
           disabled={isPending}
           onClick={handleDelete}
         >
           <TrashIcon className="size-3.5" />
           {isPending ? "Deleting..." : "Delete"}
-        </Button>
+        </CmsDeleteButton>
       </div>
 
       {preview ? (

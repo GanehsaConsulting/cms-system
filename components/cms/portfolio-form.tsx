@@ -11,6 +11,7 @@ import { PortfolioFormPublishChecklist } from "@/components/cms/portfolio/portfo
 import { CmsAlert } from "@/components/shared/cms-alert";
 import { CmsPageShell } from "@/components/shared/cms-page-shell";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
+import { CmsDeleteButton } from "@/components/shared/cms-delete-button";
 import { SolidSurface } from "@/components/shared/solid-surface";
 import { Button } from "@/components/ui/button";
 import { PORTFOLIO_ACTION_CONFIRMATIONS } from "@/config/portfolio-form";
@@ -179,15 +180,14 @@ export function PortfolioForm({
                     Permanently remove this portfolio work.
                   </p>
                 </div>
-                <Button
+                <CmsDeleteButton
                   type="button"
-                  variant="destructive"
                   className="h-9"
                   disabled={isPending}
                   onClick={() => setDeleteOpen(true)}
                 >
                   Delete work
-                </Button>
+                </CmsDeleteButton>
               </SolidSurface>
             ) : null}
           </div>
