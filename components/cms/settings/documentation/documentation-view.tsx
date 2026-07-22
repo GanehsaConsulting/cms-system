@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { DocumentationCopyButton } from "@/components/cms/settings/documentation/documentation-copy-button";
+import { DocumentationMarkdown } from "@/components/cms/settings/documentation/documentation-markdown";
 import { DocumentationSidebar } from "@/components/cms/settings/documentation/documentation-sidebar";
 import { SolidSurface } from "@/components/shared/solid-surface";
 import { Badge } from "@/components/ui/badge";
@@ -76,9 +77,7 @@ export function DocumentationView() {
           </div>
 
           <div className={CMS_SCROLL_REGION}>
-            <pre className="px-4 py-4 font-mono text-[0.7rem] leading-relaxed text-muted-foreground whitespace-pre-wrap">
-              {activeSection.markdown}
-            </pre>
+            <DocumentationMarkdown markdown={activeSection.markdown} />
           </div>
         </SolidSurface>
       </div>
