@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { MagnifyingGlassIcon } from "@/lib/icons";
 import {
   LIST_TOOLBAR_CONTROL_FOCUS,
@@ -7,6 +8,7 @@ import {
   LIST_TOOLBAR_CONTROL_SURFACE,
   LIST_SEARCH_SHORTCUT_CLASS,
 } from "@/config/list-toolbar";
+import { getSidebarSearchShortcutLabel } from "@/lib/sidebar/search-shortcut";
 import { cn } from "@/lib/utils";
 
 interface SidebarSearchTriggerProps {
@@ -18,6 +20,12 @@ export function SidebarSearchTrigger({
   onOpen,
   className,
 }: SidebarSearchTriggerProps) {
+  const [shortcutLabel, setShortcutLabel] = useState("⌘/");
+
+  useEffect(() => {
+    setShortcutLabel(getSidebarSearchShortcutLabel());
+  }, []);
+
   return (
     <button
       type="button"
@@ -33,7 +41,7 @@ export function SidebarSearchTrigger({
     >
       <MagnifyingGlassIcon className="size-3.5 shrink-0 opacity-70" />
       <span className="min-w-0 flex-1 truncate">Search</span>
-      <kbd className={LIST_SEARCH_SHORTCUT_CLASS}>⌘/</kbd>
+      <kbd className={LIST_SEARCH_SHORTCUT_CLASS}>{shortcutLabel}</kbd>
     </button>
   );
 }

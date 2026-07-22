@@ -19,6 +19,7 @@ import {
   filterSidebarSearchItems,
   type SidebarSearchItem,
 } from "@/lib/sidebar/search";
+import { getSidebarSearchShortcutLabel } from "@/lib/sidebar/search-shortcut";
 import { cn } from "@/lib/utils";
 
 interface SidebarSearchDialogProps {
@@ -66,29 +67,6 @@ export function SidebarSearchDialog({
   useEffect(() => {
     setActiveIndex(0);
   }, [query]);
-
-  useEffect(() => {
-    function handleKeyDown(event: KeyboardEvent) {
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "/") {
-        const target = event.target;
-        if (
-          target instanceof HTMLElement &&
-          (target.isContentEditable ||
-            target.tagName === "INPUT" ||
-            target.tagName === "TEXTAREA" ||
-            target.tagName === "SELECT")
-        ) {
-          return;
-        }
-
-        event.preventDefault();
-        onOpenChange(true);
-      }
-    }
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [onOpenChange]);
 
   function handleSelect(item: SidebarSearchItem) {
     onOpenChange(false);
@@ -165,7 +143,7 @@ export function SidebarSearchDialog({
             )}
           />
           <kbd className="hidden rounded-md bg-black/5 px-1.5 py-0.5 font-medium text-[10px] text-muted-foreground sm:inline dark:bg-white/10">
-            ⌘/
+            {getSidebarSearchShortcutLabel()}
           </kbd>
         </div>
 

@@ -26,6 +26,7 @@ import {
   SIDEBAR_COLLAPSED_DOCK_WRAPPER,
 } from "@/config/sidebar";
 import { useCmsPresence } from "@/hooks/use-cms-presence";
+import { isSidebarSearchShortcut } from "@/lib/sidebar/search-shortcut";
 import { cn } from "@/lib/utils";
 import type { CmsProfileFormValues } from "@/lib/validations/cms-user";
 
@@ -85,6 +86,20 @@ export function CmsSidebar({
   useEffect(() => {
     setUser(initialUser);
   }, [initialUser]);
+
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (!isSidebarSearchShortcut(event)) {
+        return;
+      }
+
+      event.preventDefault();
+      setSearchOpen(true);
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   function handleUserUpdate(values: CmsProfileFormValues) {
     setUser((current) => ({
