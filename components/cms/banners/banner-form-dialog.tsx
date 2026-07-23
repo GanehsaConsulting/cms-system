@@ -141,8 +141,17 @@ export function BannerFormDialog({
     );
   }, [banner, defaultKey, isEdit, open]);
 
-  function handleOpenChange(nextOpen: boolean) {
+  function handleOpenChange(
+    nextOpen: boolean,
+    eventDetails?: { reason?: string },
+  ) {
     if (isPending) {
+      return;
+    }
+
+    // Native file picker steals focus; closing here would unmount the form
+    // before the selected file is applied.
+    if (!nextOpen && eventDetails?.reason === "focus-out") {
       return;
     }
 

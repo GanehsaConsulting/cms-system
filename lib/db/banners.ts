@@ -3,9 +3,12 @@ import { slugify } from "@/lib/articles/slug";
 import { isRequiredBannerPlacementKey } from "@/config/banner-placements";
 import { assertBrandMatch } from "@/lib/brands/content-scope";
 import { getBannerImages } from "@/lib/banners/images";
+import { resolveImageAssets } from "@/lib/cloudinary/assets";
 import { db } from "@/lib/db/client";
 import { banners } from "@/lib/db/schema";
 import type { Banner, BannerInput } from "@/types/banner";
+
+const IMAGE_FOLDER = "cms-system/banners";
 
 function toIso(value: Date): string {
   return value.toISOString();
@@ -33,6 +36,10 @@ function normalizeInput(input: BannerInput): BannerInput {
     redirectUrl: input.redirectUrl.trim(),
     isActive: input.isActive,
   };
+}
+
+async function resolveBannerImages(images: string[]): Promise<string[]> {
+  return resolveImageAssets(images, IMAGE_FOLDER);
 }
 
 export async function getBanners(brandId: string): Promise<Banner[]> {
@@ -108,6 +115,11 @@ export async function createBanner(
     throw new Error("At least one image is required");
   }
 
+  const images = await resolveBannerImages(normalized.images);
+  if (images.length === 0) {
+    throw new Error("At least one image is required");
+  }
+
   const existing = await db
     .select({ id: banners.id })
     .from(banners)
@@ -125,6 +137,7 @@ export async function createBanner(
       id: crypto.randomUUID(),
       brandId,
       ...normalized,
+      images,
       createdAt: now,
       updatedAt: now,
     })
@@ -153,6 +166,11 @@ export async function updateBanner(
     throw new Error("At least one image is required");
   }
 
+  const images = await resolveBannerImages(normalized.images);
+  if (images.length === 0) {
+    throw new Error("At least one image is required");
+  }
+
   const duplicate = await db
     .select({ id: banners.id })
     .from(banners)
@@ -173,6 +191,7 @@ export async function updateBanner(
     .update(banners)
     .set({
       ...normalized,
+      images,
       brandId,
       updatedAt: new Date(),
     })
