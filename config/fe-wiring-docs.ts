@@ -79,8 +79,10 @@ Portfolio filters: \`featured=true|false\`, \`workType=website|social-media\`, \
 \`\`\`
 GET ${CMS_PUBLIC_API_BASE}/banners?brandId=
 GET ${CMS_PUBLIC_API_BASE}/banners/by-key/{key}?brandId=
+GET ${CMS_PUBLIC_API_BASE}/banners/placements?brandId=
 \`\`\`
-List filters: \`key=\`, \`q=\`/\`search=\`, \`sort=\`
+List filters: \`key=\`, \`q=\`/\`search=\`, \`sort=\`  
+\`/placements\` = explicit FE contract (required keys + custom discovery + fill status).
 
 ### Activities (Activity / Promo cards)
 \`\`\`
@@ -528,57 +530,99 @@ const BANNERS_MARKDOWN = `# Banners — Complete Frontend Wiring
 \`\`\`
 GET ${CMS_PUBLIC_API_BASE}/banners?brandId={brandId}
 GET ${CMS_PUBLIC_API_BASE}/banners/by-key/{key}?brandId={brandId}
+GET ${CMS_PUBLIC_API_BASE}/banners/placements?brandId={brandId}
 \`\`\`
 
 Examples:
 \`\`\`
 ${CMS_PUBLIC_API_BASE}/banners?brandId=gonline
+${CMS_PUBLIC_API_BASE}/banners/placements?brandId=gonline
 ${CMS_PUBLIC_API_BASE}/banners?brandId=gonline&key=homepage
-${CMS_PUBLIC_API_BASE}/banners?brandId=gonline&q=promo&sort=name-asc
 ${CMS_PUBLIC_API_BASE}/banners/by-key/homepage?brandId=gonline
-${CMS_PUBLIC_API_BASE}/banners/by-key/popup?brandId=gec
-${CMS_PUBLIC_API_BASE}/banners/by-key/mega-menu?brandId=gec
-${CMS_PUBLIC_API_BASE}/banners/by-key/bottom?brandId=gec
-${CMS_PUBLIC_API_BASE}/banners/by-key/promo-strip?brandId=gonline
+${CMS_PUBLIC_API_BASE}/banners/by-key/popup?brandId=gonline
+${CMS_PUBLIC_API_BASE}/banners/by-key/mega-menu?brandId=gonline
+${CMS_PUBLIC_API_BASE}/banners/by-key/bottom?brandId=gonline
+${CMS_PUBLIC_API_BASE}/banners/by-key/ad-1?brandId=gonline
 \`\`\`
 
-Feature required: \`banners\` · Only \`isActive: true\` banners are returned.
+Feature required: \`banners\` · Only \`isActive: true\` banners are returned from list/by-key.
 
-## Website placement keys (CMS-defined, brand-owned)
+## FE contract (read this first)
+
+Banners are **slot-based**, not page-hardcoded CMS IDs.
+
+| Kind | Keys | FE rule |
+|------|------|---------|
+| **Website (required)** | \`homepage\`, \`popup\`, \`mega-menu\`, \`bottom\` | Always know these 4 keys. Fetch by-key. **Hide the slot** when 404 / \`ready: false\`. |
+| **Custom** | Any other key created in CMS (e.g. \`ad-1\`, \`promo-20\`) | **Do not hardcode another brand’s keys.** Discover via \`/placements\` or list. Wire only keys this FE layout needs. |
+
+### Why audits complain
+- **Required key empty in CMS** → FE slot is blank until CMS fills images + Active. That is expected — hide the UI.
+- **Custom key in CMS unused by FE** (e.g. \`promo-20\` on Ganesha, \`ad-1\` on Gonline) → OK if that page does not need it. Discover, don’t assume.
+- **\`bottom\` with no sticky UI on FE** → Still fetch \`bottom\`; if FE has no sticky bar yet, treat like optional render (hide). CMS keeps the slot for when FE ships it.
+
+### Prefer placements catalog
+\`\`\`ts
+type BannerPlacementFillStatus = "missing" | "empty" | "inactive" | "ready";
+
+type BannerPlacementCatalog = {
+  requiredKeys: string[];
+  website: Array<{
+    key: string;
+    required: true | false;
+    kind: "website" | "custom";
+    status: BannerPlacementFillStatus;
+    ready: boolean;
+    endpointPath: string;
+  }>;
+  custom: Array</* same shape */>;
+  summary: {
+    requiredTotal: number;
+    requiredReady: number;
+    customTotal: number;
+    customReady: number;
+  };
+};
+
+const { data: catalog } = await fetch(
+  \`${CMS_PUBLIC_API_BASE}/banners/placements?brandId=\${brandId}\`,
+).then((r) => r.json());
+
+// Wire required slots:
+for (const slot of catalog.website) {
+  if (!slot.ready) continue; // hide UI
+  const banner = await loadPlacementBanner(brandId, slot.key);
+  // render…
+}
+
+// Wire custom only if this page needs a promo strip / ads rail:
+const promoKeys = catalog.custom.map((c) => c.key); // brand-specific
+\`\`\`
+
+## Website placement keys (CMS-defined)
 
 These keys appear in **Banners → Website**.
 
-### Banners (required once set up)
-| Key | Placement |
-|-----|-----------|
-| \`homepage\` | Homepage hero (top section) |
-| \`popup\` | Popup banner |
-| \`mega-menu\` | Mega menu banner |
-| \`bottom\` | Bottom sticky banner |
+| Key | Placement | FE UI |
+|-----|-----------|-------|
+| \`homepage\` | Homepage hero | Hero / top carousel |
+| \`popup\` | Popup banner | Modal / entrance popup |
+| \`mega-menu\` | Mega menu banner | Menu panel creative |
+| \`bottom\` | Bottom sticky | Sticky bar (hide if FE not ready yet) |
 
-Keep at least 1 image and do not delete the banner row for required keys.
+Keep at least 1 image and do not delete the banner row for required keys once created.
 
-### Custom Banners
-Custom banners are **not** fixed slots. In the CMS, use **Add custom banner** and set any unique key your frontend expects (e.g. \`promo-strip\`, \`pricing-hero\`, \`footer-banner\`).
+## Custom Banners
+Custom banners are **not** fixed slots. In CMS: **Add custom banner** + unique key.
 
-Fetch each custom banner with the same **by-key** endpoint using that key. Delete/rename freely — they are not required placements.
+Examples by brand (do **not** share across brands):
+- Gonline: \`ad-1\`, \`ad-2\`, \`ad-3\`
+- Ganesha: \`promo-20\`, \`promo-21\`
 
-**Content updates** (images, redirect, active) are live via the API — no FE code change.
-**Key / placement changes** (new key, rename, delete) need an FE code update or a list-based discovery pattern (see below).
+Fetch with the same **by-key** endpoint. Delete/rename freely.
 
-Use **by-key** for each placement — one fetch per slot. Keys are lowercase with hyphens.
-
-In the CMS, each placement card has **Copy FE docs** for paste-ready agent prompts (generated from the current key at copy time).
-
-## List query params
-| Param | Values | Notes |
-|-------|--------|-------|
-| \`brandId\` | string | **required** |
-| \`key\` | string | filter list by placement key |
-| \`q\` / \`search\` | string | name, key, redirectUrl |
-| \`sort\` | \`updatedAt-desc\` (default), \`name-asc\`, \`key-asc\` | |
-
-List returns \`{ data: Banner[] }\` (typically a small set — pagination not required).
+**Content updates** (images, redirect, active) are live via API — no FE code change.
+**New custom key** needs either FE hardcode for that page **or** discovery via \`/placements\`.
 
 ## Prefer by-key for placements
 \`\`\`ts
@@ -588,9 +632,6 @@ const REQUIRED_BANNER_KEYS = [
   "mega-menu",
   "bottom",
 ] as const;
-
-// Plus any custom banner keys you create in the CMS:
-const CUSTOM_BANNER_KEYS = ["promo-strip", "pricing-hero"] as const;
 
 async function loadPlacementBanner(brandId: string, key: string) {
   const res = await fetch(
@@ -614,14 +655,11 @@ const { data: banners } = await fetch(
 
 const byKey = Object.fromEntries(banners.map((b: Banner) => [b.key, b]));
 const hero = byKey.homepage ?? null;
-const promo = byKey["promo-strip"] ?? null;
 
-// Discover custom banners dynamically (everything except required keys):
 const REQUIRED = new Set(REQUIRED_BANNER_KEYS);
 const customBanners = banners.filter((b: Banner) => !REQUIRED.has(b.key));
 \`\`\`
 
-## Carousel
 When \`images.length > 1\`, render as a carousel. Single image = static banner.
 
 ## Redirect
@@ -645,17 +683,16 @@ interface Banner {
 }
 \`\`\`
 
-## CMS production checklist (affects data)
-1. JSON store \`data/banners.json\` must include \`brandId\` on each row
-2. Backfill legacy rows: \`npx tsx scripts/backfill-json-brand-id.ts gec\`
-3. Set **Active** in CMS for banners that should appear on the public site
-4. Use the CMS placement keys above for required slots (\`homepage\`, not \`homepage-hero\`)
-5. Do not delete required Website banner rows after setup (min 1 image)
-6. Custom banners: agree on keys with the frontend team, then create them via **Add custom banner**
+## CMS checklist
+1. Fill required Website slots in CMS (\`homepage\`, \`popup\`, \`mega-menu\`, \`bottom\`) when FE needs them live
+2. Set **Active** for banners that should appear
+3. Do not delete required Website banner rows after setup (min 1 image)
+4. Custom banners: create via **Add custom banner**; FE discovers via \`/placements\` (do not copy keys from another brand)
 
 ## Agent checklist
-- [ ] Load each required banner via \`by-key\` (or list + map by key)
-- [ ] Wire custom banner keys that exist in the CMS (or discover via list endpoint)
+- [ ] Bootstrap with \`GET /banners/placements?brandId=\`
+- [ ] Load each **ready** required key via \`by-key\` (hide if not ready / 404)
+- [ ] Discover custom keys from catalog (never hardcode \`promo-*\` / \`ad-*\` across brands)
 - [ ] Carousel when \`images.length > 1\`
 - [ ] Link \`redirectUrl\` on click
 - [ ] Hide placement when 404 / inactive / brand lacks \`banners\`
@@ -893,7 +930,7 @@ export const FE_WIRING_DOC_SECTIONS: FeWiringDocSection[] = [
     id: "banners",
     title: "Banners",
     summary:
-      "Website placements by type (Banners + Custom Banners), by-key wiring, copyable FE docs, carousel.",
+      "Website slots + /placements catalog, by-key wiring, custom key discovery per brand.",
     markdown: BANNERS_MARKDOWN,
   },
   {

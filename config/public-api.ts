@@ -29,6 +29,7 @@ export const PUBLIC_API_ENDPOINTS = {
   banners: `${CMS_PUBLIC_API_BASE}/banners`,
   bannerByKey: (key: string) =>
     `${CMS_PUBLIC_API_BASE}/banners/by-key/${encodeURIComponent(key)}`,
+  bannerPlacements: `${CMS_PUBLIC_API_BASE}/banners/placements`,
 } as const;
 
 /** Feature required to call each content collection endpoint. */

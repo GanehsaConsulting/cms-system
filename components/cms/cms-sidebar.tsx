@@ -79,6 +79,7 @@ export function CmsSidebar({
   const {
     onlineCount,
     users: presenceUsers,
+    loginHistory: presenceLoginHistory,
     isLoading: presenceLoading,
     refresh: refreshPresence,
   } = useCmsPresence();
@@ -187,6 +188,7 @@ export function CmsSidebar({
           open={presenceOpen}
           onOpenChange={setPresenceOpen}
           users={presenceUsers}
+          loginHistory={presenceLoginHistory}
           onlineCount={onlineCount}
           isLoading={presenceLoading}
         />

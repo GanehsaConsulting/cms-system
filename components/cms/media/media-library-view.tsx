@@ -6,20 +6,26 @@ import { MediaLibraryLibraryView } from "@/components/cms/media/media-library-li
 import { MediaLibrarySectionTabs } from "@/components/cms/media/media-library-section-tabs";
 import { CmsPageHeaderActions } from "@/components/shared/cms-page-header-actions";
 import { useMediaLibrarySection } from "@/hooks/use-media-library-section";
-import type { MediaAsset, MediaFolder, MediaLibraryFile } from "@/types/media";
+import type {
+  MediaAsset,
+  MediaFolder,
+  MediaLibraryFile,
+  MediaLibraryScope,
+} from "@/types/media";
 
 interface MediaLibraryViewProps {
   assets: MediaAsset[];
-  folders: MediaFolder[];
-  files: MediaLibraryFile[];
+  foldersByScope: Record<MediaLibraryScope, MediaFolder[]>;
+  filesByScope: Record<MediaLibraryScope, MediaLibraryFile[]>;
 }
 
 export function MediaLibraryView({
   assets,
-  folders,
-  files,
+  foldersByScope,
+  filesByScope,
 }: MediaLibraryViewProps) {
-  const { section, setSection } = useMediaLibrarySection("library");
+  const { section, setSection, isInUse, libraryScope } =
+    useMediaLibrarySection("shared");
 
   const headerActions = useMemo(
     () => <MediaLibrarySectionTabs value={section} onChange={setSection} />,
@@ -30,10 +36,15 @@ export function MediaLibraryView({
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
       <CmsPageHeaderActions>{headerActions}</CmsPageHeaderActions>
 
-      {section === "library" ? (
-        <MediaLibraryLibraryView folders={folders} files={files} />
-      ) : (
+      {isInUse ? (
         <MediaLibraryInUseView assets={assets} />
+      ) : (
+        <MediaLibraryLibraryView
+          key={libraryScope}
+          scope={libraryScope}
+          folders={foldersByScope[libraryScope]}
+          files={filesByScope[libraryScope]}
+        />
       )}
     </div>
   );

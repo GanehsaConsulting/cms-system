@@ -12,13 +12,19 @@ export type MediaTypeFilter = "all" | "image" | "video" | "document" | "other";
 
 export type MediaViewMode = "table" | "grid";
 
-export type MediaLibrarySection = "library" | "in-use";
+/** Library visibility: shared across brands, brand-only, or personal to a user. */
+export type MediaLibraryScope = "shared" | "brand" | "personal";
+
+export type MediaLibrarySection = MediaLibraryScope | "in-use";
 
 export interface MediaFolder {
   id: string;
   name: string;
   parentId: string | null;
   depth: number;
+  scope: MediaLibraryScope;
+  brandId: string | null;
+  ownerUserId: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -31,6 +37,9 @@ export interface MediaLibraryFile {
   mimeType: string;
   kind: MediaKind;
   sizeBytes: number;
+  scope: MediaLibraryScope;
+  brandId: string | null;
+  ownerUserId: string | null;
   uploadedAt: string;
   updatedAt: string;
 }

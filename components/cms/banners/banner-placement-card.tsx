@@ -59,14 +59,20 @@ export function BannerPlacementCard({
               <span className="rounded-md bg-primary/10 px-1.5 py-0.5 font-medium text-[10px] text-primary">
                 {isConfigured ? "Required" : "Setup required"}
               </span>
-            ) : null}
+            ) : (
+              <span className="rounded-md bg-muted px-1.5 py-0.5 font-medium text-[10px] text-muted-foreground">
+                Custom
+              </span>
+            )}
           </div>
         </div>
 
         <BannerPlacementMockView mock={placement.mock} images={images} />
 
         <p className="text-muted-foreground text-xs leading-relaxed">
-          {placement.description}
+          {!isConfigured && placement.required
+            ? "Empty in CMS — FE should hide this slot until content is added."
+            : placement.description}
         </p>
       </button>
 

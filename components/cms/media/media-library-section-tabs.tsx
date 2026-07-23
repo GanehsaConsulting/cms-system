@@ -21,7 +21,7 @@ export function MediaLibrarySectionTabs({
 }: MediaLibrarySectionTabsProps) {
   return (
     <nav
-      className={cn(IOS_SEGMENTED_TRACK, "w-full max-w-md")}
+      className={cn(IOS_SEGMENTED_TRACK, "w-full max-w-xl")}
       aria-label="Files & media sections"
     >
       {MEDIA_LIBRARY_SECTIONS.map((section) => {

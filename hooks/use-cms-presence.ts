@@ -8,6 +8,7 @@ import type { CmsPresenceSnapshot } from "@/types/presence";
 const EMPTY_SNAPSHOT: CmsPresenceSnapshot = {
   onlineCount: 0,
   users: [],
+  loginHistory: [],
   fetchedAt: "",
 };
 
@@ -59,6 +60,7 @@ export function useCmsPresence() {
   return {
     onlineCount: snapshot.onlineCount,
     users: snapshot.users,
+    loginHistory: snapshot.loginHistory,
     isLoading,
     refresh,
   };

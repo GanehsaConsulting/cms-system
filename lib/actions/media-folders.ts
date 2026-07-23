@@ -10,6 +10,7 @@ import {
   moveMediaFolders,
   updateMediaFolder,
 } from "@/lib/db/media-folders";
+import { assertCanAccessMediaScope } from "@/lib/media/scope";
 import { requireCmsContentAccess } from "@/lib/users/require-content-access";
 import {
   mediaFolderFormSchema,
@@ -19,6 +20,11 @@ import {
 
 function revalidateMediaLibrary() {
   revalidatePath("/media");
+}
+
+async function resolveActiveBrandId(): Promise<string | null> {
+  const brand = await requireCmsActiveBrandId();
+  return brand.ok ? brand.brandId : null;
 }
 
 export async function createMediaFolderAction(formData: FormData) {
@@ -39,11 +45,15 @@ export async function createMediaFolderAction(formData: FormData) {
   }
 
   try {
-    const folder = await createMediaFolder(parsed.data);
-    const brand = await requireCmsActiveBrandId();
-    if (brand.ok) {
+    const activeBrandId = await resolveActiveBrandId();
+    const folder = await createMediaFolder({
+      ...parsed.data,
+      brandId: parsed.data.scope === "brand" ? activeBrandId : null,
+      ownerUserId: parsed.data.scope === "personal" ? access.user.id : null,
+    });
+    if (activeBrandId) {
       await recordActivityEvent({
-        brandId: brand.brandId,
+        brandId: activeBrandId,
         entityType: "media",
         entityId: folder.id,
         action: "created",
@@ -80,11 +90,17 @@ export async function updateMediaFolderAction(id: string, formData: FormData) {
   }
 
   try {
+    const current = await getMediaFolderById(id);
+    if (!current) {
+      throw new Error("Folder not found");
+    }
+    const activeBrandId = await resolveActiveBrandId();
+    assertCanAccessMediaScope(current, access.user, activeBrandId);
+
     const folder = await updateMediaFolder(id, parsed.data);
-    const brand = await requireCmsActiveBrandId();
-    if (brand.ok) {
+    if (activeBrandId) {
       await recordActivityEvent({
-        brandId: brand.brandId,
+        brandId: activeBrandId,
         entityType: "media",
         entityId: id,
         action: "updated",
@@ -111,11 +127,16 @@ export async function deleteMediaFolderAction(id: string) {
 
   try {
     const current = await getMediaFolderById(id);
+    if (!current) {
+      throw new Error("Folder not found");
+    }
+    const activeBrandId = await resolveActiveBrandId();
+    assertCanAccessMediaScope(current, access.user, activeBrandId);
+
     await deleteMediaFolder(id);
-    const brand = await requireCmsActiveBrandId();
-    if (brand.ok && current) {
+    if (activeBrandId) {
       await recordActivityEvent({
-        brandId: brand.brandId,
+        brandId: activeBrandId,
         entityType: "media",
         entityId: id,
         action: "deleted",
@@ -156,6 +177,23 @@ export async function moveMediaFoldersAction(
   }
 
   try {
+    const activeBrandId = await resolveActiveBrandId();
+    for (const folderId of parsed.data.folderIds) {
+      const folder = await getMediaFolderById(folderId);
+      if (!folder) {
+        throw new Error("Folder not found");
+      }
+      assertCanAccessMediaScope(folder, access.user, activeBrandId);
+    }
+
+    if (parsed.data.targetParentId) {
+      const target = await getMediaFolderById(parsed.data.targetParentId);
+      if (!target) {
+        throw new Error("Destination folder not found");
+      }
+      assertCanAccessMediaScope(target, access.user, activeBrandId);
+    }
+
     const movedCount = await moveMediaFolders(
       parsed.data.folderIds,
       parsed.data.targetParentId,

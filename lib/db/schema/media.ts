@@ -8,6 +8,10 @@ export const mediaFolders = cmsSchema.table(
     name: text("name").notNull(),
     parentId: text("parent_id"),
     depth: integer("depth").notNull().default(0),
+    /** shared | brand | personal */
+    scope: text("scope").notNull().default("shared"),
+    brandId: text("brand_id"),
+    ownerUserId: text("owner_user_id"),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull(),
@@ -19,6 +23,9 @@ export const mediaFolders = cmsSchema.table(
   (table) => [
     index("media_folders_parent_id_idx").on(table.parentId),
     index("media_folders_name_idx").on(table.name),
+    index("media_folders_scope_idx").on(table.scope),
+    index("media_folders_brand_id_idx").on(table.brandId),
+    index("media_folders_owner_user_id_idx").on(table.ownerUserId),
   ],
 );
 
@@ -35,6 +42,10 @@ export const mediaFiles = cmsSchema.table(
     mimeType: text("mime_type").notNull(),
     kind: text("kind").notNull(),
     sizeBytes: integer("size_bytes").notNull().default(0),
+    /** shared | brand | personal — copied from folder on upload */
+    scope: text("scope").notNull().default("shared"),
+    brandId: text("brand_id"),
+    ownerUserId: text("owner_user_id"),
     uploadedAt: timestamp("uploaded_at", { withTimezone: true })
       .defaultNow()
       .notNull(),
@@ -47,5 +58,8 @@ export const mediaFiles = cmsSchema.table(
     index("media_files_folder_id_idx").on(table.folderId),
     index("media_files_updated_at_idx").on(table.updatedAt),
     index("media_files_kind_idx").on(table.kind),
+    index("media_files_scope_idx").on(table.scope),
+    index("media_files_brand_id_idx").on(table.brandId),
+    index("media_files_owner_user_id_idx").on(table.ownerUserId),
   ],
 );

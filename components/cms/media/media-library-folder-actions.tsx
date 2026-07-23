@@ -20,7 +20,7 @@ import {
   PlusIcon,
   TrashIcon,
 } from "@/lib/icons";
-import type { MediaFolder, MediaLibraryFile } from "@/types/media";
+import type { MediaFolder, MediaLibraryFile, MediaLibraryScope } from "@/types/media";
 import { cn } from "@/lib/utils";
 
 interface MediaLibraryFolderActionsProps {
@@ -28,6 +28,7 @@ interface MediaLibraryFolderActionsProps {
   selectedFolder: MediaFolder | null;
   allFolders: MediaFolder[];
   allFiles: MediaLibraryFile[];
+  scope: MediaLibraryScope;
 }
 
 export function MediaLibraryFolderActions({
@@ -35,6 +36,7 @@ export function MediaLibraryFolderActions({
   selectedFolder,
   allFolders,
   allFiles,
+  scope,
 }: MediaLibraryFolderActionsProps) {
   const [createOpen, setCreateOpen] = useState(false);
   const [renameOpen, setRenameOpen] = useState(false);
@@ -98,6 +100,7 @@ export function MediaLibraryFolderActions({
         onOpenChange={setCreateOpen}
         mode="create"
         parentId={parentId}
+        scope={scope}
       />
 
       <MediaLibraryFolderDialog

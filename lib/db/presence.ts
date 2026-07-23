@@ -1,9 +1,16 @@
-import { eq, max, sql } from "drizzle-orm";
-import { PRESENCE_ONLINE_THRESHOLD_MS } from "@/config/presence";
+import { eq } from "drizzle-orm";
+import {
+  PRESENCE_LOGIN_HISTORY_LIMIT,
+  PRESENCE_ONLINE_THRESHOLD_MS,
+} from "@/config/presence";
 import { getUserRoleLabel, isUserRoleId } from "@/config/user";
 import { db } from "@/lib/db/client";
 import { session, user } from "@/lib/db/schema";
-import type { CmsPresenceSnapshot, CmsPresenceUser } from "@/types/presence";
+import type {
+  CmsLoginHistoryEntry,
+  CmsPresenceSnapshot,
+  CmsPresenceUser,
+} from "@/types/presence";
 
 function toAvatarUrl(image: string | null): string {
   const trimmed = image?.trim() ?? "";
@@ -18,17 +25,24 @@ function toRoleLabel(role: string): string {
   return isUserRoleId(role) ? getUserRoleLabel(role) : role;
 }
 
+function toIso(value: Date | null | undefined): string | null {
+  if (!value) {
+    return null;
+  }
+  return value.toISOString();
+}
+
 /**
  * Active staff + last session activity.
  * Online = non-expired session touched within `PRESENCE_ONLINE_THRESHOLD_MS`.
  *
- * Two queries (not Promise.all of three) so a small connection pool is not
- * saturated by a single presence tick.
+ * Aggregation is done in JS — embedding `Date` in drizzle `sql` templates
+ * breaks postgres.js parameter binding and made presence always return empty.
  */
 export async function getCmsPresence(
   now: Date = new Date(),
 ): Promise<CmsPresenceSnapshot> {
-  const onlineSince = new Date(now.getTime() - PRESENCE_ONLINE_THRESHOLD_MS);
+  const onlineSinceMs = now.getTime() - PRESENCE_ONLINE_THRESHOLD_MS;
 
   const userRows = await db
     .select({
@@ -43,22 +57,42 @@ export async function getCmsPresence(
 
   const sessionRows = await db
     .select({
+      id: session.id,
       userId: session.userId,
-      lastSeenAt: max(session.updatedAt),
-      online: sql<boolean>`bool_or(${session.expiresAt} > ${now} and ${session.updatedAt} > ${onlineSince})`,
+      updatedAt: session.updatedAt,
+      expiresAt: session.expiresAt,
+      createdAt: session.createdAt,
+      ipAddress: session.ipAddress,
     })
-    .from(session)
-    .groupBy(session.userId);
+    .from(session);
 
-  const sessionByUser = new Map(
-    sessionRows.map((row) => [
-      row.userId,
-      {
-        lastSeenAt: row.lastSeenAt ? row.lastSeenAt.toISOString() : null,
-        online: Boolean(row.online),
-      },
-    ]),
-  );
+  const sessionByUser = new Map<
+    string,
+    { lastSeenAt: string | null; online: boolean }
+  >();
+
+  for (const row of sessionRows) {
+    const updatedMs = row.updatedAt.getTime();
+    const expiresMs = row.expiresAt.getTime();
+    const online =
+      expiresMs > now.getTime() && updatedMs > onlineSinceMs;
+    const lastSeenAt = toIso(row.updatedAt);
+    const current = sessionByUser.get(row.userId);
+
+    if (!current) {
+      sessionByUser.set(row.userId, { lastSeenAt, online });
+      continue;
+    }
+
+    const currentSeen = current.lastSeenAt
+      ? new Date(current.lastSeenAt).getTime()
+      : 0;
+    sessionByUser.set(row.userId, {
+      lastSeenAt:
+        updatedMs >= currentSeen ? lastSeenAt : current.lastSeenAt,
+      online: current.online || online,
+    });
+  }
 
   const users: CmsPresenceUser[] = userRows
     .map((row) => {
@@ -91,9 +125,33 @@ export async function getCmsPresence(
       return left.name.localeCompare(right.name, "en");
     });
 
+  const userById = new Map(userRows.map((row) => [row.id, row]));
+
+  const loginHistory: CmsLoginHistoryEntry[] = [...sessionRows]
+    .sort((left, right) => right.createdAt.getTime() - left.createdAt.getTime())
+    .slice(0, PRESENCE_LOGIN_HISTORY_LIMIT)
+    .map((row) => {
+      const owner = userById.get(row.userId);
+      if (!owner) {
+        return null;
+      }
+      return {
+        sessionId: row.id,
+        userId: owner.id,
+        name: owner.name,
+        email: owner.email,
+        avatarUrl: toAvatarUrl(owner.image),
+        roleLabel: toRoleLabel(owner.role),
+        loggedInAt: row.createdAt.toISOString(),
+        ipAddress: row.ipAddress,
+      };
+    })
+    .filter((entry): entry is CmsLoginHistoryEntry => entry !== null);
+
   return {
     onlineCount: users.filter((entry) => entry.online).length,
     users,
+    loginHistory,
     fetchedAt: now.toISOString(),
   };
 }

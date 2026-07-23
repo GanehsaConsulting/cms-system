@@ -57,6 +57,9 @@ async function main() {
       name: folder.name,
       parentId: folder.parentId,
       depth: folder.depth,
+      scope: folder.scope ?? "shared",
+      brandId: folder.brandId ?? null,
+      ownerUserId: folder.ownerUserId ?? null,
       createdAt: new Date(folder.createdAt),
       updatedAt: new Date(folder.updatedAt),
     });
@@ -83,6 +86,9 @@ async function main() {
       mimeType: file.mimeType,
       kind: file.kind,
       sizeBytes: file.sizeBytes,
+      scope: file.scope ?? "shared",
+      brandId: file.brandId ?? null,
+      ownerUserId: file.ownerUserId ?? null,
       uploadedAt: new Date(file.uploadedAt),
       updatedAt: new Date(file.updatedAt),
     });

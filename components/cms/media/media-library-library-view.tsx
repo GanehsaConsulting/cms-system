@@ -30,15 +30,17 @@ import {
 } from "@/lib/notify/action-toast";
 import { LIST_TOOLBAR_CLASS } from "@/config/list-toolbar";
 import { CMS_FLEX_CHILD, CMS_SCROLL_REGION } from "@/config/spacing";
-import type { MediaFolder, MediaLibraryFile } from "@/types/media";
+import type { MediaFolder, MediaLibraryFile, MediaLibraryScope } from "@/types/media";
 import { cn } from "@/lib/utils";
 
 interface MediaLibraryLibraryViewProps {
+  scope: MediaLibraryScope;
   folders: MediaFolder[];
   files: MediaLibraryFile[];
 }
 
 export function MediaLibraryLibraryView({
+  scope,
   folders,
   files: initialFiles,
 }: MediaLibraryLibraryViewProps) {
@@ -236,6 +238,7 @@ export function MediaLibraryLibraryView({
               selectedFolder={canManageFolder ? selectedFolder : null}
               allFolders={folders}
               allFiles={initialFiles}
+              scope={scope}
             />
             {!isAllFilesView ? (
               <MediaLibraryUploadButton

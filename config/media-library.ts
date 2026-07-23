@@ -3,13 +3,15 @@ import type { MediaTypeFilter, MediaViewMode } from "@/types/media";
 export const MEDIA_LIBRARY_PAGE_TITLE = "Files & Media";
 
 export const MEDIA_LIBRARY_PAGE_DESCRIPTION =
-  "Organize pending uploads in folders, or browse files already used across CMS modules.";
+  "Shared, brand, and personal libraries — plus files already used across CMS modules.";
 
 export const MEDIA_LIBRARY_SECTIONS: {
   id: import("@/types/media").MediaLibrarySection;
   label: string;
 }[] = [
-  { id: "library", label: "Library" },
+  { id: "shared", label: "Shared" },
+  { id: "brand", label: "Brand" },
+  { id: "personal", label: "Personal" },
   { id: "in-use", label: "In use" },
 ];
 

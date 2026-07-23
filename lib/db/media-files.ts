@@ -1,15 +1,20 @@
-import { and, count, desc, eq, inArray, ne } from "drizzle-orm";
+import { and, count, desc, eq, inArray, isNull, ne, SQL } from "drizzle-orm";
 import {
   resolveImageAsset,
   tryDeleteCloudinaryUrl,
 } from "@/lib/cloudinary/assets";
 import { db } from "@/lib/db/client";
-import { getMediaFolders } from "@/lib/db/media-folders";
+import { getMediaFolderById } from "@/lib/db/media-folders";
 import { mediaFiles } from "@/lib/db/schema";
-import { getFolderById } from "@/lib/media/folders";
+import {
+  isMediaLibraryScope,
+  mediaScopeMatches,
+  type MediaScopeContext,
+} from "@/lib/media/scope";
 import type { MediaKind, MediaLibraryFile } from "@/types/media";
 
 function rowToFile(row: typeof mediaFiles.$inferSelect): MediaLibraryFile {
+  const scope = isMediaLibraryScope(row.scope) ? row.scope : "shared";
   return {
     id: row.id,
     folderId: row.folderId,
@@ -18,9 +23,36 @@ function rowToFile(row: typeof mediaFiles.$inferSelect): MediaLibraryFile {
     mimeType: row.mimeType,
     kind: row.kind as MediaKind,
     sizeBytes: row.sizeBytes,
+    scope,
+    brandId: row.brandId,
+    ownerUserId: row.ownerUserId,
     uploadedAt: row.uploadedAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
   };
+}
+
+function scopeWhere(context: MediaScopeContext): SQL {
+  if (context.scope === "shared") {
+    return and(
+      eq(mediaFiles.scope, "shared"),
+      isNull(mediaFiles.brandId),
+      isNull(mediaFiles.ownerUserId),
+    )!;
+  }
+
+  if (context.scope === "brand") {
+    return and(
+      eq(mediaFiles.scope, "brand"),
+      eq(mediaFiles.brandId, context.brandId!),
+      isNull(mediaFiles.ownerUserId),
+    )!;
+  }
+
+  return and(
+    eq(mediaFiles.scope, "personal"),
+    eq(mediaFiles.ownerUserId, context.ownerUserId!),
+    isNull(mediaFiles.brandId),
+  )!;
 }
 
 async function isFilenameUniqueInFolder(
@@ -41,16 +73,29 @@ async function isFilenameUniqueInFolder(
   );
 }
 
-export async function getMediaLibraryFiles(): Promise<MediaLibraryFile[]> {
-  const rows = await db
-    .select()
-    .from(mediaFiles)
-    .orderBy(desc(mediaFiles.updatedAt));
+export async function getMediaLibraryFiles(
+  context?: MediaScopeContext,
+): Promise<MediaLibraryFile[]> {
+  const rows = context
+    ? await db
+        .select()
+        .from(mediaFiles)
+        .where(scopeWhere(context))
+        .orderBy(desc(mediaFiles.updatedAt))
+    : await db.select().from(mediaFiles).orderBy(desc(mediaFiles.updatedAt));
+
   return rows.map(rowToFile);
 }
 
-export async function getMediaLibraryFilesCount(): Promise<number> {
-  const [row] = await db.select({ value: count() }).from(mediaFiles);
+export async function getMediaLibraryFilesCount(
+  context?: MediaScopeContext,
+): Promise<number> {
+  const [row] = context
+    ? await db
+        .select({ value: count() })
+        .from(mediaFiles)
+        .where(scopeWhere(context))
+    : await db.select({ value: count() }).from(mediaFiles);
   return Number(row?.value ?? 0);
 }
 
@@ -113,8 +158,7 @@ export async function createMediaLibraryFiles(
     sizeBytes: number;
   }[],
 ): Promise<MediaLibraryFile[]> {
-  const folders = await getMediaFolders();
-  const folder = getFolderById(folders, folderId);
+  const folder = await getMediaFolderById(folderId);
 
   if (!folder) {
     throw new Error("Folder not found");
@@ -160,6 +204,9 @@ export async function createMediaLibraryFiles(
         mimeType: upload.mimeType,
         kind: upload.kind,
         sizeBytes: upload.sizeBytes,
+        scope: folder.scope,
+        brandId: folder.brandId,
+        ownerUserId: folder.ownerUserId,
         uploadedAt: now,
         updatedAt: now,
       })
@@ -202,8 +249,7 @@ export async function moveMediaLibraryFiles(
     return 0;
   }
 
-  const folders = await getMediaFolders();
-  const targetFolder = getFolderById(folders, targetFolderId);
+  const targetFolder = await getMediaFolderById(targetFolderId);
 
   if (!targetFolder) {
     throw new Error("Folder not found");
@@ -218,7 +264,27 @@ export async function moveMediaLibraryFiles(
     throw new Error("No files found");
   }
 
+  const targetContext: MediaScopeContext = {
+    scope: targetFolder.scope,
+    brandId: targetFolder.brandId,
+    ownerUserId: targetFolder.ownerUserId,
+  };
+
   for (const file of toMove) {
+    const fileScope = isMediaLibraryScope(file.scope) ? file.scope : "shared";
+    if (
+      !mediaScopeMatches(
+        {
+          scope: fileScope,
+          brandId: file.brandId,
+          ownerUserId: file.ownerUserId,
+        },
+        targetContext,
+      )
+    ) {
+      throw new Error("Cannot move files across library scopes");
+    }
+
     if (file.folderId === targetFolderId) {
       continue;
     }
@@ -244,6 +310,9 @@ export async function moveMediaLibraryFiles(
       .update(mediaFiles)
       .set({
         folderId: targetFolderId,
+        scope: targetFolder.scope,
+        brandId: targetFolder.brandId,
+        ownerUserId: targetFolder.ownerUserId,
         updatedAt: now,
       })
       .where(

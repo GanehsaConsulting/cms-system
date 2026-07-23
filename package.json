@@ -18,6 +18,8 @@
     "db:seed:gonline": "tsx scripts/seed-gonline-from-csv.ts",
     "db:sync:gonline-prices": "tsx scripts/sync-gonline-prices.ts",
     "db:sync:gonline-webworks": "tsx scripts/sync-gonline-webworks.ts",
+    "db:sync:gonline-socmed": "tsx scripts/sync-gonline-socmed.ts",
+    "db:sync:gonline-client-logos": "tsx scripts/sync-gonline-client-logos-from-ganesha.ts",
     "db:seed:staff": "tsx scripts/seed-staff-users.ts",
     "db:migrate:articles": "tsx scripts/migrate-articles-json.ts",
     "db:migrate:media": "tsx scripts/migrate-media-json.ts",

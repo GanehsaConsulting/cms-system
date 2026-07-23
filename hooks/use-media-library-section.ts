@@ -1,17 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import type { MediaLibrarySection } from "@/types/media";
+import { MEDIA_LIBRARY_SCOPES } from "@/lib/media/scope";
+import type { MediaLibraryScope, MediaLibrarySection } from "@/types/media";
 
 export function useMediaLibrarySection(
-  initialSection: MediaLibrarySection = "library",
+  initialSection: MediaLibrarySection = "shared",
 ) {
   const [section, setSection] = useState<MediaLibrarySection>(initialSection);
+
+  const isLibraryScope = MEDIA_LIBRARY_SCOPES.includes(
+    section as MediaLibraryScope,
+  );
 
   return {
     section,
     setSection,
-    isLibrary: section === "library",
+    isLibrary: isLibraryScope,
     isInUse: section === "in-use",
+    libraryScope: (isLibraryScope ? section : "shared") as MediaLibraryScope,
   };
 }

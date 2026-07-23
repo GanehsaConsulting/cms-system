@@ -21,7 +21,7 @@ import {
   updateMediaFolderAction,
 } from "@/lib/actions/media-folders";
 import { notifyFromActionResult } from "@/lib/notify/action-toast";
-import type { MediaFolder } from "@/types/media";
+import type { MediaFolder, MediaLibraryScope } from "@/types/media";
 
 interface MediaLibraryFolderDialogProps {
   open: boolean;
@@ -29,6 +29,7 @@ interface MediaLibraryFolderDialogProps {
   mode: "create" | "rename";
   folder?: MediaFolder | null;
   parentId?: string | null;
+  scope?: MediaLibraryScope;
 }
 
 export function MediaLibraryFolderDialog({
@@ -37,6 +38,7 @@ export function MediaLibraryFolderDialog({
   mode,
   folder,
   parentId = null,
+  scope = "shared",
 }: MediaLibraryFolderDialogProps) {
   const router = useRouter();
   const [name, setName] = useState(folder?.name ?? "");
@@ -62,6 +64,7 @@ export function MediaLibraryFolderDialog({
 
     if (!isRename) {
       formData.set("parentId", parentId ?? "");
+      formData.set("scope", scope);
     }
 
     startTransition(async () => {

@@ -133,14 +133,20 @@ export function buildBannerPlacementWiringMarkdown(
   brandId = "{brandId}",
 ) {
   const endpoint = `${CMS_PUBLIC_API_BASE}/banners/by-key/${placement.key}?brandId=${brandId}`;
+  const catalogEndpoint = `${CMS_PUBLIC_API_BASE}/banners/placements?brandId=${brandId}`;
   const requiredNote = placement.required
-    ? "Required website placement — once set up, keep at least 1 image; do not delete this key."
-    : "Custom banner — create/delete freely in CMS; wire the key your frontend expects.";
+    ? "Required website placement — once set up, keep at least 1 image; do not delete this key. FE must hide the slot when missing/inactive."
+    : "Custom banner — create/delete freely in CMS; discover via /banners/placements (do not hardcode keys from another brand).";
 
   return `# ${placement.title} (\`${placement.key}\`)
 
 Category: **${placement.category === "custom" ? "Custom Banners" : "Banners"}**
 ${requiredNote}
+
+## Placement catalog (all slots for this brand)
+\`\`\`
+GET ${catalogEndpoint}
+\`\`\`
 
 ## Endpoint
 \`\`\`

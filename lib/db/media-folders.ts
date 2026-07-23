@@ -1,4 +1,4 @@
-import { asc, eq, inArray } from "drizzle-orm";
+import { and, asc, eq, inArray, isNull, SQL } from "drizzle-orm";
 import { db } from "@/lib/db/client";
 import { deleteMediaLibraryFilesInFolders } from "@/lib/db/media-files";
 import { mediaFolders } from "@/lib/db/schema";
@@ -12,27 +12,63 @@ import {
   isFolderNameUniqueAmongSiblings,
 } from "@/lib/media/folders";
 import {
+  buildMediaScopeContext,
+  isMediaLibraryScope,
+  mediaScopeMatches,
+  type MediaScopeContext,
+} from "@/lib/media/scope";
+import {
   getMaxFolderDepthError,
   mediaFolderFormSchema,
 } from "@/lib/validations/media-folder";
-import type { MediaFolder } from "@/types/media";
+import type { MediaFolder, MediaLibraryScope } from "@/types/media";
 
 function rowToFolder(row: typeof mediaFolders.$inferSelect): MediaFolder {
+  const scope = isMediaLibraryScope(row.scope) ? row.scope : "shared";
   return {
     id: row.id,
     name: row.name,
     parentId: row.parentId,
     depth: row.depth,
+    scope,
+    brandId: row.brandId,
+    ownerUserId: row.ownerUserId,
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
   };
 }
 
-export async function getMediaFolders(): Promise<MediaFolder[]> {
-  const rows = await db
-    .select()
-    .from(mediaFolders)
-    .orderBy(asc(mediaFolders.name));
+function scopeWhere(context: MediaScopeContext): SQL {
+  if (context.scope === "shared") {
+    return and(eq(mediaFolders.scope, "shared"), isNull(mediaFolders.brandId), isNull(mediaFolders.ownerUserId))!;
+  }
+
+  if (context.scope === "brand") {
+    return and(
+      eq(mediaFolders.scope, "brand"),
+      eq(mediaFolders.brandId, context.brandId!),
+      isNull(mediaFolders.ownerUserId),
+    )!;
+  }
+
+  return and(
+    eq(mediaFolders.scope, "personal"),
+    eq(mediaFolders.ownerUserId, context.ownerUserId!),
+    isNull(mediaFolders.brandId),
+  )!;
+}
+
+export async function getMediaFolders(
+  context?: MediaScopeContext,
+): Promise<MediaFolder[]> {
+  const rows = context
+    ? await db
+        .select()
+        .from(mediaFolders)
+        .where(scopeWhere(context))
+        .orderBy(asc(mediaFolders.name))
+    : await db.select().from(mediaFolders).orderBy(asc(mediaFolders.name));
+
   return rows.map(rowToFolder);
 }
 
@@ -50,13 +86,34 @@ export async function getMediaFolderById(
 export async function createMediaFolder(input: {
   name: string;
   parentId: string | null;
+  scope: MediaLibraryScope;
+  brandId?: string | null;
+  ownerUserId?: string | null;
 }): Promise<MediaFolder> {
   const parsed = mediaFolderFormSchema.safeParse(input);
   if (!parsed.success) {
     throw new Error(parsed.error.issues[0]?.message ?? "Invalid folder data");
   }
 
-  const folders = await getMediaFolders();
+  let scopeContext = buildMediaScopeContext({
+    scope: input.scope,
+    brandId: input.brandId,
+    ownerUserId: input.ownerUserId,
+  });
+
+  if (parsed.data.parentId) {
+    const parent = await getMediaFolderById(parsed.data.parentId);
+    if (!parent) {
+      throw new Error("Parent folder not found");
+    }
+    scopeContext = {
+      scope: parent.scope,
+      brandId: parent.brandId,
+      ownerUserId: parent.ownerUserId,
+    };
+  }
+
+  const folders = await getMediaFolders(scopeContext);
   const parent = parsed.data.parentId
     ? getFolderById(folders, parsed.data.parentId)
     : null;
@@ -87,6 +144,9 @@ export async function createMediaFolder(input: {
       name: parsed.data.name.trim(),
       parentId: parsed.data.parentId,
       depth: getNextFolderDepth(parent),
+      scope: scopeContext.scope,
+      brandId: scopeContext.brandId,
+      ownerUserId: scopeContext.ownerUserId,
       createdAt: now,
       updatedAt: now,
     })
@@ -104,11 +164,16 @@ export async function updateMediaFolder(
     throw new Error(parsed.error.issues[0]?.message ?? "Invalid folder data");
   }
 
-  const folders = await getMediaFolders();
-  const current = getFolderById(folders, id);
+  const current = await getMediaFolderById(id);
   if (!current) {
     throw new Error("Folder not found");
   }
+
+  const folders = await getMediaFolders({
+    scope: current.scope,
+    brandId: current.brandId,
+    ownerUserId: current.ownerUserId,
+  });
 
   if (
     !isFolderNameUniqueAmongSiblings(
@@ -134,12 +199,16 @@ export async function updateMediaFolder(
 }
 
 export async function deleteMediaFolder(id: string): Promise<void> {
-  const folders = await getMediaFolders();
-  const folder = getFolderById(folders, id);
-
+  const folder = await getMediaFolderById(id);
   if (!folder) {
     throw new Error("Folder not found");
   }
+
+  const folders = await getMediaFolders({
+    scope: folder.scope,
+    brandId: folder.brandId,
+    ownerUserId: folder.ownerUserId,
+  });
 
   const idsToDelete = [id, ...getDescendantFolderIds(folders, id)];
   await deleteMediaLibraryFilesInFolders(idsToDelete);
@@ -154,17 +223,38 @@ export async function moveMediaFolders(
     return 0;
   }
 
-  const folders = await getMediaFolders();
+  const first = await getMediaFolderById(ids[0]!);
+  if (!first) {
+    throw new Error("No folders found");
+  }
+
+  const scopeContext: MediaScopeContext = {
+    scope: first.scope,
+    brandId: first.brandId,
+    ownerUserId: first.ownerUserId,
+  };
+
+  const folders = await getMediaFolders(scopeContext);
   const rootIds = getRootSelectedFolderIds(folders, ids);
 
   if (rootIds.length === 0) {
     throw new Error("No folders found");
   }
 
+  for (const folderId of rootIds) {
+    const folder = getFolderById(folders, folderId);
+    if (!folder || !mediaScopeMatches(folder, scopeContext)) {
+      throw new Error("Folders must stay within the same library scope");
+    }
+  }
+
   if (targetParentId) {
     const target = getFolderById(folders, targetParentId);
     if (!target) {
       throw new Error("Destination folder not found");
+    }
+    if (!mediaScopeMatches(target, scopeContext)) {
+      throw new Error("Cannot move folders across library scopes");
     }
   }
 
