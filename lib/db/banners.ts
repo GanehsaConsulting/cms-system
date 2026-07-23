@@ -1,6 +1,7 @@
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { slugify } from "@/lib/articles/slug";
+import { isRequiredBannerPlacementKey } from "@/config/banner-placements";
 import { assertBrandMatch, filterByBrand } from "@/lib/brands/content-scope";
 import { getBannerImages } from "@/lib/banners/images";
 import type { Banner, BannerInput } from "@/types/banner";
@@ -186,6 +187,12 @@ export async function deleteBanner(brandId: string, id: string): Promise<void> {
   }
 
   assertBrandMatch(target, brandId, "Banner not found");
+
+  if (isRequiredBannerPlacementKey(target.key)) {
+    throw new Error(
+      "This website placement is required and cannot be deleted. Keep at least one image.",
+    );
+  }
 
   await writeBanners(banners.filter((banner) => banner.id !== id));
 }

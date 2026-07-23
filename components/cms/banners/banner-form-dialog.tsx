@@ -126,7 +126,7 @@ export function BannerFormDialog({
   const [keyTouched, setKeyTouched] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
-  const keyLocked = lockKey && !isEdit;
+  const keyLocked = lockKey;
 
   useEffect(() => {
     if (!open) {

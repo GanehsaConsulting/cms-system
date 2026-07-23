@@ -1,5 +1,6 @@
 import type { BannerPlacementMock } from "@/config/banner-placements";
 import { BannerPlacementMockBottom } from "@/components/cms/banners/banner-placement-mock-bottom";
+import { BannerPlacementMockCta } from "@/components/cms/banners/banner-placement-mock-cta";
 import { BannerPlacementMockHomepage } from "@/components/cms/banners/banner-placement-mock-homepage";
 import { BannerPlacementMockMegaMenu } from "@/components/cms/banners/banner-placement-mock-mega-menu";
 import { BannerPlacementMockPopup } from "@/components/cms/banners/banner-placement-mock-popup";
@@ -32,5 +33,7 @@ export function BannerPlacementMockView({
       return (
         <BannerPlacementMockBottom images={images} className={className} />
       );
+    case "cta":
+      return <BannerPlacementMockCta images={images} className={className} />;
   }
 }

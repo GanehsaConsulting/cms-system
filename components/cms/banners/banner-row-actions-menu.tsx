@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { BANNER_ACTION_CONFIRMATIONS } from "@/config/banner-actions";
+import { isRequiredBannerPlacementKey } from "@/config/banner-placements";
 import { useConfirmDialog } from "@/hooks/use-confirm-dialog";
 import { deleteBannerAction } from "@/lib/actions/banners";
 import { notifyFromActionResult } from "@/lib/notify/action-toast";
@@ -29,6 +30,7 @@ export function BannerRowActionsMenu({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const { requestConfirm, confirmDialog } = useConfirmDialog(isPending);
+  const canDelete = !isRequiredBannerPlacementKey(banner.key);
 
   function handleDelete() {
     const confirmation = BANNER_ACTION_CONFIRMATIONS.delete(banner.name);
@@ -62,7 +64,7 @@ export function BannerRowActionsMenu({
         >
           <DotsThreeIcon className="size-4" />
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-40">
+        <DropdownMenuContent align="end" className="w-44">
           <DropdownMenuItem
             onClick={(event) => {
               event.stopPropagation();
@@ -72,18 +74,22 @@ export function BannerRowActionsMenu({
             <PencilSimpleIcon />
             Edit
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            variant="destructive"
-            disabled={isPending}
-            onClick={(event) => {
-              event.stopPropagation();
-              handleDelete();
-            }}
-          >
-            <TrashIcon />
-            Delete
-          </DropdownMenuItem>
+          {canDelete ? (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                variant="destructive"
+                disabled={isPending}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  handleDelete();
+                }}
+              >
+                <TrashIcon />
+                Delete
+              </DropdownMenuItem>
+            </>
+          ) : null}
         </DropdownMenuContent>
       </DropdownMenu>
 

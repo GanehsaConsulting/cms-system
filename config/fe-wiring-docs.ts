@@ -539,11 +539,17 @@ ${CMS_PUBLIC_API_BASE}/banners/by-key/homepage?brandId=gonline
 ${CMS_PUBLIC_API_BASE}/banners/by-key/popup?brandId=gec
 ${CMS_PUBLIC_API_BASE}/banners/by-key/mega-menu?brandId=gec
 ${CMS_PUBLIC_API_BASE}/banners/by-key/bottom?brandId=gec
+${CMS_PUBLIC_API_BASE}/banners/by-key/cta-primary?brandId=gonline
+${CMS_PUBLIC_API_BASE}/banners/by-key/cta-inline?brandId=gonline
 \`\`\`
 
 Feature required: \`banners\` · Only \`isActive: true\` banners are returned.
 
-## Website placement keys (CMS-defined)
+## Website placement keys (CMS-defined, brand-owned)
+
+These keys appear in **Banners → Website**. They are **required** once set up: keep at least 1 image and do not delete the banner row for that key.
+
+### Banners
 | Key | Placement |
 |-----|-----------|
 | \`homepage\` | Homepage hero (top section) |
@@ -551,7 +557,15 @@ Feature required: \`banners\` · Only \`isActive: true\` banners are returned.
 | \`mega-menu\` | Mega menu banner |
 | \`bottom\` | Bottom sticky banner |
 
+### CTA
+| Key | Placement |
+|-----|-----------|
+| \`cta-primary\` | Full-width primary call-to-action block |
+| \`cta-inline\` | Compact inline CTA (sidebar / embeds) |
+
 Use **by-key** for each placement — one fetch per slot. Keys are lowercase with hyphens.
+
+In the CMS, each placement card has **Copy FE docs** (and Website has **Copy all docs**) for paste-ready agent prompts.
 
 ## List query params
 | Param | Values | Notes |
@@ -565,7 +579,14 @@ List returns \`{ data: Banner[] }\` (typically a small set — pagination not re
 
 ## Prefer by-key for placements
 \`\`\`ts
-const PLACEMENT_KEYS = ["homepage", "popup", "mega-menu", "bottom"] as const;
+const PLACEMENT_KEYS = [
+  "homepage",
+  "popup",
+  "mega-menu",
+  "bottom",
+  "cta-primary",
+  "cta-inline",
+] as const;
 
 async function loadPlacementBanner(brandId: string, key: string) {
   const res = await fetch(
@@ -589,6 +610,7 @@ const { data: banners } = await fetch(
 
 const byKey = Object.fromEntries(banners.map((b: Banner) => [b.key, b]));
 const hero = byKey.homepage ?? null;
+const primaryCta = byKey["cta-primary"] ?? null;
 \`\`\`
 
 ## Carousel
@@ -620,9 +642,11 @@ interface Banner {
 2. Backfill legacy rows: \`npx tsx scripts/backfill-json-brand-id.ts gec\`
 3. Set **Active** in CMS for banners that should appear on the public site
 4. Use the CMS placement keys above (\`homepage\`, not \`homepage-hero\`)
+5. Do not delete required Website placement rows after setup (min 1 image)
 
 ## Agent checklist
 - [ ] Load each placement via \`by-key\` (or list + map by key)
+- [ ] Wire both **Banners** and **CTA** keys listed above
 - [ ] Carousel when \`images.length > 1\`
 - [ ] Link \`redirectUrl\` on click
 - [ ] Hide placement when 404 / inactive / brand lacks \`banners\`
@@ -787,7 +811,7 @@ interface PublicBrand {
 | \`articles\` | Blog |
 | \`prices\` | Pricing |
 | \`clients-works\` | Clients + Portfolio |
-| \`banners\` | Hero / popup |
+| \`banners\` | Hero / popup / CTA placements |
 | \`activities\` | Activity / promo feed |
 | \`dashboard\` | CMS-only |
 
@@ -860,7 +884,7 @@ export const FE_WIRING_DOC_SECTIONS: FeWiringDocSection[] = [
     id: "banners",
     title: "Banners",
     summary:
-      "By-key placements (homepage, popup, mega-menu, bottom), list filters, carousel.",
+      "Website placements by type (Banners + CTA), by-key wiring, copyable FE docs, carousel.",
     markdown: BANNERS_MARKDOWN,
   },
   {

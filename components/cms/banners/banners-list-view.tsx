@@ -51,10 +51,10 @@ export function BannersListView({ banners }: BannersListViewProps) {
     setFormOpen(true);
   }
 
-  function openEdit(banner: Banner) {
+  function openEdit(banner: Banner, options?: { lockKey?: boolean }) {
     setEditingBanner(banner);
     setDefaultKey("");
-    setLockKey(false);
+    setLockKey(Boolean(options?.lockKey));
     setFormOpen(true);
   }
 
@@ -63,7 +63,7 @@ export function BannersListView({ banners }: BannersListViewProps) {
     banner: Banner | null,
   ) {
     if (banner) {
-      openEdit(banner);
+      openEdit(banner, { lockKey: placement.required });
       return;
     }
 
