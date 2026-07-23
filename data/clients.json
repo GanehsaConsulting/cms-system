@@ -596,5 +596,423 @@
     "photos": [],
     "createdAt": "2026-07-21T03:02:48.530Z",
     "updatedAt": "2026-07-21T03:02:48.530Z"
+  },
+  {
+    "id": "2d833736-7bd8-4b07-94f8-2d17db26805c",
+    "brandId": "gonline",
+    "name": "Ganesha Consulting",
+    "logo": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747152/Porto/ganesha_11_11zon_rrm9zp.webp",
+    "website": "https://www.ganeshaconsulting.co.id/",
+    "description": "Corporate Web System — Advanced Dynamic — CMS · Articles · Dynamic Content · Corporate Services · Activities",
+    "featured": false,
+    "testimonials": [],
+    "photos": [
+      {
+        "id": "1c365663-a960-4858-bbf2-641b39eaf138",
+        "url": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747152/Porto/ganesha_11_11zon_rrm9zp.webp",
+        "caption": "Ganesha Consulting"
+      }
+    ],
+    "createdAt": "2026-07-23T06:28:12.405Z",
+    "updatedAt": "2026-07-23T06:28:12.405Z"
+  },
+  {
+    "id": "c0ae7d61-77fd-46a5-b768-e10b0dccc6ba",
+    "brandId": "gonline",
+    "name": "GAB",
+    "logo": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747145/Porto/gabdig_9_11zon_ndcgjv.webp",
+    "website": "https://www.gab.co.id/",
+    "description": "Corporate Website — Advanced Dynamic — CMS · Multi-service · Products Page",
+    "featured": false,
+    "testimonials": [],
+    "photos": [
+      {
+        "id": "110cb598-e54d-4e7f-8f46-fc911a2e06de",
+        "url": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747145/Porto/gabdig_9_11zon_ndcgjv.webp",
+        "caption": "GAB Mattiro Floresind"
+      }
+    ],
+    "createdAt": "2026-07-23T06:28:12.406Z",
+    "updatedAt": "2026-07-23T06:28:12.406Z"
+  },
+  {
+    "id": "101cfb01-74bc-4779-b929-771a32e0399a",
+    "brandId": "gonline",
+    "name": "PT Ganesha Multi Kreatif",
+    "logo": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747146/Porto/gec_12_11zon_hxf0wo.webp",
+    "website": "https://www.ganeshaec.co.id/",
+    "description": "Corporate Construction Website — Advanced Dynamic — Dynamic Services · Product Listings",
+    "featured": false,
+    "testimonials": [],
+    "photos": [
+      {
+        "id": "1237988f-a7e1-43c0-9e0a-804827f5ecb4",
+        "url": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747146/Porto/gec_12_11zon_hxf0wo.webp",
+        "caption": "GEC"
+      }
+    ],
+    "createdAt": "2026-07-23T06:28:12.406Z",
+    "updatedAt": "2026-07-23T06:28:12.406Z"
+  },
+  {
+    "id": "72212b41-2fdd-43b5-be03-e6ac24d1e640",
+    "brandId": "gonline",
+    "name": "Ganapatih",
+    "logo": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747146/Porto/ganapatih_10_11zon_tl1yjl.webp",
+    "website": "https://ganapatih.vercel.app/",
+    "description": "Product Catalog Website — Advanced Dynamic — CMS Products · E-commerce Static",
+    "featured": false,
+    "testimonials": [],
+    "photos": [
+      {
+        "id": "a46c863a-3170-49cc-b8c5-3ab0618b0503",
+        "url": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747146/Porto/ganapatih_10_11zon_tl1yjl.webp",
+        "caption": "Ganapatih"
+      }
+    ],
+    "createdAt": "2026-07-23T06:28:12.407Z",
+    "updatedAt": "2026-07-23T06:28:12.407Z"
+  },
+  {
+    "id": "3a2f446f-6bf9-46f6-a0fa-27ab9cdba86d",
+    "brandId": "gonline",
+    "name": "People Impact",
+    "logo": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747148/Porto/ppl_20_11zon_gd5cx4.webp",
+    "website": "https://www.peopleimpact.co.id/",
+    "description": "Company Profile — Company Profile — Profile · Contact",
+    "featured": false,
+    "testimonials": [],
+    "photos": [
+      {
+        "id": "90855fce-6eb0-48ba-88f9-d8543f88491b",
+        "url": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747148/Porto/ppl_20_11zon_gd5cx4.webp",
+        "caption": "People Impact"
+      }
+    ],
+    "createdAt": "2026-07-23T06:28:12.408Z",
+    "updatedAt": "2026-07-23T06:28:12.408Z"
+  },
+  {
+    "id": "4d78fb3d-af9b-41de-b7bf-0f5a10791eab",
+    "brandId": "gonline",
+    "name": "LPK",
+    "logo": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747148/Porto/lpk_18_11zon_xf0se2.webp",
+    "website": "https://lpk-web.vercel.app/",
+    "description": "Company Profile — Company Profile — Programs · Contact Form",
+    "featured": false,
+    "testimonials": [],
+    "photos": [
+      {
+        "id": "5f2eeaab-e4ee-4558-9591-bb383a5cf392",
+        "url": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747148/Porto/lpk_18_11zon_xf0se2.webp",
+        "caption": "LPK Training"
+      }
+    ],
+    "createdAt": "2026-07-23T06:28:12.408Z",
+    "updatedAt": "2026-07-23T06:28:12.408Z"
+  },
+  {
+    "id": "e8de941c-1b8b-4b4d-9154-aae6e36510b8",
+    "brandId": "gonline",
+    "name": "PT Blora Inovasi Sejahtera",
+    "logo": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747145/Porto/blora_2_11zon_nucsyq.webp",
+    "website": "https://www.blorainovasisejahtera.com/",
+    "description": "Company Profile — Company Profile — Company Profile",
+    "featured": false,
+    "testimonials": [],
+    "photos": [
+      {
+        "id": "1b081d55-67f0-41b8-9bbe-74b0fe32eb7a",
+        "url": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747145/Porto/blora_2_11zon_nucsyq.webp",
+        "caption": "BIS"
+      }
+    ],
+    "createdAt": "2026-07-23T06:28:12.409Z",
+    "updatedAt": "2026-07-23T06:28:12.409Z"
+  },
+  {
+    "id": "0c9de786-f375-4b9b-ab1a-120dc37ecd75",
+    "brandId": "gonline",
+    "name": "BPN IND",
+    "logo": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747145/Porto/bpn_3_11zon_mfshl5.webp",
+    "website": "https://www.bpn-ind.com/",
+    "description": "Company Profile — Company Profile — Company Profile",
+    "featured": false,
+    "testimonials": [],
+    "photos": [
+      {
+        "id": "4b2a093d-6421-4af0-9b5c-c614ec089e0e",
+        "url": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747145/Porto/bpn_3_11zon_mfshl5.webp",
+        "caption": "BPN"
+      }
+    ],
+    "createdAt": "2026-07-23T06:28:12.410Z",
+    "updatedAt": "2026-07-23T06:28:12.410Z"
+  },
+  {
+    "id": "5c0395f1-9ea4-4cf4-87d5-c613985fa2f3",
+    "brandId": "gonline",
+    "name": "Budevi",
+    "logo": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747146/Porto/devi_6_11zon_gun3dq.webp",
+    "website": "https://web-budevi.vercel.app/",
+    "description": "Company Profile — Company Profile — Products · CTA · Print Products",
+    "featured": false,
+    "testimonials": [],
+    "photos": [
+      {
+        "id": "26e162d4-55a2-48f5-b32a-72eee3e7c5fa",
+        "url": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747146/Porto/devi_6_11zon_gun3dq.webp",
+        "caption": "Budevi"
+      }
+    ],
+    "createdAt": "2026-07-23T06:28:12.410Z",
+    "updatedAt": "2026-07-23T06:28:12.410Z"
+  },
+  {
+    "id": "31ab99d9-892f-45fd-92ed-b5aa468fd0fc",
+    "brandId": "gonline",
+    "name": "Medlife",
+    "logo": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747148/Porto/medlife_19_11zon_lz1nv3.webp",
+    "website": "https://www.medlife.co.id/",
+    "description": "Landing Page — Landing Page — CTA · Products Focused",
+    "featured": false,
+    "testimonials": [],
+    "photos": [
+      {
+        "id": "c0e46741-4712-47d6-8cf2-693986b1831a",
+        "url": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747148/Porto/medlife_19_11zon_lz1nv3.webp",
+        "caption": "Medlife"
+      }
+    ],
+    "createdAt": "2026-07-23T06:28:12.411Z",
+    "updatedAt": "2026-07-23T06:28:12.411Z"
+  },
+  {
+    "id": "e6a9090b-3902-4ce4-baad-cbb6c98bb2e2",
+    "brandId": "gonline",
+    "name": "Bharata Fresh",
+    "logo": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747145/Porto/bharata_1_11zon_lwfutt.webp",
+    "website": "https://www.bharatafreshbali.com/",
+    "description": "Landing Page — Landing Page — CTA · Product Section",
+    "featured": false,
+    "testimonials": [],
+    "photos": [
+      {
+        "id": "e2f6932b-04a7-4ea0-9ff2-0b967a162091",
+        "url": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747145/Porto/bharata_1_11zon_lwfutt.webp",
+        "caption": "Bharata Fresh Bali"
+      }
+    ],
+    "createdAt": "2026-07-23T06:28:12.411Z",
+    "updatedAt": "2026-07-23T06:28:12.411Z"
+  },
+  {
+    "id": "2483db77-752a-4703-9767-956652af9abf",
+    "brandId": "gonline",
+    "name": "JMA Indonesia",
+    "logo": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747147/Porto/jma_14_11zon_fljtoi.webp",
+    "website": "https://jmaindonesia.com/",
+    "description": "Landing Page — Landing Page — Static Landing",
+    "featured": false,
+    "testimonials": [],
+    "photos": [
+      {
+        "id": "2c465a0c-e501-4b83-8661-2d12d9309bd0",
+        "url": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747147/Porto/jma_14_11zon_fljtoi.webp",
+        "caption": "JMA"
+      }
+    ],
+    "createdAt": "2026-07-23T06:28:12.412Z",
+    "updatedAt": "2026-07-23T06:28:12.412Z"
+  },
+  {
+    "id": "98714960-4808-41f5-a6fa-70894afa6f36",
+    "brandId": "gonline",
+    "name": "Savier Jasmine",
+    "logo": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747147/Porto/jasmine_13_11zon_hxl2hi.webp",
+    "website": "https://savier-jasmine.vercel.app/",
+    "description": "Landing Page — Landing Page — Brand Landing",
+    "featured": false,
+    "testimonials": [],
+    "photos": [
+      {
+        "id": "acbc449e-be9e-4127-ae39-fbd88fac69f7",
+        "url": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747147/Porto/jasmine_13_11zon_hxl2hi.webp",
+        "caption": "Jasmine"
+      }
+    ],
+    "createdAt": "2026-07-23T06:28:12.412Z",
+    "updatedAt": "2026-07-23T06:28:12.412Z"
+  },
+  {
+    "id": "c7c2a54b-dba8-4fef-abec-5cb93f3262d9",
+    "brandId": "gonline",
+    "name": "Kalanesia",
+    "logo": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747147/Porto/kalanesia_15_11zon_buwuf6.webp",
+    "website": "https://www.kalanesia.com/",
+    "description": "Landing Page — Landing Page — Brand Landing",
+    "featured": false,
+    "testimonials": [],
+    "photos": [
+      {
+        "id": "91249229-d12a-4579-a97d-25605f8f75fe",
+        "url": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747147/Porto/kalanesia_15_11zon_buwuf6.webp",
+        "caption": "Kalanesia"
+      }
+    ],
+    "createdAt": "2026-07-23T06:28:12.413Z",
+    "updatedAt": "2026-07-23T06:28:12.413Z"
+  },
+  {
+    "id": "d975cad0-66d7-48d7-a786-0cb05a2a65f6",
+    "brandId": "gonline",
+    "name": "Buildify",
+    "logo": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747145/Porto/buildify_4_11zon_oz43z0.webp",
+    "website": "https://mockup-buildify.vercel.app/",
+    "description": "Landing Page — Landing Page — Brand Landing",
+    "featured": false,
+    "testimonials": [],
+    "photos": [
+      {
+        "id": "592b85a5-81c7-4d90-96dc-9b9bd4656aa6",
+        "url": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747145/Porto/buildify_4_11zon_oz43z0.webp",
+        "caption": "Buildify"
+      }
+    ],
+    "createdAt": "2026-07-23T06:28:12.413Z",
+    "updatedAt": "2026-07-23T06:28:12.413Z"
+  },
+  {
+    "id": "3a3e9b20-e5a1-48b9-804b-72de274bdfb3",
+    "brandId": "gonline",
+    "name": "SGW Indo Logistik",
+    "logo": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747148/Porto/sgw_21_11zon_gywqzn.webp",
+    "website": "https://sgwindologistik.com/",
+    "description": "Landing Page — Landing Page — CTA Company Landing",
+    "featured": false,
+    "testimonials": [],
+    "photos": [
+      {
+        "id": "9bad9ba1-9da1-4638-8854-9127c18cb5b3",
+        "url": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747148/Porto/sgw_21_11zon_gywqzn.webp",
+        "caption": "SGW"
+      }
+    ],
+    "createdAt": "2026-07-23T06:28:12.414Z",
+    "updatedAt": "2026-07-23T06:28:12.414Z"
+  },
+  {
+    "id": "3d6d8664-b229-4baf-964e-f7f00a65e674",
+    "brandId": "gonline",
+    "name": "PT EMS",
+    "logo": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747146/Porto/elka_8_11zon_lokqha.webp",
+    "website": "https://pt-ems.vercel.app/",
+    "description": "Landing Page — Landing Page — Product Landing",
+    "featured": false,
+    "testimonials": [],
+    "photos": [
+      {
+        "id": "f5fffb33-9f49-4931-853e-c5413aba135e",
+        "url": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747146/Porto/elka_8_11zon_lokqha.webp",
+        "caption": "Elka Mitra Sejahtera"
+      }
+    ],
+    "createdAt": "2026-07-23T06:28:12.414Z",
+    "updatedAt": "2026-07-23T06:28:12.414Z"
+  },
+  {
+    "id": "3a338184-38a6-45c5-9362-8b7ce1dccd1d",
+    "brandId": "gonline",
+    "name": "Krek",
+    "logo": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747147/Porto/krek_16_11zon_su0tsi.webp",
+    "website": "https://krek-web.vercel.app/",
+    "description": "Landing Page — Landing Page — Product Landing",
+    "featured": false,
+    "testimonials": [],
+    "photos": [
+      {
+        "id": "98ea6442-d3eb-44ee-a961-d2455fce3174",
+        "url": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747147/Porto/krek_16_11zon_su0tsi.webp",
+        "caption": "Krek"
+      }
+    ],
+    "createdAt": "2026-07-23T06:28:12.415Z",
+    "updatedAt": "2026-07-23T06:28:12.415Z"
+  },
+  {
+    "id": "f8535915-aae6-47fa-87a1-f044772f680b",
+    "brandId": "gonline",
+    "name": "D Racing",
+    "logo": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747146/Porto/dracing_7_11zon_ii2q0p.webp",
+    "website": "https://dracing-web.vercel.app/",
+    "description": "Landing Page — Landing Page — Product Landing",
+    "featured": false,
+    "testimonials": [],
+    "photos": [
+      {
+        "id": "270b244e-0371-4a18-bea4-e3a47248e8c8",
+        "url": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747146/Porto/dracing_7_11zon_ii2q0p.webp",
+        "caption": "8DRACING"
+      }
+    ],
+    "createdAt": "2026-07-23T06:28:12.415Z",
+    "updatedAt": "2026-07-23T06:28:12.415Z"
+  },
+  {
+    "id": "dd16c897-8ca2-4f28-b108-4922352081ad",
+    "brandId": "gonline",
+    "name": "PT Lentera Berkat Wisesa",
+    "logo": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747148/Porto/lbw_17_11zon_ve2qpq.webp",
+    "website": "https://web-pt-lentera.vercel.app/",
+    "description": "Landing Page — Landing Page — CTA Landing",
+    "featured": false,
+    "testimonials": [],
+    "photos": [
+      {
+        "id": "b938fe97-d6fa-46cf-b4f9-15d50ffd7baf",
+        "url": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747148/Porto/lbw_17_11zon_ve2qpq.webp",
+        "caption": "Lentera Berkat Wisesa"
+      }
+    ],
+    "createdAt": "2026-07-23T06:28:12.415Z",
+    "updatedAt": "2026-07-23T06:28:12.415Z"
+  },
+  {
+    "id": "63d5e0cc-ae5b-4a6b-bc59-93a64d2f46af",
+    "brandId": "gonline",
+    "name": "Superclean",
+    "logo": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747149/Porto/superclean_22_11zon_klzncc.webp",
+    "website": "https://superclean-development.vercel.app/",
+    "description": "CMS Platform — CMS — Admin CRUD · System Management",
+    "featured": false,
+    "testimonials": [],
+    "photos": [
+      {
+        "id": "e063ed64-bbcb-433f-8f03-94d8c79eb123",
+        "url": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747149/Porto/superclean_22_11zon_klzncc.webp",
+        "caption": "Superclean CMS"
+      }
+    ],
+    "createdAt": "2026-07-23T06:28:12.416Z",
+    "updatedAt": "2026-07-23T06:28:12.416Z"
+  },
+  {
+    "id": "c8e9b811-b5e9-4357-a6d1-af2ca83efb20",
+    "brandId": "gonline",
+    "name": "Ganesha CMS System",
+    "logo": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747145/Porto/cms-ganesha_5_11zon_xmx69g.webp",
+    "website": "https://ganesha-cms.vercel.app",
+    "description": "CMS Platform — CMS — Custom CMS · User Management · CRUD · Blog Manager · Post Admin",
+    "featured": false,
+    "testimonials": [],
+    "photos": [
+      {
+        "id": "155d9222-d885-499f-93f2-8982189beb48",
+        "url": "https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747145/Porto/cms-ganesha_5_11zon_xmx69g.webp",
+        "caption": "Ganesha CMS"
+      }
+    ],
+    "createdAt": "2026-07-23T06:28:12.416Z",
+    "updatedAt": "2026-07-23T06:28:12.416Z"
   }
 ]

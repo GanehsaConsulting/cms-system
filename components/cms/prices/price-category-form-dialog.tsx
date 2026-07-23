@@ -77,12 +77,14 @@ export function PriceCategoryFormDialog({
         : await createPriceCategoryAction(formData);
 
       if (!result.success) {
-        notifyError(result.error || "Failed to save category.");
+        notifyError(result.error || "Failed to save service name.");
         setError(result.error);
         return;
       }
 
-      notifySuccess(category ? "Category saved." : "Category created.");
+      notifySuccess(
+        category ? "Service name saved." : "Service name created.",
+      );
       onSaved(result.category);
       resetForm();
       onOpenChange(false);
@@ -94,19 +96,19 @@ export function PriceCategoryFormDialog({
       <CmsDialogContent showCloseButton={!isPending} size="sm">
         <CmsDialogHeader>
           <CmsDialogTitle>
-            {isEdit ? "Rename category" : "Create price category"}
+            {isEdit ? "Rename service name" : "Create service name"}
           </CmsDialogTitle>
           <CmsDialogDescription>
             {isEdit
-              ? "Update the display name. Plans already using this category stay linked."
-              : "Categories group pricing cards onto public service pages."}
+              ? "Update the display name. Plans already using this service stay linked."
+              : "Service names group pricing cards onto public service pages."}
           </CmsDialogDescription>
         </CmsDialogHeader>
 
         <form onSubmit={handleSubmit} className={DIALOG_FORM_CLASS}>
           <CmsDialogBody className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="price-category-label">Category name</Label>
+              <Label htmlFor="price-category-label">Service name</Label>
               <Input
                 id="price-category-label"
                 value={label}
@@ -144,7 +146,7 @@ export function PriceCategoryFormDialog({
                 ? "Saving..."
                 : isEdit
                   ? "Save changes"
-                  : "Create category"}
+                  : "Create service name"}
             </Button>
           </CmsDialogFooter>
         </form>

@@ -38,5 +38,59 @@
     "isActive": true,
     "createdAt": "2026-07-21T03:02:48.537Z",
     "updatedAt": "2026-07-21T03:02:48.537Z"
+  },
+  {
+    "id": "dc19a893-b2c5-4ccf-b451-ba38fb2f9966",
+    "brandId": "gonline",
+    "name": "Gonline Ad 1",
+    "key": "ad-1",
+    "images": [
+      "https://res.cloudinary.com/di3cnyfg3/image/upload/v1775727396/Landing_Page_Website_rtxs1c.webp"
+    ],
+    "redirectUrl": "https://api.whatsapp.com/send/?phone=628887127000&type=phone_number&app_absent=0&text=Halo+Minline+aku+tertarik+promo+nya+dong",
+    "isActive": true,
+    "createdAt": "2026-07-23T06:28:12.436Z",
+    "updatedAt": "2026-07-23T06:28:12.436Z"
+  },
+  {
+    "id": "4e67e142-54a3-4fb9-bf35-292750d65731",
+    "brandId": "gonline",
+    "name": "Gonline Ad 2",
+    "key": "ad-2",
+    "images": [
+      "https://res.cloudinary.com/di3cnyfg3/image/upload/v1775727396/Compnay_Profile_Discount_1_Jt_azxana.webp"
+    ],
+    "redirectUrl": "https://api.whatsapp.com/send/?phone=628887127000&type=phone_number&app_absent=0&text=Halo+Minline+aku+tertarik+promo+nya+dong",
+    "isActive": true,
+    "createdAt": "2026-07-23T06:28:12.436Z",
+    "updatedAt": "2026-07-23T06:28:12.436Z"
+  },
+  {
+    "id": "1b60233e-ba6d-42d2-997a-df35f2680e34",
+    "brandId": "gonline",
+    "name": "Gonline Ad 3",
+    "key": "ad-3",
+    "images": [
+      "https://res.cloudinary.com/di3cnyfg3/image/upload/v1776244941/50off_11zon_xyzy50.webp"
+    ],
+    "redirectUrl": "https://api.whatsapp.com/send/?phone=628887127000&type=phone_number&app_absent=0&text=Halo+Minline+aku+tertarik+promo+diskon+1+jt+nya+doong",
+    "isActive": true,
+    "createdAt": "2026-07-23T06:28:12.436Z",
+    "updatedAt": "2026-07-23T06:28:12.436Z"
+  },
+  {
+    "id": "a18c4add-58de-4fc0-938e-0379521d1590",
+    "brandId": "gonline",
+    "name": "Homepage Hero",
+    "key": "homepage",
+    "images": [
+      "https://res.cloudinary.com/di3cnyfg3/image/upload/v1775727396/Landing_Page_Website_rtxs1c.webp",
+      "https://res.cloudinary.com/di3cnyfg3/image/upload/v1775727396/Compnay_Profile_Discount_1_Jt_azxana.webp",
+      "https://res.cloudinary.com/di3cnyfg3/image/upload/v1776244941/50off_11zon_xyzy50.webp"
+    ],
+    "redirectUrl": "https://api.whatsapp.com/send/?phone=628887127000&type=phone_number&app_absent=0&text=Halo+Minline+aku+tertarik+promo+nya+dong",
+    "isActive": true,
+    "createdAt": "2026-07-23T06:28:12.436Z",
+    "updatedAt": "2026-07-23T06:28:12.436Z"
   }
 ]

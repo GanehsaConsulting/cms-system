@@ -19,7 +19,7 @@ export function PricesListManageCategoriesButton({
       onClick={onClick}
     >
       <TagIcon className="size-3.5 opacity-70" />
-      Categories
+      Service Name
     </Button>
   );
 }

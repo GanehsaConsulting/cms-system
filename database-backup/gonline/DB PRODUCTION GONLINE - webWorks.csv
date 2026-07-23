@@ -1,0 +1,23 @@
+id,Status,Link,Category,ImagePreview,CompanyName,BrandName,Features,Kind
+1,TRUE,https://www.ganeshaconsulting.co.id/,Advanced Dynamic,https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747152/Porto/ganesha_11_11zon_rrm9zp.webp,Ganesha Consulting,Ganesha Consulting,CMS ; Articles ; Dynamic Content ; Corporate Services ; Activities,Corporate Web System
+2,TRUE,https://www.gab.co.id/,Advanced Dynamic,https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747145/Porto/gabdig_9_11zon_ndcgjv.webp,GAB,GAB Mattiro Floresind,CMS ; Multi-service ; Products Page,Corporate Website
+3,TRUE,https://www.ganeshaec.co.id/,Advanced Dynamic,https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747146/Porto/gec_12_11zon_hxf0wo.webp,PT Ganesha Multi Kreatif,GEC,Dynamic Services ; Product Listings,Corporate Construction Website
+4,TRUE,https://ganapatih.vercel.app/,Advanced Dynamic,https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747146/Porto/ganapatih_10_11zon_tl1yjl.webp,Ganapatih,Ganapatih,CMS Products ; E-commerce Static,Product Catalog Website
+5,TRUE,https://www.peopleimpact.co.id/,Company Profile,https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747148/Porto/ppl_20_11zon_gd5cx4.webp,People Impact,People Impact,Profile ; Contact,Company Profile
+6,TRUE,https://lpk-web.vercel.app/,Company Profile,https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747148/Porto/lpk_18_11zon_xf0se2.webp,LPK,LPK Training,Programs ; Contact Form,Company Profile
+7,TRUE,https://www.blorainovasisejahtera.com/,Company Profile,https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747145/Porto/blora_2_11zon_nucsyq.webp,PT Blora Inovasi Sejahtera,BIS,Company Profile,Company Profile
+8,TRUE,https://www.bpn-ind.com/,Company Profile,https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747145/Porto/bpn_3_11zon_mfshl5.webp,BPN IND,BPN,Company Profile,Company Profile
+9,TRUE,https://web-budevi.vercel.app/,Company Profile,https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747146/Porto/devi_6_11zon_gun3dq.webp,Budevi,Budevi,Products ; CTA ; Print Products,Company Profile
+10,TRUE,https://www.medlife.co.id/,Landing Page,https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747148/Porto/medlife_19_11zon_lz1nv3.webp,Medlife,Medlife,CTA ; Products Focused,Landing Page
+11,TRUE,https://www.bharatafreshbali.com/,Landing Page,https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747145/Porto/bharata_1_11zon_lwfutt.webp,Bharata Fresh,Bharata Fresh Bali,CTA ; Product Section,Landing Page
+12,TRUE,https://jmaindonesia.com/,Landing Page,https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747147/Porto/jma_14_11zon_fljtoi.webp,JMA Indonesia,JMA,Static Landing,Landing Page
+13,TRUE,https://savier-jasmine.vercel.app/,Landing Page,https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747147/Porto/jasmine_13_11zon_hxl2hi.webp,Savier Jasmine,Jasmine,Brand Landing,Landing Page
+14,TRUE,https://www.kalanesia.com/,Landing Page,https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747147/Porto/kalanesia_15_11zon_buwuf6.webp,Kalanesia,Kalanesia,Brand Landing,Landing Page
+15,TRUE,https://mockup-buildify.vercel.app/,Landing Page,https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747145/Porto/buildify_4_11zon_oz43z0.webp,Buildify,Buildify,Brand Landing,Landing Page
+16,TRUE,https://sgwindologistik.com/,Landing Page,https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747148/Porto/sgw_21_11zon_gywqzn.webp,SGW Indo Logistik,SGW,CTA Company Landing,Landing Page
+17,TRUE,https://pt-ems.vercel.app/,Landing Page,https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747146/Porto/elka_8_11zon_lokqha.webp,PT EMS,Elka Mitra Sejahtera,Product Landing,Landing Page
+18,TRUE,https://krek-web.vercel.app/,Landing Page,https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747147/Porto/krek_16_11zon_su0tsi.webp,Krek,Krek,Product Landing,Landing Page
+19,TRUE,https://dracing-web.vercel.app/,Landing Page,https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747146/Porto/dracing_7_11zon_ii2q0p.webp,D Racing,8DRACING,Product Landing,Landing Page
+20,TRUE,https://web-pt-lentera.vercel.app/,Landing Page,https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747148/Porto/lbw_17_11zon_ve2qpq.webp,PT Lentera Berkat Wisesa,Lentera Berkat Wisesa,CTA Landing,Landing Page
+21,TRUE,https://superclean-development.vercel.app/,CMS,https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747149/Porto/superclean_22_11zon_klzncc.webp,Superclean,Superclean CMS,Admin CRUD ; System Management,CMS Platform
+22,TRUE,https://ganesha-cms.vercel.app,CMS,https://res.cloudinary.com/dr5dlofvv/image/upload/v1764747145/Porto/cms-ganesha_5_11zon_xmx69g.webp,Ganesha CMS System,Ganesha CMS,Custom CMS ; User Management ; CRUD ; Blog Manager ; Post Admin,CMS Platform

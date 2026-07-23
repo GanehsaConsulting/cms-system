@@ -76,15 +76,19 @@ export function PriceCategoriesManageDialog({
   function handleDelete(category: PriceCategory) {
     setActionError(null);
     requestConfirm({
-      title: "Delete price category?",
-      description: `Delete "${category.label}"? This cannot be undone. Categories still used by price plans cannot be deleted.`,
+      title: "Delete service name?",
+      description: `Delete "${category.label}"? This cannot be undone. Service names still used by price plans cannot be deleted.`,
       confirmLabel: "Delete",
       variant: "destructive",
       onConfirm: () => {
         startTransition(async () => {
           const result = await deletePriceCategoryAction(category.id);
           if (
-            !notifyFromActionResult(result, "Category deleted.", "Failed to delete category.")
+            !notifyFromActionResult(
+              result,
+              "Service name deleted.",
+              "Failed to delete service name.",
+            )
           ) {
             if (!result.success) {
               setActionError(result.error);
@@ -106,7 +110,7 @@ export function PriceCategoriesManageDialog({
       <CmsDialog open={open} onOpenChange={onOpenChange}>
         <CmsDialogContent showCloseButton size="md" className="flex flex-col">
           <CmsDialogHeader>
-            <CmsDialogTitle>Price categories</CmsDialogTitle>
+            <CmsDialogTitle>Service names</CmsDialogTitle>
             <CmsDialogDescription>
               Manage which pricing pages plans can be assigned to.
             </CmsDialogDescription>
@@ -120,7 +124,7 @@ export function PriceCategoriesManageDialog({
               onClick={handleCreate}
             >
               <PlusIcon className="size-3.5" />
-              New category
+              New service name
             </Button>
 
             {actionError ? (
@@ -134,9 +138,9 @@ export function PriceCategoriesManageDialog({
                   "border border-dashed border-(--separator) bg-white/30 px-4 py-8 text-center dark:bg-white/8",
                 )}
               >
-                <p className="font-medium text-sm">No categories yet</p>
+                <p className="font-medium text-sm">No service names yet</p>
                 <p className="mt-1 text-muted-foreground text-sm">
-                  Create a category before assigning plans.
+                  Create a service name before assigning plans.
                 </p>
               </div>
             ) : (

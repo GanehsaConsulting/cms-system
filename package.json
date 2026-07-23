@@ -15,10 +15,14 @@
     "db:seed:admin": "tsx scripts/seed-admin.ts",
     "db:seed:gospace": "tsx scripts/seed-gospace-from-dump.ts",
     "db:seed:ganesha": "tsx scripts/seed-ganesha-from-dump.ts",
+    "db:seed:gonline": "tsx scripts/seed-gonline-from-csv.ts",
+    "db:sync:gonline-prices": "tsx scripts/sync-gonline-prices.ts",
+    "db:sync:gonline-webworks": "tsx scripts/sync-gonline-webworks.ts",
     "db:seed:staff": "tsx scripts/seed-staff-users.ts",
     "db:migrate:articles": "tsx scripts/migrate-articles-json.ts",
     "db:migrate:media": "tsx scripts/migrate-media-json.ts",
     "db:migrate:prices": "tsx scripts/migrate-prices-json.ts",
+    "db:migrate:clients-works-banners": "tsx scripts/migrate-clients-works-banners-json.ts",
     "db:migrate:activities": "tsx scripts/migrate-activities-ganesha-dump.ts"
   },
   "dependencies": {

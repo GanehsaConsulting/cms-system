@@ -35,7 +35,7 @@ export function PriceFormCategoryField({
     <div className="flex h-full flex-col gap-2">
       <div className="flex items-center justify-between gap-2">
         <Label htmlFor="serviceSlug" className="text-primary">
-          Price category
+          Service name
         </Label>
         <Button
           type="button"
@@ -59,7 +59,7 @@ export function PriceFormCategoryField({
               onValueChange={field.onChange}
             >
               <SelectTrigger id="serviceSlug" className="w-full">
-                <SelectValue placeholder="Select a price category" />
+                <SelectValue placeholder="Select a service name" />
               </SelectTrigger>
               <SelectContent>
                 {categories.map((category) => (

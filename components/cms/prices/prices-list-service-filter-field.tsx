@@ -48,7 +48,7 @@ export function PricesListServiceFilterField({
 
   return (
     <div className={LIST_FILTER_FIELD_CLASS}>
-      <Label htmlFor="price-service-filter-search">Price category</Label>
+      <Label htmlFor="price-service-filter-search">Service name</Label>
       <div className={cn(RADIUS_DEEP, "overflow-hidden border border-input")}>
         <div className="relative border-input border-b px-2 py-1.5">
           <MagnifyingGlassIcon className="pointer-events-none absolute top-1/2 left-4 size-3.5 -translate-y-1/2 text-muted-foreground" />
@@ -56,7 +56,7 @@ export function PricesListServiceFilterField({
             id="price-service-filter-search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search categories..."
+            placeholder="Search service names..."
             className="h-8 border-0 bg-transparent pl-7 shadow-none focus-visible:ring-0"
           />
         </div>
@@ -71,7 +71,7 @@ export function PricesListServiceFilterField({
               value === "all" && "bg-muted font-medium",
             )}
           >
-            All categories
+            All service names
           </button>
 
           {filteredServices.length > 0 ? (
@@ -94,7 +94,7 @@ export function PricesListServiceFilterField({
             ))
           ) : (
             <p className="px-2.5 py-2 text-muted-foreground text-sm">
-              No categories found.
+              No service names found.
             </p>
           )}
         </div>

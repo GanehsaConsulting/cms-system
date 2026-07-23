@@ -1,44 +1,28 @@
-import { readFile, writeFile } from "node:fs/promises";
-import path from "node:path";
+import { and, desc, eq, ne } from "drizzle-orm";
 import { slugify } from "@/lib/articles/slug";
 import { isRequiredBannerPlacementKey } from "@/config/banner-placements";
-import { assertBrandMatch, filterByBrand } from "@/lib/brands/content-scope";
+import { assertBrandMatch } from "@/lib/brands/content-scope";
 import { getBannerImages } from "@/lib/banners/images";
+import { db } from "@/lib/db/client";
+import { banners } from "@/lib/db/schema";
 import type { Banner, BannerInput } from "@/types/banner";
 
-const DATA_PATH = path.join(process.cwd(), "data/banners.json");
+function toIso(value: Date): string {
+  return value.toISOString();
+}
 
-type LegacyBanner = Banner & { image?: string };
-
-function normalizeBanner(raw: LegacyBanner): Banner {
-  const { image: _legacyImage, ...rest } = raw;
+function rowToBanner(row: typeof banners.$inferSelect): Banner {
   return {
-    ...rest,
-    brandId: String(rest.brandId ?? "").trim(),
-    images: getBannerImages(raw),
+    id: row.id,
+    brandId: row.brandId,
+    name: row.name,
+    key: row.key,
+    images: getBannerImages({ images: Array.isArray(row.images) ? row.images : [] }),
+    redirectUrl: row.redirectUrl,
+    isActive: row.isActive,
+    createdAt: toIso(row.createdAt),
+    updatedAt: toIso(row.updatedAt),
   };
-}
-
-async function readBanners(): Promise<Banner[]> {
-  try {
-    const raw = await readFile(DATA_PATH, "utf-8");
-    const banners = JSON.parse(raw) as LegacyBanner[];
-    return banners.map(normalizeBanner);
-  } catch (error) {
-    if (
-      error &&
-      typeof error === "object" &&
-      "code" in error &&
-      error.code === "ENOENT"
-    ) {
-      return [];
-    }
-    throw error;
-  }
-}
-
-async function writeBanners(banners: Banner[]): Promise<void> {
-  await writeFile(DATA_PATH, `${JSON.stringify(banners, null, 2)}\n`, "utf-8");
 }
 
 function normalizeInput(input: BannerInput): BannerInput {
@@ -52,20 +36,26 @@ function normalizeInput(input: BannerInput): BannerInput {
 }
 
 export async function getBanners(brandId: string): Promise<Banner[]> {
-  const banners = filterByBrand(await readBanners(), brandId);
-  return banners.sort(
-    (left, right) =>
-      new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime(),
-  );
+  const rows = await db
+    .select()
+    .from(banners)
+    .where(eq(banners.brandId, brandId))
+    .orderBy(desc(banners.updatedAt));
+
+  return rows.map(rowToBanner);
 }
 
 export async function getBannerById(
   brandId: string,
   id: string,
 ): Promise<Banner | null> {
-  const banners = await readBanners();
-  const banner = banners.find((item) => item.id === id) ?? null;
+  const rows = await db
+    .select()
+    .from(banners)
+    .where(eq(banners.id, id))
+    .limit(1);
 
+  const banner = rows[0] ? rowToBanner(rows[0]) : null;
   if (!banner) {
     return null;
   }
@@ -88,10 +78,15 @@ export async function getBannerByKey(
     return null;
   }
 
-  const banners = filterByBrand(await readBanners(), brandId);
-  const banner =
-    banners.find((item) => item.key === normalizedKey) ?? null;
+  const rows = await db
+    .select()
+    .from(banners)
+    .where(
+      and(eq(banners.brandId, brandId), eq(banners.key, normalizedKey)),
+    )
+    .limit(1);
 
+  const banner = rows[0] ? rowToBanner(rows[0]) : null;
   if (!banner || !banner.isActive) {
     return null;
   }
@@ -103,7 +98,6 @@ export async function createBanner(
   brandId: string,
   input: BannerInput,
 ): Promise<Banner> {
-  const banners = await readBanners();
   const normalized = normalizeInput(input);
 
   if (!normalized.key) {
@@ -114,25 +108,29 @@ export async function createBanner(
     throw new Error("At least one image is required");
   }
 
-  const duplicate = filterByBrand(banners, brandId).find(
-    (banner) => banner.key === normalized.key,
-  );
-  if (duplicate) {
+  const existing = await db
+    .select({ id: banners.id })
+    .from(banners)
+    .where(and(eq(banners.brandId, brandId), eq(banners.key, normalized.key)))
+    .limit(1);
+
+  if (existing.length > 0) {
     throw new Error("A banner with this key already exists");
   }
 
-  const now = new Date().toISOString();
-  const banner: Banner = {
-    id: crypto.randomUUID(),
-    brandId,
-    ...normalized,
-    createdAt: now,
-    updatedAt: now,
-  };
+  const now = new Date();
+  const [row] = await db
+    .insert(banners)
+    .values({
+      id: crypto.randomUUID(),
+      brandId,
+      ...normalized,
+      createdAt: now,
+      updatedAt: now,
+    })
+    .returning();
 
-  banners.push(banner);
-  await writeBanners(banners);
-  return banner;
+  return rowToBanner(row);
 }
 
 export async function updateBanner(
@@ -140,14 +138,10 @@ export async function updateBanner(
   id: string,
   input: BannerInput,
 ): Promise<Banner> {
-  const banners = await readBanners();
-  const index = banners.findIndex((banner) => banner.id === id);
-
-  if (index === -1) {
+  const current = await getBannerById(brandId, id);
+  if (!current) {
     throw new Error("Banner not found");
   }
-
-  assertBrandMatch(banners[index], brandId, "Banner not found");
 
   const normalized = normalizeInput(input);
 
@@ -159,40 +153,52 @@ export async function updateBanner(
     throw new Error("At least one image is required");
   }
 
-  const duplicate = filterByBrand(banners, brandId).find(
-    (banner) => banner.id !== id && banner.key === normalized.key,
-  );
-  if (duplicate) {
+  const duplicate = await db
+    .select({ id: banners.id })
+    .from(banners)
+    .where(
+      and(
+        eq(banners.brandId, brandId),
+        eq(banners.key, normalized.key),
+        ne(banners.id, id),
+      ),
+    )
+    .limit(1);
+
+  if (duplicate.length > 0) {
     throw new Error("A banner with this key already exists");
   }
 
-  const updated: Banner = {
-    ...banners[index],
-    ...normalized,
-    brandId,
-    updatedAt: new Date().toISOString(),
-  };
+  const [row] = await db
+    .update(banners)
+    .set({
+      ...normalized,
+      brandId,
+      updatedAt: new Date(),
+    })
+    .where(and(eq(banners.id, id), eq(banners.brandId, brandId)))
+    .returning();
 
-  banners[index] = updated;
-  await writeBanners(banners);
-  return updated;
-}
-
-export async function deleteBanner(brandId: string, id: string): Promise<void> {
-  const banners = await readBanners();
-  const target = banners.find((banner) => banner.id === id);
-
-  if (!target) {
+  if (!row) {
     throw new Error("Banner not found");
   }
 
-  assertBrandMatch(target, brandId, "Banner not found");
+  return rowToBanner(row);
+}
 
-  if (isRequiredBannerPlacementKey(target.key)) {
+export async function deleteBanner(brandId: string, id: string): Promise<void> {
+  const current = await getBannerById(brandId, id);
+  if (!current) {
+    throw new Error("Banner not found");
+  }
+
+  if (isRequiredBannerPlacementKey(current.key)) {
     throw new Error(
       "This website placement is required and cannot be deleted. Keep at least one image.",
     );
   }
 
-  await writeBanners(banners.filter((banner) => banner.id !== id));
+  await db
+    .delete(banners)
+    .where(and(eq(banners.id, id), eq(banners.brandId, brandId)));
 }

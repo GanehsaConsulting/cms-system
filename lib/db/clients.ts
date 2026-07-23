@@ -1,31 +1,28 @@
-import { readFile, writeFile } from "node:fs/promises";
-import path from "node:path";
-import { assertBrandMatch, filterByBrand } from "@/lib/brands/content-scope";
+import { and, desc, eq } from "drizzle-orm";
+import { assertBrandMatch } from "@/lib/brands/content-scope";
 import { normalizeClient } from "@/lib/clients/normalize";
+import { db } from "@/lib/db/client";
+import { clients } from "@/lib/db/schema";
 import type { Client, ClientInput } from "@/types/client";
 
-const DATA_PATH = path.join(process.cwd(), "data/clients.json");
-
-async function readClients(): Promise<Client[]> {
-  try {
-    const raw = await readFile(DATA_PATH, "utf-8");
-    const clients = JSON.parse(raw) as Client[];
-    return clients.map(normalizeClient);
-  } catch (error) {
-    if (
-      error &&
-      typeof error === "object" &&
-      "code" in error &&
-      error.code === "ENOENT"
-    ) {
-      return [];
-    }
-    throw error;
-  }
+function toIso(value: Date): string {
+  return value.toISOString();
 }
 
-async function writeClients(clients: Client[]): Promise<void> {
-  await writeFile(DATA_PATH, `${JSON.stringify(clients, null, 2)}\n`, "utf-8");
+function rowToClient(row: typeof clients.$inferSelect): Client {
+  return normalizeClient({
+    id: row.id,
+    brandId: row.brandId,
+    name: row.name,
+    logo: row.logo,
+    website: row.website,
+    description: row.description,
+    featured: row.featured,
+    testimonials: Array.isArray(row.testimonials) ? row.testimonials : [],
+    photos: Array.isArray(row.photos) ? row.photos : [],
+    createdAt: toIso(row.createdAt),
+    updatedAt: toIso(row.updatedAt),
+  });
 }
 
 function normalizeInput(input: ClientInput): ClientInput {
@@ -54,20 +51,26 @@ function normalizeInput(input: ClientInput): ClientInput {
 }
 
 export async function getClients(brandId: string): Promise<Client[]> {
-  const clients = filterByBrand(await readClients(), brandId);
-  return clients.sort(
-    (left, right) =>
-      new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime(),
-  );
+  const rows = await db
+    .select()
+    .from(clients)
+    .where(eq(clients.brandId, brandId))
+    .orderBy(desc(clients.updatedAt));
+
+  return rows.map(rowToClient);
 }
 
 export async function getClientById(
   brandId: string,
   id: string,
 ): Promise<Client | null> {
-  const clients = await readClients();
-  const client = clients.find((item) => item.id === id) ?? null;
+  const rows = await db
+    .select()
+    .from(clients)
+    .where(eq(clients.id, id))
+    .limit(1);
 
+  const client = rows[0] ? rowToClient(rows[0]) : null;
   if (!client) {
     return null;
   }
@@ -84,21 +87,22 @@ export async function createClient(
   brandId: string,
   input: ClientInput,
 ): Promise<Client> {
-  const clients = await readClients();
   const normalized = normalizeInput(input);
-  const now = new Date().toISOString();
+  const now = new Date();
+  const id = crypto.randomUUID();
 
-  const client: Client = {
-    id: crypto.randomUUID(),
-    brandId,
-    ...normalized,
-    createdAt: now,
-    updatedAt: now,
-  };
+  const [row] = await db
+    .insert(clients)
+    .values({
+      id,
+      brandId,
+      ...normalized,
+      createdAt: now,
+      updatedAt: now,
+    })
+    .returning();
 
-  clients.push(client);
-  await writeClients(clients);
-  return client;
+  return rowToClient(row);
 }
 
 export async function updateClient(
@@ -106,38 +110,36 @@ export async function updateClient(
   id: string,
   input: ClientInput,
 ): Promise<Client> {
-  const clients = await readClients();
-  const index = clients.findIndex((client) => client.id === id);
-
-  if (index === -1) {
+  const current = await getClientById(brandId, id);
+  if (!current) {
     throw new Error("Client not found");
   }
 
-  assertBrandMatch(clients[index], brandId, "Client not found");
+  const normalized = normalizeInput(input);
+  const [row] = await db
+    .update(clients)
+    .set({
+      ...normalized,
+      brandId,
+      updatedAt: new Date(),
+    })
+    .where(and(eq(clients.id, id), eq(clients.brandId, brandId)))
+    .returning();
 
-  const updated: Client = {
-    ...clients[index],
-    ...normalizeInput(input),
-    brandId,
-    updatedAt: new Date().toISOString(),
-  };
+  if (!row) {
+    throw new Error("Client not found");
+  }
 
-  clients[index] = updated;
-  await writeClients(clients);
-  return updated;
+  return rowToClient(row);
 }
 
 export async function deleteClient(brandId: string, id: string): Promise<void> {
-  const clients = await readClients();
-  const target = clients.find((client) => client.id === id);
-
-  if (!target) {
+  const current = await getClientById(brandId, id);
+  if (!current) {
     throw new Error("Client not found");
   }
 
-  assertBrandMatch(target, brandId, "Client not found");
-
-  const nextClients = clients.filter((client) => client.id !== id);
-
-  await writeClients(nextClients);
+  await db
+    .delete(clients)
+    .where(and(eq(clients.id, id), eq(clients.brandId, brandId)));
 }

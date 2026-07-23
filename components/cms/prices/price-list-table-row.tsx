@@ -6,6 +6,7 @@ import { CmsListTableRow } from "@/components/shared/cms-list-table-row";
 import { TableCell } from "@/components/ui/table";
 import { LIST_TABLE_CELL_CLASS } from "@/config/list-table";
 import { getPriceCategoryTitleClass } from "@/config/price-category-styles";
+import { getPriceCategoryLabel } from "@/lib/prices/categories";
 import {
   calculateDiscountPercent,
   formatPriceCurrency,
@@ -37,19 +38,25 @@ export function PriceListTableRow({
   const categoryId = price.serviceSlug || price.category;
   const knownIds = categories.map((category) => category.id);
   const packageTitle = getPriceDisplayText(price.packageName);
+  const serviceName = getPriceCategoryLabel(categoryId, categories);
 
   return (
     <CmsListTableRow isSelected={isSelected} onClick={() => onSelect(price.id)}>
       <TableCell className={LIST_TABLE_CELL_CLASS}>
-        <p
-          className={cn(
-            "min-w-[220px] truncate font-medium",
-            getPriceCategoryTitleClass(categoryId, knownIds),
-          )}
-          title={packageTitle}
-        >
-          {packageTitle}
-        </p>
+        <div className="min-w-55 leading-tight">
+          <p
+            className={cn(
+              "truncate font-medium",
+              getPriceCategoryTitleClass(categoryId, knownIds),
+            )}
+            title={packageTitle}
+          >
+            {packageTitle}
+          </p>
+          <p className="truncate text-muted-foreground text-xs" title={serviceName}>
+            {serviceName}
+          </p>
+        </div>
       </TableCell>
       <TableCell className={LIST_TABLE_CELL_CLASS}>
         <p className="font-medium text-sm tabular-nums">
