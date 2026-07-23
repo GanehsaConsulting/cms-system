@@ -5,6 +5,7 @@ import { MediaLibraryKindBadge } from "@/components/cms/media/media-library-kind
 import { MediaLibraryKindIcon } from "@/components/cms/media/media-library-kind-icon";
 import { MediaLibraryLibraryFileActionsMenu } from "@/components/cms/media/media-library-library-file-actions-menu";
 import { MediaLibraryLibraryFileSelectCheckbox } from "@/components/cms/media/media-library-library-file-select-checkbox";
+import { useCmsImagePreview } from "@/components/shared/cms-image-preview-provider";
 import { CmsListTableRow } from "@/components/shared/cms-list-table-row";
 import { TableCell } from "@/components/ui/table";
 import { formatMediaFileSize } from "@/lib/media/list";
@@ -26,6 +27,7 @@ export function MediaLibraryLibraryTableRow({
   isSelected,
   onToggleSelect,
 }: MediaLibraryLibraryTableRowProps) {
+  const { openPreview } = useCmsImagePreview();
   const created = formatClientDateParts(file.uploadedAt);
   const updated = formatClientDateParts(file.updatedAt);
   const canPreview = isRenderableMediaPreview(file.kind);
@@ -48,14 +50,24 @@ export function MediaLibraryLibraryTableRow({
         />
       </TableCell>
       <TableCell className={LIST_TABLE_CELL_CLASS}>
-        <div className="flex min-w-[220px] items-center gap-3">
-          <div
-            className={cn(
-              RADIUS_DEEP,
-              "relative flex size-10 shrink-0 items-center justify-center overflow-hidden bg-muted",
-            )}
-          >
-            {canPreview ? (
+        <div className="flex min-w-55 items-center gap-3">
+          {canPreview ? (
+            <button
+              type="button"
+              aria-label={`Preview ${file.filename}`}
+              onClick={(event) => {
+                event.stopPropagation();
+                openPreview({
+                  images: [file.url],
+                  title: file.filename,
+                });
+              }}
+              className={cn(
+                RADIUS_DEEP,
+                "relative flex size-10 shrink-0 items-center justify-center overflow-hidden bg-muted",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
+              )}
+            >
               <Image
                 src={file.url}
                 alt=""
@@ -63,13 +75,20 @@ export function MediaLibraryLibraryTableRow({
                 unoptimized
                 className="object-cover"
               />
-            ) : (
+            </button>
+          ) : (
+            <div
+              className={cn(
+                RADIUS_DEEP,
+                "relative flex size-10 shrink-0 items-center justify-center overflow-hidden bg-muted",
+              )}
+            >
               <MediaLibraryKindIcon
                 kind={file.kind}
                 className="size-4 text-muted-foreground"
               />
-            )}
-          </div>
+            </div>
+          )}
           <div className="min-w-0">
             <p className="truncate font-medium">{file.filename}</p>
             <p className="truncate text-muted-foreground text-xs">

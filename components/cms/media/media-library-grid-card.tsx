@@ -3,7 +3,9 @@
 import Image from "next/image";
 import { MediaLibraryKindBadge } from "@/components/cms/media/media-library-kind-badge";
 import { MediaLibraryKindIcon } from "@/components/cms/media/media-library-kind-icon";
+import { useCmsImagePreview } from "@/components/shared/cms-image-preview-provider";
 import { SolidSurface } from "@/components/shared/solid-surface";
+import { MagnifyingGlassIcon } from "@/lib/icons";
 import { isRenderableMediaPreview } from "@/lib/media/classify";
 import { formatMediaUsageSummary } from "@/lib/media/list";
 import { RADIUS_DEEP } from "@/config/shape";
@@ -16,6 +18,7 @@ interface MediaLibraryGridCardProps {
 }
 
 export function MediaLibraryGridCard({ asset, onSelect }: MediaLibraryGridCardProps) {
+  const { openPreview } = useCmsImagePreview();
   const canPreview = isRenderableMediaPreview(asset.kind);
   const isInteractive = Boolean(onSelect);
 
@@ -36,6 +39,7 @@ export function MediaLibraryGridCard({ asset, onSelect }: MediaLibraryGridCardPr
           : undefined
       }
       className={cn(
+        "group",
         isInteractive &&
           "cursor-pointer rounded-(--radius-inner) focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
       )}
@@ -53,13 +57,29 @@ export function MediaLibraryGridCard({ asset, onSelect }: MediaLibraryGridCardPr
           )}
         >
           {canPreview ? (
-            <Image
-              src={asset.url}
-              alt=""
-              fill
-              unoptimized
-              className="object-cover"
-            />
+            <>
+              <Image
+                src={asset.url}
+                alt=""
+                fill
+                unoptimized
+                className="object-cover"
+              />
+              <button
+                type="button"
+                aria-label={`Preview ${asset.filename}`}
+                className="absolute top-1.5 right-1.5 z-10 flex size-7 items-center justify-center rounded-md bg-background/80 text-foreground opacity-0 backdrop-blur-sm transition-opacity hover:bg-background group-hover:opacity-100"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  openPreview({
+                    images: [asset.url],
+                    title: asset.filename,
+                  });
+                }}
+              >
+                <MagnifyingGlassIcon className="size-3.5" />
+              </button>
+            </>
           ) : (
             <div className="flex h-full items-center justify-center text-muted-foreground">
               <MediaLibraryKindIcon kind={asset.kind} className="size-8 opacity-60" />

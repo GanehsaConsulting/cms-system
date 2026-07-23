@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { useCmsImagePreview } from "@/components/shared/cms-image-preview-provider";
 import { RADIUS_DEEP, RADIUS_INNER } from "@/config/shape";
 import { cn } from "@/lib/utils";
 
@@ -9,6 +12,8 @@ interface ContentActivityDetailCoverProps {
 export function ContentActivityDetailCover({
   images,
 }: ContentActivityDetailCoverProps) {
+  const { openPreview } = useCmsImagePreview();
+
   if (images.length === 0) {
     return null;
   }
@@ -17,10 +22,20 @@ export function ContentActivityDetailCover({
 
   return (
     <div className="space-y-2">
-      <div
+      <button
+        type="button"
+        aria-label="Preview cover image"
+        onClick={() =>
+          openPreview({
+            images,
+            index: 0,
+            title: "Activity images",
+          })
+        }
         className={cn(
           RADIUS_INNER,
           "relative h-36 w-full overflow-hidden bg-muted shadow-sm",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
         )}
       >
         <Image
@@ -31,16 +46,26 @@ export function ContentActivityDetailCover({
           className="object-cover"
           unoptimized
         />
-      </div>
+      </button>
 
       {rest.length > 0 ? (
         <div className="flex items-center gap-2 overflow-x-auto pb-0.5">
-          {rest.slice(0, 4).map((image) => (
-            <div
+          {rest.slice(0, 4).map((image, index) => (
+            <button
               key={image}
+              type="button"
+              aria-label={`Preview image ${index + 2}`}
+              onClick={() =>
+                openPreview({
+                  images,
+                  index: index + 1,
+                  title: "Activity images",
+                })
+              }
               className={cn(
                 RADIUS_DEEP,
                 "relative size-14 shrink-0 overflow-hidden bg-muted",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
               )}
             >
               <Image
@@ -51,12 +76,22 @@ export function ContentActivityDetailCover({
                 className="object-cover"
                 unoptimized
               />
-            </div>
+            </button>
           ))}
           {rest.length > 4 ? (
-            <span className="shrink-0 text-muted-foreground text-xs tabular-nums">
+            <button
+              type="button"
+              onClick={() =>
+                openPreview({
+                  images,
+                  index: 5,
+                  title: "Activity images",
+                })
+              }
+              className="shrink-0 text-muted-foreground text-xs tabular-nums hover:text-foreground"
+            >
               +{rest.length - 4}
-            </span>
+            </button>
           ) : null}
         </div>
       ) : null}

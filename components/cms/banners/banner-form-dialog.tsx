@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { BannerFormPublishChecklist } from "@/components/cms/banners/banner-form-publish-checklist";
 import { BannerFormImageField } from "@/components/cms/banners/banner-form-image-field";
+import { BannerFormKeyField } from "@/components/cms/banners/banner-form-key-field";
 import {
   BannerFormRedirectField,
   type BannerRedirectMode,
@@ -259,8 +260,8 @@ export function BannerFormDialog({
           </CmsDialogTitle>
           <CmsDialogDescription>
             {keyLocked
-              ? `This banner will be shown in the “${defaultKey}” placement.`
-              : "Add images and a redirect link. A unique key is created automatically from the first image."}
+              ? `This banner will be shown in the “${defaultKey || form.key}” placement.`
+              : "Add a custom placement key, images, and redirect. Leave the key blank to auto-generate from the first image."}
           </CmsDialogDescription>
         </CmsDialogHeader>
 
@@ -286,6 +287,16 @@ export function BannerFormDialog({
                 onChange={(value) => updateField("isActive", value)}
               />
             </div>
+
+            <BannerFormKeyField
+              value={form.key}
+              locked={keyLocked}
+              disabled={isPending}
+              onChange={(value) => {
+                setKeyTouched(true);
+                updateField("key", value);
+              }}
+            />
 
             <BannerFormImageField
               value={form.images}

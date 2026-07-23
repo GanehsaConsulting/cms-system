@@ -5,7 +5,9 @@ import { MediaLibraryKindBadge } from "@/components/cms/media/media-library-kind
 import { MediaLibraryKindIcon } from "@/components/cms/media/media-library-kind-icon";
 import { MediaLibraryLibraryFileActionsMenu } from "@/components/cms/media/media-library-library-file-actions-menu";
 import { MediaLibraryLibraryFileSelectCheckbox } from "@/components/cms/media/media-library-library-file-select-checkbox";
+import { useCmsImagePreview } from "@/components/shared/cms-image-preview-provider";
 import { SolidSurface } from "@/components/shared/solid-surface";
+import { MagnifyingGlassIcon } from "@/lib/icons";
 import { isRenderableMediaPreview } from "@/lib/media/classify";
 import { formatClientDateParts } from "@/lib/clients/list";
 import { RADIUS_DEEP } from "@/config/shape";
@@ -25,6 +27,7 @@ export function MediaLibraryLibraryGridCard({
   hasSelection,
   onToggleSelect,
 }: MediaLibraryLibraryGridCardProps) {
+  const { openPreview } = useCmsImagePreview();
   const canPreview = isRenderableMediaPreview(file.kind);
   const uploaded = formatClientDateParts(file.uploadedAt);
   const showSelectControl = hasSelection || isSelected;
@@ -78,7 +81,23 @@ export function MediaLibraryLibraryGridCard({
             />
           </div>
 
-          <div className="absolute top-1.5 right-1.5 z-10 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
+          <div className="absolute top-1.5 right-1.5 z-10 flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
+            {canPreview ? (
+              <button
+                type="button"
+                aria-label={`Preview ${file.filename}`}
+                className="flex size-7 items-center justify-center rounded-md bg-background/80 text-foreground backdrop-blur-sm transition-colors hover:bg-background"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  openPreview({
+                    images: [file.url],
+                    title: file.filename,
+                  });
+                }}
+              >
+                <MagnifyingGlassIcon className="size-3.5" />
+              </button>
+            ) : null}
             <MediaLibraryLibraryFileActionsMenu
               file={file}
               triggerClassName="size-7 bg-background/80 backdrop-blur-sm hover:bg-background"

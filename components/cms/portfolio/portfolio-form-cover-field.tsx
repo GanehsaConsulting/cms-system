@@ -5,6 +5,7 @@ import { useRef, useState } from "react";
 import type { Control } from "react-hook-form";
 import { Controller } from "react-hook-form";
 import { TrashIcon, UploadSimpleIcon } from "@/lib/icons";
+import { useCmsImagePreview } from "@/components/shared/cms-image-preview-provider";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { PORTFOLIO_COVER_UPLOAD_HINT } from "@/config/portfolio-form";
@@ -26,6 +27,7 @@ export function PortfolioFormCoverField({
   const inputRef = useRef<HTMLInputElement>(null);
   const [localError, setLocalError] = useState<string | null>(null);
   const [isReading, setIsReading] = useState(false);
+  const { openPreview } = useCmsImagePreview();
 
   return (
     <Controller
@@ -84,13 +86,25 @@ export function PortfolioFormCoverField({
                 )}
               >
                 {field.value ? (
-                  <Image
-                    src={field.value}
-                    alt=""
-                    fill
-                    unoptimized
-                    className="object-cover"
-                  />
+                  <button
+                    type="button"
+                    aria-label="Preview cover image"
+                    className="absolute inset-0"
+                    onClick={() =>
+                      openPreview({
+                        images: [field.value],
+                        title: "Cover preview",
+                      })
+                    }
+                  >
+                    <Image
+                      src={field.value}
+                      alt=""
+                      fill
+                      unoptimized
+                      className="object-cover"
+                    />
+                  </button>
                 ) : (
                   <UploadSimpleIcon className="size-5 text-muted-foreground" />
                 )}

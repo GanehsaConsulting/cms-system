@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { UploadSimpleIcon } from "@/lib/icons";
-import { ArticleFormGalleryPreviewDialog } from "@/components/cms/articles/article-form-gallery-preview-dialog";
 import { ArticleFormGalleryRowItem } from "@/components/cms/articles/article-form-gallery-row-item";
+import { useCmsImagePreview } from "@/components/shared/cms-image-preview-provider";
 import { RADIUS_DEEP } from "@/config/shape";
 import { cn } from "@/lib/utils";
 
@@ -22,32 +21,7 @@ export function ArticleFormGalleryCarousel({
   uploadDisabled = false,
   onDrop,
 }: ArticleFormGalleryCarouselProps) {
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewIndex, setPreviewIndex] = useState(0);
-
-  useEffect(() => {
-    if (!previewOpen) {
-      return;
-    }
-
-    if (images.length === 0) {
-      setPreviewOpen(false);
-      return;
-    }
-
-    if (previewIndex >= images.length) {
-      setPreviewIndex(images.length - 1);
-    }
-  }, [images.length, previewIndex, previewOpen]);
-
-  function openPreview(index: number) {
-    setPreviewIndex(index);
-    setPreviewOpen(true);
-  }
-
-  function handleRemove(index: number) {
-    onRemove(index);
-  }
+  const { openPreview } = useCmsImagePreview();
 
   if (images.length === 0) {
     return (
@@ -69,31 +43,28 @@ export function ArticleFormGalleryCarousel({
   }
 
   return (
-    <>
-      <div
-        className={cn(
-          RADIUS_DEEP,
-          "flex snap-x snap-mandatory gap-2 overflow-x-auto border border-border bg-muted/15 p-2",
-        )}
-      >
-        {images.map((src, index) => (
-          <ArticleFormGalleryRowItem
-            key={`${src.slice(0, 48)}-${index}`}
-            src={src}
-            alt={`Gallery image ${index + 1}`}
-            onPreview={() => openPreview(index)}
-            onRemove={() => handleRemove(index)}
-          />
-        ))}
-      </div>
-
-      <ArticleFormGalleryPreviewDialog
-        open={previewOpen}
-        onOpenChange={setPreviewOpen}
-        images={images}
-        index={previewIndex}
-        onIndexChange={setPreviewIndex}
-      />
-    </>
+    <div
+      className={cn(
+        RADIUS_DEEP,
+        "flex snap-x snap-mandatory gap-2 overflow-x-auto border border-border bg-muted/15 p-2",
+      )}
+    >
+      {images.map((src, index) => (
+        <ArticleFormGalleryRowItem
+          key={`${src.slice(0, 48)}-${index}`}
+          src={src}
+          alt={`Gallery image ${index + 1}`}
+          onPreview={() =>
+            openPreview({
+              images,
+              index,
+              title: "Gallery preview",
+              description: "Preview gallery image before publishing.",
+            })
+          }
+          onRemove={() => onRemove(index)}
+        />
+      ))}
+    </div>
   );
 }

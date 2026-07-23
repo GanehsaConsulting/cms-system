@@ -5,6 +5,7 @@ import type { Control } from "react-hook-form";
 import { Controller, useFormContext } from "react-hook-form";
 import Image from "next/image";
 import { PlusIcon, TrashIcon, UploadSimpleIcon } from "@/lib/icons";
+import { useCmsImagePreview } from "@/components/shared/cms-image-preview-provider";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { CONTENT_ACTIVITY_FORM_LIMITS } from "@/config/content-activity-form";
@@ -29,6 +30,7 @@ export function ContentActivityFormImagesField({
   const [localError, setLocalError] = useState<string | null>(null);
   const [isReading, setIsReading] = useState(false);
   const { getValues } = useFormContext<ContentActivityFormValues>();
+  const { openPreview } = useCmsImagePreview();
 
   return (
     <Controller
@@ -113,16 +115,29 @@ export function ContentActivityFormImagesField({
                       "group relative size-20 overflow-hidden bg-muted",
                     )}
                   >
-                    <Image
-                      src={image}
-                      alt=""
-                      fill
-                      unoptimized
-                      className="object-cover"
-                    />
                     <button
                       type="button"
-                      className="absolute top-1 right-1 rounded-full bg-black/55 p-1 text-white opacity-0 transition-opacity group-hover:opacity-100"
+                      aria-label={`Preview image ${index + 1}`}
+                      className="absolute inset-0"
+                      onClick={() =>
+                        openPreview({
+                          images,
+                          index,
+                          title: "Activity images",
+                        })
+                      }
+                    >
+                      <Image
+                        src={image}
+                        alt=""
+                        fill
+                        unoptimized
+                        className="object-cover"
+                      />
+                    </button>
+                    <button
+                      type="button"
+                      className="absolute top-1 right-1 z-10 rounded-full bg-black/55 p-1 text-white opacity-0 transition-opacity group-hover:opacity-100"
                       aria-label="Remove image"
                       onClick={() =>
                         field.onChange(images.filter((_, i) => i !== index))

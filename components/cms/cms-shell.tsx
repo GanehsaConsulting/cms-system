@@ -5,6 +5,7 @@ import { CmsSidebar } from "@/components/cms/cms-sidebar";
 import { AppearanceDrawerProvider } from "@/components/shared/appearance-drawer-provider";
 import { BrandProvider, useBrand } from "@/components/shared/brand-provider";
 import { BrandSwitchPendingIndicator } from "@/components/shared/brand-switch-pending-indicator";
+import { CmsImagePreviewProvider } from "@/components/shared/cms-image-preview-provider";
 import { CmsSidebarProvider } from "@/components/shared/cms-sidebar-provider";
 import { GlassPanel } from "@/components/shared/glass-panel";
 import { NotificationCenterProvider } from "@/components/shared/notification-center-provider";
@@ -72,16 +73,18 @@ export function CmsShell({
         canAccessAllPages={canAccessAllPages}
       >
         <NotificationCenterProvider userId={user?.id}>
-          <CmsSidebarProvider
-            className="relative z-10 flex h-svh max-h-svh min-h-0 w-full overflow-hidden bg-transparent"
-            style={
-              {
-                "--sidebar-width-icon": SEPARATED_SIDEBAR_ICON_WIDTH,
-              } as React.CSSProperties
-            }
-          >
-            <CmsShellMain user={user}>{children}</CmsShellMain>
-          </CmsSidebarProvider>
+          <CmsImagePreviewProvider>
+            <CmsSidebarProvider
+              className="relative z-10 flex h-svh max-h-svh min-h-0 w-full overflow-hidden bg-transparent"
+              style={
+                {
+                  "--sidebar-width-icon": SEPARATED_SIDEBAR_ICON_WIDTH,
+                } as React.CSSProperties
+              }
+            >
+              <CmsShellMain user={user}>{children}</CmsShellMain>
+            </CmsSidebarProvider>
+          </CmsImagePreviewProvider>
         </NotificationCenterProvider>
       </BrandProvider>
     </AppearanceDrawerProvider>

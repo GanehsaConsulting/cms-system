@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useRef, useState } from "react";
 import { PlusIcon, TrashIcon, UploadSimpleIcon } from "@/lib/icons";
+import { useCmsImagePreview } from "@/components/shared/cms-image-preview-provider";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { BANNER_IMAGE_UPLOAD_HINT, BANNER_LIMITS } from "@/config/banner";
@@ -32,6 +33,7 @@ export function BannerFormImageField({
   const inputRef = useRef<HTMLInputElement>(null);
   const [localError, setLocalError] = useState<string | null>(null);
   const [isReading, setIsReading] = useState(false);
+  const { openPreview } = useCmsImagePreview();
   const canAddMore = value.length < BANNER_LIMITS.maxImages;
   const uploadDisabled = disabled || isReading || !canAddMore;
 
@@ -111,20 +113,33 @@ export function BannerFormImageField({
                 "group relative aspect-4/3 overflow-hidden bg-muted",
               )}
             >
-              <Image
-                src={image}
-                alt=""
-                fill
-                unoptimized
-                className="object-cover"
-              />
+              <button
+                type="button"
+                aria-label={`Preview image ${index + 1}`}
+                className="absolute inset-0"
+                onClick={() =>
+                  openPreview({
+                    images: value,
+                    index,
+                    title: "Banner image",
+                  })
+                }
+              >
+                <Image
+                  src={image}
+                  alt=""
+                  fill
+                  unoptimized
+                  className="object-cover"
+                />
+              </button>
               <button
                 type="button"
                 aria-label={`Remove image ${index + 1}`}
                 disabled={disabled || isReading}
                 onClick={() => removeImage(index)}
                 className={cn(
-                  "absolute top-1 right-1 flex size-6 items-center justify-center rounded-full",
+                  "absolute top-1 right-1 z-10 flex size-6 items-center justify-center rounded-full",
                   "bg-black/55 text-white opacity-0 transition-opacity",
                   "hover:bg-black/70 group-hover:opacity-100",
                   "focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
@@ -133,7 +148,7 @@ export function BannerFormImageField({
                 <TrashIcon className="size-3.5" />
               </button>
               {index === 0 ? (
-                <span className="absolute bottom-1 left-1 rounded bg-black/55 px-1.5 py-0.5 text-[9px] text-white">
+                <span className="pointer-events-none absolute bottom-1 left-1 rounded bg-black/55 px-1.5 py-0.5 text-[9px] text-white">
                   Cover
                 </span>
               ) : null}

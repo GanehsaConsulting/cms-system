@@ -120,8 +120,10 @@ export function BannersListView({ banners }: BannersListViewProps) {
         )}
       >
         <BannersPlacementsSection
+          banners={banners}
           bannersByKey={bannersByKey}
           onSelectPlacement={handleSelectPlacement}
+          onAddCustomCta={() => openCreate()}
         />
 
         <BannersGlobalPanel

@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { MediaLibraryKindBadge } from "@/components/cms/media/media-library-kind-badge";
 import { MediaLibraryKindIcon } from "@/components/cms/media/media-library-kind-icon";
+import { useCmsImagePreview } from "@/components/shared/cms-image-preview-provider";
 import { CmsListTableRow } from "@/components/shared/cms-list-table-row";
 import { TableCell } from "@/components/ui/table";
 import { LIST_TABLE_CELL_CLASS } from "@/config/list-table";
@@ -23,6 +24,7 @@ interface MediaLibraryTableRowProps {
 }
 
 export function MediaLibraryTableRow({ asset, onSelect }: MediaLibraryTableRowProps) {
+  const { openPreview } = useCmsImagePreview();
   const primaryUsage = asset.usages[0];
   const sourceHref = primaryUsage ? getMediaSourceHref(primaryUsage) : null;
   const updated = formatClientDateParts(asset.updatedAt);
@@ -34,14 +36,24 @@ export function MediaLibraryTableRow({ asset, onSelect }: MediaLibraryTableRowPr
       onClick={() => onSelect?.(asset)}
     >
       <TableCell className={LIST_TABLE_CELL_CLASS}>
-        <div className="flex min-w-[220px] items-center gap-3">
-          <div
-            className={cn(
-              RADIUS_DEEP,
-              "relative flex size-10 shrink-0 items-center justify-center overflow-hidden bg-muted",
-            )}
-          >
-            {canPreview ? (
+        <div className="flex min-w-55 items-center gap-3">
+          {canPreview ? (
+            <button
+              type="button"
+              aria-label={`Preview ${asset.filename}`}
+              onClick={(event) => {
+                event.stopPropagation();
+                openPreview({
+                  images: [asset.url],
+                  title: asset.filename,
+                });
+              }}
+              className={cn(
+                RADIUS_DEEP,
+                "relative flex size-10 shrink-0 items-center justify-center overflow-hidden bg-muted",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
+              )}
+            >
               <Image
                 src={asset.url}
                 alt=""
@@ -49,13 +61,20 @@ export function MediaLibraryTableRow({ asset, onSelect }: MediaLibraryTableRowPr
                 unoptimized
                 className="object-cover"
               />
-            ) : (
+            </button>
+          ) : (
+            <div
+              className={cn(
+                RADIUS_DEEP,
+                "relative flex size-10 shrink-0 items-center justify-center overflow-hidden bg-muted",
+              )}
+            >
               <MediaLibraryKindIcon
                 kind={asset.kind}
                 className="size-4 text-muted-foreground"
               />
-            )}
-          </div>
+            </div>
+          )}
           <div className="min-w-0">
             <p className="truncate font-medium">{asset.filename}</p>
             <p className="truncate text-muted-foreground text-xs">

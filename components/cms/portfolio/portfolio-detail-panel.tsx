@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { XIcon } from "@/lib/icons";
 import { ActivityLogPanel } from "@/components/shared/activity-log-panel";
+import { useCmsImagePreview } from "@/components/shared/cms-image-preview-provider";
 import { PortfolioDetailPanelActions } from "@/components/cms/portfolio/portfolio-detail-panel-actions";
 import { PortfolioDetailTabDetail } from "@/components/cms/portfolio/portfolio-detail-tab-detail";
 import { PortfolioFeaturedBadge } from "@/components/cms/portfolio/portfolio-featured-badge";
@@ -22,17 +23,28 @@ export function PortfolioDetailPanel({
   clientName,
   onClose,
 }: PortfolioDetailPanelProps) {
+  const { openPreview } = useCmsImagePreview();
+
   return (
     <aside className="flex min-h-0 w-full flex-1 flex-col overflow-hidden">
       <div className="flex items-start justify-between gap-3 border-(--separator) border-b p-4">
         <div className="flex min-w-0 items-start gap-3">
-          <div
-            className={cn(
-              RADIUS_DEEP,
-              "relative flex size-11 shrink-0 items-center justify-center overflow-hidden bg-white/45 dark:bg-white/10",
-            )}
-          >
-            {item.coverImage ? (
+          {item.coverImage ? (
+            <button
+              type="button"
+              aria-label="Preview cover image"
+              onClick={() =>
+                openPreview({
+                  images: [item.coverImage],
+                  title: item.title,
+                })
+              }
+              className={cn(
+                RADIUS_DEEP,
+                "relative flex size-11 shrink-0 items-center justify-center overflow-hidden bg-white/45 dark:bg-white/10",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
+              )}
+            >
               <Image
                 src={item.coverImage}
                 alt=""
@@ -40,12 +52,19 @@ export function PortfolioDetailPanel({
                 unoptimized
                 className="object-cover"
               />
-            ) : (
+            </button>
+          ) : (
+            <div
+              className={cn(
+                RADIUS_DEEP,
+                "relative flex size-11 shrink-0 items-center justify-center overflow-hidden bg-white/45 dark:bg-white/10",
+              )}
+            >
               <span className="font-medium text-muted-foreground text-sm">
                 {item.title.slice(0, 1).toUpperCase() || "?"}
               </span>
-            )}
-          </div>
+            </div>
+          )}
           <div className="min-w-0 space-y-2">
             <p className="font-medium text-[11px] text-muted-foreground uppercase tracking-wide">
               Detail

@@ -10,6 +10,7 @@ import type {
 } from "react-hook-form";
 import { Controller } from "react-hook-form";
 import { PlusIcon, TrashIcon, UploadSimpleIcon } from "@/lib/icons";
+import { useCmsImagePreview } from "@/components/shared/cms-image-preview-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -43,6 +44,7 @@ export function ClientFormGallerySection({
   const inputRef = useRef<HTMLInputElement>(null);
   const [localError, setLocalError] = useState<string | null>(null);
   const [isReading, setIsReading] = useState(false);
+  const { openPreview } = useCmsImagePreview();
   const photos = watch("photos");
   const remaining = CLIENT_FORM_LIMITS.maxPhotos - fields.length;
 
@@ -100,7 +102,7 @@ export function ClientFormGallerySection({
         <div
           className={cn(
             RADIUS_DEEP,
-            "flex flex-col items-center justify-center border border-dashed border-[color:var(--separator)] bg-muted/30 px-4 py-10 text-center",
+            "flex flex-col items-center justify-center border border-dashed border-(--separator) bg-muted/30 px-4 py-10 text-center",
           )}
         >
           <UploadSimpleIcon className="size-5 text-muted-foreground" />
@@ -148,13 +150,26 @@ export function ClientFormGallerySection({
           >
             <div className="relative aspect-video overflow-hidden rounded-lg bg-background">
               {photos[index]?.url ? (
-                <Image
-                  src={photos[index].url}
-                  alt=""
-                  fill
-                  unoptimized
-                  className="object-cover"
-                />
+                <button
+                  type="button"
+                  aria-label={`Preview photo ${index + 1}`}
+                  className="absolute inset-0"
+                  onClick={() =>
+                    openPreview({
+                      images: photos.map((photo) => photo.url).filter(Boolean),
+                      index,
+                      title: "Client photos",
+                    })
+                  }
+                >
+                  <Image
+                    src={photos[index].url}
+                    alt=""
+                    fill
+                    unoptimized
+                    className="object-cover"
+                  />
+                </button>
               ) : null}
             </div>
             <div className="space-y-2">

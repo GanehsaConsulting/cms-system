@@ -39,10 +39,12 @@ export const BANNER_PLACEMENT_CATEGORIES: BannerPlacementCategory[] = [
   {
     id: "cta",
     title: "CTA",
-    description: "Call-to-action blocks that drive clicks into WhatsApp or pages.",
+    description:
+      "Custom call-to-action placements. Add your own keys (e.g. pricing, footer).",
   },
 ];
 
+/** Fixed website banner slots only — CTAs are user-defined custom keys. */
 export const BANNER_PLACEMENTS: BannerPlacement[] = [
   {
     id: "homepage",
@@ -80,24 +82,6 @@ export const BANNER_PLACEMENTS: BannerPlacement[] = [
     mock: "bottom",
     required: true,
   },
-  {
-    id: "cta-primary",
-    key: "cta-primary",
-    title: "Primary CTA",
-    description: "Full-width call-to-action block for mid-page or landing sections.",
-    category: "cta",
-    mock: "cta",
-    required: true,
-  },
-  {
-    id: "cta-inline",
-    key: "cta-inline",
-    title: "Inline CTA",
-    description: "Compact CTA card for sidebars, article footers, or content embeds.",
-    category: "cta",
-    mock: "cta",
-    required: true,
-  },
 ];
 
 /** Fixed placement keys used by the CMS and public by-key API. */
@@ -121,17 +105,42 @@ export function getBannerPlacementsByCategory(
   );
 }
 
+/** True when the banner key is not a fixed Website banner slot. */
+export function isCustomCtaBannerKey(key: string) {
+  return !BANNER_PLACEMENT_KEYS.includes(key);
+}
+
+/** Build a placement view-model for a custom CTA banner (wiring + cards). */
+export function toCustomCtaPlacement(banner: {
+  id: string;
+  name: string;
+  key: string;
+}): BannerPlacement {
+  return {
+    id: banner.id,
+    key: banner.key,
+    title: banner.name || banner.key,
+    description: "Custom CTA — fetch by key on the public site.",
+    category: "cta",
+    mock: "cta",
+    required: false,
+  };
+}
+
 /** Copy-ready FE wiring snippet for one placement key. */
 export function buildBannerPlacementWiringMarkdown(
   placement: BannerPlacement,
   brandId = "{brandId}",
 ) {
   const endpoint = `${CMS_PUBLIC_API_BASE}/banners/by-key/${placement.key}?brandId=${brandId}`;
+  const requiredNote = placement.required
+    ? "Required website placement — once set up, keep at least 1 image; do not delete this key."
+    : "Custom CTA placement — create/delete freely in CMS; wire the key your frontend expects.";
 
   return `# ${placement.title} (\`${placement.key}\`)
 
 Category: **${placement.category === "cta" ? "CTA" : "Banners"}**
-Required website placement — once set up, keep at least 1 image; do not delete this key.
+${requiredNote}
 
 ## Endpoint
 \`\`\`

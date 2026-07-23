@@ -6,6 +6,7 @@ import type { Control } from "react-hook-form";
 import { Controller } from "react-hook-form";
 import { TrashIcon, UploadSimpleIcon } from "@/lib/icons";
 import { ArticleFormField } from "@/components/cms/articles/article-form-field";
+import { useCmsImagePreview } from "@/components/shared/cms-image-preview-provider";
 import { Button } from "@/components/ui/button";
 import { THUMBNAIL_UPLOAD_HINT } from "@/config/article-form";
 import { RADIUS_DEEP } from "@/config/shape";
@@ -28,6 +29,7 @@ export function ArticleFormThumbnailField({
   const inputRef = useRef<HTMLInputElement>(null);
   const [localError, setLocalError] = useState<string | null>(null);
   const [isReading, setIsReading] = useState(false);
+  const { openPreview } = useCmsImagePreview();
 
   return (
     <Controller
@@ -103,19 +105,31 @@ export function ArticleFormThumbnailField({
             >
               {thumbnail ? (
                 <>
-                  <Image
-                    src={thumbnail}
-                    alt="Thumbnail preview"
-                    fill
-                    unoptimized
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, 720px"
-                  />
+                  <button
+                    type="button"
+                    aria-label="Preview thumbnail"
+                    className="absolute inset-0"
+                    onClick={() =>
+                      openPreview({
+                        images: [thumbnail],
+                        title: "Thumbnail preview",
+                      })
+                    }
+                  >
+                    <Image
+                      src={thumbnail}
+                      alt="Thumbnail preview"
+                      fill
+                      unoptimized
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 720px"
+                    />
+                  </button>
                   <Button
                     type="button"
                     variant="secondary"
                     size="icon-sm"
-                    className="absolute top-2 right-2 size-7 shadow-sm"
+                    className="absolute top-2 right-2 z-10 size-7 shadow-sm"
                     aria-label="Remove thumbnail"
                     onClick={() => field.onChange("")}
                   >

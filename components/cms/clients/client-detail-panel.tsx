@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { XIcon } from "@/lib/icons";
 import { ActivityLogPanel } from "@/components/shared/activity-log-panel";
+import { useCmsImagePreview } from "@/components/shared/cms-image-preview-provider";
 import { ClientDetailPanelActions } from "@/components/cms/clients/client-detail-panel-actions";
 import { ClientDetailTabDetail } from "@/components/cms/clients/client-detail-tab-detail";
 import { ClientFeaturedBadge } from "@/components/cms/clients/client-featured-badge";
@@ -17,17 +18,28 @@ interface ClientDetailPanelProps {
 }
 
 export function ClientDetailPanel({ client, onClose }: ClientDetailPanelProps) {
+  const { openPreview } = useCmsImagePreview();
+
   return (
     <aside className="flex min-h-0 w-full flex-1 flex-col overflow-hidden">
       <div className="flex items-start justify-between gap-3 border-(--separator) border-b p-4">
         <div className="flex min-w-0 items-start gap-3">
-          <div
-            className={cn(
-              RADIUS_DEEP,
-              "relative flex size-11 shrink-0 items-center justify-center overflow-hidden bg-white/45 dark:bg-white/10",
-            )}
-          >
-            {client.logo ? (
+          {client.logo ? (
+            <button
+              type="button"
+              aria-label="Preview logo"
+              onClick={() =>
+                openPreview({
+                  images: [client.logo],
+                  title: client.name,
+                })
+              }
+              className={cn(
+                RADIUS_DEEP,
+                "relative flex size-11 shrink-0 items-center justify-center overflow-hidden bg-white/45 dark:bg-white/10",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
+              )}
+            >
               <Image
                 src={client.logo}
                 alt=""
@@ -35,12 +47,19 @@ export function ClientDetailPanel({ client, onClose }: ClientDetailPanelProps) {
                 unoptimized
                 className="object-contain p-1.5"
               />
-            ) : (
+            </button>
+          ) : (
+            <div
+              className={cn(
+                RADIUS_DEEP,
+                "relative flex size-11 shrink-0 items-center justify-center overflow-hidden bg-white/45 dark:bg-white/10",
+              )}
+            >
               <span className="font-medium text-muted-foreground text-sm">
                 {client.name.slice(0, 1).toUpperCase() || "?"}
               </span>
-            )}
-          </div>
+            </div>
+          )}
           <div className="min-w-0 space-y-2">
             <p className="font-medium text-[11px] text-muted-foreground uppercase tracking-wide">
               Detail

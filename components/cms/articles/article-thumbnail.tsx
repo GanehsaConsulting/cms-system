@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { useCmsImagePreview } from "@/components/shared/cms-image-preview-provider";
 import { RADIUS_DEEP } from "@/config/shape";
 import { getArticleThumbnailGradient } from "@/lib/articles/list";
 import { cn } from "@/lib/utils";
@@ -24,15 +27,26 @@ export function ArticleThumbnail({
   size = "sm",
   className,
 }: ArticleThumbnailProps) {
+  const { openPreview } = useCmsImagePreview();
   const imageSrc = src?.trim() || "";
   const initial = title.trim().charAt(0).toUpperCase() || "A";
 
   if (imageSrc) {
     return (
-      <div
+      <button
+        type="button"
+        aria-label="Preview thumbnail"
+        onClick={(event) => {
+          event.stopPropagation();
+          openPreview({
+            images: [imageSrc],
+            title: "Thumbnail preview",
+          });
+        }}
         className={cn(
           RADIUS_DEEP,
-          "relative shrink-0 overflow-hidden bg-muted shadow-sm",
+          "relative shrink-0 overflow-hidden bg-muted shadow-sm transition-opacity hover:opacity-90",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
           sizeClasses[size],
           className,
         )}
@@ -42,9 +56,7 @@ export function ArticleThumbnail({
           alt=""
           fill
           sizes={
-            size === "sm"
-              ? "40px"
-              : "(max-width: 768px) 100vw, 288px"
+            size === "sm" ? "40px" : "(max-width: 768px) 100vw, 288px"
           }
           className="object-cover"
           unoptimized={
@@ -52,7 +64,7 @@ export function ArticleThumbnail({
             !imageSrc.startsWith("/")
           }
         />
-      </div>
+      </button>
     );
   }
 

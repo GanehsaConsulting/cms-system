@@ -5,6 +5,7 @@ import { useRef, useState } from "react";
 import type { Control } from "react-hook-form";
 import { Controller } from "react-hook-form";
 import { TrashIcon, UploadSimpleIcon } from "@/lib/icons";
+import { useCmsImagePreview } from "@/components/shared/cms-image-preview-provider";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { CLIENT_LOGO_UPLOAD_HINT } from "@/config/client-form";
@@ -24,6 +25,7 @@ export function ClientFormLogoField({ control }: ClientFormLogoFieldProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [localError, setLocalError] = useState<string | null>(null);
   const [isReading, setIsReading] = useState(false);
+  const { openPreview } = useCmsImagePreview();
 
   return (
     <Controller
@@ -82,13 +84,25 @@ export function ClientFormLogoField({ control }: ClientFormLogoFieldProps) {
                 )}
               >
                 {field.value ? (
-                  <Image
-                    src={field.value}
-                    alt=""
-                    fill
-                    unoptimized
-                    className="object-contain p-2"
-                  />
+                  <button
+                    type="button"
+                    aria-label="Preview logo"
+                    className="absolute inset-0"
+                    onClick={() =>
+                      openPreview({
+                        images: [field.value],
+                        title: "Logo preview",
+                      })
+                    }
+                  >
+                    <Image
+                      src={field.value}
+                      alt=""
+                      fill
+                      unoptimized
+                      className="object-contain p-2"
+                    />
+                  </button>
                 ) : (
                   <UploadSimpleIcon className="size-5 text-muted-foreground" />
                 )}
