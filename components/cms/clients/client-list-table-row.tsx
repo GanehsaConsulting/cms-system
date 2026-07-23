@@ -8,6 +8,7 @@ import { TableCell } from "@/components/ui/table";
 import { LIST_TABLE_CELL_CLASS } from "@/config/list-table";
 import { RADIUS_DEEP } from "@/config/shape";
 import { formatClientDateParts } from "@/lib/clients/list";
+import { isCompanyLogoIcon } from "@/lib/clients/logo";
 import type { Client } from "@/types/client";
 import { cn } from "@/lib/utils";
 
@@ -23,11 +24,12 @@ export function ClientListTableRow({
   onSelect,
 }: ClientListTableRowProps) {
   const updated = formatClientDateParts(client.updatedAt);
+  const marqueeReady = isCompanyLogoIcon(client.logo);
 
   return (
     <CmsListTableRow isSelected={isSelected} onClick={() => onSelect(client.id)}>
       <TableCell className={LIST_TABLE_CELL_CLASS}>
-        <div className="flex min-w-[220px] items-center gap-3">
+        <div className="flex min-w-55 items-center gap-3">
           <div
             className={cn(
               RADIUS_DEEP,
@@ -49,7 +51,14 @@ export function ClientListTableRow({
             )}
           </div>
           <div className="min-w-0">
-            <p className="truncate font-medium">{client.name}</p>
+            <div className="flex min-w-0 items-center gap-1.5">
+              <p className="truncate font-medium">{client.name}</p>
+              {marqueeReady ? (
+                <span className="shrink-0 rounded-md bg-sky-500/15 px-1.5 py-0.5 font-medium text-[10px] text-sky-700 dark:text-sky-300">
+                  Marquee
+                </span>
+              ) : null}
+            </div>
             <p className="truncate text-muted-foreground text-xs">
               {client.website || "No website"}
             </p>

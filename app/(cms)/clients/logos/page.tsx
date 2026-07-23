@@ -3,9 +3,8 @@ import { ClientsListView } from "@/components/cms/clients/clients-list-view";
 import { CmsListBodySkeleton } from "@/components/skeletons/cms-list-body-skeleton";
 import { SECTION_BODY_PADDING } from "@/config/spacing";
 import { requireCmsNavHref } from "@/lib/brands/require-cms-nav";
-import { filterLogoOnlyClients } from "@/lib/clients/content-kinds";
+import { filterClientsForLogosTab } from "@/lib/clients/content-kinds";
 import { getClients } from "@/lib/db/clients";
-import { getPortfolioItems } from "@/lib/db/portfolio";
 import { cn } from "@/lib/utils";
 
 export default function ClientsLogosPage() {
@@ -29,17 +28,14 @@ export default function ClientsLogosPage() {
 
 async function ClientsLogosContent() {
   const brand = await requireCmsNavHref("/clients");
-  const [clients, portfolio] = await Promise.all([
-    getClients(brand.id),
-    getPortfolioItems(brand.id),
-  ]);
-  const logoOnlyClients = filterLogoOnlyClients(clients, portfolio);
+  const clients = await getClients(brand.id);
+  const logoClients = filterClientsForLogosTab(clients);
 
   return (
     <ClientsListView
-      clients={logoOnlyClients}
-      emptyTitle="No logo-only clients"
-      emptyDescription="Clients appear here when they have a logo and nothing else attached yet."
+      clients={logoClients}
+      emptyTitle="No client logos yet"
+      emptyDescription="Add a logo on a client profile. The public marquee uses logos whose URL includes /company_logos/."
     />
   );
 }

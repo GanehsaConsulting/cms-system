@@ -1,10 +1,7 @@
 import type { ClientContentKind } from "@/config/client-content-kinds";
+import { hasClientLogo, isCompanyLogoIcon } from "@/lib/clients/logo";
 import type { Client } from "@/types/client";
 import type { Portfolio } from "@/types/portfolio";
-
-function hasLogo(client: Client): boolean {
-  return client.logo.trim().length > 0;
-}
 
 /** Content kinds present on a client (and optional linked portfolio works). */
 export function getClientContentKinds(
@@ -13,7 +10,7 @@ export function getClientContentKinds(
 ): ClientContentKind[] {
   const kinds: ClientContentKind[] = [];
 
-  if (hasLogo(client)) {
+  if (hasClientLogo(client.logo)) {
     kinds.push("logo");
   }
   if (client.photos.length > 0) {
@@ -31,12 +28,13 @@ export function getClientContentKinds(
 
 /**
  * Logo-only: has a logo and no gallery photos, testimonials, or portfolio works.
+ * (Legacy staging filter — prefer {@link filterClientsForLogosTab} for the Logos UI.)
  */
 export function isClientLogoOnly(
   client: Client,
   works: Portfolio[] = [],
 ): boolean {
-  if (!hasLogo(client)) {
+  if (!hasClientLogo(client.logo)) {
     return false;
   }
 
@@ -62,4 +60,21 @@ export function filterLogoOnlyClients(
   return clients.filter((client) =>
     isClientLogoOnly(client, worksByClientId.get(client.id) ?? []),
   );
+}
+
+/**
+ * Logos tab + FE marquee source: clients with a logo URL.
+ * Company-logo icons (`/company_logos/`) sort first — those are what FE marquee uses.
+ */
+export function filterClientsForLogosTab(clients: Client[]): Client[] {
+  return clients
+    .filter((client) => hasClientLogo(client.logo))
+    .sort((left, right) => {
+      const leftReady = isCompanyLogoIcon(left.logo) ? 0 : 1;
+      const rightReady = isCompanyLogoIcon(right.logo) ? 0 : 1;
+      if (leftReady !== rightReady) {
+        return leftReady - rightReady;
+      }
+      return left.name.localeCompare(right.name, "en");
+    });
 }
