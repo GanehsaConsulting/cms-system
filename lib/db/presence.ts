@@ -1,4 +1,4 @@
-import { and, eq, gt, max } from "drizzle-orm";
+import { eq, max, sql } from "drizzle-orm";
 import { PRESENCE_ONLINE_THRESHOLD_MS } from "@/config/presence";
 import { getUserRoleLabel, isUserRoleId } from "@/config/user";
 import { db } from "@/lib/db/client";
@@ -21,60 +21,56 @@ function toRoleLabel(role: string): string {
 /**
  * Active staff + last session activity.
  * Online = non-expired session touched within `PRESENCE_ONLINE_THRESHOLD_MS`.
+ *
+ * Two queries (not Promise.all of three) so a small connection pool is not
+ * saturated by a single presence tick.
  */
 export async function getCmsPresence(
   now: Date = new Date(),
 ): Promise<CmsPresenceSnapshot> {
   const onlineSince = new Date(now.getTime() - PRESENCE_ONLINE_THRESHOLD_MS);
 
-  const [userRows, lastSeenRows, onlineRows] = await Promise.all([
-    db
-      .select({
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        image: user.image,
-      })
-      .from(user)
-      .where(eq(user.status, "active")),
-    db
-      .select({
-        userId: session.userId,
-        lastSeenAt: max(session.updatedAt),
-      })
-      .from(session)
-      .groupBy(session.userId),
-    db
-      .select({
-        userId: session.userId,
-      })
-      .from(session)
-      .where(
-        and(gt(session.expiresAt, now), gt(session.updatedAt, onlineSince)),
-      )
-      .groupBy(session.userId),
-  ]);
+  const userRows = await db
+    .select({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      image: user.image,
+    })
+    .from(user)
+    .where(eq(user.status, "active"));
 
-  const lastSeenByUser = new Map(
-    lastSeenRows.map((row) => [
+  const sessionRows = await db
+    .select({
+      userId: session.userId,
+      lastSeenAt: max(session.updatedAt),
+      online: sql<boolean>`bool_or(${session.expiresAt} > ${now} and ${session.updatedAt} > ${onlineSince})`,
+    })
+    .from(session)
+    .groupBy(session.userId);
+
+  const sessionByUser = new Map(
+    sessionRows.map((row) => [
       row.userId,
-      row.lastSeenAt ? row.lastSeenAt.toISOString() : null,
+      {
+        lastSeenAt: row.lastSeenAt ? row.lastSeenAt.toISOString() : null,
+        online: Boolean(row.online),
+      },
     ]),
   );
-  const onlineIds = new Set(onlineRows.map((row) => row.userId));
 
   const users: CmsPresenceUser[] = userRows
     .map((row) => {
-      const online = onlineIds.has(row.id);
+      const presence = sessionByUser.get(row.id);
       return {
         id: row.id,
         name: row.name,
         email: row.email,
         roleLabel: toRoleLabel(row.role),
         avatarUrl: toAvatarUrl(row.image),
-        online,
-        lastSeenAt: lastSeenByUser.get(row.id) ?? null,
+        online: presence?.online ?? false,
+        lastSeenAt: presence?.lastSeenAt ?? null,
       };
     })
     .sort((left, right) => {
