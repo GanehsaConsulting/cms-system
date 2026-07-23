@@ -33,7 +33,7 @@ export function BannerPlacementMockView({
       return (
         <BannerPlacementMockBottom images={images} className={className} />
       );
-    case "cta":
+    case "custom":
       return <BannerPlacementMockCta images={images} className={className} />;
   }
 }

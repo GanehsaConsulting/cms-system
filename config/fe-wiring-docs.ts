@@ -539,7 +539,7 @@ ${CMS_PUBLIC_API_BASE}/banners/by-key/homepage?brandId=gonline
 ${CMS_PUBLIC_API_BASE}/banners/by-key/popup?brandId=gec
 ${CMS_PUBLIC_API_BASE}/banners/by-key/mega-menu?brandId=gec
 ${CMS_PUBLIC_API_BASE}/banners/by-key/bottom?brandId=gec
-${CMS_PUBLIC_API_BASE}/banners/by-key/cta-pricing?brandId=gonline
+${CMS_PUBLIC_API_BASE}/banners/by-key/promo-strip?brandId=gonline
 \`\`\`
 
 Feature required: \`banners\` · Only \`isActive: true\` banners are returned.
@@ -558,14 +558,17 @@ These keys appear in **Banners → Website**.
 
 Keep at least 1 image and do not delete the banner row for required keys.
 
-### CTA (custom)
-CTAs are **not** fixed slots. In the CMS, use **Add custom CTA** and set any unique key your frontend expects (e.g. \`cta-pricing\`, \`cta-footer\`, \`promo-strip\`).
+### Custom Banners
+Custom banners are **not** fixed slots. In the CMS, use **Add custom banner** and set any unique key your frontend expects (e.g. \`promo-strip\`, \`pricing-hero\`, \`footer-banner\`).
 
-Fetch each custom CTA with the same **by-key** endpoint using that key. Delete/rename freely — they are not required placements.
+Fetch each custom banner with the same **by-key** endpoint using that key. Delete/rename freely — they are not required placements.
+
+**Content updates** (images, redirect, active) are live via the API — no FE code change.
+**Key / placement changes** (new key, rename, delete) need an FE code update or a list-based discovery pattern (see below).
 
 Use **by-key** for each placement — one fetch per slot. Keys are lowercase with hyphens.
 
-In the CMS, each placement card has **Copy FE docs** for paste-ready agent prompts.
+In the CMS, each placement card has **Copy FE docs** for paste-ready agent prompts (generated from the current key at copy time).
 
 ## List query params
 | Param | Values | Notes |
@@ -586,8 +589,8 @@ const REQUIRED_BANNER_KEYS = [
   "bottom",
 ] as const;
 
-// Plus any custom CTA keys you create in the CMS:
-const CUSTOM_CTA_KEYS = ["cta-pricing", "cta-footer"] as const;
+// Plus any custom banner keys you create in the CMS:
+const CUSTOM_BANNER_KEYS = ["promo-strip", "pricing-hero"] as const;
 
 async function loadPlacementBanner(brandId: string, key: string) {
   const res = await fetch(
@@ -611,7 +614,11 @@ const { data: banners } = await fetch(
 
 const byKey = Object.fromEntries(banners.map((b: Banner) => [b.key, b]));
 const hero = byKey.homepage ?? null;
-const pricingCta = byKey["cta-pricing"] ?? null;
+const promo = byKey["promo-strip"] ?? null;
+
+// Discover custom banners dynamically (everything except required keys):
+const REQUIRED = new Set(REQUIRED_BANNER_KEYS);
+const customBanners = banners.filter((b: Banner) => !REQUIRED.has(b.key));
 \`\`\`
 
 ## Carousel
@@ -644,11 +651,11 @@ interface Banner {
 3. Set **Active** in CMS for banners that should appear on the public site
 4. Use the CMS placement keys above for required slots (\`homepage\`, not \`homepage-hero\`)
 5. Do not delete required Website banner rows after setup (min 1 image)
-6. Custom CTAs: agree on keys with the frontend team, then create them via **Add custom CTA**
+6. Custom banners: agree on keys with the frontend team, then create them via **Add custom banner**
 
 ## Agent checklist
 - [ ] Load each required banner via \`by-key\` (or list + map by key)
-- [ ] Wire custom CTA keys that exist in the CMS (not a fixed list)
+- [ ] Wire custom banner keys that exist in the CMS (or discover via list endpoint)
 - [ ] Carousel when \`images.length > 1\`
 - [ ] Link \`redirectUrl\` on click
 - [ ] Hide placement when 404 / inactive / brand lacks \`banners\`
@@ -813,7 +820,7 @@ interface PublicBrand {
 | \`articles\` | Blog |
 | \`prices\` | Pricing |
 | \`clients-works\` | Clients + Portfolio |
-| \`banners\` | Hero / popup / CTA placements |
+| \`banners\` | Hero / popup / custom banner placements |
 | \`activities\` | Activity / promo feed |
 | \`dashboard\` | CMS-only |
 
@@ -886,7 +893,7 @@ export const FE_WIRING_DOC_SECTIONS: FeWiringDocSection[] = [
     id: "banners",
     title: "Banners",
     summary:
-      "Website placements by type (Banners + CTA), by-key wiring, copyable FE docs, carousel.",
+      "Website placements by type (Banners + Custom Banners), by-key wiring, copyable FE docs, carousel.",
     markdown: BANNERS_MARKDOWN,
   },
   {

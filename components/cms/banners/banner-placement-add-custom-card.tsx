@@ -4,13 +4,13 @@ import { PlusIcon } from "@/lib/icons";
 import { RADIUS_INNER } from "@/config/shape";
 import { cn } from "@/lib/utils";
 
-interface BannerPlacementAddCtaCardProps {
+interface BannerPlacementAddCustomCardProps {
   onAdd: () => void;
 }
 
-export function BannerPlacementAddCtaCard({
+export function BannerPlacementAddCustomCard({
   onAdd,
-}: BannerPlacementAddCtaCardProps) {
+}: BannerPlacementAddCustomCardProps) {
   return (
     <button
       type="button"
@@ -26,7 +26,7 @@ export function BannerPlacementAddCtaCard({
       <span className="flex size-9 items-center justify-center rounded-full bg-primary/10 text-primary">
         <PlusIcon className="size-4" />
       </span>
-      <span className="font-semibold text-sm">Add custom CTA</span>
+      <span className="font-semibold text-sm">Add custom banner</span>
       <span className="max-w-56 text-muted-foreground text-xs leading-relaxed">
         Create a new placement with your own key for the frontend to fetch.
       </span>

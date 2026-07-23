@@ -123,7 +123,7 @@ export function BannersListView({ banners }: BannersListViewProps) {
           banners={banners}
           bannersByKey={bannersByKey}
           onSelectPlacement={handleSelectPlacement}
-          onAddCustomCta={() => openCreate()}
+          onAddCustomBanner={() => openCreate()}
         />
 
         <BannersGlobalPanel

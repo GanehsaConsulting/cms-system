@@ -24,7 +24,7 @@ export function BannerFormKeyField({
         id="banner-key"
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        placeholder="cta-pricing"
+        placeholder="promo-strip"
         maxLength={BANNER_LIMITS.key}
         disabled={disabled || locked}
         readOnly={locked}

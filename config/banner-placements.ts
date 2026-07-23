@@ -1,13 +1,13 @@
 import { CMS_PUBLIC_API_BASE } from "@/config/public-api";
 
-export type BannerPlacementCategoryId = "banners" | "cta";
+export type BannerPlacementCategoryId = "banners" | "custom";
 
 export type BannerPlacementMock =
   | "homepage"
   | "popup"
   | "mega-menu"
   | "bottom"
-  | "cta";
+  | "custom";
 
 export interface BannerPlacementCategory {
   id: BannerPlacementCategoryId;
@@ -37,14 +37,14 @@ export const BANNER_PLACEMENT_CATEGORIES: BannerPlacementCategory[] = [
     description: "Hero, popup, menu, and sticky slots for the public site.",
   },
   {
-    id: "cta",
-    title: "CTA",
+    id: "custom",
+    title: "Custom Banners",
     description:
-      "Custom call-to-action placements. Add your own keys (e.g. pricing, footer).",
+      "Extra placements with your own keys (e.g. pricing, footer, promo).",
   },
 ];
 
-/** Fixed website banner slots only — CTAs are user-defined custom keys. */
+/** Fixed website banner slots only — custom banners use user-defined keys. */
 export const BANNER_PLACEMENTS: BannerPlacement[] = [
   {
     id: "homepage",
@@ -106,12 +106,12 @@ export function getBannerPlacementsByCategory(
 }
 
 /** True when the banner key is not a fixed Website banner slot. */
-export function isCustomCtaBannerKey(key: string) {
+export function isCustomBannerKey(key: string) {
   return !BANNER_PLACEMENT_KEYS.includes(key);
 }
 
-/** Build a placement view-model for a custom CTA banner (wiring + cards). */
-export function toCustomCtaPlacement(banner: {
+/** Build a placement view-model for a custom banner (wiring + cards). */
+export function toCustomBannerPlacement(banner: {
   id: string;
   name: string;
   key: string;
@@ -120,9 +120,9 @@ export function toCustomCtaPlacement(banner: {
     id: banner.id,
     key: banner.key,
     title: banner.name || banner.key,
-    description: "Custom CTA — fetch by key on the public site.",
-    category: "cta",
-    mock: "cta",
+    description: "Custom banner — fetch by key on the public site.",
+    category: "custom",
+    mock: "custom",
     required: false,
   };
 }
@@ -135,11 +135,11 @@ export function buildBannerPlacementWiringMarkdown(
   const endpoint = `${CMS_PUBLIC_API_BASE}/banners/by-key/${placement.key}?brandId=${brandId}`;
   const requiredNote = placement.required
     ? "Required website placement — once set up, keep at least 1 image; do not delete this key."
-    : "Custom CTA placement — create/delete freely in CMS; wire the key your frontend expects.";
+    : "Custom banner — create/delete freely in CMS; wire the key your frontend expects.";
 
   return `# ${placement.title} (\`${placement.key}\`)
 
-Category: **${placement.category === "cta" ? "CTA" : "Banners"}**
+Category: **${placement.category === "custom" ? "Custom Banners" : "Banners"}**
 ${requiredNote}
 
 ## Endpoint
