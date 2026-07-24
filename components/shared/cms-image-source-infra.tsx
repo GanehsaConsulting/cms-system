@@ -28,7 +28,14 @@ export function CmsImageSourceInfra({ source }: CmsImageSourceInfraProps) {
         existingUrls={source.pickerExistingUrls}
         maxSelectable={Math.max(source.maxSelectable, 0)}
         initialTab={source.pickerTab}
+        allowMultiple={source.allowMultiple}
+        isReading={source.isReading}
+        disabled={source.disabled || !source.canAdd}
         onAdd={source.addUrls}
+        onChooseDeviceFiles={source.openUpload}
+        onDropDeviceFiles={(files) => {
+          void source.addFiles(files);
+        }}
       />
     </>
   );

@@ -75,9 +75,7 @@ export function ClientFormLogoControl({
           <CmsImageSourceActions
             disabled={source.busy}
             uploadLabel={value ? "Replace" : "Upload"}
-            onUpload={source.openUpload}
-            onLibrary={source.openLibrary}
-            onUrl={source.openUrl}
+            onOpen={source.open}
           />
           {value ? (
             <Button

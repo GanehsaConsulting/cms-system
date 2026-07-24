@@ -47,7 +47,7 @@ export function useCmsImageSource({
   const [localError, setLocalError] = useState<string | null>(null);
   const [isReading, setIsReading] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
-  const [pickerTab, setPickerTab] = useState<CmsImagePickerTab>("shared");
+  const [pickerTab, setPickerTab] = useState<CmsImagePickerTab>("device");
 
   const allowMultiple = multiple ?? maxSelectable > 1;
   const canAdd = maxSelectable > 0 && !disabled;
@@ -107,6 +107,7 @@ export function useCmsImageSource({
 
       setLocalError(null);
       setIsReading(true);
+      setPickerOpen(false);
 
       try {
         const nextImages: string[] = [];
@@ -139,6 +140,7 @@ export function useCmsImageSource({
     markNativeFilePickerOpen();
   }
 
+  /** Open OS file picker (Device tab / drop zone). */
   function openUpload() {
     if (busy) {
       return;
@@ -153,12 +155,17 @@ export function useCmsImageSource({
     input.click();
   }
 
-  function openPicker(tab: CmsImagePickerTab) {
+  function openPicker(tab: CmsImagePickerTab = "device") {
     if (busy) {
       return;
     }
     setPickerTab(tab);
     setPickerOpen(true);
+  }
+
+  /** Single entry point — opens the unified picker on Device. */
+  function open() {
+    openPicker("device");
   }
 
   function openLibrary() {
@@ -199,6 +206,7 @@ export function useCmsImageSource({
     pickerOpen,
     setPickerOpen,
     pickerTab,
+    open,
     openUpload,
     openLibrary,
     openUrl,

@@ -129,9 +129,7 @@ export function ArticleFormThumbnailField({
                 ? "Replace"
                 : "Upload"
           }
-          onUpload={source.openUpload}
-          onLibrary={source.openLibrary}
-          onUrl={source.openUrl}
+          onOpen={source.open}
         />
         <p className="text-muted-foreground text-xs">Or drag & drop an image here.</p>
       </div>

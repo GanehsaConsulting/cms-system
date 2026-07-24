@@ -112,11 +112,14 @@ type EncodedImage = {
   dataUrl: string;
 };
 
-function encodeOptimizedImage(image: HTMLImageElement): EncodedImage {
+function encodeOptimizedImage(
+  image: HTMLImageElement,
+  maxEdgePx = OPTIMIZE_IMAGES_MAX_EDGE_PX,
+): EncodedImage {
   const { width, height } = scaleDimensions(
     image.naturalWidth,
     image.naturalHeight,
-    OPTIMIZE_IMAGES_MAX_EDGE_PX,
+    maxEdgePx,
   );
 
   const canvas = document.createElement("canvas");
@@ -184,17 +187,19 @@ async function resolveWorkingImageFile(file: File): Promise<File> {
   return file;
 }
 
-/**
- * Browser-displayable data URL for CMS image fields.
- * When optimize is ON: resize + WebP (JPEG fallback). GIF stays as-is.
- * When optimize is OFF: original bytes as data URL (HEIC still converted for preview).
- */
-export async function prepareArticleImageDataUrl(file: File): Promise<string> {
-  const validationError = validateArticleImageFile(file);
-  if (validationError) {
-    throw new Error(validationError);
-  }
+export interface PrepareCmsImageOptions {
+  /** Override longest-edge resize (default from Appearance optimize config). */
+  maxEdgePx?: number;
+}
 
+/**
+ * Shared data-URL prep for every CMS image upload field.
+ * Respects Appearance → Optimize before upload (WebP + resize).
+ */
+export async function prepareCmsImageDataUrl(
+  file: File,
+  options: PrepareCmsImageOptions = {},
+): Promise<string> {
   if (isGifLike(file)) {
     return readFileAsDataUrl(file);
   }
@@ -207,15 +212,29 @@ export async function prepareArticleImageDataUrl(file: File): Promise<string> {
   }
 
   const image = await loadImageFromFile(workingFile);
-  return encodeOptimizedImage(image).dataUrl;
+  return encodeOptimizedImage(image, options.maxEdgePx).dataUrl;
 }
 
 /**
- * File ready for direct Cloudinary upload (Media Library).
- * Non-images and GIFs are returned unchanged. HEIC always converted.
- * When optimize is ON, still images become WebP (or JPEG fallback).
+ * Article / gallery / editor fields — validates accepted article image types first.
  */
-export async function prepareCmsImageFileForUpload(file: File): Promise<File> {
+export async function prepareArticleImageDataUrl(file: File): Promise<string> {
+  const validationError = validateArticleImageFile(file);
+  if (validationError) {
+    throw new Error(validationError);
+  }
+
+  return prepareCmsImageDataUrl(file);
+}
+
+/**
+ * File ready for direct Cloudinary upload (Media Library and any signed upload).
+ * Non-images and GIFs are returned unchanged. HEIC always converted for browser support.
+ */
+export async function prepareCmsImageFileForUpload(
+  file: File,
+  options: PrepareCmsImageOptions = {},
+): Promise<File> {
   if (!isImageLike(file) || isGifLike(file)) {
     return file;
   }
@@ -228,7 +247,7 @@ export async function prepareCmsImageFileForUpload(file: File): Promise<File> {
   }
 
   const image = await loadImageFromFile(workingFile);
-  const encoded = encodeOptimizedImage(image);
+  const encoded = encodeOptimizedImage(image, options.maxEdgePx);
   const baseName = file.name.replace(/\.[^/.]+$/, "") || "image";
 
   return dataUrlToFile(

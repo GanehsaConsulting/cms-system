@@ -7,24 +7,16 @@ import { cn } from "@/lib/utils";
 interface CmsImageSourceActionsProps {
   disabled?: boolean;
   uploadLabel?: string;
-  libraryLabel?: string;
-  urlLabel?: string;
   className?: string;
-  onUpload: () => void;
-  onLibrary: () => void;
-  onUrl: () => void;
+  onOpen: () => void;
 }
 
-/** Standard Upload · Library · URL action row for CMS image fields. */
+/** Single Upload control — opens the shared image picker modal. */
 export function CmsImageSourceActions({
   disabled = false,
   uploadLabel = CMS_IMAGE_SOURCE_LABELS.upload,
-  libraryLabel = CMS_IMAGE_SOURCE_LABELS.library,
-  urlLabel = CMS_IMAGE_SOURCE_LABELS.url,
   className,
-  onUpload,
-  onLibrary,
-  onUrl,
+  onOpen,
 }: CmsImageSourceActionsProps) {
   return (
     <div className={cn("flex min-w-0 flex-wrap gap-2", className)}>
@@ -33,27 +25,9 @@ export function CmsImageSourceActions({
         variant="outline"
         size="sm"
         disabled={disabled}
-        onClick={onUpload}
+        onClick={onOpen}
       >
         {uploadLabel}
-      </Button>
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        disabled={disabled}
-        onClick={onLibrary}
-      >
-        {libraryLabel}
-      </Button>
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        disabled={disabled}
-        onClick={onUrl}
-      >
-        {urlLabel}
       </Button>
     </div>
   );

@@ -40,7 +40,7 @@ export function ArticleFormGalleryCarousel({
         <UploadSimpleIcon className="size-7 text-muted-foreground/60" />
         <p className="text-muted-foreground text-sm">No gallery images yet</p>
         <p className="text-muted-foreground text-xs">
-          Use Upload, Library, or URL below — or drag images here
+          Use Upload below — or drag images here
         </p>
       </button>
     );

@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState, useTransition } from "react";
+import { CmsImagePickerDevicePanel } from "@/components/shared/cms-image-picker-device-panel";
 import { CmsImagePickerGrid } from "@/components/shared/cms-image-picker-grid";
+import { CmsImagePickerOptimizeToggle } from "@/components/shared/cms-image-picker-optimize-toggle";
 import { CmsImagePickerTabs } from "@/components/shared/cms-image-picker-tabs";
 import { CmsImagePickerUrlPanel } from "@/components/shared/cms-image-picker-url-panel";
 import { CmsAlert } from "@/components/shared/cms-alert";
@@ -32,6 +34,11 @@ interface CmsImagePickerDialogProps {
   onAdd: (urls: string[], meta?: { addedFileNames: string[] }) => void;
   /** Initial tab when the dialog opens. */
   initialTab?: CmsImagePickerTab;
+  allowMultiple?: boolean;
+  isReading?: boolean;
+  disabled?: boolean;
+  onChooseDeviceFiles: () => void;
+  onDropDeviceFiles: (files: File[]) => void;
 }
 
 function filterItems(items: CmsImagePickerItem[], query: string) {
@@ -53,7 +60,12 @@ export function CmsImagePickerDialog({
   existingUrls,
   maxSelectable,
   onAdd,
-  initialTab = "shared",
+  initialTab = "device",
+  allowMultiple = false,
+  isReading = false,
+  disabled = false,
+  onChooseDeviceFiles,
+  onDropDeviceFiles,
 }: CmsImagePickerDialogProps) {
   const [tab, setTab] = useState<CmsImagePickerTab>(initialTab);
   const [query, setQuery] = useState("");
@@ -66,6 +78,7 @@ export function CmsImagePickerDialog({
   const disabledUrls = useMemo(() => new Set(existingUrls), [existingUrls]);
   const selectedSet = useMemo(() => new Set(selectedUrls), [selectedUrls]);
   const remainingSlots = Math.max(0, maxSelectable - selectedUrls.length);
+  const isLibraryTab = tab === "shared" || tab === "in-use";
 
   const visibleItems = useMemo(() => {
     const source = tab === "in-use" ? inUse : shared;
@@ -149,19 +162,41 @@ export function CmsImagePickerDialog({
     onOpenChange(false);
   }
 
+  function handleChooseDeviceFiles() {
+    onChooseDeviceFiles();
+  }
+
+  function handleDropDeviceFiles(files: File[]) {
+    onDropDeviceFiles(files);
+  }
+
   return (
     <CmsDialog open={open} onOpenChange={handleOpenChange}>
       <CmsDialogContent size="xl" showCloseButton>
         <CmsDialogHeader>
           <CmsDialogTitle>Add images</CmsDialogTitle>
           <CmsDialogDescription>
-            Choose from Shared Files & Media, reuse In-use images, or paste a
-            URL. You can add up to {maxSelectable} more.
+            Upload from your device, pick Shared / In use media, or paste a URL.
+            You can add up to {maxSelectable} more.
           </CmsDialogDescription>
         </CmsDialogHeader>
 
         <CmsDialogBody className="space-y-4">
           <CmsImagePickerTabs value={tab} onChange={setTab} />
+
+          {tab === "device" ? (
+            <>
+              <CmsImagePickerOptimizeToggle />
+              <CmsImagePickerDevicePanel
+                remainingSlots={maxSelectable}
+                allowMultiple={allowMultiple}
+                disabled={disabled}
+                isReading={isReading}
+                onChooseFiles={handleChooseDeviceFiles}
+                onDropFiles={handleDropDeviceFiles}
+              />
+            </>
+          ) : null}
 
           {tab === "url" ? (
             <CmsImagePickerUrlPanel
@@ -169,7 +204,9 @@ export function CmsImagePickerDialog({
               disabled={isPending}
               onAdd={handleAddUrl}
             />
-          ) : (
+          ) : null}
+
+          {isLibraryTab ? (
             <>
               <CmsListSearch
                 inputId="cms-image-picker-search"
@@ -211,10 +248,10 @@ export function CmsImagePickerDialog({
                 </p>
               ) : null}
             </>
-          )}
+          ) : null}
         </CmsDialogBody>
 
-        {tab !== "url" ? (
+        {isLibraryTab ? (
           <CmsDialogFooter>
             <Button
               type="button"

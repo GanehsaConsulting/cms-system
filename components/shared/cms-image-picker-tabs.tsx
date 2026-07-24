@@ -10,6 +10,7 @@ import type { CmsImagePickerTab } from "@/types/cms-image-picker";
 import { cn } from "@/lib/utils";
 
 const TABS: { id: CmsImagePickerTab; label: string }[] = [
+  { id: "device", label: "Device" },
   { id: "shared", label: "Shared" },
   { id: "in-use", label: "In use" },
   { id: "url", label: "URL" },

@@ -78,9 +78,7 @@ export function ClientFormGallerySection({
             <CmsImageSourceActions
               disabled={source.busy}
               uploadLabel="Upload"
-              onUpload={source.openUpload}
-              onLibrary={source.openLibrary}
-              onUrl={source.openUrl}
+              onOpen={source.open}
             />
           </div>
         </div>
@@ -158,9 +156,7 @@ export function ClientFormGallerySection({
           variant="button"
           buttonLabel="Add photo"
           disabled={source.busy}
-          onUpload={source.openUpload}
-          onLibrary={source.openLibrary}
-          onUrl={source.openUrl}
+          onOpen={source.open}
         />
       ) : null}
 

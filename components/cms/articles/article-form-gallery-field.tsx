@@ -84,7 +84,7 @@ export function ArticleFormGalleryField({
         onRemove={removeImage}
         uploadDisabled={uploadDisabled}
         onDrop={handleDrop}
-        onRequestUpload={source.openUpload}
+        onRequestUpload={source.open}
       />
 
       {canAddMore ? (
@@ -98,9 +98,7 @@ export function ArticleFormGalleryField({
                   ? "Upload more"
                   : "Upload"
             }
-            onUpload={source.openUpload}
-            onLibrary={source.openLibrary}
-            onUrl={source.openUrl}
+            onOpen={source.open}
           />
           <p className="text-muted-foreground text-xs">
             Or drag & drop images onto the gallery area.

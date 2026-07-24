@@ -104,9 +104,7 @@ export function ContentActivityFormImagesField({
               <CmsImageSourceMenu
                 disabled={source.busy}
                 className="aspect-square size-20"
-                onUpload={source.openUpload}
-                onLibrary={source.openLibrary}
-                onUrl={source.openUrl}
+                onOpen={source.open}
               />
             </div>
           ) : null}
@@ -126,15 +124,13 @@ export function ContentActivityFormImagesField({
       {canAddMore ? (
         <CmsImageSourceActions
           disabled={source.busy}
-          onUpload={source.openUpload}
-          onLibrary={source.openLibrary}
-          onUrl={source.openUrl}
+          onOpen={source.open}
         />
       ) : null}
 
       <p className="text-muted-foreground text-xs">
-        Up to {CONTENT_ACTIVITY_FORM_LIMITS.maxImages} images. Upload, Library,
-        or URL.
+        Up to {CONTENT_ACTIVITY_FORM_LIMITS.maxImages} images. Use Upload to add
+        from device, library, or URL.
       </p>
 
       {source.localError || error ? (

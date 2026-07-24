@@ -43,9 +43,7 @@ export function SidebarProfilePhotoControl({
             <CmsImageSourceActions
               disabled={source.busy}
               uploadLabel={value ? "Change" : "Upload"}
-              onUpload={source.openUpload}
-              onLibrary={source.openLibrary}
-              onUrl={source.openUrl}
+              onOpen={source.open}
             />
             {value ? (
               <Button

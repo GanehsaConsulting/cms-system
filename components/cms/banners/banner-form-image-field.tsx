@@ -117,9 +117,7 @@ export function BannerFormImageField({
           {source.canAdd ? (
             <CmsImageSourceMenu
               disabled={source.busy}
-              onUpload={source.openUpload}
-              onLibrary={source.openLibrary}
-              onUrl={source.openUrl}
+              onOpen={source.open}
             />
           ) : null}
         </div>
@@ -137,9 +135,7 @@ export function BannerFormImageField({
           </div>
           <CmsImageSourceActions
             disabled={source.busy}
-            onUpload={source.openUpload}
-            onLibrary={source.openLibrary}
-            onUrl={source.openUrl}
+            onOpen={source.open}
           />
         </div>
       )}

@@ -12,8 +12,8 @@ import {
   createMediaUploadSignaturesAction,
   saveMediaLibraryUploadsAction,
 } from "@/lib/actions/media-files";
-import { prepareCmsImageFileForUpload } from "@/lib/articles/prepare-image-data-url";
 import { UploadSimpleIcon } from "@/lib/icons";
+import { classifyMediaUrl } from "@/lib/media/classify";
 import { uploadFileToCloudinary } from "@/lib/media/direct-upload";
 import {
   getMediaUploadMeta,
@@ -60,30 +60,30 @@ export function MediaLibraryUploadButton({
 
     setError(null);
     startTransition(async () => {
+      const signed = await createMediaUploadSignaturesAction(
+        folderId,
+        batch.map(getMediaUploadMeta),
+      );
+      if (!signed.success) {
+        setError(signed.error);
+        notifyError(signed.error);
+        return;
+      }
+
       try {
-        const preparedFiles: File[] = [];
-        for (const file of batch) {
-          preparedFiles.push(await prepareCmsImageFileForUpload(file));
-        }
-
-        const metas = preparedFiles.map(getMediaUploadMeta);
-        const signed = await createMediaUploadSignaturesAction(folderId, metas);
-        if (!signed.success) {
-          setError(signed.error);
-          notifyError(signed.error);
-          return;
-        }
-
         const uploads = [];
 
-        for (const file of preparedFiles) {
-          const meta = getMediaUploadMeta(file);
+        for (const file of batch) {
           const uploaded = await uploadFileToCloudinary(file, signed.params);
+          const classified = classifyMediaUrl(uploaded.filename);
+
           uploads.push({
-            ...meta,
+            filename: uploaded.filename.trim() || classified.filename,
+            mimeType: uploaded.mimeType || classified.mimeType,
+            sizeBytes: uploaded.sizeBytes,
+            kind: classified.kind,
             url: uploaded.url,
             publicId: uploaded.publicId,
-            sizeBytes: uploaded.sizeBytes,
           });
         }
 
