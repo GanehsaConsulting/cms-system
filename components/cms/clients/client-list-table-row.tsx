@@ -25,6 +25,10 @@ export function ClientListTableRow({
 }: ClientListTableRowProps) {
   const updated = formatClientDateParts(client.updatedAt);
   const marqueeReady = isCompanyLogoIcon(client.logo);
+  const thumbUrl =
+    client.logo.trim() ||
+    client.photos.find((photo) => photo.url.trim())?.url ||
+    "";
 
   return (
     <CmsListTableRow isSelected={isSelected} onClick={() => onSelect(client.id)}>
@@ -36,13 +40,15 @@ export function ClientListTableRow({
               "relative flex size-9 shrink-0 items-center justify-center overflow-hidden bg-muted",
             )}
           >
-            {client.logo ? (
+            {thumbUrl ? (
               <Image
-                src={client.logo}
+                src={thumbUrl}
                 alt=""
                 fill
                 unoptimized
-                className="object-contain p-1"
+                className={
+                  client.logo.trim() ? "object-contain p-1" : "object-cover"
+                }
               />
             ) : (
               <span className="font-medium text-muted-foreground text-xs">

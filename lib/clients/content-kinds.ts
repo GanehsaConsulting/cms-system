@@ -78,3 +78,16 @@ export function filterClientsForLogosTab(clients: Client[]): Client[] {
       return left.name.localeCompare(right.name, "en");
     });
 }
+
+/** Client Photo tab: clients that have at least one gallery photo. */
+export function filterClientsForPhotosTab(clients: Client[]): Client[] {
+  return clients
+    .filter((client) => client.photos.some((photo) => photo.url.trim()))
+    .sort((left, right) => {
+      const photoDiff = right.photos.length - left.photos.length;
+      if (photoDiff !== 0) {
+        return photoDiff;
+      }
+      return left.name.localeCompare(right.name, "en");
+    });
+}
