@@ -1,14 +1,18 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { useRef, useState, useTransition } from "react";
 import { CmsAlert } from "@/components/shared/cms-alert";
-import { MEDIA_LIBRARY_ACCEPT_ATTRIBUTE, MEDIA_LIBRARY_UPLOAD_HINT } from "@/config/media-library";
+import { Button } from "@/components/ui/button";
+import {
+  MEDIA_LIBRARY_ACCEPT_ATTRIBUTE,
+  MEDIA_LIBRARY_UPLOAD_HINT,
+} from "@/config/media-library";
 import {
   createMediaUploadSignaturesAction,
   saveMediaLibraryUploadsAction,
 } from "@/lib/actions/media-files";
+import { prepareCmsImageFileForUpload } from "@/lib/articles/prepare-image-data-url";
 import { UploadSimpleIcon } from "@/lib/icons";
 import { uploadFileToCloudinary } from "@/lib/media/direct-upload";
 import {
@@ -16,10 +20,7 @@ import {
   normalizeUploadBatch,
   validateMediaUploadFile,
 } from "@/lib/media/upload";
-import {
-  notifyError,
-  notifyFromActionResult,
-} from "@/lib/notify/action-toast";
+import { notifyError, notifyFromActionResult } from "@/lib/notify/action-toast";
 
 interface MediaLibraryUploadButtonProps {
   folderId: string | null;
@@ -59,18 +60,23 @@ export function MediaLibraryUploadButton({
 
     setError(null);
     startTransition(async () => {
-      const metas = batch.map(getMediaUploadMeta);
-      const signed = await createMediaUploadSignaturesAction(folderId, metas);
-      if (!signed.success) {
-        setError(signed.error);
-        notifyError(signed.error);
-        return;
-      }
-
       try {
+        const preparedFiles: File[] = [];
+        for (const file of batch) {
+          preparedFiles.push(await prepareCmsImageFileForUpload(file));
+        }
+
+        const metas = preparedFiles.map(getMediaUploadMeta);
+        const signed = await createMediaUploadSignaturesAction(folderId, metas);
+        if (!signed.success) {
+          setError(signed.error);
+          notifyError(signed.error);
+          return;
+        }
+
         const uploads = [];
 
-        for (const file of batch) {
+        for (const file of preparedFiles) {
           const meta = getMediaUploadMeta(file);
           const uploaded = await uploadFileToCloudinary(file, signed.params);
           uploads.push({
@@ -122,9 +128,7 @@ export function MediaLibraryUploadButton({
         <UploadSimpleIcon className="size-3.5" />
         Upload
       </Button>
-      {error ? (
-        <CmsAlert variant="error" size="sm" message={error} />
-      ) : null}
+      {error ? <CmsAlert variant="error" size="sm" message={error} /> : null}
     </div>
   );
 }

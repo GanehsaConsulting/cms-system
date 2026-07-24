@@ -3,6 +3,7 @@
 import { AccentColorPicker } from "@/components/shared/accent-color-picker";
 import { AppIconStylePicker } from "@/components/shared/app-icon-style-picker";
 import { GlassBlurPicker } from "@/components/shared/glass-blur-picker";
+import { OptimizeImagesToggle } from "@/components/shared/optimize-images-toggle";
 import { ThemeModePicker } from "@/components/shared/theme-mode-picker";
 import { WallpaperPicker } from "@/components/shared/wallpaper-picker";
 import {
@@ -54,6 +55,16 @@ export function AppearanceView() {
         </div>
         <p className={SETTINGS_SECTION_FOOTER}>
           Adjust blur, transparency, and glass border.
+        </p>
+      </section>
+
+      <section className={SETTINGS_SECTION}>
+        <h2 className={SETTINGS_SECTION_LABEL}>Uploads</h2>
+        <div className={SETTINGS_GROUP}>
+          <OptimizeImagesToggle />
+        </div>
+        <p className={SETTINGS_SECTION_FOOTER}>
+          Applies to device uploads in forms and the Media Library.
         </p>
       </section>
 

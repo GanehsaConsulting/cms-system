@@ -1,9 +1,9 @@
 import {
-  validateArticleImageFile,
-} from "@/lib/articles/gallery";
-
-const MAX_EDGE_PX = 2048;
-const OUTPUT_QUALITY = 0.88;
+  OPTIMIZE_IMAGES_MAX_EDGE_PX,
+  OPTIMIZE_IMAGES_QUALITY,
+} from "@/config/optimize-images";
+import { readStoredOptimizeImagesEnabled } from "@/lib/appearance/optimize-images-storage";
+import { validateArticleImageFile } from "@/lib/articles/gallery";
 
 function readFileAsDataUrl(file: File | Blob): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -37,6 +37,25 @@ function isGifLike(file: File): boolean {
   }
 
   return file.name.split(".").pop()?.toLowerCase() === "gif";
+}
+
+function isImageLike(file: File): boolean {
+  if (file.type.startsWith("image/")) {
+    return true;
+  }
+
+  const extension = file.name.split(".").pop()?.toLowerCase() ?? "";
+  return [
+    "jpg",
+    "jpeg",
+    "png",
+    "webp",
+    "gif",
+    "heic",
+    "heif",
+    "avif",
+    "bmp",
+  ].includes(extension);
 }
 
 function scaleDimensions(
@@ -76,11 +95,28 @@ function loadImageFromFile(file: File | Blob): Promise<HTMLImageElement> {
   });
 }
 
-function encodeImageToJpegDataUrl(image: HTMLImageElement): string {
+function supportsWebpEncoding(): boolean {
+  try {
+    const canvas = document.createElement("canvas");
+    canvas.width = 1;
+    canvas.height = 1;
+    return canvas.toDataURL("image/webp").startsWith("data:image/webp");
+  } catch {
+    return false;
+  }
+}
+
+type EncodedImage = {
+  mimeType: "image/webp" | "image/jpeg";
+  extension: "webp" | "jpg";
+  dataUrl: string;
+};
+
+function encodeOptimizedImage(image: HTMLImageElement): EncodedImage {
   const { width, height } = scaleDimensions(
     image.naturalWidth,
     image.naturalHeight,
-    MAX_EDGE_PX,
+    OPTIMIZE_IMAGES_MAX_EDGE_PX,
   );
 
   const canvas = document.createElement("canvas");
@@ -94,12 +130,19 @@ function encodeImageToJpegDataUrl(image: HTMLImageElement): string {
 
   context.drawImage(image, 0, 0, width, height);
 
-  const dataUrl = canvas.toDataURL("image/jpeg", OUTPUT_QUALITY);
-  if (!dataUrl.startsWith("data:image/jpeg")) {
-    throw new Error("Failed to prepare image preview.");
+  if (supportsWebpEncoding()) {
+    const webp = canvas.toDataURL("image/webp", OPTIMIZE_IMAGES_QUALITY);
+    if (webp.startsWith("data:image/webp")) {
+      return { mimeType: "image/webp", extension: "webp", dataUrl: webp };
+    }
   }
 
-  return dataUrl;
+  const jpeg = canvas.toDataURL("image/jpeg", OPTIMIZE_IMAGES_QUALITY);
+  if (!jpeg.startsWith("data:image/jpeg")) {
+    throw new Error("Failed to prepare image.");
+  }
+
+  return { mimeType: "image/jpeg", extension: "jpg", dataUrl: jpeg };
 }
 
 async function convertHeicToJpegFile(file: File): Promise<File> {
@@ -107,7 +150,7 @@ async function convertHeicToJpegFile(file: File): Promise<File> {
   const converted = await heic2any({
     blob: file,
     toType: "image/jpeg",
-    quality: OUTPUT_QUALITY,
+    quality: OPTIMIZE_IMAGES_QUALITY,
   });
 
   const blob = Array.isArray(converted) ? converted[0] : converted;
@@ -119,10 +162,32 @@ async function convertHeicToJpegFile(file: File): Promise<File> {
   return new File([blob], `${baseName}.jpg`, { type: "image/jpeg" });
 }
 
+function dataUrlToFile(
+  dataUrl: string,
+  filename: string,
+  mimeType: string,
+): File {
+  const [, payload = ""] = dataUrl.split(",", 2);
+  const binary = atob(payload);
+  const bytes = new Uint8Array(binary.length);
+  for (let index = 0; index < binary.length; index += 1) {
+    bytes[index] = binary.charCodeAt(index);
+  }
+
+  return new File([bytes], filename, { type: mimeType });
+}
+
+async function resolveWorkingImageFile(file: File): Promise<File> {
+  if (isHeicLike(file)) {
+    return convertHeicToJpegFile(file);
+  }
+  return file;
+}
+
 /**
- * Returns a browser-displayable data URL for article thumbnails, gallery,
- * and inline editor images. HEIC/HEIF is converted to JPEG because most
- * browsers cannot render Apple formats in `<img>` tags.
+ * Browser-displayable data URL for CMS image fields.
+ * When optimize is ON: resize + WebP (JPEG fallback). GIF stays as-is.
+ * When optimize is OFF: original bytes as data URL (HEIC still converted for preview).
  */
 export async function prepareArticleImageDataUrl(file: File): Promise<string> {
   const validationError = validateArticleImageFile(file);
@@ -134,11 +199,41 @@ export async function prepareArticleImageDataUrl(file: File): Promise<string> {
     return readFileAsDataUrl(file);
   }
 
-  let workingFile = file;
-  if (isHeicLike(file)) {
-    workingFile = await convertHeicToJpegFile(file);
+  const optimize = readStoredOptimizeImagesEnabled();
+  const workingFile = await resolveWorkingImageFile(file);
+
+  if (!optimize) {
+    return readFileAsDataUrl(workingFile);
   }
 
   const image = await loadImageFromFile(workingFile);
-  return encodeImageToJpegDataUrl(image);
+  return encodeOptimizedImage(image).dataUrl;
+}
+
+/**
+ * File ready for direct Cloudinary upload (Media Library).
+ * Non-images and GIFs are returned unchanged. HEIC always converted.
+ * When optimize is ON, still images become WebP (or JPEG fallback).
+ */
+export async function prepareCmsImageFileForUpload(file: File): Promise<File> {
+  if (!isImageLike(file) || isGifLike(file)) {
+    return file;
+  }
+
+  const optimize = readStoredOptimizeImagesEnabled();
+  const workingFile = await resolveWorkingImageFile(file);
+
+  if (!optimize) {
+    return workingFile;
+  }
+
+  const image = await loadImageFromFile(workingFile);
+  const encoded = encodeOptimizedImage(image);
+  const baseName = file.name.replace(/\.[^/.]+$/, "") || "image";
+
+  return dataUrlToFile(
+    encoded.dataUrl,
+    `${baseName}.${encoded.extension}`,
+    encoded.mimeType,
+  );
 }

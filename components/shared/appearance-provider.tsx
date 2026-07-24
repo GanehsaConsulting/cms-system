@@ -14,6 +14,7 @@ import { DEFAULT_APP_ICON_STYLE } from "@/config/app-icon-styles";
 import { DEFAULT_GLASS_BLUR_LEVEL } from "@/config/glass-blur";
 import { DEFAULT_GLASS_BORDER_ENABLED } from "@/config/glass-border";
 import { DEFAULT_GLASS_FILL_TRANSPARENCY } from "@/config/glass-fill";
+import { DEFAULT_OPTIMIZE_IMAGES_ENABLED } from "@/config/optimize-images";
 import { DEFAULT_THEME_MODE } from "@/config/theme-modes";
 import {
   applyAppearance,
@@ -28,6 +29,10 @@ import {
   writeStoredGlassBorderEnabled,
   writeStoredGlassFillTransparency,
 } from "@/lib/appearance/glass-blur-storage";
+import {
+  readStoredOptimizeImagesEnabled,
+  writeStoredOptimizeImagesEnabled,
+} from "@/lib/appearance/optimize-images-storage";
 import {
   readStoredAccentId,
   readStoredAppIconStyle,
@@ -50,6 +55,7 @@ interface AppearanceContextValue {
   glassBlurLevel: GlassBlurLevelId;
   glassFillTransparency: number;
   glassBorderEnabled: boolean;
+  optimizeImagesEnabled: boolean;
   resolvedDark: boolean;
   setThemeMode: (mode: ThemeMode) => void;
   setAccentId: (id: AccentColorId) => void;
@@ -57,6 +63,7 @@ interface AppearanceContextValue {
   setGlassBlurLevel: (levelId: GlassBlurLevelId) => void;
   setGlassFillTransparency: (value: number) => void;
   setGlassBorderEnabled: (enabled: boolean) => void;
+  setOptimizeImagesEnabled: (enabled: boolean) => void;
 }
 
 const AppearanceContext = createContext<AppearanceContextValue | null>(null);
@@ -89,6 +96,9 @@ export function AppearanceProvider({
   const [glassBorderEnabled, setGlassBorderEnabledState] = useState(
     DEFAULT_GLASS_BORDER_ENABLED,
   );
+  const [optimizeImagesEnabled, setOptimizeImagesEnabledState] = useState(
+    DEFAULT_OPTIMIZE_IMAGES_ENABLED,
+  );
   const [resolvedDark, setResolvedDark] = useState(initialResolvedDark);
 
   useLayoutEffect(() => {
@@ -98,6 +108,7 @@ export function AppearanceProvider({
     const storedGlassBlurLevel = readStoredGlassBlurLevel();
     const storedGlassFillTransparency = readStoredGlassFillTransparency();
     const storedGlassBorderEnabled = readStoredGlassBorderEnabled();
+    const storedOptimizeImagesEnabled = readStoredOptimizeImagesEnabled();
 
     setThemeModeState(storedThemeMode);
     setAccentIdState(storedAccentId);
@@ -105,12 +116,14 @@ export function AppearanceProvider({
     setGlassBlurLevelState(storedGlassBlurLevel);
     setGlassFillTransparencyState(storedGlassFillTransparency);
     setGlassBorderEnabledState(storedGlassBorderEnabled);
+    setOptimizeImagesEnabledState(storedOptimizeImagesEnabled);
     writeStoredThemeMode(storedThemeMode);
     writeStoredAccentId(storedAccentId);
     writeStoredAppIconStyle(storedAppIconStyle);
     writeStoredGlassBlurLevel(storedGlassBlurLevel);
     writeStoredGlassFillTransparency(storedGlassFillTransparency);
     writeStoredGlassBorderEnabled(storedGlassBorderEnabled);
+    writeStoredOptimizeImagesEnabled(storedOptimizeImagesEnabled);
     applyAppearance({
       themeMode: storedThemeMode,
       accentId: storedAccentId,
@@ -188,6 +201,11 @@ export function AppearanceProvider({
     writeStoredGlassBorderEnabled(enabled);
   }, []);
 
+  const setOptimizeImagesEnabled = useCallback((enabled: boolean) => {
+    setOptimizeImagesEnabledState(enabled);
+    writeStoredOptimizeImagesEnabled(enabled);
+  }, []);
+
   const value = useMemo<AppearanceContextValue>(
     () => ({
       themeMode,
@@ -196,6 +214,7 @@ export function AppearanceProvider({
       glassBlurLevel,
       glassFillTransparency,
       glassBorderEnabled,
+      optimizeImagesEnabled,
       resolvedDark,
       setThemeMode,
       setAccentId,
@@ -203,6 +222,7 @@ export function AppearanceProvider({
       setGlassBlurLevel,
       setGlassFillTransparency,
       setGlassBorderEnabled,
+      setOptimizeImagesEnabled,
     }),
     [
       accentId,
@@ -210,12 +230,14 @@ export function AppearanceProvider({
       glassBlurLevel,
       glassBorderEnabled,
       glassFillTransparency,
+      optimizeImagesEnabled,
       resolvedDark,
       setAccentId,
       setAppIconStyle,
       setGlassBlurLevel,
       setGlassBorderEnabled,
       setGlassFillTransparency,
+      setOptimizeImagesEnabled,
       setThemeMode,
       themeMode,
     ],
