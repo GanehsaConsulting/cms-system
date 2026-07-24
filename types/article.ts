@@ -18,6 +18,8 @@ export interface Article {
   highlighted: boolean;
   gallery: string[];
   thumbnail: string;
+  /** Public site views / card clicks (incremented via public click API). */
+  clickCount: number;
   /** Publish time when published, or scheduled go-live time when scheduled. */
   publishedAt: string | null;
   /** CMS display — resolved from linked author profile when available. */

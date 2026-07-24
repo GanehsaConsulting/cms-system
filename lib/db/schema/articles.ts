@@ -1,6 +1,7 @@
 import {
   boolean,
   index,
+  integer,
   jsonb,
   primaryKey,
   text,
@@ -45,6 +46,7 @@ export const articles = cmsSchema.table(
     highlighted: boolean("highlighted").notNull().default(false),
     gallery: jsonb("gallery").$type<string[]>().notNull().default([]),
     thumbnail: text("thumbnail").notNull().default(""),
+    clickCount: integer("click_count").notNull().default(0),
     publishedAt: timestamp("published_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()

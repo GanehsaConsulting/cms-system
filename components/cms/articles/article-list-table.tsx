@@ -58,6 +58,7 @@ export function ArticleListTable({
             sortMap={ARTICLE_TABLE_SORT_MAP}
             onSortChange={onSortChange}
           />
+          <TableHead className={LIST_TABLE_HEAD_CLASS}>Views</TableHead>
           <CmsListTableSortHead
             label="Updated"
             column="updated"

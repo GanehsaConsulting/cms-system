@@ -14,6 +14,9 @@ export function normalizePortfolio(raw: Portfolio): Portfolio {
     description: String(raw.description ?? "").trim(),
     url: String(raw.url ?? "").trim(),
     featured: Boolean(raw.featured),
+    clickCount: Number.isFinite(raw.clickCount)
+      ? Math.max(0, Math.floor(raw.clickCount))
+      : 0,
     createdAt: String(raw.createdAt ?? new Date().toISOString()),
     updatedAt: String(raw.updatedAt ?? new Date().toISOString()),
   };

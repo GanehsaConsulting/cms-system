@@ -4,9 +4,7 @@ import {
   publicJson,
   publicOptionsResponse,
 } from "@/lib/api/public-response";
-import { getArticleBySlug } from "@/lib/db/articles";
-import { verifyPreviewSecret } from "@/lib/preview/verify-preview-secret";
-import { toPublicArticle } from "@/types/public-article";
+import { incrementArticleClick } from "@/lib/db/articles";
 
 export function OPTIONS() {
   return publicOptionsResponse();
@@ -24,26 +22,18 @@ export async function GET(
   }
 
   if (!brandHasFeature(result.brand, "articles")) {
-    return publicError("Articles module is not enabled for this brand", 404);
+    return publicError("Article not found", 404);
   }
 
   const { slug } = await context.params;
-  const article = await getArticleBySlug(
-    result.brand.id,
-    decodeURIComponent(slug),
-  );
 
-  if (!article) {
+  try {
+    const clickCount = await incrementArticleClick(
+      result.brand.id,
+      decodeURIComponent(slug),
+    );
+    return publicJson({ slug: decodeURIComponent(slug), clickCount });
+  } catch {
     return publicError("Article not found", 404);
   }
-
-  const preview = verifyPreviewSecret(request);
-
-  if (!preview && article.status !== "published") {
-    return publicError("Article not found", 404);
-  }
-
-  return publicJson(toPublicArticle(article), {
-    cacheControl: preview ? "private, no-store" : undefined,
-  });
 }

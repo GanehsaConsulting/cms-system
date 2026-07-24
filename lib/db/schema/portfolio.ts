@@ -1,6 +1,7 @@
 import {
   boolean,
   index,
+  integer,
   text,
   timestamp,
 } from "drizzle-orm/pg-core";
@@ -18,6 +19,7 @@ export const portfolio = cmsSchema.table(
     description: text("description").notNull().default(""),
     url: text("url").notNull().default(""),
     featured: boolean("featured").notNull().default(false),
+    clickCount: integer("click_count").notNull().default(0),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull(),

@@ -24,6 +24,11 @@ export function PortfolioDetailTabDetail({
             <PortfolioWorkTypeBadge workType={item.workType} />
           </span>
         </CmsDetailMetaRow>
+        <CmsDetailMetaRow label="Clicks">
+          <span className="tabular-nums">
+            {(item.clickCount ?? 0).toLocaleString("en-US")}
+          </span>
+        </CmsDetailMetaRow>
         <CmsDetailMetaRow
           label="URL"
           stacked={Boolean(item.url)}

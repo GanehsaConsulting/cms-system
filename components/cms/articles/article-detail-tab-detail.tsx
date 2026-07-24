@@ -2,6 +2,7 @@ import { ArticleAuthorAvatar } from "@/components/cms/articles/article-author-av
 import { ArticleCategoryBadge } from "@/components/cms/articles/article-category-badge";
 import { ArticleTagList } from "@/components/cms/articles/article-tag-list";
 import { formatArticleDate } from "@/lib/articles/list";
+import { getArticleReadingTimeMinutes } from "@/lib/articles/reading-time";
 import type { Article } from "@/types/article";
 
 interface ArticleDetailTabDetailProps {
@@ -11,6 +12,11 @@ interface ArticleDetailTabDetailProps {
 export function ArticleDetailTabDetail({
   article,
 }: ArticleDetailTabDetailProps) {
+  const readingTimeMinutes = getArticleReadingTimeMinutes(
+    article.content,
+    article.excerpt,
+  );
+
   return (
     <dl className="mt-4 space-y-4 text-sm">
       <div className="space-y-1.5">
@@ -36,6 +42,20 @@ export function ArticleDetailTabDetail({
         <dt className="text-muted-foreground">Tags</dt>
         <dd>
           <ArticleTagList tags={article.tags} />
+        </dd>
+      </div>
+
+      <div className="space-y-1.5">
+        <dt className="text-muted-foreground">Views</dt>
+        <dd className="tabular-nums">
+          {(article.clickCount ?? 0).toLocaleString("en-US")}
+        </dd>
+      </div>
+
+      <div className="space-y-1.5">
+        <dt className="text-muted-foreground">Reading time</dt>
+        <dd>
+          {readingTimeMinutes === 1 ? "1 min" : `${readingTimeMinutes} min`}
         </dd>
       </div>
 

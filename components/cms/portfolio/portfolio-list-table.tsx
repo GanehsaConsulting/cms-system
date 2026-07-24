@@ -47,6 +47,7 @@ export function PortfolioListTable({
             sortMap={PORTFOLIO_TABLE_SORT_MAP}
             onSortChange={onSortChange}
           />
+          <TableHead className={LIST_TABLE_HEAD_CLASS}>Clicks</TableHead>
           <CmsListTableSortHead
             label="Updated"
             column="updated"

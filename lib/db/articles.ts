@@ -1,7 +1,7 @@
-import { and, desc, eq, isNotNull, lte, ne } from "drizzle-orm";
-import { assertBrandMatch } from "@/lib/brands/content-scope";
+import { and, desc, eq, isNotNull, lte, ne, sql } from "drizzle-orm";
 import { normalizeArticle } from "@/lib/articles/list";
 import { resolveArticleContentImages } from "@/lib/articles/resolve-content-images";
+import { assertBrandMatch } from "@/lib/brands/content-scope";
 import { resolveImageAsset, resolveImageAssets } from "@/lib/cloudinary/assets";
 import { db } from "@/lib/db/client";
 import { articles, user } from "@/lib/db/schema";
@@ -40,6 +40,7 @@ function rowToArticle(
     highlighted: row.highlighted,
     gallery: Array.isArray(row.gallery) ? row.gallery : [],
     thumbnail: row.thumbnail,
+    clickCount: row.clickCount ?? 0,
     publishedAt: toIso(row.publishedAt),
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
@@ -161,6 +162,7 @@ export async function getArticlesList(brandId: string): Promise<Article[]> {
       highlighted: articles.highlighted,
       gallery: articles.gallery,
       thumbnail: articles.thumbnail,
+      clickCount: articles.clickCount,
       publishedAt: articles.publishedAt,
       createdAt: articles.createdAt,
       updatedAt: articles.updatedAt,
@@ -189,6 +191,7 @@ export async function getArticlesList(brandId: string): Promise<Article[]> {
       highlighted: row.highlighted,
       gallery: Array.isArray(row.gallery) ? row.gallery : [],
       thumbnail: row.thumbnail,
+      clickCount: row.clickCount ?? 0,
       publishedAt: toIso(row.publishedAt),
       createdAt: row.createdAt.toISOString(),
       updatedAt: row.updatedAt.toISOString(),
@@ -376,7 +379,10 @@ export async function updateArticle(
   return rowToArticle(row);
 }
 
-export async function deleteArticle(brandId: string, id: string): Promise<void> {
+export async function deleteArticle(
+  brandId: string,
+  id: string,
+): Promise<void> {
   const deleted = await db
     .delete(articles)
     .where(and(eq(articles.id, id), eq(articles.brandId, brandId)))
@@ -385,6 +391,31 @@ export async function deleteArticle(brandId: string, id: string): Promise<void> 
   if (deleted.length === 0) {
     throw new Error("Article not found");
   }
+}
+
+export async function incrementArticleClick(
+  brandId: string,
+  slug: string,
+): Promise<number> {
+  const [row] = await db
+    .update(articles)
+    .set({
+      clickCount: sql`${articles.clickCount} + 1`,
+    })
+    .where(
+      and(
+        eq(articles.brandId, brandId),
+        eq(articles.slug, slug),
+        eq(articles.status, "published"),
+      ),
+    )
+    .returning({ clickCount: articles.clickCount });
+
+  if (!row) {
+    throw new Error("Article not found");
+  }
+
+  return row.clickCount;
 }
 
 /** Ensures a fetched article belongs to the requested brand (public/CMS guards). */

@@ -51,10 +51,12 @@ GET ${CMS_PUBLIC_API_BASE}/brands/{brandId}
 GET ${CMS_PUBLIC_API_BASE}/articles?brandId=
 GET ${CMS_PUBLIC_API_BASE}/articles/{slug}?brandId=
 GET ${CMS_PUBLIC_API_BASE}/articles/{slug}/related?brandId=
+GET ${CMS_PUBLIC_API_BASE}/articles/{slug}/click?brandId=
 GET ${CMS_PUBLIC_API_BASE}/article-categories?brandId=
 \`\`\`
 Query filters: \`highlighted=true|false\`, \`category=\`, \`tag=\`, \`q=\` or \`search=\`, \`sort=\`, \`page=\`, \`limit=\`, \`excludeSlug=\`  
-Detail preview (staging): \`preview=\` or \`Authorization: Bearer\` with \`CMS_PREVIEW_SECRET\`
+Detail preview (staging): \`preview=\` or \`Authorization: Bearer\` with \`CMS_PREVIEW_SECRET\`  
+Click endpoint increments \`clickCount\` (fire when opening an article / card click). List + detail include \`readingTimeMinutes\`.
 
 ### Prices
 \`\`\`
@@ -71,9 +73,11 @@ GET ${CMS_PUBLIC_API_BASE}/clients/{id}?brandId=
 GET ${CMS_PUBLIC_API_BASE}/clients/{id}/portfolio?brandId=
 GET ${CMS_PUBLIC_API_BASE}/portfolio?brandId=
 GET ${CMS_PUBLIC_API_BASE}/portfolio/{id}?brandId=
+GET ${CMS_PUBLIC_API_BASE}/portfolio/{id}/click?brandId=
 \`\`\`
 Clients filters: \`featured=true|false\`, \`q=\`/\`search=\`, \`sort=\`, \`page=\`, \`limit=\`  
-Portfolio filters: \`featured=true|false\`, \`workType=website|social-media\`, \`clientId=\`, \`excludeId=\`, \`q=\`/\`search=\`, \`sort=\`, \`page=\`, \`limit=\`
+Portfolio filters: \`featured=true|false\`, \`workType=website|social-media\`, \`clientId=\`, \`excludeId=\`, \`q=\`/\`search=\`, \`sort=\`, \`page=\`, \`limit=\`  
+Portfolio click endpoint increments \`clickCount\` (fire on card / CTA click).
 
 ### Banners
 \`\`\`
@@ -145,6 +149,7 @@ const ARTICLES_MARKDOWN = `# Articles — Complete Frontend Wiring
 GET ${CMS_PUBLIC_API_BASE}/articles?brandId={brandId}
 GET ${CMS_PUBLIC_API_BASE}/articles/{slug}?brandId={brandId}
 GET ${CMS_PUBLIC_API_BASE}/articles/{slug}/related?brandId={brandId}
+GET ${CMS_PUBLIC_API_BASE}/articles/{slug}/click?brandId={brandId}
 GET ${CMS_PUBLIC_API_BASE}/article-categories?brandId={brandId}
 \`\`\`
 
@@ -159,6 +164,7 @@ ${CMS_PUBLIC_API_BASE}/articles?brandId=gonline&sort=title-asc
 ${CMS_PUBLIC_API_BASE}/articles?brandId=gonline&excludeSlug=my-slug
 ${CMS_PUBLIC_API_BASE}/articles/my-slug?brandId=gonline
 ${CMS_PUBLIC_API_BASE}/articles/my-slug/related?brandId=gonline&limit=3
+${CMS_PUBLIC_API_BASE}/articles/my-slug/click?brandId=gonline
 ${CMS_PUBLIC_API_BASE}/articles/draft-slug?brandId=gonline&preview=YOUR_PREVIEW_SECRET
 ${CMS_PUBLIC_API_BASE}/article-categories?brandId=gonline
 \`\`\`
@@ -234,6 +240,8 @@ interface ArticleSummary {
   highlighted: boolean;
   gallery: string[];
   thumbnail: string;
+  clickCount: number;
+  readingTimeMinutes: number; // estimated from body (~200 wpm); min 1
   publishedAt: string | null;
   createdAt: string;
   updatedAt: string;
@@ -249,6 +257,18 @@ interface ArticleCategory {
   source: "built-in" | "custom";
 }
 \`\`\`
+
+## Click / view tracking
+\`GET .../articles/{slug}/click?brandId=\` — increments \`clickCount\` for **published** articles only.
+
+Fire-and-forget when the user opens an article (detail mount) or clicks a card:
+
+\`\`\`ts
+await fetch(\`${CMS_PUBLIC_API_BASE}/articles/\${slug}/click?brandId=\${brandId}\`);
+// { data: { slug: string; clickCount: number } }
+\`\`\`
+
+\`readingTimeMinutes\` is computed server-side from HTML body (excerpt fallback). Do not recompute on the FE unless you need a custom WPM.
 
 Style category badges on the FE — \`badgeClassName\` is **not** exposed on the public API.
 
@@ -269,6 +289,7 @@ CMS can set \`status: "scheduled"\` with a future \`publishedAt\`. A **cron-job.
 - [ ] Filters: highlighted, category, tag, search, sort, pagination
 - [ ] Hide if brand lacks \`articles\`
 - [ ] Preview only on staging with server-side secret (optional)
+- [ ] Fire \`/articles/{slug}/click\` on article open; show \`readingTimeMinutes\` + \`clickCount\`
 `;
 
 const PRICES_MARKDOWN = `# Prices — Complete Frontend Wiring
@@ -398,6 +419,7 @@ GET ${CMS_PUBLIC_API_BASE}/clients/{id}?brandId={brandId}
 GET ${CMS_PUBLIC_API_BASE}/clients/{id}/portfolio?brandId={brandId}
 GET ${CMS_PUBLIC_API_BASE}/portfolio?brandId={brandId}
 GET ${CMS_PUBLIC_API_BASE}/portfolio/{id}?brandId={brandId}
+GET ${CMS_PUBLIC_API_BASE}/portfolio/{id}/click?brandId={brandId}
 \`\`\`
 
 Examples:
@@ -415,6 +437,7 @@ ${CMS_PUBLIC_API_BASE}/portfolio?brandId=gonline&clientId=client-123
 ${CMS_PUBLIC_API_BASE}/portfolio?brandId=gonline&featured=true&q=landing
 ${CMS_PUBLIC_API_BASE}/portfolio?brandId=gonline&excludeId=work-456
 ${CMS_PUBLIC_API_BASE}/portfolio/work-456?brandId=gonline
+${CMS_PUBLIC_API_BASE}/portfolio/work-456/click?brandId=gonline
 \`\`\`
 
 Feature required: \`clients-works\`
@@ -501,6 +524,7 @@ interface PortfolioSummary {
   coverImage: string;
   url: string;
   featured: boolean;
+  clickCount: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -509,6 +533,14 @@ interface Portfolio extends PortfolioSummary {
   description: string;
   client: ClientRef; // detail endpoint only — embedded client name/logo
 }
+\`\`\`
+
+## Portfolio click tracking
+\`GET .../portfolio/{id}/click?brandId=\` — increments \`clickCount\`.
+
+\`\`\`ts
+await fetch(\`${CMS_PUBLIC_API_BASE}/portfolio/\${id}/click?brandId=\${brandId}\`);
+// { data: { id: string; clickCount: number } }
 \`\`\`
 
 ## CMS production checklist (affects data)
@@ -520,6 +552,7 @@ interface Portfolio extends PortfolioSummary {
 - [ ] Clients list (summaries) + detail
 - [ ] Client portfolio via \`/clients/{id}/portfolio\`
 - [ ] Portfolio list (summaries) + detail with embedded \`client\`
+- [ ] Fire \`/portfolio/{id}/click\` on work card / CTA click
 - [ ] Pagination + featured / workType / clientId / search / sort
 - [ ] Hide if brand lacks \`clients-works\`
 `;

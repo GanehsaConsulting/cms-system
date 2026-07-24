@@ -176,6 +176,9 @@ export function normalizeArticle(article: Article): Article {
     highlighted: article.highlighted ?? false,
     gallery: article.gallery ?? [],
     thumbnail: article.thumbnail ?? "",
+    clickCount: Number.isFinite(article.clickCount)
+      ? Math.max(0, Math.floor(article.clickCount))
+      : 0,
   };
 }
 

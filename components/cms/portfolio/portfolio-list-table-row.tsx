@@ -30,7 +30,7 @@ export function PortfolioListTableRow({
   return (
     <CmsListTableRow isSelected={isSelected} onClick={() => onSelect(item.id)}>
       <TableCell className={LIST_TABLE_CELL_CLASS}>
-        <div className="flex min-w-[220px] items-center gap-3">
+        <div className="flex min-w-55 items-center gap-3">
           <div
             className={cn(
               RADIUS_DEEP,
@@ -64,6 +64,11 @@ export function PortfolioListTableRow({
       </TableCell>
       <TableCell className={LIST_TABLE_CELL_CLASS}>
         <PortfolioFeaturedBadge featured={item.featured} />
+      </TableCell>
+      <TableCell className={LIST_TABLE_CELL_CLASS}>
+        <p className="text-sm tabular-nums">
+          {(item.clickCount ?? 0).toLocaleString("en-US")}
+        </p>
       </TableCell>
       <TableCell className={LIST_TABLE_CELL_CLASS}>
         <div className="text-sm leading-tight">

@@ -74,6 +74,11 @@ export function ArticleListTableRow({
         </div>
       </TableCell>
       <TableCell className={LIST_TABLE_CELL_CLASS}>
+        <p className="text-sm tabular-nums">
+          {(article.clickCount ?? 0).toLocaleString("en-US")}
+        </p>
+      </TableCell>
+      <TableCell className={LIST_TABLE_CELL_CLASS}>
         <div className="text-sm leading-tight">
           <p>{updated.date}</p>
           <p className="text-muted-foreground text-xs">{updated.time}</p>

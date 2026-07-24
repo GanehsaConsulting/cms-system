@@ -12,6 +12,8 @@ export interface Portfolio {
   /** Live project / social URL. */
   url: string;
   featured: boolean;
+  /** Public site clicks (incremented via public click API). */
+  clickCount: number;
   createdAt: string;
   updatedAt: string;
 }

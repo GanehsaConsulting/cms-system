@@ -1,7 +1,7 @@
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import { assertBrandMatch } from "@/lib/brands/content-scope";
-import { getClientById } from "@/lib/db/clients";
 import { db } from "@/lib/db/client";
+import { getClientById } from "@/lib/db/clients";
 import { portfolio } from "@/lib/db/schema";
 import { normalizePortfolio } from "@/lib/portfolio/normalize";
 import type { Portfolio, PortfolioInput } from "@/types/portfolio";
@@ -21,6 +21,7 @@ function rowToPortfolio(row: typeof portfolio.$inferSelect): Portfolio {
     description: row.description,
     url: row.url,
     featured: row.featured,
+    clickCount: row.clickCount ?? 0,
     createdAt: toIso(row.createdAt),
     updatedAt: toIso(row.updatedAt),
   });
@@ -168,4 +169,23 @@ export async function deletePortfolioByClientId(
     .where(
       and(eq(portfolio.brandId, brandId), eq(portfolio.clientId, clientId)),
     );
+}
+
+export async function incrementPortfolioClick(
+  brandId: string,
+  id: string,
+): Promise<number> {
+  const [row] = await db
+    .update(portfolio)
+    .set({
+      clickCount: sql`${portfolio.clickCount} + 1`,
+    })
+    .where(and(eq(portfolio.brandId, brandId), eq(portfolio.id, id)))
+    .returning({ clickCount: portfolio.clickCount });
+
+  if (!row) {
+    throw new Error("Portfolio item not found");
+  }
+
+  return row.clickCount;
 }
