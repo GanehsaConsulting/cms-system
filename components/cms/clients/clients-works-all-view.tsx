@@ -25,8 +25,8 @@ export function ClientsWorksAllView({
     allGroups,
     featuredFilter,
     setFeaturedFilter,
-    portfolioFilter,
-    setPortfolioFilter,
+    contentFilter,
+    setContentFilter,
     search,
     setSearch,
     sort,
@@ -56,25 +56,25 @@ export function ClientsWorksAllView({
       <ClientsWorksAllToolbar
         search={search}
         featuredFilter={featuredFilter}
-        portfolioFilter={portfolioFilter}
+        contentFilter={contentFilter}
         sort={sort}
         hasActiveFilters={hasActiveFilters}
         onSearchChange={setSearch}
         onFeaturedFilterChange={setFeaturedFilter}
-        onPortfolioFilterChange={setPortfolioFilter}
+        onContentFilterChange={setContentFilter}
         onSortChange={setSort}
         onResetFilters={resetFilters}
       />
     );
   }, [
     allGroups.length,
+    contentFilter,
     featuredFilter,
     hasActiveFilters,
-    portfolioFilter,
     resetFilters,
     search,
+    setContentFilter,
     setFeaturedFilter,
-    setPortfolioFilter,
     setSearch,
     setSort,
     sort,

@@ -1,21 +1,34 @@
-import type { ClientFeaturedFilter, ClientListSort } from "@/config/client-list";
+import type { ClientListSort } from "@/config/client-list";
 import { LIST_DEFAULT_PAGE_SIZE } from "@/config/list-table";
 
 export const CLIENTS_WORKS_ALL_PAGE_SIZE = LIST_DEFAULT_PAGE_SIZE;
 
-export type ClientsWorksAllPortfolioFilter =
+/** Contents / portfolio scope on the All tab. */
+export type ClientsWorksAllContentFilter =
   | "all"
+  | "logo"
+  | "logo-only"
+  | "photos"
+  | "testimonials"
+  | "social-media"
+  | "website"
   | "with-works"
   | "without-works";
 
-export interface ClientsWorksAllPortfolioFilterOption {
-  id: ClientsWorksAllPortfolioFilter;
+export interface ClientsWorksAllContentFilterOption {
+  id: ClientsWorksAllContentFilter;
   label: string;
 }
 
-export const CLIENTS_WORKS_ALL_PORTFOLIO_FILTERS: ClientsWorksAllPortfolioFilterOption[] =
+export const CLIENTS_WORKS_ALL_CONTENT_FILTERS: ClientsWorksAllContentFilterOption[] =
   [
-    { id: "all", label: "All clients" },
+    { id: "all", label: "All contents" },
+    { id: "social-media", label: "Social media only" },
+    { id: "website", label: "Website only" },
+    { id: "logo", label: "Has logo" },
+    { id: "logo-only", label: "Logo only" },
+    { id: "photos", label: "Client photos" },
+    { id: "testimonials", label: "Testimonials" },
     { id: "with-works", label: "With portfolio" },
     { id: "without-works", label: "Without portfolio" },
   ];

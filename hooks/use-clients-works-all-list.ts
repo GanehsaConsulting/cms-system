@@ -3,13 +3,11 @@
 import { useEffect, useMemo, useState } from "react";
 import type {
   ClientFeaturedFilter,
+  ClientsWorksAllContentFilter,
   ClientsWorksAllListSort,
-  ClientsWorksAllPortfolioFilter,
 } from "@/config/clients-works-all";
 import { CLIENTS_WORKS_ALL_PAGE_SIZE } from "@/config/clients-works-all";
-import {
-  groupClientsWithWorks,
-} from "@/lib/clients/group-with-works";
+import { groupClientsWithWorks } from "@/lib/clients/group-with-works";
 import {
   filterClientsWorksAllGroups,
   sortClientsWorksAllGroups,
@@ -24,8 +22,8 @@ export function useClientsWorksAllList(
 ) {
   const [featuredFilter, setFeaturedFilter] =
     useState<ClientFeaturedFilter>("all");
-  const [portfolioFilter, setPortfolioFilter] =
-    useState<ClientsWorksAllPortfolioFilter>("all");
+  const [contentFilter, setContentFilter] =
+    useState<ClientsWorksAllContentFilter>("all");
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<ClientsWorksAllListSort>("updated-desc");
   const [page, setPage] = useState(1);
@@ -44,12 +42,12 @@ export function useClientsWorksAllList(
         filterClientsWorksAllGroups(
           allGroups,
           featuredFilter,
-          portfolioFilter,
+          contentFilter,
           search,
         ),
         sort,
       ),
-    [allGroups, featuredFilter, portfolioFilter, search, sort],
+    [allGroups, featuredFilter, contentFilter, search, sort],
   );
 
   const pagination = useMemo(
@@ -62,11 +60,13 @@ export function useClientsWorksAllList(
 
   const hasActiveFilters =
     featuredFilter !== "all" ||
-    portfolioFilter !== "all" ||
+    contentFilter !== "all" ||
     search.trim().length > 0 ||
     sort !== "updated-desc";
 
-  const withWorksCount = groups.filter((group) => group.works.length > 0).length;
+  const withWorksCount = groups.filter(
+    (group) => group.works.length > 0,
+  ).length;
   const portfolioCount = groups.reduce(
     (total, group) => total + group.works.length,
     0,
@@ -75,7 +75,7 @@ export function useClientsWorksAllList(
   useEffect(() => {
     setPage(1);
     setPanelDismissed(false);
-  }, [featuredFilter, portfolioFilter, search, sort, pageSize]);
+  }, [featuredFilter, contentFilter, search, sort, pageSize]);
 
   useEffect(() => {
     setPanelDismissed(false);
@@ -111,7 +111,7 @@ export function useClientsWorksAllList(
 
   function resetFilters() {
     setFeaturedFilter("all");
-    setPortfolioFilter("all");
+    setContentFilter("all");
     setSearch("");
     setSort("updated-desc");
     setPage(1);
@@ -123,8 +123,8 @@ export function useClientsWorksAllList(
     groups,
     featuredFilter,
     setFeaturedFilter,
-    portfolioFilter,
-    setPortfolioFilter,
+    contentFilter,
+    setContentFilter,
     search,
     setSearch,
     sort,

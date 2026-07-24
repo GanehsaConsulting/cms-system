@@ -41,8 +41,8 @@ export const PORTFOLIO_WORK_TYPE_FILTERS: {
   label: string;
 }[] = [
   { id: "all", label: "All types" },
-  { id: "social-media", label: "Social media" },
-  { id: "website", label: "Website" },
+  { id: "social-media", label: "Social media only" },
+  { id: "website", label: "Website only" },
 ];
 
 export const PORTFOLIO_LIST_SORT_OPTIONS: {

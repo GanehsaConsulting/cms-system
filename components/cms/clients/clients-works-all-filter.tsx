@@ -11,11 +11,11 @@ import {
 } from "@/components/ui/select";
 import {
   CLIENT_FEATURED_FILTERS,
-  CLIENTS_WORKS_ALL_PORTFOLIO_FILTERS,
+  CLIENTS_WORKS_ALL_CONTENT_FILTERS,
   CLIENTS_WORKS_ALL_SORT_OPTIONS,
   type ClientFeaturedFilter,
+  type ClientsWorksAllContentFilter,
   type ClientsWorksAllListSort,
-  type ClientsWorksAllPortfolioFilter,
 } from "@/config/clients-works-all";
 import {
   LIST_FILTER_FIELD_CLASS,
@@ -25,22 +25,22 @@ import { toSelectItems } from "@/lib/select-items";
 
 interface ClientsWorksAllFilterProps {
   featuredFilter: ClientFeaturedFilter;
-  portfolioFilter: ClientsWorksAllPortfolioFilter;
+  contentFilter: ClientsWorksAllContentFilter;
   sort: ClientsWorksAllListSort;
   hasActiveFilters: boolean;
   onFeaturedFilterChange: (filter: ClientFeaturedFilter) => void;
-  onPortfolioFilterChange: (filter: ClientsWorksAllPortfolioFilter) => void;
+  onContentFilterChange: (filter: ClientsWorksAllContentFilter) => void;
   onSortChange: (sort: ClientsWorksAllListSort) => void;
   onReset: () => void;
 }
 
 export function ClientsWorksAllFilter({
   featuredFilter,
-  portfolioFilter,
+  contentFilter,
   sort,
   hasActiveFilters,
   onFeaturedFilterChange,
-  onPortfolioFilterChange,
+  onContentFilterChange,
   onSortChange,
   onReset,
 }: ClientsWorksAllFilterProps) {
@@ -70,19 +70,19 @@ export function ClientsWorksAllFilter({
         </div>
 
         <div className={LIST_FILTER_FIELD_CLASS}>
-          <Label htmlFor="all-portfolio-filter">Portfolio</Label>
+          <Label htmlFor="all-content-filter">Contents</Label>
           <Select
-            value={portfolioFilter}
-            items={toSelectItems(CLIENTS_WORKS_ALL_PORTFOLIO_FILTERS)}
+            value={contentFilter}
+            items={toSelectItems(CLIENTS_WORKS_ALL_CONTENT_FILTERS)}
             onValueChange={(value) =>
-              onPortfolioFilterChange(value as ClientsWorksAllPortfolioFilter)
+              onContentFilterChange(value as ClientsWorksAllContentFilter)
             }
           >
-            <SelectTrigger id="all-portfolio-filter" className="w-full">
+            <SelectTrigger id="all-content-filter" className="w-full">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {CLIENTS_WORKS_ALL_PORTFOLIO_FILTERS.map((option) => (
+              {CLIENTS_WORKS_ALL_CONTENT_FILTERS.map((option) => (
                 <SelectItem key={option.id} value={option.id}>
                   {option.label}
                 </SelectItem>

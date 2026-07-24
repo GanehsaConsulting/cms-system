@@ -1,10 +1,12 @@
 import type {
   ClientFeaturedFilter,
+  ClientsWorksAllContentFilter,
   ClientsWorksAllListSort,
-  ClientsWorksAllPortfolioFilter,
 } from "@/config/clients-works-all";
+import { isClientLogoOnly } from "@/lib/clients/content-kinds";
 import type { ClientWithWorks } from "@/lib/clients/group-with-works";
 import { getClientSearchText } from "@/lib/clients/list";
+import { hasClientLogo } from "@/lib/clients/logo";
 
 function getGroupSearchText(group: ClientWithWorks) {
   return [
@@ -20,39 +22,76 @@ function getGroupSearchText(group: ClientWithWorks) {
     .toLowerCase();
 }
 
+function matchesContentFilter(
+  group: ClientWithWorks,
+  contentFilter: ClientsWorksAllContentFilter,
+): ClientWithWorks | null {
+  const { client, works } = group;
+
+  switch (contentFilter) {
+    case "logo":
+      return hasClientLogo(client.logo) ? group : null;
+    case "logo-only":
+      return isClientLogoOnly(client, works) ? group : null;
+    case "photos":
+      return client.photos.some((photo) => photo.url.trim()) ? group : null;
+    case "testimonials":
+      return client.testimonials.length > 0 ? group : null;
+    case "social-media": {
+      const filteredWorks = works.filter(
+        (work) => work.workType === "social-media",
+      );
+      return filteredWorks.length > 0 ? { client, works: filteredWorks } : null;
+    }
+    case "website": {
+      const filteredWorks = works.filter((work) => work.workType === "website");
+      return filteredWorks.length > 0 ? { client, works: filteredWorks } : null;
+    }
+    case "with-works":
+      return works.length > 0 ? group : null;
+    case "without-works":
+      return works.length === 0 ? group : null;
+    default:
+      return group;
+  }
+}
+
 export function filterClientsWorksAllGroups(
   groups: ClientWithWorks[],
   featured: ClientFeaturedFilter,
-  portfolioFilter: ClientsWorksAllPortfolioFilter,
+  contentFilter: ClientsWorksAllContentFilter,
   query: string,
 ) {
   const normalizedQuery = query.trim().toLowerCase();
+  const next: ClientWithWorks[] = [];
 
-  return groups.filter((group) => {
-    const { client, works } = group;
+  for (const group of groups) {
+    const { client } = group;
 
     if (featured === "featured" && !client.featured) {
-      return false;
+      continue;
     }
 
     if (featured === "standard" && client.featured) {
-      return false;
+      continue;
     }
 
-    if (portfolioFilter === "with-works" && works.length === 0) {
-      return false;
+    const matched = matchesContentFilter(group, contentFilter);
+    if (!matched) {
+      continue;
     }
 
-    if (portfolioFilter === "without-works" && works.length > 0) {
-      return false;
+    if (
+      normalizedQuery &&
+      !getGroupSearchText(matched).includes(normalizedQuery)
+    ) {
+      continue;
     }
 
-    if (!normalizedQuery) {
-      return true;
-    }
+    next.push(matched);
+  }
 
-    return getGroupSearchText(group).includes(normalizedQuery);
-  });
+  return next;
 }
 
 export function sortClientsWorksAllGroups(
@@ -83,7 +122,6 @@ export function sortClientsWorksAllGroups(
           new Date(leftClient.updatedAt).getTime() -
           new Date(rightClient.updatedAt).getTime()
         );
-      case "updated-desc":
       default:
         return (
           new Date(rightClient.updatedAt).getTime() -

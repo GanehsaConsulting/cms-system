@@ -3,22 +3,22 @@
 import { ClientsWorksAllFilter } from "@/components/cms/clients/clients-works-all-filter";
 import { ClientsWorksAllSearch } from "@/components/cms/clients/clients-works-all-search";
 import { ClientsWorksNewDataButton } from "@/components/cms/clients/clients-works-new-data-button";
-import { LIST_TOOLBAR_CLASS } from "@/config/list-toolbar";
 import type {
   ClientFeaturedFilter,
+  ClientsWorksAllContentFilter,
   ClientsWorksAllListSort,
-  ClientsWorksAllPortfolioFilter,
 } from "@/config/clients-works-all";
+import { LIST_TOOLBAR_CLASS } from "@/config/list-toolbar";
 
 interface ClientsWorksAllToolbarProps {
   search: string;
   featuredFilter: ClientFeaturedFilter;
-  portfolioFilter: ClientsWorksAllPortfolioFilter;
+  contentFilter: ClientsWorksAllContentFilter;
   sort: ClientsWorksAllListSort;
   hasActiveFilters: boolean;
   onSearchChange: (value: string) => void;
   onFeaturedFilterChange: (filter: ClientFeaturedFilter) => void;
-  onPortfolioFilterChange: (filter: ClientsWorksAllPortfolioFilter) => void;
+  onContentFilterChange: (filter: ClientsWorksAllContentFilter) => void;
   onSortChange: (sort: ClientsWorksAllListSort) => void;
   onResetFilters: () => void;
 }
@@ -26,12 +26,12 @@ interface ClientsWorksAllToolbarProps {
 export function ClientsWorksAllToolbar({
   search,
   featuredFilter,
-  portfolioFilter,
+  contentFilter,
   sort,
   hasActiveFilters,
   onSearchChange,
   onFeaturedFilterChange,
-  onPortfolioFilterChange,
+  onContentFilterChange,
   onSortChange,
   onResetFilters,
 }: ClientsWorksAllToolbarProps) {
@@ -39,11 +39,11 @@ export function ClientsWorksAllToolbar({
     <div className={LIST_TOOLBAR_CLASS}>
       <ClientsWorksAllFilter
         featuredFilter={featuredFilter}
-        portfolioFilter={portfolioFilter}
+        contentFilter={contentFilter}
         sort={sort}
         hasActiveFilters={hasActiveFilters}
         onFeaturedFilterChange={onFeaturedFilterChange}
-        onPortfolioFilterChange={onPortfolioFilterChange}
+        onContentFilterChange={onContentFilterChange}
         onSortChange={onSortChange}
         onReset={onResetFilters}
       />
