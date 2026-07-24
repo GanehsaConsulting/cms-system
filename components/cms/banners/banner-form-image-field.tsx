@@ -2,7 +2,9 @@
 
 import Image from "next/image";
 import { useRef, useState } from "react";
-import { PlusIcon, TrashIcon, UploadSimpleIcon } from "@/lib/icons";
+import { TrashIcon, UploadSimpleIcon } from "@/lib/icons";
+import { BannerFormImageAddMenu } from "@/components/cms/banners/banner-form-image-add-menu";
+import { CmsImagePickerDialog } from "@/components/shared/cms-image-picker-dialog";
 import { useCmsImagePreview } from "@/components/shared/cms-image-preview-provider";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -12,6 +14,7 @@ import {
   GALLERY_ACCEPT_ATTRIBUTE,
   readGalleryImageFile,
 } from "@/lib/articles/gallery";
+import type { CmsImagePickerTab } from "@/types/cms-image-picker";
 import { cn } from "@/lib/utils";
 
 export interface BannerFormImageChangeMeta {
@@ -33,8 +36,11 @@ export function BannerFormImageField({
   const inputRef = useRef<HTMLInputElement>(null);
   const [localError, setLocalError] = useState<string | null>(null);
   const [isReading, setIsReading] = useState(false);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [pickerTab, setPickerTab] = useState<CmsImagePickerTab>("shared");
   const { openPreview } = useCmsImagePreview();
   const canAddMore = value.length < BANNER_LIMITS.maxImages;
+  const remainingSlots = BANNER_LIMITS.maxImages - value.length;
   const uploadDisabled = disabled || isReading || !canAddMore;
 
   async function addFiles(fileList: FileList | File[]) {
@@ -47,7 +53,6 @@ export function BannerFormImageField({
 
     try {
       const files = Array.from(fileList);
-      const remainingSlots = BANNER_LIMITS.maxImages - value.length;
       const nextFiles = files.slice(0, remainingSlots);
       const nextImages: string[] = [];
 
@@ -69,10 +74,33 @@ export function BannerFormImageField({
     }
   }
 
+  function addUrls(
+    urls: string[],
+    meta?: { addedFileNames: string[] },
+  ) {
+    const unique = urls
+      .map((url) => url.trim())
+      .filter((url) => url.length > 0 && !value.includes(url))
+      .slice(0, remainingSlots);
+
+    if (unique.length === 0) {
+      return;
+    }
+
+    onChange([...value, ...unique], {
+      addedFileNames: meta?.addedFileNames?.slice(0, unique.length) ?? [],
+    });
+  }
+
   function removeImage(index: number) {
     onChange(value.filter((_, itemIndex) => itemIndex !== index), {
       addedFileNames: [],
     });
+  }
+
+  function openPicker(tab: CmsImagePickerTab) {
+    setPickerTab(tab);
+    setPickerOpen(true);
   }
 
   return (
@@ -156,22 +184,12 @@ export function BannerFormImageField({
           ))}
 
           {canAddMore ? (
-            <button
-              type="button"
+            <BannerFormImageAddMenu
               disabled={uploadDisabled}
-              onClick={() => inputRef.current?.click()}
-              className={cn(
-                RADIUS_DEEP,
-                "flex aspect-4/3 flex-col items-center justify-center gap-1 border border-dashed border-black/15 text-muted-foreground transition-colors",
-                "hover:border-black/25 hover:bg-black/3 hover:text-foreground",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
-                "dark:border-white/18 dark:hover:border-white/28 dark:hover:bg-white/6",
-                "disabled:pointer-events-none disabled:opacity-50",
-              )}
-            >
-              <PlusIcon className="size-4" />
-              <span className="text-[10px]">Add</span>
-            </button>
+              onUpload={() => inputRef.current?.click()}
+              onLibrary={() => openPicker("shared")}
+              onUrl={() => openPicker("url")}
+            />
           ) : null}
         </div>
       ) : (
@@ -195,7 +213,25 @@ export function BannerFormImageField({
               disabled={uploadDisabled}
               onClick={() => inputRef.current?.click()}
             >
-              Upload images
+              Upload
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={uploadDisabled}
+              onClick={() => openPicker("shared")}
+            >
+              Library
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={uploadDisabled}
+              onClick={() => openPicker("url")}
+            >
+              URL
             </Button>
           </div>
         </div>
@@ -204,6 +240,15 @@ export function BannerFormImageField({
       {localError ? (
         <p className="text-destructive text-xs">{localError}</p>
       ) : null}
+
+      <CmsImagePickerDialog
+        open={pickerOpen}
+        onOpenChange={setPickerOpen}
+        existingUrls={value}
+        maxSelectable={remainingSlots}
+        initialTab={pickerTab}
+        onAdd={addUrls}
+      />
     </div>
   );
 }

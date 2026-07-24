@@ -6,4 +6,4 @@ export const BANNER_LIMITS = {
 } as const;
 
 export const BANNER_IMAGE_UPLOAD_HINT =
-  "PNG, JPG, or WebP. Add multiple images for a carousel on the public site.";
+  "Upload from device, pick Shared / In use media, or paste a URL. Multiple images become a carousel.";
