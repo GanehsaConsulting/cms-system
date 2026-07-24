@@ -1,15 +1,14 @@
 "use client";
 
-import Image from "next/image";
-import { XIcon } from "@/lib/icons";
 import { ClientDetailTabDetail } from "@/components/cms/clients/client-detail-tab-detail";
 import { ClientFeaturedBadge } from "@/components/cms/clients/client-featured-badge";
 import { ClientsWorksAllDetailPanelActions } from "@/components/cms/clients/clients-works-all-detail-panel-actions";
 import { ClientsWorksAllDetailWorks } from "@/components/cms/clients/clients-works-all-detail-works";
+import { ClientsWorksAllMediaStack } from "@/components/cms/clients/clients-works-all-media-stack";
 import { Button } from "@/components/ui/button";
-import { RADIUS_DEEP } from "@/config/shape";
 import type { ClientWithWorks } from "@/lib/clients/group-with-works";
-import { cn } from "@/lib/utils";
+import { getClientAllMediaUrls } from "@/lib/clients/preview";
+import { XIcon } from "@/lib/icons";
 
 interface ClientsWorksAllDetailPanelProps {
   group: ClientWithWorks;
@@ -21,31 +20,18 @@ export function ClientsWorksAllDetailPanel({
   onClose,
 }: ClientsWorksAllDetailPanelProps) {
   const { client, works } = group;
+  const mediaUrls = getClientAllMediaUrls(client, works);
 
   return (
     <aside className="flex min-h-0 w-full flex-1 flex-col overflow-hidden">
       <div className="flex items-start justify-between gap-3 border-(--separator) border-b p-4">
         <div className="flex min-w-0 items-start gap-3">
-          <div
-            className={cn(
-              RADIUS_DEEP,
-              "relative flex size-11 shrink-0 items-center justify-center overflow-hidden bg-white/45 dark:bg-white/10",
-            )}
-          >
-            {client.logo ? (
-              <Image
-                src={client.logo}
-                alt=""
-                fill
-                unoptimized
-                className="object-contain p-1.5"
-              />
-            ) : (
-              <span className="font-medium text-muted-foreground text-sm">
-                {client.name.slice(0, 1).toUpperCase() || "?"}
-              </span>
-            )}
-          </div>
+          <ClientsWorksAllMediaStack
+            images={mediaUrls}
+            title={client.name}
+            size="md"
+            fallbackLabel={client.name}
+          />
           <div className="min-w-0 space-y-2">
             <p className="font-medium text-[11px] text-muted-foreground uppercase tracking-wide">
               Detail
