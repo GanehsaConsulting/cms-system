@@ -3,6 +3,7 @@ import { ClientsListView } from "@/components/cms/clients/clients-list-view";
 import { CmsListBodySkeleton } from "@/components/skeletons/cms-list-body-skeleton";
 import { SECTION_BODY_PADDING } from "@/config/spacing";
 import { requireCmsNavHref } from "@/lib/brands/require-cms-nav";
+import { filterClientsForPhotosTab } from "@/lib/clients/content-kinds";
 import { getClients } from "@/lib/db/clients";
 import { cn } from "@/lib/utils";
 
@@ -28,6 +29,14 @@ export default function ClientsListPage() {
 async function ClientsListContent() {
   const brand = await requireCmsNavHref("/clients");
   const clients = await getClients(brand.id);
+  const photoClients = filterClientsForPhotosTab(clients);
 
-  return <ClientsListView clients={clients} />;
+  return (
+    <ClientsListView
+      clients={photoClients}
+      previewMode="photo"
+      emptyTitle="No client photos yet"
+      emptyDescription="Add gallery photos on a client profile. They appear here for the active brand."
+    />
+  );
 }

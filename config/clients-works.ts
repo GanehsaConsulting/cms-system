@@ -2,9 +2,8 @@ import type { PortfolioWorkType } from "@/types/portfolio";
 
 export const CLIENTS_WORKS_TABS = [
   { id: "all", label: "All", href: "/clients" },
-  { id: "clients", label: "Clients", href: "/clients/clients" },
+  { id: "clients", label: "Client Photos", href: "/clients/clients" },
   { id: "logos", label: "Logos", href: "/clients/logos" },
-  { id: "photos", label: "Client Photo", href: "/clients/photos" },
   { id: "portfolio", label: "Portfolio", href: "/clients/portfolio" },
 ] as const;
 
@@ -13,10 +12,6 @@ export type ClientsWorksTabId = (typeof CLIENTS_WORKS_TABS)[number]["id"];
 export function getClientsWorksActiveTab(pathname: string): ClientsWorksTabId {
   if (pathname.startsWith("/clients/portfolio")) {
     return "portfolio";
-  }
-
-  if (pathname.startsWith("/clients/photos")) {
-    return "photos";
   }
 
   if (pathname.startsWith("/clients/logos")) {

@@ -34,6 +34,7 @@ async function ClientsLogosContent() {
   return (
     <ClientsListView
       clients={logoClients}
+      previewMode="logo"
       emptyTitle="No client logos yet"
       emptyDescription="Add a logo on a client profile. The public marquee uses logos whose URL includes /company_logos/."
     />

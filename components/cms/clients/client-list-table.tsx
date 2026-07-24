@@ -9,12 +9,14 @@ import {
   type ClientListSort,
 } from "@/config/client-list";
 import { LIST_TABLE_HEAD_CLASS } from "@/config/list-table";
+import type { ClientListPreviewMode } from "@/lib/clients/preview";
 import type { Client } from "@/types/client";
 
 interface ClientListTableProps {
   clients: Client[];
   selectedId: string | null;
   sort: ClientListSort;
+  previewMode?: ClientListPreviewMode;
   onSelect: (id: string) => void;
   onSortChange: (sort: ClientListSort) => void;
 }
@@ -23,6 +25,7 @@ export function ClientListTable({
   clients,
   selectedId,
   sort,
+  previewMode = "auto",
   onSelect,
   onSortChange,
 }: ClientListTableProps) {
@@ -64,6 +67,7 @@ export function ClientListTable({
           key={client.id}
           client={client}
           isSelected={selectedId === client.id}
+          previewMode={previewMode}
           onSelect={onSelect}
         />
       ))}

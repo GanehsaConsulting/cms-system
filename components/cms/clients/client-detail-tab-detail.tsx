@@ -1,16 +1,22 @@
+import { ClientDetailLogoPreview } from "@/components/cms/clients/client-detail-logo-preview";
 import { ClientFeaturedBadge } from "@/components/cms/clients/client-featured-badge";
 import { CmsDetailMetaGroup } from "@/components/shared/cms-detail-meta-group";
 import { CmsDetailMetaRow } from "@/components/shared/cms-detail-meta-row";
 import { formatClientDate } from "@/lib/clients/list";
+import type { ClientListPreviewMode } from "@/lib/clients/preview";
 import type { Client } from "@/types/client";
 
 interface ClientDetailTabDetailProps {
   client: Client;
+  previewMode?: ClientListPreviewMode;
 }
 
-export function ClientDetailTabDetail({ client }: ClientDetailTabDetailProps) {
+export function ClientDetailTabDetail({
+  client,
+  previewMode = "auto",
+}: ClientDetailTabDetailProps) {
   return (
-    <div className="space-y-4">
+    <div className={previewMode === "photo" ? "mt-4 space-y-4" : "space-y-4"}>
       <CmsDetailMetaGroup label="Overview">
         <CmsDetailMetaRow label="Website" stacked={Boolean(client.website)}>
           {client.website ? (
@@ -31,8 +37,18 @@ export function ClientDetailTabDetail({ client }: ClientDetailTabDetailProps) {
             <ClientFeaturedBadge featured={client.featured} />
           </span>
         </CmsDetailMetaRow>
-        <CmsDetailMetaRow label="Logo" showDivider={false}>
-          {client.logo ? "Uploaded" : "—"}
+        <CmsDetailMetaRow
+          label="Logo"
+          stacked={previewMode === "logo" && Boolean(client.logo)}
+          showDivider={false}
+        >
+          {previewMode === "logo" && client.logo ? (
+            <ClientDetailLogoPreview logo={client.logo} title={client.name} />
+          ) : client.logo ? (
+            "Uploaded"
+          ) : (
+            "—"
+          )}
         </CmsDetailMetaRow>
       </CmsDetailMetaGroup>
 

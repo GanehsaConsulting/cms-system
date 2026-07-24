@@ -9,29 +9,36 @@ import { LIST_TABLE_CELL_CLASS } from "@/config/list-table";
 import { RADIUS_DEEP } from "@/config/shape";
 import { formatClientDateParts } from "@/lib/clients/list";
 import { isCompanyLogoIcon } from "@/lib/clients/logo";
-import type { Client } from "@/types/client";
+import {
+  type ClientListPreviewMode,
+  getClientListPreview,
+} from "@/lib/clients/preview";
 import { cn } from "@/lib/utils";
+import type { Client } from "@/types/client";
 
 interface ClientListTableRowProps {
   client: Client;
   isSelected: boolean;
+  previewMode?: ClientListPreviewMode;
   onSelect: (id: string) => void;
 }
 
 export function ClientListTableRow({
   client,
   isSelected,
+  previewMode = "auto",
   onSelect,
 }: ClientListTableRowProps) {
   const updated = formatClientDateParts(client.updatedAt);
-  const marqueeReady = isCompanyLogoIcon(client.logo);
-  const thumbUrl =
-    client.logo.trim() ||
-    client.photos.find((photo) => photo.url.trim())?.url ||
-    "";
+  const marqueeReady =
+    previewMode !== "photo" && isCompanyLogoIcon(client.logo);
+  const preview = getClientListPreview(client, previewMode);
 
   return (
-    <CmsListTableRow isSelected={isSelected} onClick={() => onSelect(client.id)}>
+    <CmsListTableRow
+      isSelected={isSelected}
+      onClick={() => onSelect(client.id)}
+    >
       <TableCell className={LIST_TABLE_CELL_CLASS}>
         <div className="flex min-w-55 items-center gap-3">
           <div
@@ -40,14 +47,16 @@ export function ClientListTableRow({
               "relative flex size-9 shrink-0 items-center justify-center overflow-hidden bg-muted",
             )}
           >
-            {thumbUrl ? (
+            {preview.url ? (
               <Image
-                src={thumbUrl}
+                src={preview.url}
                 alt=""
                 fill
                 unoptimized
                 className={
-                  client.logo.trim() ? "object-contain p-1" : "object-cover"
+                  preview.fit === "contain"
+                    ? "object-contain p-1"
+                    : "object-cover"
                 }
               />
             ) : (

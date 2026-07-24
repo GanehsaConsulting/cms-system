@@ -8,17 +8,20 @@ import { ClientsWorksNewDataButton } from "@/components/cms/clients/clients-work
 import { CmsPageHeaderActions } from "@/components/shared/cms-page-header-actions";
 import { CMS_FLEX_CHILD, SECTION_BODY_PADDING } from "@/config/spacing";
 import { useClientsList } from "@/hooks/use-clients-list";
+import type { ClientListPreviewMode } from "@/lib/clients/preview";
 import { cn } from "@/lib/utils";
 import type { Client } from "@/types/client";
 
 interface ClientsListViewProps {
   clients: Client[];
+  previewMode?: ClientListPreviewMode;
   emptyTitle?: string;
   emptyDescription?: string;
 }
 
 export function ClientsListView({
   clients,
+  previewMode = "auto",
   emptyTitle,
   emptyDescription,
 }: ClientsListViewProps) {
@@ -98,6 +101,7 @@ export function ClientsListView({
           rangeStart={pagination.rangeStart}
           rangeEnd={pagination.rangeEnd}
           sort={sort}
+          previewMode={previewMode}
           onSelect={selectClient}
           onClosePanel={closePanel}
           onPageChange={setPage}

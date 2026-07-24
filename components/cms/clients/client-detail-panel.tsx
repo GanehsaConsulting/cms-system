@@ -1,37 +1,53 @@
 "use client";
 
 import Image from "next/image";
-import { XIcon } from "@/lib/icons";
-import { ActivityLogPanel } from "@/components/shared/activity-log-panel";
-import { useCmsImagePreview } from "@/components/shared/cms-image-preview-provider";
 import { ClientDetailPanelActions } from "@/components/cms/clients/client-detail-panel-actions";
+import { ClientDetailPhotosPreview } from "@/components/cms/clients/client-detail-photos-preview";
 import { ClientDetailTabDetail } from "@/components/cms/clients/client-detail-tab-detail";
 import { ClientFeaturedBadge } from "@/components/cms/clients/client-featured-badge";
+import { ActivityLogPanel } from "@/components/shared/activity-log-panel";
+import { useCmsImagePreview } from "@/components/shared/cms-image-preview-provider";
 import { Button } from "@/components/ui/button";
 import { RADIUS_DEEP } from "@/config/shape";
-import type { Client } from "@/types/client";
+import { isCompanyLogoIcon } from "@/lib/clients/logo";
+import {
+  type ClientListPreviewMode,
+  getClientListPreview,
+} from "@/lib/clients/preview";
+import { XIcon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
+import type { Client } from "@/types/client";
 
 interface ClientDetailPanelProps {
   client: Client;
+  previewMode?: ClientListPreviewMode;
   onClose: () => void;
 }
 
-export function ClientDetailPanel({ client, onClose }: ClientDetailPanelProps) {
+export function ClientDetailPanel({
+  client,
+  previewMode = "auto",
+  onClose,
+}: ClientDetailPanelProps) {
   const { openPreview } = useCmsImagePreview();
+  const preview = getClientListPreview(client, previewMode);
+  const marqueeReady =
+    previewMode !== "photo" && isCompanyLogoIcon(client.logo);
+  const previewAriaLabel =
+    previewMode === "photo" ? "Preview client photo" : "Preview logo";
 
   return (
     <aside className="flex min-h-0 w-full flex-1 flex-col overflow-hidden">
       <div className="flex items-start justify-between gap-3 border-(--separator) border-b p-4">
         <div className="flex min-w-0 items-start gap-3">
-          {client.logo ? (
+          {preview.url ? (
             <button
               type="button"
-              aria-label="Preview logo"
+              aria-label={previewAriaLabel}
               onClick={() =>
                 openPreview({
-                  images: [client.logo],
-                  title: client.name,
+                  images: preview.previewImages,
+                  title: preview.previewTitle,
                 })
               }
               className={cn(
@@ -41,11 +57,15 @@ export function ClientDetailPanel({ client, onClose }: ClientDetailPanelProps) {
               )}
             >
               <Image
-                src={client.logo}
+                src={preview.url}
                 alt=""
                 fill
                 unoptimized
-                className="object-contain p-1.5"
+                className={
+                  preview.fit === "contain"
+                    ? "object-contain p-1.5"
+                    : "object-cover"
+                }
               />
             </button>
           ) : (
@@ -67,7 +87,14 @@ export function ClientDetailPanel({ client, onClose }: ClientDetailPanelProps) {
             <h2 className="line-clamp-2 font-semibold text-sm leading-snug">
               {client.name}
             </h2>
-            <ClientFeaturedBadge featured={client.featured} />
+            <div className="flex flex-wrap items-center gap-2">
+              <ClientFeaturedBadge featured={client.featured} />
+              {marqueeReady ? (
+                <span className="rounded-md bg-sky-500/15 px-1.5 py-0.5 font-medium text-[10px] text-sky-700 dark:text-sky-300">
+                  Marquee
+                </span>
+              ) : null}
+            </div>
           </div>
         </div>
         <Button
@@ -83,7 +110,13 @@ export function ClientDetailPanel({ client, onClose }: ClientDetailPanelProps) {
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto p-4">
-        <ClientDetailTabDetail client={client} />
+        {previewMode === "photo" ? (
+          <ClientDetailPhotosPreview
+            images={preview.previewImages}
+            title={client.name}
+          />
+        ) : null}
+        <ClientDetailTabDetail client={client} previewMode={previewMode} />
         <ActivityLogPanel
           entityType="client"
           entityId={client.id}

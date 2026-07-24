@@ -6,6 +6,7 @@ import { CmsListPagination } from "@/components/shared/cms-list-pagination";
 import { GlassSurface } from "@/components/shared/glass-surface";
 import type { ClientListSort } from "@/config/client-list";
 import { CMS_FLEX_CHILD, CMS_SCROLL_REGION } from "@/config/spacing";
+import type { ClientListPreviewMode } from "@/lib/clients/preview";
 import type { Client } from "@/types/client";
 import { cn } from "@/lib/utils";
 
@@ -20,6 +21,7 @@ interface ClientsListWorkspaceProps {
   rangeStart: number;
   rangeEnd: number;
   sort: ClientListSort;
+  previewMode?: ClientListPreviewMode;
   onSelect: (id: string) => void;
   onClosePanel: () => void;
   onPageChange: (page: number) => void;
@@ -39,6 +41,7 @@ export function ClientsListWorkspace({
   rangeStart,
   rangeEnd,
   sort,
+  previewMode = "auto",
   onSelect,
   onClosePanel,
   onPageChange,
@@ -62,6 +65,7 @@ export function ClientsListWorkspace({
                 clients={clients}
                 selectedId={selectedId}
                 sort={sort}
+                previewMode={previewMode}
                 onSelect={onSelect}
                 onSortChange={onSortChange}
               />
@@ -90,7 +94,11 @@ export function ClientsListWorkspace({
 
       {selectedClient ? (
         <GlassSurface className="hidden min-h-0 w-[24rem] shrink-0 flex-col overflow-hidden lg:flex">
-          <ClientDetailPanel client={selectedClient} onClose={onClosePanel} />
+          <ClientDetailPanel
+            client={selectedClient}
+            previewMode={previewMode}
+            onClose={onClosePanel}
+          />
         </GlassSurface>
       ) : null}
     </div>
