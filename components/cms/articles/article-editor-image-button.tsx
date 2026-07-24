@@ -107,7 +107,13 @@ export function ArticleEditorImageButton({
           {text ? <span className="tiptap-button-text">{text}</span> : null}
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="min-w-44">
-          <DropdownMenuItem onClick={source.openUpload} className="gap-2">
+          <DropdownMenuItem
+            className="gap-2"
+            onPointerDown={(event) => {
+              event.preventDefault();
+              source.openUpload();
+            }}
+          >
             <UploadSimpleIcon className="size-3.5" />
             {CMS_IMAGE_SOURCE_LABELS.uploadFromDevice}
           </DropdownMenuItem>

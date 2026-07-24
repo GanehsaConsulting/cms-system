@@ -1,10 +1,14 @@
 "use client";
 
-import { useCallback, useId, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import {
   GALLERY_ACCEPT_ATTRIBUTE,
   readGalleryImageFile,
 } from "@/lib/articles/gallery";
+import {
+  markNativeFilePickerClosed,
+  markNativeFilePickerOpen,
+} from "@/lib/cms/native-file-picker";
 import type { CmsImagePickerTab } from "@/types/cms-image-picker";
 
 export interface CmsImageSourceAddMeta {
@@ -39,6 +43,7 @@ export function useCmsImageSource({
   const generatedId = useId();
   const inputId = inputIdProp ?? `cms-image-source-${generatedId}`;
   const inputRef = useRef<HTMLInputElement>(null);
+  const pickerSessionRef = useRef(false);
   const [localError, setLocalError] = useState<string | null>(null);
   const [isReading, setIsReading] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -47,6 +52,27 @@ export function useCmsImageSource({
   const allowMultiple = multiple ?? maxSelectable > 1;
   const canAdd = maxSelectable > 0 && !disabled;
   const busy = disabled || isReading || !canAdd;
+
+  useEffect(() => {
+    function endPickerSession() {
+      if (!pickerSessionRef.current) {
+        return;
+      }
+      pickerSessionRef.current = false;
+      markNativeFilePickerClosed();
+    }
+
+    function handleWindowFocus() {
+      // OS file dialog closed (selected or cancelled).
+      window.setTimeout(endPickerSession, 0);
+    }
+
+    window.addEventListener("focus", handleWindowFocus);
+    return () => {
+      window.removeEventListener("focus", handleWindowFocus);
+      endPickerSession();
+    };
+  }, []);
 
   const addUrls = useCallback(
     (urls: string[], meta?: CmsImageSourceAddMeta) => {
@@ -73,11 +99,16 @@ export function useCmsImageSource({
         return;
       }
 
+      // Snapshot immediately — FileList is live and clears with input.value = "".
+      const files = Array.from(fileList).slice(0, maxSelectable);
+      if (files.length === 0) {
+        return;
+      }
+
       setLocalError(null);
       setIsReading(true);
 
       try {
-        const files = Array.from(fileList).slice(0, maxSelectable);
         const nextImages: string[] = [];
         const names: string[] = [];
 
@@ -100,11 +131,26 @@ export function useCmsImageSource({
     [addUrls, canAdd, maxSelectable, readFile],
   );
 
+  function beginNativeFilePicker() {
+    if (pickerSessionRef.current) {
+      return;
+    }
+    pickerSessionRef.current = true;
+    markNativeFilePickerOpen();
+  }
+
   function openUpload() {
     if (busy) {
       return;
     }
-    inputRef.current?.click();
+    const input = inputRef.current;
+    if (!input) {
+      return;
+    }
+
+    beginNativeFilePicker();
+    // Open synchronously while still inside the user gesture (menu/button click).
+    input.click();
   }
 
   function openPicker(tab: CmsImagePickerTab) {
@@ -124,9 +170,16 @@ export function useCmsImageSource({
   }
 
   function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const files = event.target.files;
+    // Copy before clearing — clearing empties the live FileList.
+    const files = event.target.files ? Array.from(event.target.files) : [];
     event.target.value = "";
-    if (files?.length) {
+
+    if (pickerSessionRef.current) {
+      pickerSessionRef.current = false;
+      markNativeFilePickerClosed();
+    }
+
+    if (files.length > 0) {
       void addFiles(files);
     }
   }
@@ -137,6 +190,7 @@ export function useCmsImageSource({
     accept,
     allowMultiple,
     maxSelectable,
+    disabled,
     localError,
     setLocalError,
     isReading,

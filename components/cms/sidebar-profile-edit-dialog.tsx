@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { CmsUser } from "@/config/cms-user";
 import { DIALOG_FORM_CLASS } from "@/config/dialog";
+import { shouldIgnoreDialogCloseForFilePicker } from "@/lib/cms/native-file-picker";
 import {
   type CmsProfileFormValues,
   cmsProfileFormSchema,
@@ -66,8 +67,24 @@ export function SidebarProfileEditDialog({
     onOpenChange(false);
   }
 
+  function handleOpenChange(
+    nextOpen: boolean,
+    eventDetails?: { reason?: string },
+  ) {
+    if (!nextOpen) {
+      if (eventDetails?.reason === "focus-out") {
+        return;
+      }
+      if (shouldIgnoreDialogCloseForFilePicker(eventDetails?.reason)) {
+        return;
+      }
+    }
+
+    onOpenChange(nextOpen);
+  }
+
   return (
-    <CmsDialog open={open} onOpenChange={onOpenChange}>
+    <CmsDialog open={open} onOpenChange={handleOpenChange}>
       <CmsDialogContent showCloseButton size="sm" className="flex flex-col">
         <CmsDialogHeader>
           <CmsDialogTitle>Edit profile</CmsDialogTitle>

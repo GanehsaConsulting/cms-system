@@ -18,7 +18,8 @@ export function CmsImageSourceInfra({ source }: CmsImageSourceInfraProps) {
         accept={source.accept}
         multiple={source.allowMultiple}
         className="sr-only"
-        disabled={source.busy}
+        // Do not tie to isReading — disabling mid-gesture can cancel the OS picker.
+        disabled={source.disabled || !source.canAdd}
         onChange={source.handleInputChange}
       />
       <CmsImagePickerDialog

@@ -34,6 +34,7 @@ import {
 } from "@/config/user";
 import { DIALOG_FORM_CLASS } from "@/config/dialog";
 import { createUserAction, updateUserAction } from "@/lib/actions/users";
+import { shouldIgnoreDialogCloseForFilePicker } from "@/lib/cms/native-file-picker";
 import { notifyError, notifySuccess } from "@/lib/notify/action-toast";
 import { toSelectItems } from "@/lib/select-items";
 import { generateUserPassword } from "@/lib/users/password";
@@ -104,9 +105,21 @@ export function UserFormDialog({
     setCreatedCredentials(null);
   }, [brands, open, user]);
 
-  function handleOpenChange(nextOpen: boolean) {
+  function handleOpenChange(
+    nextOpen: boolean,
+    eventDetails?: { reason?: string },
+  ) {
     if (isPending) {
       return;
+    }
+
+    if (!nextOpen) {
+      if (eventDetails?.reason === "focus-out") {
+        return;
+      }
+      if (shouldIgnoreDialogCloseForFilePicker(eventDetails?.reason)) {
+        return;
+      }
     }
 
     onOpenChange(nextOpen);

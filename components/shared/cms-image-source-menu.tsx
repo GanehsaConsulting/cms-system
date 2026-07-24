@@ -79,7 +79,14 @@ export function CmsImageSourceMenu({
         )}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="min-w-44">
-        <DropdownMenuItem onClick={onUpload} className="gap-2">
+        <DropdownMenuItem
+          className="gap-2"
+          onPointerDown={(event) => {
+            // Open the file picker during the same gesture, before the menu unmounts.
+            event.preventDefault();
+            onUpload();
+          }}
+        >
           <UploadSimpleIcon className="size-3.5" />
           {CMS_IMAGE_SOURCE_LABELS.uploadFromDevice}
         </DropdownMenuItem>

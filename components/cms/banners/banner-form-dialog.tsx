@@ -31,6 +31,7 @@ import {
 import { getBannerImages } from "@/lib/banners/images";
 import { bannerKeyFromImageFileName } from "@/lib/banners/key-from-image";
 import { notifyError, notifySuccess } from "@/lib/notify/action-toast";
+import { shouldIgnoreDialogCloseForFilePicker } from "@/lib/cms/native-file-picker";
 import {
   buildWhatsAppUrl,
   extractWhatsAppMessage,
@@ -149,10 +150,15 @@ export function BannerFormDialog({
       return;
     }
 
-    // Native file picker steals focus; closing here would unmount the form
-    // before the selected file is applied.
-    if (!nextOpen && eventDetails?.reason === "focus-out") {
-      return;
+    // Native file picker steals focus / outside press; closing would unmount
+    // the input before the selected file is applied.
+    if (!nextOpen) {
+      if (eventDetails?.reason === "focus-out") {
+        return;
+      }
+      if (shouldIgnoreDialogCloseForFilePicker(eventDetails?.reason)) {
+        return;
+      }
     }
 
     onOpenChange(nextOpen);
