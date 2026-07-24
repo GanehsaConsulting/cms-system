@@ -9,24 +9,21 @@ import { CMS_IMAGE_SOURCE_HINT } from "@/config/cms-image-source";
 import { useCmsImageSource } from "@/hooks/use-cms-image-source";
 import { TrashIcon } from "@/lib/icons";
 
-interface UserFormPhotoFieldProps {
+interface SidebarProfilePhotoControlProps {
   value: string;
-  nameFallback: string;
-  disabled?: boolean;
-  onChange: (avatarUrl: string) => void;
+  displayName: string;
+  onChange: (value: string) => void;
 }
 
-export function UserFormPhotoField({
+export function SidebarProfilePhotoControl({
   value,
-  nameFallback,
-  disabled = false,
+  displayName,
   onChange,
-}: UserFormPhotoFieldProps) {
+}: SidebarProfilePhotoControlProps) {
   const source = useCmsImageSource({
     existingUrls: value ? [value] : [],
     maxSelectable: 1,
     multiple: false,
-    disabled,
     onAdd: (urls) => onChange(urls[0] ?? ""),
   });
 
@@ -35,7 +32,7 @@ export function UserFormPhotoField({
       <Label>Profile photo</Label>
       <div className="flex items-center gap-3">
         <SidebarProfileAvatar
-          name={nameFallback}
+          name={displayName}
           avatarUrl={value || undefined}
           size="lg"
         />
@@ -68,7 +65,7 @@ export function UserFormPhotoField({
             ) : null}
           </div>
           <p className="text-muted-foreground text-xs leading-relaxed">
-            {CMS_IMAGE_SOURCE_HINT} Shown in the user list and profile areas.
+            {CMS_IMAGE_SOURCE_HINT} Shown in the sidebar and profile dialog.
           </p>
           {source.localError ? (
             <p className="text-destructive text-xs">{source.localError}</p>

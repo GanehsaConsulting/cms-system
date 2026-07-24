@@ -1,20 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useState } from "react";
 import { TrashIcon, UploadSimpleIcon } from "@/lib/icons";
-import { BannerFormImageAddMenu } from "@/components/cms/banners/banner-form-image-add-menu";
-import { CmsImagePickerDialog } from "@/components/shared/cms-image-picker-dialog";
+import { CmsImageSourceActions } from "@/components/shared/cms-image-source-actions";
+import { CmsImageSourceInfra } from "@/components/shared/cms-image-source-infra";
+import { CmsImageSourceMenu } from "@/components/shared/cms-image-source-menu";
 import { useCmsImagePreview } from "@/components/shared/cms-image-preview-provider";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { BANNER_IMAGE_UPLOAD_HINT, BANNER_LIMITS } from "@/config/banner";
 import { RADIUS_DEEP } from "@/config/shape";
-import {
-  GALLERY_ACCEPT_ATTRIBUTE,
-  readGalleryImageFile,
-} from "@/lib/articles/gallery";
-import type { CmsImagePickerTab } from "@/types/cms-image-picker";
+import { useCmsImageSource } from "@/hooks/use-cms-image-source";
 import { cn } from "@/lib/utils";
 
 export interface BannerFormImageChangeMeta {
@@ -33,80 +28,30 @@ export function BannerFormImageField({
   disabled = false,
   onChange,
 }: BannerFormImageFieldProps) {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [localError, setLocalError] = useState<string | null>(null);
-  const [isReading, setIsReading] = useState(false);
-  const [pickerOpen, setPickerOpen] = useState(false);
-  const [pickerTab, setPickerTab] = useState<CmsImagePickerTab>("shared");
   const { openPreview } = useCmsImagePreview();
-  const canAddMore = value.length < BANNER_LIMITS.maxImages;
   const remainingSlots = BANNER_LIMITS.maxImages - value.length;
-  const uploadDisabled = disabled || isReading || !canAddMore;
 
-  async function addFiles(fileList: FileList | File[]) {
-    if (!canAddMore) {
-      return;
-    }
-
-    setLocalError(null);
-    setIsReading(true);
-
-    try {
-      const files = Array.from(fileList);
-      const nextFiles = files.slice(0, remainingSlots);
-      const nextImages: string[] = [];
-
-      for (const file of nextFiles) {
-        nextImages.push(await readGalleryImageFile(file));
-      }
-
-      onChange([...value, ...nextImages], {
-        addedFileNames: nextFiles.map((file) => file.name),
-      });
-    } catch (uploadError) {
-      setLocalError(
-        uploadError instanceof Error
-          ? uploadError.message
-          : "Failed to upload image.",
-      );
-    } finally {
-      setIsReading(false);
-    }
-  }
-
-  function addUrls(
-    urls: string[],
-    meta?: { addedFileNames: string[] },
-  ) {
-    const unique = urls
-      .map((url) => url.trim())
-      .filter((url) => url.length > 0 && !value.includes(url))
-      .slice(0, remainingSlots);
-
-    if (unique.length === 0) {
-      return;
-    }
-
-    onChange([...value, ...unique], {
-      addedFileNames: meta?.addedFileNames?.slice(0, unique.length) ?? [],
-    });
-  }
+  const source = useCmsImageSource({
+    existingUrls: value,
+    maxSelectable: remainingSlots,
+    disabled,
+    inputId: "banner-images",
+    onAdd: (urls, meta) => {
+      onChange([...value, ...urls], meta);
+    },
+  });
 
   function removeImage(index: number) {
-    onChange(value.filter((_, itemIndex) => itemIndex !== index), {
-      addedFileNames: [],
-    });
-  }
-
-  function openPicker(tab: CmsImagePickerTab) {
-    setPickerTab(tab);
-    setPickerOpen(true);
+    onChange(
+      value.filter((_, itemIndex) => itemIndex !== index),
+      { addedFileNames: [] },
+    );
   }
 
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between gap-2">
-        <Label htmlFor="banner-images">Images</Label>
+        <Label htmlFor={source.inputId}>Images</Label>
         <span className="text-muted-foreground text-[11px] tabular-nums">
           {value.length}/{BANNER_LIMITS.maxImages}
         </span>
@@ -114,22 +59,8 @@ export function BannerFormImageField({
       <p className="text-muted-foreground text-[11px] leading-relaxed">
         {BANNER_IMAGE_UPLOAD_HINT}
       </p>
-      <input
-        ref={inputRef}
-        id="banner-images"
-        type="file"
-        accept={GALLERY_ACCEPT_ATTRIBUTE}
-        multiple
-        className="sr-only"
-        disabled={uploadDisabled}
-        onChange={(event) => {
-          const files = event.target.files;
-          event.target.value = "";
-          if (files?.length) {
-            void addFiles(files);
-          }
-        }}
-      />
+
+      <CmsImageSourceInfra source={source} />
 
       {value.length > 0 ? (
         <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
@@ -164,7 +95,7 @@ export function BannerFormImageField({
               <button
                 type="button"
                 aria-label={`Remove image ${index + 1}`}
-                disabled={disabled || isReading}
+                disabled={disabled || source.isReading}
                 onClick={() => removeImage(index)}
                 className={cn(
                   "absolute top-1 right-1 z-10 flex size-6 items-center justify-center rounded-full",
@@ -183,12 +114,12 @@ export function BannerFormImageField({
             </div>
           ))}
 
-          {canAddMore ? (
-            <BannerFormImageAddMenu
-              disabled={uploadDisabled}
-              onUpload={() => inputRef.current?.click()}
-              onLibrary={() => openPicker("shared")}
-              onUrl={() => openPicker("url")}
+          {source.canAdd ? (
+            <CmsImageSourceMenu
+              disabled={source.busy}
+              onUpload={source.openUpload}
+              onLibrary={source.openLibrary}
+              onUrl={source.openUrl}
             />
           ) : null}
         </div>
@@ -204,51 +135,18 @@ export function BannerFormImageField({
           >
             <UploadSimpleIcon className="size-5 text-muted-foreground" />
           </div>
-
-          <div className="flex min-w-0 flex-1 flex-wrap gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              disabled={uploadDisabled}
-              onClick={() => inputRef.current?.click()}
-            >
-              Upload
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              disabled={uploadDisabled}
-              onClick={() => openPicker("shared")}
-            >
-              Library
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              disabled={uploadDisabled}
-              onClick={() => openPicker("url")}
-            >
-              URL
-            </Button>
-          </div>
+          <CmsImageSourceActions
+            disabled={source.busy}
+            onUpload={source.openUpload}
+            onLibrary={source.openLibrary}
+            onUrl={source.openUrl}
+          />
         </div>
       )}
 
-      {localError ? (
-        <p className="text-destructive text-xs">{localError}</p>
+      {source.localError ? (
+        <p className="text-destructive text-xs">{source.localError}</p>
       ) : null}
-
-      <CmsImagePickerDialog
-        open={pickerOpen}
-        onOpenChange={setPickerOpen}
-        existingUrls={value}
-        maxSelectable={remainingSlots}
-        initialTab={pickerTab}
-        onAdd={addUrls}
-      />
     </div>
   );
 }

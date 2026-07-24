@@ -1,3 +1,5 @@
+import { CMS_IMAGE_SOURCE_HINT } from "@/config/cms-image-source";
+
 export const CLIENT_FORM_LIMITS = {
   name: 120,
   website: 300,
@@ -12,8 +14,6 @@ export const CLIENT_FORM_LIMITS = {
   maxImageSizeMb: 2,
 } as const;
 
-export const CLIENT_LOGO_UPLOAD_HINT =
-  "Optional. Square logo works best. Max 2 MB (JPG, PNG, WebP).";
+export const CLIENT_LOGO_UPLOAD_HINT = `Optional. Square logo works best. ${CMS_IMAGE_SOURCE_HINT}`;
 
-export const CLIENT_GALLERY_UPLOAD_HINT =
-  "Optional. Upload up to 24 photos (JPG, PNG, WebP). Max 2 MB each.";
+export const CLIENT_GALLERY_UPLOAD_HINT = `Optional. Up to 24 photos. ${CMS_IMAGE_SOURCE_HINT}`;

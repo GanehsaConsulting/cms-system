@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useState } from "react";
 import type {
   Control,
   UseFieldArrayAppend,
@@ -9,7 +8,10 @@ import type {
   UseFormWatch,
 } from "react-hook-form";
 import { Controller } from "react-hook-form";
-import { PlusIcon, TrashIcon, UploadSimpleIcon } from "@/lib/icons";
+import { TrashIcon, UploadSimpleIcon } from "@/lib/icons";
+import { CmsImageSourceActions } from "@/components/shared/cms-image-source-actions";
+import { CmsImageSourceInfra } from "@/components/shared/cms-image-source-infra";
+import { CmsImageSourceMenu } from "@/components/shared/cms-image-source-menu";
 import { useCmsImagePreview } from "@/components/shared/cms-image-preview-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,10 +21,7 @@ import {
   CLIENT_GALLERY_UPLOAD_HINT,
 } from "@/config/client-form";
 import { RADIUS_DEEP } from "@/config/shape";
-import {
-  GALLERY_ACCEPT_ATTRIBUTE,
-  readGalleryImageFile,
-} from "@/lib/articles/gallery";
+import { useCmsImageSource } from "@/hooks/use-cms-image-source";
 import type { ClientFormValues } from "@/lib/validations/client";
 import { cn } from "@/lib/utils";
 
@@ -41,64 +40,29 @@ export function ClientFormGallerySection({
   append,
   remove,
 }: ClientFormGallerySectionProps) {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [localError, setLocalError] = useState<string | null>(null);
-  const [isReading, setIsReading] = useState(false);
   const { openPreview } = useCmsImagePreview();
   const photos = watch("photos");
   const remaining = CLIENT_FORM_LIMITS.maxPhotos - fields.length;
+  const existingUrls = photos.map((photo) => photo.url).filter(Boolean);
 
-  async function handleFiles(fileList: FileList | null) {
-    if (!fileList || fileList.length === 0) {
-      return;
-    }
-
-    setLocalError(null);
-    setIsReading(true);
-
-    try {
-      const files = Array.from(fileList).slice(0, Math.max(remaining, 0));
-
-      for (const file of files) {
-        const url = await readGalleryImageFile(file);
+  const source = useCmsImageSource({
+    existingUrls,
+    maxSelectable: Math.max(remaining, 0),
+    onAdd: (urls) => {
+      for (const url of urls) {
         append({
           id: crypto.randomUUID(),
           url,
           caption: "",
         });
       }
-
-      if (fileList.length > remaining) {
-        setLocalError(
-          `Only ${CLIENT_FORM_LIMITS.maxPhotos} photos are allowed per client.`,
-        );
-      }
-    } catch (uploadError) {
-      setLocalError(
-        uploadError instanceof Error
-          ? uploadError.message
-          : "Failed to upload photo.",
-      );
-    } finally {
-      setIsReading(false);
-    }
-  }
+    },
+  });
 
   if (fields.length === 0) {
     return (
       <div className="space-y-3">
-        <input
-          ref={inputRef}
-          type="file"
-          accept={GALLERY_ACCEPT_ATTRIBUTE}
-          multiple
-          className="sr-only"
-          disabled={isReading}
-          onChange={(event) => {
-            void handleFiles(event.target.files);
-            event.target.value = "";
-          }}
-        />
+        <CmsImageSourceInfra source={source} />
         <div
           className={cn(
             RADIUS_DEEP,
@@ -110,18 +74,18 @@ export function ClientFormGallerySection({
           <p className="mt-1 max-w-sm text-muted-foreground text-sm">
             {CLIENT_GALLERY_UPLOAD_HINT}
           </p>
-          <Button
-            type="button"
-            className="mt-4 gap-1.5"
-            disabled={isReading}
-            onClick={() => inputRef.current?.click()}
-          >
-            <PlusIcon className="size-3.5" />
-            Upload Photo
-          </Button>
+          <div className="mt-4">
+            <CmsImageSourceActions
+              disabled={source.busy}
+              uploadLabel="Upload"
+              onUpload={source.openUpload}
+              onLibrary={source.openLibrary}
+              onUrl={source.openUrl}
+            />
+          </div>
         </div>
-        {localError ? (
-          <p className="text-destructive text-xs">{localError}</p>
+        {source.localError ? (
+          <p className="text-destructive text-xs">{source.localError}</p>
         ) : null}
       </div>
     );
@@ -129,18 +93,7 @@ export function ClientFormGallerySection({
 
   return (
     <div className="space-y-3">
-      <input
-        ref={inputRef}
-        type="file"
-        accept={GALLERY_ACCEPT_ATTRIBUTE}
-        multiple
-        className="sr-only"
-        disabled={isReading || remaining <= 0}
-        onChange={(event) => {
-          void handleFiles(event.target.files);
-          event.target.value = "";
-        }}
-      />
+      <CmsImageSourceInfra source={source} />
 
       <div className="grid gap-3 sm:grid-cols-2">
         {fields.map((field, index) => (
@@ -201,20 +154,18 @@ export function ClientFormGallerySection({
       </div>
 
       {remaining > 0 ? (
-        <Button
-          type="button"
-          variant="outline"
-          className="gap-1.5"
-          disabled={isReading}
-          onClick={() => inputRef.current?.click()}
-        >
-          <PlusIcon className="size-3.5" />
-          Upload Photo
-        </Button>
+        <CmsImageSourceMenu
+          variant="button"
+          buttonLabel="Add photo"
+          disabled={source.busy}
+          onUpload={source.openUpload}
+          onLibrary={source.openLibrary}
+          onUrl={source.openUrl}
+        />
       ) : null}
 
-      {localError ? (
-        <p className="text-destructive text-xs">{localError}</p>
+      {source.localError ? (
+        <p className="text-destructive text-xs">{source.localError}</p>
       ) : null}
     </div>
   );

@@ -45,11 +45,11 @@ export const GALLERY_ACCEPTED_EXTENSIONS = ARTICLE_IMAGE_ACCEPTED_EXTENSIONS;
 
 export const GALLERY_INPUT_ID = "article-gallery-upload";
 
-export const GALLERY_UPLOAD_HINT = `Optional. Upload up to 12 images (${ARTICLE_IMAGE_FORMATS_LABEL}). Max 2 MB each.`;
+export const GALLERY_UPLOAD_HINT = `Optional. Up to 12 images (${ARTICLE_IMAGE_FORMATS_LABEL}). Upload from device, Library, or URL.`;
 
 /** Average adult reading speed for English copy. */
 export const ARTICLE_READING_WPM = 200;
 
 export const ARTICLE_SITE_BASE_URL = "https://yoursite.com/";
 
-export const THUMBNAIL_UPLOAD_HINT = `Recommended size: 1200 × 675 px (16:9). Max 2 MB (${ARTICLE_IMAGE_FORMATS_LABEL}).`;
+export const THUMBNAIL_UPLOAD_HINT = `Recommended size: 1200 × 675 px (16:9). Upload from device, Library, or URL.`;
