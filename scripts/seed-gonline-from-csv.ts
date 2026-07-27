@@ -376,7 +376,6 @@ async function main() {
 
   for (const work of workRows) {
     const name = (work.CompanyName || work.BrandName || "").trim();
-    const logo = (work.ImagePreview ?? "").trim();
     if (!name) {
       clientsSkipped += 1;
       continue;
@@ -399,20 +398,14 @@ async function main() {
 
     const created = await createClient(brandId, {
       name,
-      logo,
+      // Website preview belongs to portfolio.coverImage, not client.logo.
+      logo: "",
       website: (work.Link ?? "").trim(),
       description,
       featured: false,
       testimonials: [],
-      photos: logo
-        ? [
-            {
-              id: crypto.randomUUID(),
-              url: logo,
-              caption: (work.BrandName || name).trim(),
-            },
-          ]
-        : [],
+      // ImagePreview belongs to portfolio.coverImage, not client gallery photos.
+      photos: [],
     });
     clientIdByCompany.set(key, created.id);
     clientsInserted += 1;
