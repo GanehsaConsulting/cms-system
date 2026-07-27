@@ -20,17 +20,20 @@ import type { Banner } from "@/types/banner";
 
 interface BannerRowActionsMenuProps {
   banner: Banner;
+  canDeleteBanner?: boolean;
   onEdit: (banner: Banner) => void;
 }
 
 export function BannerRowActionsMenu({
   banner,
+  canDeleteBanner = false,
   onEdit,
 }: BannerRowActionsMenuProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const { requestConfirm, confirmDialog } = useConfirmDialog(isPending);
-  const canDelete = !isRequiredBannerPlacementKey(banner.key);
+  const canDelete =
+    canDeleteBanner && !isRequiredBannerPlacementKey(banner.key);
 
   function handleDelete() {
     const confirmation = BANNER_ACTION_CONFIRMATIONS.delete(banner.name);

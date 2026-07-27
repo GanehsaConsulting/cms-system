@@ -16,6 +16,7 @@ const BULK_HEAD = cn(LIST_TABLE_BULK_HEAD_CLASS, "h-10 px-2.5");
 
 interface TrashListTableProps {
   items: TrashListItem[];
+  canPurgePermanently?: boolean;
   bulkSelectedKeys: Set<string>;
   isAllBulkSelected: boolean;
   isBulkIndeterminate: boolean;
@@ -25,6 +26,7 @@ interface TrashListTableProps {
 
 export function TrashListTable({
   items,
+  canPurgePermanently = false,
   bulkSelectedKeys,
   isAllBulkSelected,
   isBulkIndeterminate,
@@ -59,6 +61,7 @@ export function TrashListTable({
           <TrashListRow
             key={key}
             entry={entry}
+            canPurgePermanently={canPurgePermanently}
             isBulkSelected={bulkSelectedKeys.has(key)}
             onToggleBulk={() => onToggleBulk(key)}
           />

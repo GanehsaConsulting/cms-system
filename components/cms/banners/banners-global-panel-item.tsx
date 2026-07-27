@@ -10,11 +10,13 @@ import { cn } from "@/lib/utils";
 
 interface BannersGlobalPanelItemProps {
   banner: Banner;
+  canDeleteBanner?: boolean;
   onEdit: (banner: Banner) => void;
 }
 
 export function BannersGlobalPanelItem({
   banner,
+  canDeleteBanner = false,
   onEdit,
 }: BannersGlobalPanelItemProps) {
   const { openPreview } = useCmsImagePreview();
@@ -94,7 +96,11 @@ export function BannersGlobalPanelItem({
         </div>
       </button>
 
-      <BannerRowActionsMenu banner={banner} onEdit={onEdit} />
+      <BannerRowActionsMenu
+        banner={banner}
+        canDeleteBanner={canDeleteBanner}
+        onEdit={onEdit}
+      />
     </div>
   );
 }

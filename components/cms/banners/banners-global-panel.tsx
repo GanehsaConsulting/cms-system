@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 
 interface BannersGlobalPanelProps {
   banners: Banner[];
+  canDeleteBanner?: boolean;
   onEdit: (banner: Banner) => void;
   onAddPlacement: () => void;
   className?: string;
@@ -16,6 +17,7 @@ interface BannersGlobalPanelProps {
 
 export function BannersGlobalPanel({
   banners,
+  canDeleteBanner = false,
   onEdit,
   onAddPlacement,
   className,
@@ -41,6 +43,7 @@ export function BannersGlobalPanel({
               <BannersGlobalPanelItem
                 key={banner.id}
                 banner={banner}
+                canDeleteBanner={canDeleteBanner}
                 onEdit={onEdit}
               />
             ))}

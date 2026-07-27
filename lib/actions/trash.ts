@@ -56,6 +56,7 @@ import {
 } from "@/lib/db/prices";
 import { revalidateMediaLibraryCache } from "@/lib/media/cache";
 import { getCurrentCmsUser } from "@/lib/users/current";
+import { isSuperAdmin } from "@/lib/users/permissions";
 import { requireCmsContentAccess } from "@/lib/users/require-content-access";
 import type { TrashKind } from "@/types/trash";
 
@@ -85,6 +86,22 @@ async function requireTrashAccess() {
   }
 
   return { ok: true as const, user: access.user, brandId: brand.brandId };
+}
+
+async function requireTrashPurgeAccess() {
+  const access = await requireTrashAccess();
+  if (!access.ok) {
+    return access;
+  }
+
+  if (!isSuperAdmin(access.user)) {
+    return {
+      ok: false as const,
+      error: "Only Super Admin can permanently delete trash items.",
+    };
+  }
+
+  return access;
 }
 
 export async function restoreTrashItemAction(kind: TrashKind, id: string) {
@@ -285,7 +302,7 @@ export async function restoreTrashItemAction(kind: TrashKind, id: string) {
 }
 
 export async function purgeTrashItemAction(kind: TrashKind, id: string) {
-  const access = await requireTrashAccess();
+  const access = await requireTrashPurgeAccess();
   if (!access.ok) {
     return { success: false as const, error: access.error };
   }
@@ -518,6 +535,11 @@ export async function restoreTrashItemsAction(
 export async function purgeTrashItemsAction(
   items: Array<{ kind: TrashKind; id: string }>,
 ) {
+  const access = await requireTrashPurgeAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
   const unique = dedupeTrashItems(items);
   if (unique.length === 0) {
     return { success: false as const, error: "No items selected." };
@@ -561,7 +583,7 @@ function dedupeTrashItems(items: Array<{ kind: TrashKind; id: string }>) {
 }
 
 export async function emptyTrashAction() {
-  const access = await requireTrashAccess();
+  const access = await requireTrashPurgeAccess();
   if (!access.ok) {
     return { success: false as const, error: access.error };
   }

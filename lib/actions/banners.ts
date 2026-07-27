@@ -12,6 +12,7 @@ import {
 import { revalidateMediaLibraryCache } from "@/lib/media/cache";
 import { bannerSchema } from "@/lib/validations/banner";
 import { requireCmsContentAccess } from "@/lib/users/require-content-access";
+import { requireSuperAdminAccess } from "@/lib/users/require-super-admin";
 
 function revalidateBannerPaths() {
   revalidatePath("/banners");
@@ -128,9 +129,9 @@ export async function updateBannerAction(id: string, formData: FormData) {
 }
 
 export async function deleteBannerAction(id: string) {
-  const access = await requireCmsContentAccess();
-  if (!access.ok) {
-    return { success: false as const, error: access.error };
+  const superAdmin = await requireSuperAdminAccess();
+  if (!superAdmin.ok) {
+    return { success: false as const, error: superAdmin.error };
   }
 
   const brand = await requireCmsActiveBrandId();
@@ -147,7 +148,7 @@ export async function deleteBannerAction(id: string) {
         entityType: "banner",
         entityId: id,
         action: "deleted",
-        actor: access.user,
+        actor: superAdmin.user,
         entityTitle: current.name,
       });
     }

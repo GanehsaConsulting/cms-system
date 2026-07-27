@@ -41,12 +41,14 @@ const BULK_CELL = cn(LIST_TABLE_BULK_CELL_CLASS, "px-2.5 py-2.5");
 
 interface TrashListRowProps {
   entry: TrashListItem;
+  canPurgePermanently?: boolean;
   isBulkSelected: boolean;
   onToggleBulk: () => void;
 }
 
 export function TrashListRow({
   entry,
+  canPurgePermanently = false,
   isBulkSelected,
   onToggleBulk,
 }: TrashListRowProps) {
@@ -197,17 +199,19 @@ export function TrashListRow({
             >
               <ArrowCounterclockwiseIcon className="size-3.5" />
             </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="size-7 text-destructive hover:text-destructive"
-              disabled={isPending}
-              aria-label={`Delete ${entry.title} forever`}
-              onClick={handlePurge}
-            >
-              <TrashIcon className="size-3.5" />
-            </Button>
+            {canPurgePermanently ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="size-7 text-destructive hover:text-destructive"
+                disabled={isPending}
+                aria-label={`Delete ${entry.title} forever`}
+                onClick={handlePurge}
+              >
+                <TrashIcon className="size-3.5" />
+              </Button>
+            ) : null}
           </div>
         </TableCell>
       </tr>

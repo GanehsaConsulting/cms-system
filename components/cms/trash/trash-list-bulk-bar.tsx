@@ -19,12 +19,14 @@ import {
 
 interface TrashListBulkBarProps {
   selectedKeys: string[];
+  canPurgePermanently?: boolean;
   onClear: () => void;
 }
 
 /** Footer bulk bar — always visible; actions enable when selection is non-empty. */
 export function TrashListBulkBar({
   selectedKeys,
+  canPurgePermanently = false,
   onClear,
 }: TrashListBulkBarProps) {
   const router = useRouter();
@@ -111,15 +113,17 @@ export function TrashListBulkBar({
           <ArrowCounterclockwiseIcon className="size-3.5" />
           Restore selected
         </Button>
-        <CmsDeleteButton
-          type="button"
-          className="h-8"
-          disabled={!hasSelection || isPending}
-          onClick={handlePurge}
-        >
-          <TrashIcon className="size-3.5" />
-          Delete selected
-        </CmsDeleteButton>
+        {canPurgePermanently ? (
+          <CmsDeleteButton
+            type="button"
+            className="h-8"
+            disabled={!hasSelection || isPending}
+            onClick={handlePurge}
+          >
+            <TrashIcon className="size-3.5" />
+            Delete selected
+          </CmsDeleteButton>
+        ) : null}
       </div>
 
       {confirmDialog}

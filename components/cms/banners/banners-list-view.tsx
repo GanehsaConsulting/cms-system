@@ -15,9 +15,13 @@ import { cn } from "@/lib/utils";
 
 interface BannersListViewProps {
   banners: Banner[];
+  canDeleteBanner?: boolean;
 }
 
-export function BannersListView({ banners }: BannersListViewProps) {
+export function BannersListView({
+  banners,
+  canDeleteBanner = false,
+}: BannersListViewProps) {
   const router = useRouter();
   const [formOpen, setFormOpen] = useState(false);
   const [editingBanner, setEditingBanner] = useState<Banner | null>(null);
@@ -128,6 +132,7 @@ export function BannersListView({ banners }: BannersListViewProps) {
 
         <BannersGlobalPanel
           banners={filteredBanners}
+          canDeleteBanner={canDeleteBanner}
           onEdit={openEdit}
           onAddPlacement={() => openCreate()}
         />

@@ -7,6 +7,8 @@ import { CmsSectionLayout } from "@/components/shared/cms-section-layout";
 import { SECTION_BODY_PADDING } from "@/config/spacing";
 import { requireCmsNavHref } from "@/lib/brands/require-cms-nav";
 import { getBanners } from "@/lib/db/banners";
+import { getCurrentCmsUser } from "@/lib/users/current";
+import { isSuperAdmin } from "@/lib/users/permissions";
 import { cn } from "@/lib/utils";
 
 export default function BannersPage() {
@@ -51,11 +53,17 @@ function BodyFrame({ children }: { children: React.ReactNode }) {
 
 async function BannersPageContent() {
   const brand = await requireCmsNavHref("/banners");
-  const banners = await getBanners(brand.id);
+  const [banners, user] = await Promise.all([
+    getBanners(brand.id),
+    getCurrentCmsUser(),
+  ]);
 
   return (
     <BodyFrame>
-      <BannersListView banners={banners} />
+      <BannersListView
+        banners={banners}
+        canDeleteBanner={isSuperAdmin(user)}
+      />
     </BodyFrame>
   );
 }

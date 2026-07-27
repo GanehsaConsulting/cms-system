@@ -16,6 +16,7 @@ import { getTrashedPortfolioItems } from "@/lib/db/portfolio";
 import { getTrashedPrices } from "@/lib/db/prices";
 import { getPriceDisplayText } from "@/lib/prices/normalize";
 import { getCurrentCmsUser } from "@/lib/users/current";
+import { isSuperAdmin } from "@/lib/users/permissions";
 import type { TrashListItem } from "@/types/trash";
 import { cn } from "@/lib/utils";
 
@@ -195,7 +196,10 @@ async function TrashPageContent() {
 
   return (
     <BodyFrame>
-      <TrashListView items={items} />
+      <TrashListView
+        items={items}
+        canPurgePermanently={isSuperAdmin(user)}
+      />
     </BodyFrame>
   );
 }

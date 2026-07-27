@@ -16,9 +16,13 @@ import { cn } from "@/lib/utils";
 
 interface TrashListViewProps {
   items: TrashListItem[];
+  canPurgePermanently?: boolean;
 }
 
-export function TrashListView({ items }: TrashListViewProps) {
+export function TrashListView({
+  items,
+  canPurgePermanently = false,
+}: TrashListViewProps) {
   const visibleKeys = useMemo(
     () => items.map((item) => trashItemKey(item)),
     [items],
@@ -31,8 +35,8 @@ export function TrashListView({ items }: TrashListViewProps) {
     if (items.length === 0) {
       return null;
     }
-    return <TrashEmptyButton />;
-  }, [items.length]);
+    return canPurgePermanently ? <TrashEmptyButton /> : null;
+  }, [canPurgePermanently, items.length]);
 
   return (
     <>
@@ -54,6 +58,7 @@ export function TrashListView({ items }: TrashListViewProps) {
             <div className={CMS_SCROLL_REGION}>
               <TrashListTable
                 items={items}
+                canPurgePermanently={canPurgePermanently}
                 bulkSelectedKeys={bulk.selectedIdSet}
                 isAllBulkSelected={bulk.isAllSelected}
                 isBulkIndeterminate={bulk.isIndeterminate}
@@ -69,6 +74,7 @@ export function TrashListView({ items }: TrashListViewProps) {
             </div>
             <TrashListBulkBar
               selectedKeys={bulk.selectedIds}
+              canPurgePermanently={canPurgePermanently}
               onClear={bulk.clear}
             />
           </GlassSurface>
