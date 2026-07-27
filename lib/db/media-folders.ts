@@ -1,6 +1,5 @@
-import { and, asc, eq, inArray, isNull, SQL } from "drizzle-orm";
+import { and, asc, eq, inArray, isNotNull, isNull, or, SQL } from "drizzle-orm";
 import { db } from "@/lib/db/client";
-import { deleteMediaLibraryFilesInFolders } from "@/lib/db/media-files";
 import { mediaFolders } from "@/lib/db/schema";
 import {
   canCreateChildFolder,
@@ -35,12 +34,17 @@ function rowToFolder(row: typeof mediaFolders.$inferSelect): MediaFolder {
     ownerUserId: row.ownerUserId,
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
+    deletedAt: row.deletedAt ? row.deletedAt.toISOString() : null,
   };
 }
 
 function scopeWhere(context: MediaScopeContext): SQL {
   if (context.scope === "shared") {
-    return and(eq(mediaFolders.scope, "shared"), isNull(mediaFolders.brandId), isNull(mediaFolders.ownerUserId))!;
+    return and(
+      eq(mediaFolders.scope, "shared"),
+      isNull(mediaFolders.brandId),
+      isNull(mediaFolders.ownerUserId),
+    )!;
   }
 
   if (context.scope === "brand") {
@@ -58,6 +62,43 @@ function scopeWhere(context: MediaScopeContext): SQL {
   )!;
 }
 
+function activeScopeWhere(context: MediaScopeContext): SQL {
+  return and(scopeWhere(context), isNull(mediaFolders.deletedAt))!;
+}
+
+function trashVisibilityWhere(input: {
+  brandId: string | null;
+  ownerUserId: string | null;
+}): SQL {
+  const visibility: SQL[] = [
+    and(
+      eq(mediaFolders.scope, "shared"),
+      isNull(mediaFolders.brandId),
+      isNull(mediaFolders.ownerUserId),
+    )!,
+  ];
+
+  if (input.brandId) {
+    visibility.push(
+      and(
+        eq(mediaFolders.scope, "brand"),
+        eq(mediaFolders.brandId, input.brandId),
+      )!,
+    );
+  }
+
+  if (input.ownerUserId) {
+    visibility.push(
+      and(
+        eq(mediaFolders.scope, "personal"),
+        eq(mediaFolders.ownerUserId, input.ownerUserId),
+      )!,
+    );
+  }
+
+  return and(isNotNull(mediaFolders.deletedAt), or(...visibility))!;
+}
+
 export async function getMediaFolders(
   context?: MediaScopeContext,
 ): Promise<MediaFolder[]> {
@@ -65,20 +106,42 @@ export async function getMediaFolders(
     ? await db
         .select()
         .from(mediaFolders)
-        .where(scopeWhere(context))
+        .where(activeScopeWhere(context))
         .orderBy(asc(mediaFolders.name))
-    : await db.select().from(mediaFolders).orderBy(asc(mediaFolders.name));
+    : await db
+        .select()
+        .from(mediaFolders)
+        .where(isNull(mediaFolders.deletedAt))
+        .orderBy(asc(mediaFolders.name));
+
+  return rows.map(rowToFolder);
+}
+
+export async function getTrashedMediaFolders(input: {
+  brandId: string | null;
+  ownerUserId: string | null;
+}): Promise<MediaFolder[]> {
+  const rows = await db
+    .select()
+    .from(mediaFolders)
+    .where(trashVisibilityWhere(input))
+    .orderBy(asc(mediaFolders.name));
 
   return rows.map(rowToFolder);
 }
 
 export async function getMediaFolderById(
   id: string,
+  options?: { includeDeleted?: boolean },
 ): Promise<MediaFolder | null> {
   const rows = await db
     .select()
     .from(mediaFolders)
-    .where(eq(mediaFolders.id, id))
+    .where(
+      options?.includeDeleted
+        ? eq(mediaFolders.id, id)
+        : and(eq(mediaFolders.id, id), isNull(mediaFolders.deletedAt)),
+    )
     .limit(1);
   return rows[0] ? rowToFolder(rows[0]) : null;
 }
@@ -192,13 +255,14 @@ export async function updateMediaFolder(
       name: parsed.data.name.trim(),
       updatedAt: new Date(),
     })
-    .where(eq(mediaFolders.id, id))
+    .where(and(eq(mediaFolders.id, id), isNull(mediaFolders.deletedAt)))
     .returning();
 
   return rowToFolder(row);
 }
 
-export async function deleteMediaFolder(id: string): Promise<void> {
+/** Soft-delete folder + descendants + files inside. */
+export async function softDeleteMediaFolder(id: string): Promise<void> {
   const folder = await getMediaFolderById(id);
   if (!folder) {
     throw new Error("Folder not found");
@@ -211,8 +275,131 @@ export async function deleteMediaFolder(id: string): Promise<void> {
   });
 
   const idsToDelete = [id, ...getDescendantFolderIds(folders, id)];
-  await deleteMediaLibraryFilesInFolders(idsToDelete);
+  const now = new Date();
+
+  const { softDeleteMediaLibraryFilesInFolders } = await import(
+    "@/lib/db/media-files"
+  );
+  await softDeleteMediaLibraryFilesInFolders(idsToDelete);
+  await db
+    .update(mediaFolders)
+    .set({ deletedAt: now, updatedAt: now })
+    .where(
+      and(
+        inArray(mediaFolders.id, idsToDelete),
+        isNull(mediaFolders.deletedAt),
+      ),
+    );
+}
+
+export async function restoreMediaFolder(id: string): Promise<void> {
+  const folder = await getMediaFolderById(id, { includeDeleted: true });
+  if (!folder?.deletedAt) {
+    throw new Error("Folder not found in Trash");
+  }
+
+  if (folder.parentId) {
+    const parent = await getMediaFolderById(folder.parentId, {
+      includeDeleted: true,
+    });
+    if (parent?.deletedAt) {
+      await restoreMediaFolder(parent.id);
+    }
+  }
+
+  const now = new Date();
+
+  const allFolders = await db
+    .select()
+    .from(mediaFolders)
+    .where(
+      and(
+        eq(mediaFolders.scope, folder.scope),
+        folder.brandId
+          ? eq(mediaFolders.brandId, folder.brandId)
+          : isNull(mediaFolders.brandId),
+        folder.ownerUserId
+          ? eq(mediaFolders.ownerUserId, folder.ownerUserId)
+          : isNull(mediaFolders.ownerUserId),
+      ),
+    );
+
+  const folderList = allFolders.map(rowToFolder);
+  const descendantIds = getDescendantFolderIds(folderList, id);
+  const idsToRestore = [id, ...descendantIds];
+
+  await db
+    .update(mediaFolders)
+    .set({ deletedAt: null, updatedAt: now })
+    .where(
+      and(
+        inArray(mediaFolders.id, idsToRestore),
+        isNotNull(mediaFolders.deletedAt),
+      ),
+    );
+
+  const { restoreMediaLibraryFilesInFolders } = await import(
+    "@/lib/db/media-files"
+  );
+  await restoreMediaLibraryFilesInFolders(idsToRestore);
+}
+
+export async function purgeMediaFolder(id: string): Promise<void> {
+  const folder = await getMediaFolderById(id, { includeDeleted: true });
+  if (!folder?.deletedAt) {
+    throw new Error("Folder not found in Trash");
+  }
+
+  const allFolders = await db
+    .select()
+    .from(mediaFolders)
+    .where(
+      and(
+        eq(mediaFolders.scope, folder.scope),
+        folder.brandId
+          ? eq(mediaFolders.brandId, folder.brandId)
+          : isNull(mediaFolders.brandId),
+        folder.ownerUserId
+          ? eq(mediaFolders.ownerUserId, folder.ownerUserId)
+          : isNull(mediaFolders.ownerUserId),
+        isNotNull(mediaFolders.deletedAt),
+      ),
+    );
+
+  const folderList = allFolders.map(rowToFolder);
+  const descendantIds = getDescendantFolderIds(folderList, id).filter((fid) =>
+    folderList.some((f) => f.id === fid && f.deletedAt),
+  );
+  const idsToDelete = [id, ...descendantIds];
+
+  const { purgeMediaLibraryFilesInFolders } = await import(
+    "@/lib/db/media-files"
+  );
+  await purgeMediaLibraryFilesInFolders(idsToDelete);
   await db.delete(mediaFolders).where(inArray(mediaFolders.id, idsToDelete));
+}
+
+/** Soft-delete for CMS — hard delete only via purge from Trash. */
+export async function deleteMediaFolder(id: string): Promise<void> {
+  await softDeleteMediaFolder(id);
+}
+
+export async function purgeAllTrashedMediaFolders(input: {
+  brandId: string | null;
+  ownerUserId: string | null;
+}): Promise<number> {
+  const folders = await getTrashedMediaFolders(input);
+  const trashedIds = new Set(folders.map((f) => f.id));
+  const roots = folders.filter(
+    (f) => !f.parentId || !trashedIds.has(f.parentId),
+  );
+
+  let count = 0;
+  for (const folder of roots) {
+    await purgeMediaFolder(folder.id);
+    count += 1;
+  }
+  return count;
 }
 
 export async function moveMediaFolders(

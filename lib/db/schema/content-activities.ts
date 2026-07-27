@@ -25,6 +25,7 @@ export const contentActivities = cmsSchema.table(
     authorName: text("author_name").notNull(),
     authorId: text("author_id"),
     clickCount: integer("click_count").notNull().default(0),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull(),
@@ -47,5 +48,9 @@ export const contentActivities = cmsSchema.table(
       table.status,
     ),
     index("content_activities_brand_kind_idx").on(table.brandId, table.kind),
+    index("content_activities_brand_deleted_at_idx").on(
+      table.brandId,
+      table.deletedAt,
+    ),
   ],
 );

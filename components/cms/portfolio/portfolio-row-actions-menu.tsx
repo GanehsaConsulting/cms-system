@@ -36,7 +36,7 @@ export function PortfolioRowActionsMenu({
           const notified = await runNotifiedAction(
             () => deletePortfolioAction(item.id),
             {
-              success: "Work deleted.",
+              success: "Moved to Trash.",
               errorFallback: "Failed to delete work.",
             },
           );

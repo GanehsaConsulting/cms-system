@@ -8,6 +8,7 @@ import { PricesListCreateButton } from "@/components/cms/prices/prices-list-crea
 import { PricesListToolbar } from "@/components/cms/prices/prices-list-toolbar";
 import { PricesListWorkspace } from "@/components/cms/prices/prices-list-workspace";
 import { CmsPageHeaderActions } from "@/components/shared/cms-page-header-actions";
+import { useListBulkSelection } from "@/hooks/use-list-bulk-selection";
 import { usePricesList } from "@/hooks/use-prices-list";
 import { CMS_FLEX_CHILD } from "@/config/spacing";
 import type { Price } from "@/types/price";
@@ -49,6 +50,22 @@ export function PricesListView({ prices, categories }: PricesListViewProps) {
     hasActiveFilters,
     resetFilters,
   } = usePricesList(prices);
+
+  const visibleIds = useMemo(
+    () => pagination.items.map((price) => price.id),
+    [pagination.items],
+  );
+  const bulk = useListBulkSelection(visibleIds);
+  const bulkSelectedIdSet = useMemo(
+    () => new Set(bulk.selectedIds),
+    [bulk.selectedIds],
+  );
+
+  useEffect(() => {
+    bulk.clear();
+    // Clear when the visible page/filter set changes — not on every bulk API change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: clear on list identity change
+  }, [statusFilter, serviceFilter, search, sort, page, pageSize]);
 
   const headerActions = useMemo(() => {
     if (prices.length === 0) {
@@ -115,11 +132,24 @@ export function PricesListView({ prices, categories }: PricesListViewProps) {
           rangeStart={pagination.rangeStart}
           rangeEnd={pagination.rangeEnd}
           sort={sort}
+          bulkSelectedIds={bulk.selectedIds}
+          bulkSelectedIdSet={bulkSelectedIdSet}
+          isAllBulkSelected={bulk.isAllSelected}
+          isBulkIndeterminate={bulk.isIndeterminate}
           onSelect={selectPrice}
           onClosePanel={closePanel}
           onPageChange={setPage}
           onPageSizeChange={setPageSize}
           onSortChange={setSort}
+          onToggleBulk={bulk.toggle}
+          onToggleBulkAll={(checked) => {
+            if (checked) {
+              bulk.selectAll();
+            } else {
+              bulk.clear();
+            }
+          }}
+          onClearBulk={bulk.clear}
         />
       )}
 

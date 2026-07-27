@@ -1,4 +1,4 @@
-import { and, asc, eq } from "drizzle-orm";
+import { and, asc, eq, isNull } from "drizzle-orm";
 import { ARTICLE_CATEGORIES } from "@/config/article-categories";
 import { getCustomCategoryBadgeClass } from "@/config/article-category-styles";
 import { slugify } from "@/lib/articles/slug";
@@ -157,6 +157,7 @@ export async function deleteCustomCategory(
       and(
         eq(articles.brandId, brandId),
         eq(articles.category, id),
+        isNull(articles.deletedAt),
       ),
     )
     .limit(1);

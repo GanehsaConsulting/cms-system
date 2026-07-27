@@ -1,4 +1,4 @@
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, isNotNull, isNull, sql } from "drizzle-orm";
 import { assertBrandMatch } from "@/lib/brands/content-scope";
 import { db } from "@/lib/db/client";
 import { getClientById } from "@/lib/db/clients";
@@ -24,6 +24,7 @@ function rowToPortfolio(row: typeof portfolio.$inferSelect): Portfolio {
     clickCount: row.clickCount ?? 0,
     createdAt: toIso(row.createdAt),
     updatedAt: toIso(row.updatedAt),
+    deletedAt: row.deletedAt ? toIso(row.deletedAt) : null,
   });
 }
 
@@ -50,8 +51,20 @@ export async function getPortfolioItems(brandId: string): Promise<Portfolio[]> {
   const rows = await db
     .select()
     .from(portfolio)
-    .where(eq(portfolio.brandId, brandId))
+    .where(and(eq(portfolio.brandId, brandId), isNull(portfolio.deletedAt)))
     .orderBy(desc(portfolio.updatedAt));
+
+  return rows.map(rowToPortfolio);
+}
+
+export async function getTrashedPortfolioItems(
+  brandId: string,
+): Promise<Portfolio[]> {
+  const rows = await db
+    .select()
+    .from(portfolio)
+    .where(and(eq(portfolio.brandId, brandId), isNotNull(portfolio.deletedAt)))
+    .orderBy(desc(portfolio.deletedAt));
 
   return rows.map(rowToPortfolio);
 }
@@ -59,11 +72,20 @@ export async function getPortfolioItems(brandId: string): Promise<Portfolio[]> {
 export async function getPortfolioById(
   brandId: string,
   id: string,
+  options?: { includeDeleted?: boolean },
 ): Promise<Portfolio | null> {
   const rows = await db
     .select()
     .from(portfolio)
-    .where(eq(portfolio.id, id))
+    .where(
+      options?.includeDeleted
+        ? and(eq(portfolio.id, id), eq(portfolio.brandId, brandId))
+        : and(
+            eq(portfolio.id, id),
+            eq(portfolio.brandId, brandId),
+            isNull(portfolio.deletedAt),
+          ),
+    )
     .limit(1);
 
   const item = rows[0] ? rowToPortfolio(rows[0]) : null;
@@ -87,7 +109,11 @@ export async function getPortfolioByClientId(
     .select()
     .from(portfolio)
     .where(
-      and(eq(portfolio.brandId, brandId), eq(portfolio.clientId, clientId)),
+      and(
+        eq(portfolio.brandId, brandId),
+        eq(portfolio.clientId, clientId),
+        isNull(portfolio.deletedAt),
+      ),
     )
     .orderBy(desc(portfolio.updatedAt));
 
@@ -136,7 +162,13 @@ export async function updatePortfolio(
       brandId,
       updatedAt: new Date(),
     })
-    .where(and(eq(portfolio.id, id), eq(portfolio.brandId, brandId)))
+    .where(
+      and(
+        eq(portfolio.id, id),
+        eq(portfolio.brandId, brandId),
+        isNull(portfolio.deletedAt),
+      ),
+    )
     .returning();
 
   if (!row) {
@@ -146,7 +178,8 @@ export async function updatePortfolio(
   return rowToPortfolio(row);
 }
 
-export async function deletePortfolio(
+/** Soft-delete — moves work to Trash. */
+export async function softDeletePortfolio(
   brandId: string,
   id: string,
 ): Promise<void> {
@@ -155,20 +188,268 @@ export async function deletePortfolio(
     throw new Error("Portfolio item not found");
   }
 
+  const now = new Date();
+  await db
+    .update(portfolio)
+    .set({ deletedAt: now, updatedAt: now })
+    .where(
+      and(
+        eq(portfolio.id, id),
+        eq(portfolio.brandId, brandId),
+        isNull(portfolio.deletedAt),
+      ),
+    );
+}
+
+export async function softDeletePortfolios(
+  brandId: string,
+  ids: string[],
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
+
+  const now = new Date();
+  const rows = await db
+    .update(portfolio)
+    .set({ deletedAt: now, updatedAt: now })
+    .where(
+      and(
+        eq(portfolio.brandId, brandId),
+        isNull(portfolio.deletedAt),
+        inArray(portfolio.id, ids),
+      ),
+    )
+    .returning({ id: portfolio.id });
+
+  return rows.length;
+}
+
+export async function softDeletePortfolioByClientId(
+  brandId: string,
+  clientId: string,
+): Promise<number> {
+  const now = new Date();
+  const rows = await db
+    .update(portfolio)
+    .set({ deletedAt: now, updatedAt: now })
+    .where(
+      and(
+        eq(portfolio.brandId, brandId),
+        eq(portfolio.clientId, clientId),
+        isNull(portfolio.deletedAt),
+      ),
+    )
+    .returning({ id: portfolio.id });
+
+  return rows.length;
+}
+
+export async function softDeletePortfolioByClientIds(
+  brandId: string,
+  clientIds: string[],
+): Promise<number> {
+  if (clientIds.length === 0) {
+    return 0;
+  }
+
+  const now = new Date();
+  const rows = await db
+    .update(portfolio)
+    .set({ deletedAt: now, updatedAt: now })
+    .where(
+      and(
+        eq(portfolio.brandId, brandId),
+        isNull(portfolio.deletedAt),
+        inArray(portfolio.clientId, clientIds),
+      ),
+    )
+    .returning({ id: portfolio.id });
+
+  return rows.length;
+}
+
+export async function restorePortfolio(
+  brandId: string,
+  id: string,
+): Promise<void> {
+  const current = await getPortfolioById(brandId, id, { includeDeleted: true });
+  if (!current?.deletedAt) {
+    throw new Error("Portfolio item not found in Trash");
+  }
+
+  const now = new Date();
+  await db
+    .update(portfolio)
+    .set({ deletedAt: null, updatedAt: now })
+    .where(
+      and(
+        eq(portfolio.id, id),
+        eq(portfolio.brandId, brandId),
+        isNotNull(portfolio.deletedAt),
+      ),
+    );
+}
+
+/** Restore all trashed works for a client (used when restoring that client). */
+export async function restorePortfolioByClientId(
+  brandId: string,
+  clientId: string,
+): Promise<number> {
+  const now = new Date();
+  const rows = await db
+    .update(portfolio)
+    .set({ deletedAt: null, updatedAt: now })
+    .where(
+      and(
+        eq(portfolio.brandId, brandId),
+        eq(portfolio.clientId, clientId),
+        isNotNull(portfolio.deletedAt),
+      ),
+    )
+    .returning({ id: portfolio.id });
+
+  return rows.length;
+}
+
+export async function purgePortfolio(
+  brandId: string,
+  id: string,
+): Promise<void> {
+  const current = await getPortfolioById(brandId, id, { includeDeleted: true });
+  if (!current?.deletedAt) {
+    throw new Error("Portfolio item not found in Trash");
+  }
+
   await db
     .delete(portfolio)
     .where(and(eq(portfolio.id, id), eq(portfolio.brandId, brandId)));
 }
 
+export async function purgePortfolios(
+  brandId: string,
+  ids: string[],
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
+
+  const rows = await db
+    .delete(portfolio)
+    .where(
+      and(
+        eq(portfolio.brandId, brandId),
+        isNotNull(portfolio.deletedAt),
+        inArray(portfolio.id, ids),
+      ),
+    )
+    .returning({ id: portfolio.id });
+
+  return rows.length;
+}
+
+export async function purgePortfolioByClientId(
+  brandId: string,
+  clientId: string,
+): Promise<number> {
+  const rows = await db
+    .delete(portfolio)
+    .where(
+      and(eq(portfolio.brandId, brandId), eq(portfolio.clientId, clientId)),
+    )
+    .returning({ id: portfolio.id });
+
+  return rows.length;
+}
+
+export async function purgeAllTrashedPortfolio(
+  brandId: string,
+): Promise<number> {
+  const rows = await db
+    .delete(portfolio)
+    .where(and(eq(portfolio.brandId, brandId), isNotNull(portfolio.deletedAt)))
+    .returning({ id: portfolio.id });
+
+  return rows.length;
+}
+
+/** Hard-delete a portfolio row (any state). Prefer softDeletePortfolio for CMS deletes. */
+export async function deletePortfolio(
+  brandId: string,
+  id: string,
+): Promise<void> {
+  await db
+    .delete(portfolio)
+    .where(and(eq(portfolio.id, id), eq(portfolio.brandId, brandId)));
+}
+
+/** Hard-delete all portfolio rows for a client. */
 export async function deletePortfolioByClientId(
   brandId: string,
   clientId: string,
 ): Promise<void> {
-  await db
-    .delete(portfolio)
+  await purgePortfolioByClientId(brandId, clientId);
+}
+
+export async function setPortfolioFeatured(
+  brandId: string,
+  ids: string[],
+  featured: boolean,
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
+
+  const rows = await db
+    .update(portfolio)
+    .set({
+      featured,
+      updatedAt: new Date(),
+    })
     .where(
-      and(eq(portfolio.brandId, brandId), eq(portfolio.clientId, clientId)),
-    );
+      and(
+        eq(portfolio.brandId, brandId),
+        isNull(portfolio.deletedAt),
+        inArray(portfolio.id, ids),
+      ),
+    )
+    .returning({ id: portfolio.id });
+
+  return rows.length;
+}
+
+export async function setPortfolioWorkType(
+  brandId: string,
+  ids: string[],
+  workType: Portfolio["workType"],
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
+
+  const rows = await db
+    .update(portfolio)
+    .set({
+      workType,
+      updatedAt: new Date(),
+    })
+    .where(
+      and(
+        eq(portfolio.brandId, brandId),
+        isNull(portfolio.deletedAt),
+        inArray(portfolio.id, ids),
+      ),
+    )
+    .returning({ id: portfolio.id });
+
+  return rows.length;
+}
+
+export async function deletePortfolios(
+  brandId: string,
+  ids: string[],
+): Promise<number> {
+  return softDeletePortfolios(brandId, ids);
 }
 
 export async function incrementPortfolioClick(
@@ -180,7 +461,13 @@ export async function incrementPortfolioClick(
     .set({
       clickCount: sql`${portfolio.clickCount} + 1`,
     })
-    .where(and(eq(portfolio.brandId, brandId), eq(portfolio.id, id)))
+    .where(
+      and(
+        eq(portfolio.brandId, brandId),
+        eq(portfolio.id, id),
+        isNull(portfolio.deletedAt),
+      ),
+    )
     .returning({ clickCount: portfolio.clickCount });
 
   if (!row) {

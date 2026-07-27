@@ -3,9 +3,13 @@
 import Image from "next/image";
 import { ClientFeaturedBadge } from "@/components/cms/clients/client-featured-badge";
 import { ClientRowActionsMenu } from "@/components/cms/clients/client-row-actions-menu";
+import { CmsListBulkCheckbox } from "@/components/shared/cms-list-bulk-checkbox";
 import { CmsListTableRow } from "@/components/shared/cms-list-table-row";
 import { TableCell } from "@/components/ui/table";
-import { LIST_TABLE_CELL_CLASS } from "@/config/list-table";
+import {
+  LIST_TABLE_BULK_CELL_CLASS,
+  LIST_TABLE_CELL_CLASS,
+} from "@/config/list-table";
 import { RADIUS_DEEP } from "@/config/shape";
 import { formatClientDateParts } from "@/lib/clients/list";
 import { isCompanyLogoIcon } from "@/lib/clients/logo";
@@ -19,15 +23,19 @@ import type { Client } from "@/types/client";
 interface ClientListTableRowProps {
   client: Client;
   isSelected: boolean;
+  isBulkSelected: boolean;
   previewMode?: ClientListPreviewMode;
   onSelect: (id: string) => void;
+  onToggleBulk: (id: string) => void;
 }
 
 export function ClientListTableRow({
   client,
   isSelected,
+  isBulkSelected,
   previewMode = "auto",
   onSelect,
+  onToggleBulk,
 }: ClientListTableRowProps) {
   const updated = formatClientDateParts(client.updatedAt);
   const marqueeReady =
@@ -39,6 +47,13 @@ export function ClientListTableRow({
       isSelected={isSelected}
       onClick={() => onSelect(client.id)}
     >
+      <TableCell className={LIST_TABLE_BULK_CELL_CLASS}>
+        <CmsListBulkCheckbox
+          checked={isBulkSelected}
+          label={`Select ${client.name}`}
+          onCheckedChange={() => onToggleBulk(client.id)}
+        />
+      </TableCell>
       <TableCell className={LIST_TABLE_CELL_CLASS}>
         <div className="flex min-w-55 items-center gap-3">
           <div

@@ -8,8 +8,8 @@ import { recordActivityEvent } from "@/lib/activity/record";
 import { requireCmsActiveBrandId } from "@/lib/brands/active-brand";
 import {
   createContentActivity,
-  deleteContentActivity,
   getContentActivityById,
+  softDeleteContentActivity,
   updateContentActivity,
   updateContentActivityStatus,
 } from "@/lib/db/content-activities";
@@ -214,7 +214,7 @@ export async function deleteContentActivityAction(id: string) {
 
   try {
     const current = await getContentActivityById(brand.brandId, id);
-    await deleteContentActivity(brand.brandId, id);
+    await softDeleteContentActivity(brand.brandId, id);
     if (current) {
       await recordActivityEvent({
         brandId: brand.brandId,
@@ -226,8 +226,9 @@ export async function deleteContentActivityAction(id: string) {
       });
     }
     revalidateContentActivityPaths();
+    revalidatePath("/trash");
     redirect("/activities");
   } catch (error) {
-    return toActionError(error, "Failed to delete activity");
+    return toActionError(error, "Failed to move activity to Trash");
   }
 }

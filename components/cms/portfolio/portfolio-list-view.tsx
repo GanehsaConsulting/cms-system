@@ -1,14 +1,14 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { ClientsWorksNewDataButton } from "@/components/cms/clients/clients-works-new-data-button";
 import { PortfolioListEmptyState } from "@/components/cms/portfolio/portfolio-list-empty-state";
 import { PortfolioListToolbar } from "@/components/cms/portfolio/portfolio-list-toolbar";
 import { PortfolioListWorkspace } from "@/components/cms/portfolio/portfolio-list-workspace";
 import { CmsPageHeaderActions } from "@/components/shared/cms-page-header-actions";
-import { CMS_FLEX_CHILD, SECTION_BODY_PADDING } from "@/config/spacing";
+import { CMS_FLEX_CHILD } from "@/config/spacing";
+import { useListBulkSelection } from "@/hooks/use-list-bulk-selection";
 import { usePortfolioList } from "@/hooks/use-portfolio-list";
-import { cn } from "@/lib/utils";
 import type { Client } from "@/types/client";
 import type { Portfolio } from "@/types/portfolio";
 
@@ -33,7 +33,9 @@ export function PortfolioListView({ items, clients }: PortfolioListViewProps) {
     setSearch,
     sort,
     setSort,
+    page,
     setPage,
+    pageSize,
     setPageSize,
     selectedId,
     selectItem,
@@ -43,6 +45,21 @@ export function PortfolioListView({ items, clients }: PortfolioListViewProps) {
     hasActiveFilters,
     resetFilters,
   } = usePortfolioList(items, clientNameById);
+
+  const visibleIds = useMemo(
+    () => pagination.items.map((item) => item.id),
+    [pagination.items],
+  );
+  const bulk = useListBulkSelection(visibleIds);
+  const bulkSelectedIdSet = useMemo(
+    () => new Set(bulk.selectedIds),
+    [bulk.selectedIds],
+  );
+
+  useEffect(() => {
+    bulk.clear();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- clear on list identity change
+  }, [workTypeFilter, search, sort, page, pageSize]);
 
   const headerActions = useMemo(() => {
     if (items.length === 0) {
@@ -74,12 +91,7 @@ export function PortfolioListView({ items, clients }: PortfolioListViewProps) {
   ]);
 
   return (
-    <div
-      className={cn(
-        "flex min-h-0 flex-1 flex-col overflow-hidden",
-        SECTION_BODY_PADDING,
-      )}
-    >
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
       <CmsPageHeaderActions>{headerActions}</CmsPageHeaderActions>
 
       {items.length === 0 ? (
@@ -98,11 +110,24 @@ export function PortfolioListView({ items, clients }: PortfolioListViewProps) {
           rangeStart={pagination.rangeStart}
           rangeEnd={pagination.rangeEnd}
           sort={sort}
+          bulkSelectedIds={bulk.selectedIds}
+          bulkSelectedIdSet={bulkSelectedIdSet}
+          isAllBulkSelected={bulk.isAllSelected}
+          isBulkIndeterminate={bulk.isIndeterminate}
           onSelect={selectItem}
           onClosePanel={closePanel}
           onPageChange={setPage}
           onPageSizeChange={setPageSize}
           onSortChange={setSort}
+          onToggleBulk={bulk.toggle}
+          onToggleBulkAll={(checked) => {
+            if (checked) {
+              bulk.selectAll();
+            } else {
+              bulk.clear();
+            }
+          }}
+          onClearBulk={bulk.clear}
         />
       )}
     </div>

@@ -20,6 +20,7 @@ import {
 
 function revalidateMediaLibrary() {
   revalidatePath("/media");
+  revalidatePath("/trash");
 }
 
 async function resolveActiveBrandId(): Promise<string | null> {

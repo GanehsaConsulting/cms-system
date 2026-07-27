@@ -39,7 +39,7 @@ export function PriceRowActionsMenu({ price }: PriceRowActionsMenuProps) {
           const notified = await runNotifiedAction(
             () => deletePriceAction(price.id),
             {
-              success: "Price plan deleted.",
+              success: "Moved to Trash.",
               errorFallback: "Failed to delete price plan.",
             },
           );

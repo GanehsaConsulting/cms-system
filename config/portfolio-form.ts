@@ -10,9 +10,18 @@ export const PORTFOLIO_COVER_UPLOAD_HINT = `${CMS_IMAGE_SOURCE_HINT} Used as the
 
 export const PORTFOLIO_ACTION_CONFIRMATIONS = {
   delete: {
-    title: "Delete work?",
+    title: "Move to Trash?",
     description:
-      "This portfolio item will be removed. This cannot be undone.",
-    confirmLabel: "Delete work",
+      "This portfolio item will be moved to Trash. You can restore it later.",
+    confirmLabel: "Move to Trash",
   },
+  bulkDelete: (count: number) => ({
+    title: count === 1 ? "Move to Trash?" : `Move ${count} works to Trash?`,
+    description:
+      count === 1
+        ? "This portfolio item will be moved to Trash. You can restore it later."
+        : `These ${count} portfolio items will be moved to Trash. You can restore them later.`,
+    confirmLabel: "Move to Trash",
+    variant: "destructive" as const,
+  }),
 } as const;

@@ -26,5 +26,6 @@ export function normalizeClient(client: Partial<Client> & { id: string }): Clien
       : [],
     createdAt: client.createdAt ?? new Date().toISOString(),
     updatedAt: client.updatedAt ?? new Date().toISOString(),
+    deletedAt: client.deletedAt ?? null,
   };
 }

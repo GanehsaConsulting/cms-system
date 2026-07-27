@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  sfArrowCounterclockwise,
   sfArrowUpRight,
   sfArchiveboxFill,
   sfBellFill,
@@ -87,6 +88,10 @@ function createSFIcon(symbol: IconDefinition, displayName: string): Icon {
 }
 
 export const ArchiveIcon = createSFIcon(sfArchiveboxFill, "ArchiveIcon");
+export const ArrowCounterclockwiseIcon = createSFIcon(
+  sfArrowCounterclockwise,
+  "ArrowCounterclockwiseIcon",
+);
 export const ArrowUpRightIcon = createSFIcon(
   sfArrowUpRight,
   "ArrowUpRightIcon",

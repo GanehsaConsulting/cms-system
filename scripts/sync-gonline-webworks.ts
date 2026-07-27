@@ -168,20 +168,13 @@ async function main() {
     if (!clientId) {
       const created = await createClient(BRAND_ID, {
         name: companyName,
-        logo,
+        // ImagePreview is a website screenshot — portfolio cover only, not logo.
+        logo: "",
         website: url,
         description,
         featured: false,
         testimonials: [],
-        photos: logo
-          ? [
-              {
-                id: crypto.randomUUID(),
-                url: logo,
-                caption: workTitle,
-              },
-            ]
-          : [],
+        photos: [],
       });
       clientId = created.id;
       clientIdByCompany.set(companyKey, clientId);

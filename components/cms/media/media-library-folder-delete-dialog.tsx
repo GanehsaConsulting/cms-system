@@ -52,7 +52,7 @@ export function MediaLibraryFolderDeleteDialog({
 
     startTransition(async () => {
       const result = await deleteMediaFolderAction(folder.id);
-      if (!notifyFromActionResult(result, "Folder deleted.")) return;
+      if (!notifyFromActionResult(result, "Moved to Trash.")) return;
 
       onOpenChange(false);
       router.refresh();
@@ -85,7 +85,7 @@ export function MediaLibraryFolderDeleteDialog({
               {hasSubfolders ? (
                 <div className="space-y-2">
                   <p className="font-medium text-sm">
-                    Subfolders that will also be deleted
+                    Subfolders that will also be moved to Trash
                   </p>
                   <ul className="max-h-40 space-y-1 overflow-y-auto rounded-(--radius-deep) bg-muted/50 p-3">
                     {impact.descendantFolders.map((subfolder) => (
@@ -107,7 +107,7 @@ export function MediaLibraryFolderDeleteDialog({
               {hasFiles ? (
                 <p className="text-muted-foreground text-sm">
                   {impact.fileCount} file{impact.fileCount === 1 ? "" : "s"} inside
-                  this folder tree will also be deleted.
+                  this folder tree will also be moved to Trash.
                 </p>
               ) : null}
             </div>

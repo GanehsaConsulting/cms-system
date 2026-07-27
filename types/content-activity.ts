@@ -20,6 +20,8 @@ export interface ContentActivity {
   clickCount: number;
   createdAt: string;
   updatedAt: string;
+  /** Set when the activity is in Trash (soft-deleted). */
+  deletedAt?: string | null;
 }
 
 export interface ContentActivityInput {

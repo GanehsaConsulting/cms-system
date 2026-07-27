@@ -627,9 +627,11 @@ async function main() {
     if (!isUsableCompanyName(companyName) || !preview) {
       continue;
     }
+    // Project preview is a website screenshot — never use it as client.logo.
+    // Portfolio cover is created in the loop below.
     await ensureClient({
       name: companyName,
-      logo: preview,
+      logo: "",
       website: (row[3] ?? "").trim(),
     });
   }

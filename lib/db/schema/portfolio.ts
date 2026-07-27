@@ -20,6 +20,7 @@ export const portfolio = cmsSchema.table(
     url: text("url").notNull().default(""),
     featured: boolean("featured").notNull().default(false),
     clickCount: integer("click_count").notNull().default(0),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull(),
@@ -32,5 +33,6 @@ export const portfolio = cmsSchema.table(
     index("portfolio_brand_updated_at_idx").on(table.brandId, table.updatedAt),
     index("portfolio_brand_client_idx").on(table.brandId, table.clientId),
     index("portfolio_brand_work_type_idx").on(table.brandId, table.workType),
+    index("portfolio_brand_deleted_at_idx").on(table.brandId, table.deletedAt),
   ],
 );

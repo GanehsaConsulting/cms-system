@@ -2,9 +2,13 @@
 
 import { PriceRowActionsMenu } from "@/components/cms/prices/price-row-actions-menu";
 import { PriceStatusBadge } from "@/components/cms/prices/price-status-badge";
+import { CmsListBulkCheckbox } from "@/components/shared/cms-list-bulk-checkbox";
 import { CmsListTableRow } from "@/components/shared/cms-list-table-row";
 import { TableCell } from "@/components/ui/table";
-import { LIST_TABLE_CELL_CLASS } from "@/config/list-table";
+import {
+  LIST_TABLE_BULK_CELL_CLASS,
+  LIST_TABLE_CELL_CLASS,
+} from "@/config/list-table";
 import { getPriceCategoryTitleClass } from "@/config/price-category-styles";
 import { getPriceCategoryLabel } from "@/lib/prices/categories";
 import {
@@ -21,14 +25,18 @@ interface PriceListTableRowProps {
   price: Price;
   categories: PriceCategory[];
   isSelected: boolean;
+  isBulkSelected: boolean;
   onSelect: (id: string) => void;
+  onToggleBulk: (id: string) => void;
 }
 
 export function PriceListTableRow({
   price,
   categories,
   isSelected,
+  isBulkSelected,
   onSelect,
+  onToggleBulk,
 }: PriceListTableRowProps) {
   const updated = formatPriceDateParts(price.updatedAt);
   const discount = calculateDiscountPercent(
@@ -42,6 +50,13 @@ export function PriceListTableRow({
 
   return (
     <CmsListTableRow isSelected={isSelected} onClick={() => onSelect(price.id)}>
+      <TableCell className={LIST_TABLE_BULK_CELL_CLASS}>
+        <CmsListBulkCheckbox
+          checked={isBulkSelected}
+          label={`Select ${packageTitle}`}
+          onCheckedChange={() => onToggleBulk(price.id)}
+        />
+      </TableCell>
       <TableCell className={LIST_TABLE_CELL_CLASS}>
         <div className="min-w-55 leading-tight">
           <p

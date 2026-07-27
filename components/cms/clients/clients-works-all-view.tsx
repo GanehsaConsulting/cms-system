@@ -6,9 +6,8 @@ import { ClientsWorksAllToolbar } from "@/components/cms/clients/clients-works-a
 import { ClientsWorksAllWorkspace } from "@/components/cms/clients/clients-works-all-workspace";
 import { ClientsWorksNewDataButton } from "@/components/cms/clients/clients-works-new-data-button";
 import { CmsPageHeaderActions } from "@/components/shared/cms-page-header-actions";
-import { CMS_FLEX_CHILD, SECTION_BODY_PADDING } from "@/config/spacing";
+import { CMS_FLEX_CHILD } from "@/config/spacing";
 import { useClientsWorksAllList } from "@/hooks/use-clients-works-all-list";
-import { cn } from "@/lib/utils";
 import type { Client } from "@/types/client";
 import type { Portfolio } from "@/types/portfolio";
 
@@ -81,12 +80,7 @@ export function ClientsWorksAllView({
   ]);
 
   return (
-    <div
-      className={cn(
-        "flex min-h-0 flex-1 flex-col overflow-hidden",
-        SECTION_BODY_PADDING,
-      )}
-    >
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
       <CmsPageHeaderActions>{headerActions}</CmsPageHeaderActions>
 
       {allGroups.length === 0 ? (

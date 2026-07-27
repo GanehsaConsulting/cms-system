@@ -2,6 +2,7 @@
 
 import { ClientDetailPanel } from "@/components/cms/clients/client-detail-panel";
 import { ClientListTable } from "@/components/cms/clients/client-list-table";
+import { ClientsListBulkBar } from "@/components/cms/clients/clients-list-bulk-bar";
 import { CmsListPagination } from "@/components/shared/cms-list-pagination";
 import { GlassSurface } from "@/components/shared/glass-surface";
 import type { ClientListSort } from "@/config/client-list";
@@ -22,11 +23,18 @@ interface ClientsListWorkspaceProps {
   rangeEnd: number;
   sort: ClientListSort;
   previewMode?: ClientListPreviewMode;
+  bulkSelectedIds: string[];
+  bulkSelectedIdSet: Set<string>;
+  isAllBulkSelected: boolean;
+  isBulkIndeterminate: boolean;
   onSelect: (id: string) => void;
   onClosePanel: () => void;
   onPageChange: (page: number) => void;
   onPageSizeChange: (pageSize: number) => void;
   onSortChange: (sort: ClientListSort) => void;
+  onToggleBulk: (id: string) => void;
+  onToggleBulkAll: (checked: boolean) => void;
+  onClearBulk: () => void;
   className?: string;
 }
 
@@ -42,11 +50,18 @@ export function ClientsListWorkspace({
   rangeEnd,
   sort,
   previewMode = "auto",
+  bulkSelectedIds,
+  bulkSelectedIdSet,
+  isAllBulkSelected,
+  isBulkIndeterminate,
   onSelect,
   onClosePanel,
   onPageChange,
   onPageSizeChange,
   onSortChange,
+  onToggleBulk,
+  onToggleBulkAll,
+  onClearBulk,
   className,
 }: ClientsListWorkspaceProps) {
   return (
@@ -60,14 +75,23 @@ export function ClientsListWorkspace({
       <GlassSurface className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
         {clients.length > 0 ? (
           <>
+            <ClientsListBulkBar
+              selectedIds={bulkSelectedIds}
+              onClear={onClearBulk}
+            />
             <div className={CMS_SCROLL_REGION}>
               <ClientListTable
                 clients={clients}
                 selectedId={selectedId}
                 sort={sort}
                 previewMode={previewMode}
+                bulkSelectedIds={bulkSelectedIdSet}
+                isAllBulkSelected={isAllBulkSelected}
+                isBulkIndeterminate={isBulkIndeterminate}
                 onSelect={onSelect}
                 onSortChange={onSortChange}
+                onToggleBulk={onToggleBulk}
+                onToggleBulkAll={onToggleBulkAll}
               />
             </div>
             <CmsListPagination

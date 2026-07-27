@@ -36,7 +36,7 @@ export function ClientRowActionsMenu({ client }: ClientRowActionsMenuProps) {
           const notified = await runNotifiedAction(
             () => deleteClientAction(client.id),
             {
-              success: "Client deleted.",
+              success: "Moved to Trash.",
               errorFallback: "Failed to delete client.",
             },
           );

@@ -23,6 +23,7 @@ export const clients = cmsSchema.table(
       .notNull()
       .default([]),
     photos: jsonb("photos").$type<ClientPhoto[]>().notNull().default([]),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull(),
@@ -34,5 +35,6 @@ export const clients = cmsSchema.table(
   (table) => [
     index("clients_brand_updated_at_idx").on(table.brandId, table.updatedAt),
     index("clients_brand_featured_idx").on(table.brandId, table.featured),
+    index("clients_brand_deleted_at_idx").on(table.brandId, table.deletedAt),
   ],
 );

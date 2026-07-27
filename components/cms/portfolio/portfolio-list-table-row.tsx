@@ -4,9 +4,13 @@ import Image from "next/image";
 import { PortfolioFeaturedBadge } from "@/components/cms/portfolio/portfolio-featured-badge";
 import { PortfolioRowActionsMenu } from "@/components/cms/portfolio/portfolio-row-actions-menu";
 import { PortfolioWorkTypeBadge } from "@/components/cms/portfolio/portfolio-work-type-badge";
+import { CmsListBulkCheckbox } from "@/components/shared/cms-list-bulk-checkbox";
 import { CmsListTableRow } from "@/components/shared/cms-list-table-row";
 import { TableCell } from "@/components/ui/table";
-import { LIST_TABLE_CELL_CLASS } from "@/config/list-table";
+import {
+  LIST_TABLE_BULK_CELL_CLASS,
+  LIST_TABLE_CELL_CLASS,
+} from "@/config/list-table";
 import { RADIUS_DEEP } from "@/config/shape";
 import { formatPortfolioDateParts } from "@/lib/portfolio/list";
 import type { Portfolio } from "@/types/portfolio";
@@ -16,19 +20,30 @@ interface PortfolioListTableRowProps {
   item: Portfolio;
   clientName: string;
   isSelected: boolean;
+  isBulkSelected: boolean;
   onSelect: (id: string) => void;
+  onToggleBulk: (id: string) => void;
 }
 
 export function PortfolioListTableRow({
   item,
   clientName,
   isSelected,
+  isBulkSelected,
   onSelect,
+  onToggleBulk,
 }: PortfolioListTableRowProps) {
   const updated = formatPortfolioDateParts(item.updatedAt);
 
   return (
     <CmsListTableRow isSelected={isSelected} onClick={() => onSelect(item.id)}>
+      <TableCell className={LIST_TABLE_BULK_CELL_CLASS}>
+        <CmsListBulkCheckbox
+          checked={isBulkSelected}
+          label={`Select ${item.title}`}
+          onCheckedChange={() => onToggleBulk(item.id)}
+        />
+      </TableCell>
       <TableCell className={LIST_TABLE_CELL_CLASS}>
         <div className="flex min-w-55 items-center gap-3">
           <div

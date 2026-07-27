@@ -50,6 +50,7 @@ export const prices = cmsSchema.table(
     whatsappMessage: jsonb("whatsapp_message").$type<LocalizedText>().notNull(),
     isActive: boolean("is_active").notNull().default(true),
     features: jsonb("features").$type<PriceFeature[]>().notNull().default([]),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull(),
@@ -62,5 +63,6 @@ export const prices = cmsSchema.table(
     uniqueIndex("prices_brand_slug_idx").on(table.brandId, table.slug),
     index("prices_brand_updated_at_idx").on(table.brandId, table.updatedAt),
     index("prices_brand_service_slug_idx").on(table.brandId, table.serviceSlug),
+    index("prices_brand_deleted_at_idx").on(table.brandId, table.deletedAt),
   ],
 );

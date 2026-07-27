@@ -12,6 +12,7 @@ import {
   PhotoIcon,
   SparkleIcon,
   SquaresFourIcon,
+  TrashIcon,
 } from "@/lib/icons";
 
 export interface NavLink {
@@ -75,6 +76,12 @@ export const contentNavLinks: NavLink[] = [
     href: "/media",
     icon: FolderOpenIcon,
     tone: "media",
+  },
+  {
+    title: "Trash",
+    href: "/trash",
+    icon: TrashIcon,
+    tone: "trash",
   },
 ];
 

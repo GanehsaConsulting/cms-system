@@ -16,6 +16,8 @@ export interface Portfolio {
   clickCount: number;
   createdAt: string;
   updatedAt: string;
+  /** Set when moved to Trash. */
+  deletedAt?: string | null;
 }
 
 export interface PortfolioInput {

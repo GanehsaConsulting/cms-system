@@ -58,7 +58,7 @@ export function ContentActivityRowActionsMenu({
           const notified = await runNotifiedAction(
             () => deleteContentActivityAction(item.id),
             {
-              success: "Activity deleted.",
+              success: "Moved to Trash.",
               errorFallback: "Failed to delete activity.",
             },
           );

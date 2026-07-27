@@ -132,7 +132,7 @@ export function MediaLibraryLibraryView({
           const result = await deleteMediaLibraryFilesAction(
             fileSelection.selectedIds,
           );
-          if (!notifyFromActionResult(result, "Files deleted.")) return;
+          if (!notifyFromActionResult(result, "Moved to Trash.")) return;
 
           fileSelection.clear();
           router.refresh();
@@ -150,7 +150,7 @@ export function MediaLibraryLibraryView({
     requestConfirm({
       title: `Delete ${rootIds.length} ${rootIds.length === 1 ? "folder" : "folders"}?`,
       description:
-        "Subfolders and files inside the selected folders will also be deleted.",
+        "Subfolders and files inside the selected folders will also be moved to Trash.",
       confirmLabel: "Delete",
       variant: "destructive",
       onConfirm: () => {
@@ -164,7 +164,7 @@ export function MediaLibraryLibraryView({
           }
 
           notifySuccess(
-            rootIds.length === 1 ? "Folder deleted." : "Folders deleted.",
+            rootIds.length === 1 ? "Moved to Trash." : `${rootIds.length} folders moved to Trash.`,
           );
           folderSelection.clear();
           router.refresh();

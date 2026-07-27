@@ -132,7 +132,7 @@ export function PortfolioForm({
       const notified = await runNotifiedAction(
         () => deletePortfolioAction(item.id),
         {
-          success: "Work deleted.",
+          success: "Moved to Trash.",
           errorFallback: "Failed to delete work.",
         },
       );
@@ -177,7 +177,7 @@ export function PortfolioForm({
                 <div>
                   <h2 className="font-semibold text-sm">Danger zone</h2>
                   <p className="mt-1 text-muted-foreground text-xs leading-relaxed">
-                    Permanently remove this portfolio work.
+                    Move this portfolio work to Trash. You can restore it later.
                   </p>
                 </div>
                 <CmsDeleteButton
@@ -186,7 +186,7 @@ export function PortfolioForm({
                   disabled={isPending}
                   onClick={() => setDeleteOpen(true)}
                 >
-                  Delete work
+                  Move to Trash
                 </CmsDeleteButton>
               </SolidSurface>
             ) : null}

@@ -26,6 +26,8 @@ export interface Article {
   authorImage?: string | null;
   createdAt: string;
   updatedAt: string;
+  /** Set when the article is in Trash (soft-deleted). */
+  deletedAt?: string | null;
 }
 
 /** Lightweight article row for dashboard / list summaries (no body content). */

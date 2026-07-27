@@ -323,7 +323,7 @@ export function ArticleForm({
           const notified = await runNotifiedAction(
             () => deleteArticleAction(article.id),
             {
-              success: "Article deleted.",
+              success: "Moved to Trash.",
               errorFallback: "Failed to delete article.",
             },
           );

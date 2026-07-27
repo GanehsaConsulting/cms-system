@@ -47,7 +47,7 @@ export function NotificationCard({
         NOTIFICATION_CARD_SURFACE,
         "group relative flex w-full items-start gap-3 transition-colors hover:bg-white/70 dark:hover:bg-white/14",
         isUnread &&
-          "bg-white/70 ring-1 ring-primary/15 dark:bg-white/14 dark:ring-primary/25",
+          "bg-white/90 dark:bg-black/70",
       )}
     >
       <button

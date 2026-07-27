@@ -27,6 +27,8 @@ export interface MediaFolder {
   ownerUserId: string | null;
   createdAt: string;
   updatedAt: string;
+  /** Set when moved to Trash. */
+  deletedAt?: string | null;
 }
 
 export interface MediaLibraryFile {
@@ -42,6 +44,8 @@ export interface MediaLibraryFile {
   ownerUserId: string | null;
   uploadedAt: string;
   updatedAt: string;
+  /** Set when moved to Trash. */
+  deletedAt?: string | null;
 }
 
 export interface MediaUsage {

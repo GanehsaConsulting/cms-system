@@ -1,4 +1,4 @@
-import { and, desc, eq, ne } from "drizzle-orm";
+import { and, desc, eq, inArray, isNotNull, isNull, ne } from "drizzle-orm";
 import { PRICE_FORM_LIMITS } from "@/config/price-form";
 import { slugify, slugifyArticleTitle } from "@/lib/articles/slug";
 import { assertBrandMatch } from "@/lib/brands/content-scope";
@@ -9,6 +9,10 @@ import {
   trimLocalized,
 } from "@/lib/locale";
 import { normalizePrice } from "@/lib/prices/normalize";
+import {
+  fromTrashUniqueValue,
+  toTrashUniqueValue,
+} from "@/lib/trash/unique-value";
 import type { LocalizedText } from "@/types/locale";
 import type { Price, PriceFeature, PriceInput } from "@/types/price";
 
@@ -35,6 +39,7 @@ function rowToPrice(row: typeof prices.$inferSelect): Price {
     features: Array.isArray(row.features) ? row.features : [],
     createdAt: toIso(row.createdAt),
     updatedAt: toIso(row.updatedAt),
+    deletedAt: row.deletedAt ? toIso(row.deletedAt) : null,
   });
 }
 
@@ -87,8 +92,18 @@ export async function getPrices(brandId: string): Promise<Price[]> {
   const rows = await db
     .select()
     .from(prices)
-    .where(eq(prices.brandId, brandId))
+    .where(and(eq(prices.brandId, brandId), isNull(prices.deletedAt)))
     .orderBy(desc(prices.updatedAt));
+
+  return rows.map(rowToPrice);
+}
+
+export async function getTrashedPrices(brandId: string): Promise<Price[]> {
+  const rows = await db
+    .select()
+    .from(prices)
+    .where(and(eq(prices.brandId, brandId), isNotNull(prices.deletedAt)))
+    .orderBy(desc(prices.deletedAt));
 
   return rows.map(rowToPrice);
 }
@@ -96,11 +111,20 @@ export async function getPrices(brandId: string): Promise<Price[]> {
 export async function getPriceById(
   brandId: string,
   id: string,
+  options?: { includeDeleted?: boolean },
 ): Promise<Price | null> {
   const rows = await db
     .select()
     .from(prices)
-    .where(eq(prices.id, id))
+    .where(
+      options?.includeDeleted
+        ? and(eq(prices.id, id), eq(prices.brandId, brandId))
+        : and(
+            eq(prices.id, id),
+            eq(prices.brandId, brandId),
+            isNull(prices.deletedAt),
+          ),
+    )
     .limit(1);
 
   const price = rows[0] ? rowToPrice(rows[0]) : null;
@@ -123,7 +147,13 @@ export async function getPriceBySlug(
   const rows = await db
     .select()
     .from(prices)
-    .where(and(eq(prices.brandId, brandId), eq(prices.slug, slug)))
+    .where(
+      and(
+        eq(prices.brandId, brandId),
+        eq(prices.slug, slug),
+        isNull(prices.deletedAt),
+      ),
+    )
     .limit(1);
 
   return rows[0] ? rowToPrice(rows[0]) : null;
@@ -175,6 +205,7 @@ export async function updatePrice(
         eq(prices.brandId, brandId),
         eq(prices.slug, normalized.slug),
         ne(prices.id, id),
+        isNull(prices.deletedAt),
       ),
     )
     .limit(1);
@@ -190,7 +221,13 @@ export async function updatePrice(
       brandId,
       updatedAt: new Date(),
     })
-    .where(and(eq(prices.id, id), eq(prices.brandId, brandId)))
+    .where(
+      and(
+        eq(prices.id, id),
+        eq(prices.brandId, brandId),
+        isNull(prices.deletedAt),
+      ),
+    )
     .returning();
 
   if (!row) {
@@ -200,8 +237,201 @@ export async function updatePrice(
   return rowToPrice(row);
 }
 
-export async function deletePrice(brandId: string, id: string): Promise<void> {
+/** Soft-delete — moves price plan to Trash and frees the slug. */
+export async function softDeletePrice(
+  brandId: string,
+  id: string,
+): Promise<void> {
   const current = await getPriceById(brandId, id);
+  if (!current) {
+    throw new Error("Price plan not found");
+  }
+
+  const now = new Date();
+  await db
+    .update(prices)
+    .set({
+      slug: toTrashUniqueValue(current.slug, id),
+      deletedAt: now,
+      updatedAt: now,
+    })
+    .where(
+      and(
+        eq(prices.id, id),
+        eq(prices.brandId, brandId),
+        isNull(prices.deletedAt),
+      ),
+    );
+}
+
+export async function softDeletePrices(
+  brandId: string,
+  ids: string[],
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
+
+  const rows = await db
+    .select({ id: prices.id, slug: prices.slug })
+    .from(prices)
+    .where(
+      and(
+        eq(prices.brandId, brandId),
+        isNull(prices.deletedAt),
+        inArray(prices.id, ids),
+      ),
+    );
+
+  if (rows.length === 0) {
+    return 0;
+  }
+
+  const now = new Date();
+  for (const row of rows) {
+    await db
+      .update(prices)
+      .set({
+        slug: toTrashUniqueValue(row.slug, row.id),
+        deletedAt: now,
+        updatedAt: now,
+      })
+      .where(
+        and(
+          eq(prices.id, row.id),
+          eq(prices.brandId, brandId),
+          isNull(prices.deletedAt),
+        ),
+      );
+  }
+
+  return rows.length;
+}
+
+export async function setPricesHighlighted(
+  brandId: string,
+  ids: string[],
+  highlighted: boolean,
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
+
+  const rows = await db
+    .update(prices)
+    .set({
+      highlighted,
+      updatedAt: new Date(),
+    })
+    .where(
+      and(
+        eq(prices.brandId, brandId),
+        isNull(prices.deletedAt),
+        inArray(prices.id, ids),
+      ),
+    )
+    .returning({ id: prices.id });
+
+  return rows.length;
+}
+
+export async function setPricesActive(
+  brandId: string,
+  ids: string[],
+  isActive: boolean,
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
+
+  const rows = await db
+    .update(prices)
+    .set({
+      isActive,
+      updatedAt: new Date(),
+    })
+    .where(
+      and(
+        eq(prices.brandId, brandId),
+        isNull(prices.deletedAt),
+        inArray(prices.id, ids),
+      ),
+    )
+    .returning({ id: prices.id });
+
+  return rows.length;
+}
+
+export async function restorePrice(
+  brandId: string,
+  id: string,
+): Promise<void> {
+  const current = await getPriceById(brandId, id, { includeDeleted: true });
+  if (!current?.deletedAt) {
+    throw new Error("Price plan not found in Trash");
+  }
+
+  const restoredSlug = fromTrashUniqueValue(current.slug, id);
+  const slugTaken = await db
+    .select({ id: prices.id })
+    .from(prices)
+    .where(
+      and(
+        eq(prices.brandId, brandId),
+        eq(prices.slug, restoredSlug),
+        ne(prices.id, id),
+        isNull(prices.deletedAt),
+      ),
+    )
+    .limit(1);
+
+  if (slugTaken.length > 0) {
+    throw new Error(
+      "Cannot restore: slug is already in use by another price plan",
+    );
+  }
+
+  const now = new Date();
+  await db
+    .update(prices)
+    .set({
+      slug: restoredSlug,
+      deletedAt: null,
+      updatedAt: now,
+    })
+    .where(
+      and(
+        eq(prices.id, id),
+        eq(prices.brandId, brandId),
+        isNotNull(prices.deletedAt),
+      ),
+    );
+}
+
+/** Permanently remove a trashed price plan. */
+export async function purgePrice(brandId: string, id: string): Promise<void> {
+  const current = await getPriceById(brandId, id, { includeDeleted: true });
+  if (!current?.deletedAt) {
+    throw new Error("Price plan not found in Trash");
+  }
+
+  await db
+    .delete(prices)
+    .where(and(eq(prices.id, id), eq(prices.brandId, brandId)));
+}
+
+export async function purgeAllTrashedPrices(brandId: string): Promise<number> {
+  const rows = await db
+    .delete(prices)
+    .where(and(eq(prices.brandId, brandId), isNotNull(prices.deletedAt)))
+    .returning({ id: prices.id });
+
+  return rows.length;
+}
+
+/** Hard-delete a price row (any state). Prefer softDeletePrice for CMS deletes. */
+export async function deletePrice(brandId: string, id: string): Promise<void> {
+  const current = await getPriceById(brandId, id, { includeDeleted: true });
 
   if (!current) {
     throw new Error("Price plan not found");

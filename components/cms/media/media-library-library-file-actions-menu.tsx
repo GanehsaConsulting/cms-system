@@ -45,7 +45,7 @@ export function MediaLibraryLibraryFileActionsMenu({
       onConfirm: () => {
         startTransition(async () => {
           const result = await deleteMediaLibraryFileAction(file.id);
-          if (!notifyFromActionResult(result, "File deleted.")) return;
+          if (!notifyFromActionResult(result, "Moved to Trash.")) return;
           router.refresh();
         });
       },

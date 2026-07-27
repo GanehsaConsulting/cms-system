@@ -41,5 +41,9 @@ async function ClientsWorksAllContent() {
     getPortfolioItems(brand.id),
   ]);
 
-  return <ClientsWorksAllView clients={clients} portfolio={portfolio} />;
+  return (
+    <BodyFrame>
+      <ClientsWorksAllView clients={clients} portfolio={portfolio} />
+    </BodyFrame>
+  );
 }

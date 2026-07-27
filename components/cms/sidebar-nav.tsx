@@ -6,6 +6,7 @@ import { SidebarAppearanceButton } from "@/components/cms/sidebar-appearance-but
 import { SidebarNavGroup } from "@/components/cms/sidebar-nav-group";
 import { SidebarNotificationsButton } from "@/components/cms/sidebar-notifications-button";
 import { SidebarAppIcon } from "@/components/shared/sidebar-app-icon";
+import { SidebarCountBadge } from "@/components/shared/sidebar-count-badge";
 import {
   SidebarMenu,
   SidebarMenuButton,
@@ -17,6 +18,7 @@ import { isClientSectionActive } from "@/config/client-tabs";
 import { useBrand } from "@/components/shared/brand-provider";
 import { isPriceSectionActive } from "@/config/price-tabs";
 import { SEPARATED_MENU_ITEM } from "@/config/sidebar";
+import { useTrashCount } from "@/hooks/use-trash-count";
 
 function isNavLinkActive(href: string, pathname: string) {
   if (href === "/articles") {
@@ -44,7 +46,9 @@ function isNavLinkActive(href: string, pathname: string) {
 
 export function SidebarNav() {
   const pathname = usePathname();
-  const { mainNavLinks, contentNavLinks, utilityNavLinks } = useBrand();
+  const { activeBrandId, mainNavLinks, contentNavLinks, utilityNavLinks } =
+    useBrand();
+  const trashCount = useTrashCount(activeBrandId);
 
   return (
     <div className="flex flex-col gap-2">
@@ -59,7 +63,15 @@ export function SidebarNav() {
                   tooltip={item.title}
                   className={SEPARATED_MENU_ITEM}
                 >
-                  <SidebarAppIcon icon={item.icon} tone={item.tone} />
+                  <span className="relative shrink-0">
+                    <SidebarAppIcon icon={item.icon} tone={item.tone} />
+                    {item.href === "/trash" ? (
+                      <SidebarCountBadge
+                        count={trashCount}
+                        className="absolute -top-1 -right-1"
+                      />
+                    ) : null}
+                  </span>
                   <span>{item.title}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -79,7 +91,15 @@ export function SidebarNav() {
                   tooltip={item.title}
                   className={SEPARATED_MENU_ITEM}
                 >
-                  <SidebarAppIcon icon={item.icon} tone={item.tone} />
+                  <span className="relative shrink-0">
+                    <SidebarAppIcon icon={item.icon} tone={item.tone} />
+                    {item.href === "/trash" ? (
+                      <SidebarCountBadge
+                        count={trashCount}
+                        className="absolute -top-1 -right-1"
+                      />
+                    ) : null}
+                  </span>
                   <span>{item.title}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>

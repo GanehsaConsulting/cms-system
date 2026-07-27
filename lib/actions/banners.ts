@@ -5,8 +5,8 @@ import { requireCmsActiveBrandId } from "@/lib/brands/active-brand";
 import { recordActivityEvent } from "@/lib/activity/record";
 import {
   createBanner,
-  deleteBanner,
   getBannerById,
+  softDeleteBanner,
   updateBanner,
 } from "@/lib/db/banners";
 import { revalidateMediaLibraryCache } from "@/lib/media/cache";
@@ -15,6 +15,7 @@ import { requireCmsContentAccess } from "@/lib/users/require-content-access";
 
 function revalidateBannerPaths() {
   revalidatePath("/banners");
+  revalidatePath("/trash");
   revalidateMediaLibraryCache();
 }
 
@@ -139,7 +140,7 @@ export async function deleteBannerAction(id: string) {
 
   try {
     const current = await getBannerById(brand.brandId, id);
-    await deleteBanner(brand.brandId, id);
+    await softDeleteBanner(brand.brandId, id);
     if (current) {
       await recordActivityEvent({
         brandId: brand.brandId,
@@ -155,7 +156,10 @@ export async function deleteBannerAction(id: string) {
   } catch (error) {
     return {
       success: false as const,
-      error: error instanceof Error ? error.message : "Failed to delete banner",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Failed to move banner to Trash",
     };
   }
 }

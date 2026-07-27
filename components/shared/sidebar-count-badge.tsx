@@ -18,7 +18,7 @@ export function SidebarCountBadge({ count, className }: SidebarCountBadgeProps) 
       aria-hidden
       className={cn(
         "pointer-events-none flex h-3.5 min-w-3.5 items-center justify-center rounded-full",
-        "bg-red-500 px-1 font-semibold text-[9px] leading-none text-white shadow-sm",
+        "bg-red-500 px-1 pb-[0.5px] font-semibold text-[9px] leading-none text-white shadow-sm",
         className,
       )}
     >

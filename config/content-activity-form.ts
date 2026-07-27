@@ -7,9 +7,10 @@ export const CONTENT_ACTIVITY_FORM_LIMITS = {
 
 export const CONTENT_ACTIVITY_ACTION_CONFIRMATIONS = {
   delete: {
-    title: "Delete this item?",
-    description: "This activity or promo will be removed permanently.",
-    confirmLabel: "Delete",
+    title: "Move to Trash?",
+    description:
+      "Move this activity or promo to Trash? You can restore it later from Trash.",
+    confirmLabel: "Move to Trash",
     variant: "destructive" as const,
   },
   archive: {

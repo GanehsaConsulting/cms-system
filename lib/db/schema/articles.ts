@@ -48,6 +48,7 @@ export const articles = cmsSchema.table(
     thumbnail: text("thumbnail").notNull().default(""),
     clickCount: integer("click_count").notNull().default(0),
     publishedAt: timestamp("published_at", { withTimezone: true }),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull(),
@@ -65,5 +66,6 @@ export const articles = cmsSchema.table(
       table.publishedAt,
     ),
     index("articles_author_id_idx").on(table.authorId),
+    index("articles_brand_deleted_at_idx").on(table.brandId, table.deletedAt),
   ],
 );

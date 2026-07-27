@@ -9,6 +9,10 @@ export const LIST_TABLE_HEAD_CLASS =
 
 export const LIST_TABLE_CELL_CLASS = "px-4 py-3.5";
 
+/** Narrow checkbox column for bulk select. */
+export const LIST_TABLE_BULK_HEAD_CLASS = `${LIST_TABLE_HEAD_CLASS} w-10 px-3`;
+export const LIST_TABLE_BULK_CELL_CLASS = `${LIST_TABLE_CELL_CLASS} w-10 px-3`;
+
 export const LIST_PAGINATION_CLASS =
   "grid shrink-0 grid-cols-[1fr_auto_1fr] items-center gap-3 border-[color:var(--separator)] border-t px-4 py-3";
 

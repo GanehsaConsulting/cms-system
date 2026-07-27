@@ -1,6 +1,7 @@
 "use client";
 
 import { PriceListTableRow } from "@/components/cms/prices/price-list-table-row";
+import { CmsListBulkCheckbox } from "@/components/shared/cms-list-bulk-checkbox";
 import { CmsListTable } from "@/components/shared/cms-list-table";
 import { CmsListTableSortHead } from "@/components/shared/cms-list-table-sort-head";
 import { TableHead } from "@/components/ui/table";
@@ -8,7 +9,10 @@ import {
   PRICE_TABLE_SORT_MAP,
   type PriceListSort,
 } from "@/config/price-list";
-import { LIST_TABLE_HEAD_CLASS } from "@/config/list-table";
+import {
+  LIST_TABLE_BULK_HEAD_CLASS,
+  LIST_TABLE_HEAD_CLASS,
+} from "@/config/list-table";
 import type { Price } from "@/types/price";
 import type { PriceCategory } from "@/types/price-category";
 
@@ -17,8 +21,13 @@ interface PriceListTableProps {
   categories: PriceCategory[];
   selectedId: string | null;
   sort: PriceListSort;
+  bulkSelectedIds: Set<string>;
+  isAllBulkSelected: boolean;
+  isBulkIndeterminate: boolean;
   onSelect: (id: string) => void;
   onSortChange: (sort: PriceListSort) => void;
+  onToggleBulk: (id: string) => void;
+  onToggleBulkAll: (checked: boolean) => void;
 }
 
 export function PriceListTable({
@@ -26,13 +35,26 @@ export function PriceListTable({
   categories,
   selectedId,
   sort,
+  bulkSelectedIds,
+  isAllBulkSelected,
+  isBulkIndeterminate,
   onSelect,
   onSortChange,
+  onToggleBulk,
+  onToggleBulkAll,
 }: PriceListTableProps) {
   return (
     <CmsListTable
       header={
         <>
+          <TableHead className={LIST_TABLE_BULK_HEAD_CLASS}>
+            <CmsListBulkCheckbox
+              checked={isAllBulkSelected}
+              indeterminate={isBulkIndeterminate}
+              label="Select all price plans on this page"
+              onCheckedChange={onToggleBulkAll}
+            />
+          </TableHead>
           <CmsListTableSortHead
             label="Package"
             column="package"
@@ -74,7 +96,9 @@ export function PriceListTable({
           price={price}
           categories={categories}
           isSelected={selectedId === price.id}
+          isBulkSelected={bulkSelectedIds.has(price.id)}
           onSelect={onSelect}
+          onToggleBulk={onToggleBulk}
         />
       ))}
     </CmsListTable>

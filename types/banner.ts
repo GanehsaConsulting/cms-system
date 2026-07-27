@@ -10,6 +10,8 @@ export interface Banner {
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
+  /** Set when the banner is in Trash (soft-deleted). */
+  deletedAt?: string | null;
 }
 
 export interface BannerInput {

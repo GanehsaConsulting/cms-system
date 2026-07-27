@@ -12,8 +12,8 @@ import {
 import { requireCmsActiveBrandId } from "@/lib/brands/active-brand";
 import {
   createArticle,
-  deleteArticle,
   getArticleById,
+  softDeleteArticle,
   updateArticle,
 } from "@/lib/db/articles";
 import { getCustomCategories } from "@/lib/db/categories";
@@ -233,7 +233,7 @@ export async function deleteArticleAction(id: string) {
 
   try {
     const current = await getArticleById(brand.brandId, id);
-    await deleteArticle(brand.brandId, id);
+    await softDeleteArticle(brand.brandId, id);
     if (current) {
       await recordActivityEvent({
         brandId: brand.brandId,
@@ -246,10 +246,11 @@ export async function deleteArticleAction(id: string) {
     }
     revalidatePath("/");
     revalidatePath("/articles");
+    revalidatePath("/trash");
     revalidateMediaLibraryCache();
     redirect("/articles");
   } catch (error) {
-    return toActionError(error, "Failed to delete article");
+    return toActionError(error, "Failed to move article to Trash");
   }
 }
 

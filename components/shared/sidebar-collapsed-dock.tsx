@@ -33,6 +33,7 @@ import {
   SIDEBAR_DOCK_LABEL_CLASS,
   SIDEBAR_DOCK_TRIGGER_CLASS,
 } from "@/config/sidebar";
+import { useTrashCount } from "@/hooks/use-trash-count";
 import { SidebarIcon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 
@@ -156,6 +157,7 @@ export function SidebarCollapsedDock({
   const { toggleSidebar } = useSidebar();
   const {
     activeBrand,
+    activeBrandId,
     mainNavLinks,
     contentNavLinks,
     utilityNavLinks,
@@ -168,6 +170,7 @@ export function SidebarCollapsedDock({
     openNotificationCenter,
     unreadCount,
   } = useNotificationCenter();
+  const trashCount = useTrashCount(activeBrandId);
   const brandLabel = activeBrand?.name ?? CMS_NAME;
 
   let index = 0;
@@ -222,7 +225,15 @@ export function SidebarCollapsedDock({
               label={item.title}
               isActive={isActive}
             >
-              <SidebarAppIcon icon={item.icon} tone={item.tone} size="dock" />
+              <span className="relative block">
+                <SidebarAppIcon icon={item.icon} tone={item.tone} size="dock" />
+                {item.href === "/trash" ? (
+                  <SidebarCountBadge
+                    count={trashCount}
+                    className="absolute top-0 right-0 z-30 translate-x-1/4 -translate-y-1/4"
+                  />
+                ) : null}
+              </span>
             </DockAppButton>
           </SidebarDockItem>
         );
@@ -239,7 +250,15 @@ export function SidebarCollapsedDock({
               label={item.title}
               isActive={isActive}
             >
-              <SidebarAppIcon icon={item.icon} tone={item.tone} size="dock" />
+              <span className="relative block">
+                <SidebarAppIcon icon={item.icon} tone={item.tone} size="dock" />
+                {item.href === "/trash" ? (
+                  <SidebarCountBadge
+                    count={trashCount}
+                    className="absolute top-0 right-0 z-30 translate-x-1/4 -translate-y-1/4"
+                  />
+                ) : null}
+              </span>
             </DockAppButton>
           </SidebarDockItem>
         );

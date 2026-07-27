@@ -9,6 +9,11 @@ export const CLIENTS_WORKS_TABS = [
 
 export type ClientsWorksTabId = (typeof CLIENTS_WORKS_TABS)[number]["id"];
 
+/** List tabs only — hide Clients & Works chrome on new/edit/detail form pages. */
+export function isClientsWorksListPath(pathname: string): boolean {
+  return CLIENTS_WORKS_TABS.some((tab) => tab.href === pathname);
+}
+
 export function getClientsWorksActiveTab(pathname: string): ClientsWorksTabId {
   if (pathname.startsWith("/clients/portfolio")) {
     return "portfolio";
@@ -18,11 +23,7 @@ export function getClientsWorksActiveTab(pathname: string): ClientsWorksTabId {
     return "logos";
   }
 
-  if (
-    pathname.startsWith("/clients/clients") ||
-    pathname === "/clients/new" ||
-    /^\/clients\/[^/]+\/edit$/.test(pathname)
-  ) {
+  if (pathname.startsWith("/clients/clients")) {
     return "clients";
   }
 

@@ -1,4 +1,4 @@
-import { and, asc, eq } from "drizzle-orm";
+import { and, asc, eq, isNull } from "drizzle-orm";
 import { slugify } from "@/lib/articles/slug";
 import { db } from "@/lib/db/client";
 import { priceCategories, prices } from "@/lib/db/schema";
@@ -139,7 +139,13 @@ export async function deletePriceCategory(
   const inUse = await db
     .select({ id: prices.id })
     .from(prices)
-    .where(and(eq(prices.brandId, brandId), eq(prices.serviceSlug, id)))
+    .where(
+      and(
+        eq(prices.brandId, brandId),
+        eq(prices.serviceSlug, id),
+        isNull(prices.deletedAt),
+      ),
+    )
     .limit(1);
 
   if (inUse.length > 0) {

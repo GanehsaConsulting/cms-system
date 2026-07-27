@@ -1,6 +1,5 @@
-import { ClientsWorksPageHeader } from "@/components/cms/clients/clients-works-page-header";
+import { ClientsWorksSectionLayout } from "@/components/cms/clients/clients-works-section-layout";
 import { CmsPageHeaderActionsProvider } from "@/components/shared/cms-page-header-actions";
-import { CmsSectionLayout } from "@/components/shared/cms-section-layout";
 
 export default function ClientsLayout({
   children,
@@ -9,9 +8,7 @@ export default function ClientsLayout({
 }>) {
   return (
     <CmsPageHeaderActionsProvider>
-      <CmsSectionLayout header={<ClientsWorksPageHeader />}>
-        {children}
-      </CmsSectionLayout>
+      <ClientsWorksSectionLayout>{children}</ClientsWorksSectionLayout>
     </CmsPageHeaderActionsProvider>
   );
 }

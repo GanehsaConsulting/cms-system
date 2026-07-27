@@ -18,6 +18,7 @@ export const banners = cmsSchema.table(
     images: jsonb("images").$type<string[]>().notNull().default([]),
     redirectUrl: text("redirect_url").notNull().default(""),
     isActive: boolean("is_active").notNull().default(true),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull(),
@@ -30,5 +31,6 @@ export const banners = cmsSchema.table(
     uniqueIndex("banners_brand_key_idx").on(table.brandId, table.key),
     index("banners_brand_updated_at_idx").on(table.brandId, table.updatedAt),
     index("banners_brand_active_idx").on(table.brandId, table.isActive),
+    index("banners_brand_deleted_at_idx").on(table.brandId, table.deletedAt),
   ],
 );

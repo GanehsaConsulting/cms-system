@@ -1,15 +1,15 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { ClientsListEmptyState } from "@/components/cms/clients/clients-list-empty-state";
 import { ClientsListToolbar } from "@/components/cms/clients/clients-list-toolbar";
 import { ClientsListWorkspace } from "@/components/cms/clients/clients-list-workspace";
 import { ClientsWorksNewDataButton } from "@/components/cms/clients/clients-works-new-data-button";
 import { CmsPageHeaderActions } from "@/components/shared/cms-page-header-actions";
-import { CMS_FLEX_CHILD, SECTION_BODY_PADDING } from "@/config/spacing";
+import { CMS_FLEX_CHILD } from "@/config/spacing";
 import { useClientsList } from "@/hooks/use-clients-list";
+import { useListBulkSelection } from "@/hooks/use-list-bulk-selection";
 import type { ClientListPreviewMode } from "@/lib/clients/preview";
-import { cn } from "@/lib/utils";
 import type { Client } from "@/types/client";
 
 interface ClientsListViewProps {
@@ -45,6 +45,22 @@ export function ClientsListView({
     resetFilters,
   } = useClientsList(clients);
 
+  const visibleIds = useMemo(
+    () => pagination.items.map((client) => client.id),
+    [pagination.items],
+  );
+  const bulk = useListBulkSelection(visibleIds);
+  const bulkSelectedIdSet = useMemo(
+    () => new Set(bulk.selectedIds),
+    [bulk.selectedIds],
+  );
+
+  useEffect(() => {
+    bulk.clear();
+    // Clear when the visible page/filter set changes — not on every bulk API change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: clear on list identity change
+  }, [featuredFilter, search, sort, page, pageSize]);
+
   const headerActions = useMemo(() => {
     if (clients.length === 0) {
       return <ClientsWorksNewDataButton />;
@@ -75,12 +91,7 @@ export function ClientsListView({
   ]);
 
   return (
-    <div
-      className={cn(
-        "flex min-h-0 flex-1 flex-col overflow-hidden",
-        SECTION_BODY_PADDING,
-      )}
-    >
+    <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
       <CmsPageHeaderActions>{headerActions}</CmsPageHeaderActions>
 
       {clients.length === 0 ? (
@@ -102,11 +113,24 @@ export function ClientsListView({
           rangeEnd={pagination.rangeEnd}
           sort={sort}
           previewMode={previewMode}
+          bulkSelectedIds={bulk.selectedIds}
+          bulkSelectedIdSet={bulkSelectedIdSet}
+          isAllBulkSelected={bulk.isAllSelected}
+          isBulkIndeterminate={bulk.isIndeterminate}
           onSelect={selectClient}
           onClosePanel={closePanel}
           onPageChange={setPage}
           onPageSizeChange={setPageSize}
           onSortChange={setSort}
+          onToggleBulk={bulk.toggle}
+          onToggleBulkAll={(checked) => {
+            if (checked) {
+              bulk.selectAll();
+            } else {
+              bulk.clear();
+            }
+          }}
+          onClearBulk={bulk.clear}
         />
       )}
     </div>

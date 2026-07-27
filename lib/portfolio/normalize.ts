@@ -19,5 +19,6 @@ export function normalizePortfolio(raw: Portfolio): Portfolio {
       : 0,
     createdAt: String(raw.createdAt ?? new Date().toISOString()),
     updatedAt: String(raw.updatedAt ?? new Date().toISOString()),
+    deletedAt: raw.deletedAt ?? null,
   };
 }

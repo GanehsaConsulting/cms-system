@@ -1,6 +1,7 @@
 "use client";
 
 import { PriceDetailPanel } from "@/components/cms/prices/price-detail-panel";
+import { PricesListBulkBar } from "@/components/cms/prices/prices-list-bulk-bar";
 import { CmsListPagination } from "@/components/shared/cms-list-pagination";
 import { PriceListTable } from "@/components/cms/prices/price-list-table";
 import { GlassSurface } from "@/components/shared/glass-surface";
@@ -22,11 +23,18 @@ interface PricesListWorkspaceProps {
   rangeStart: number;
   rangeEnd: number;
   sort: PriceListSort;
+  bulkSelectedIds: string[];
+  bulkSelectedIdSet: Set<string>;
+  isAllBulkSelected: boolean;
+  isBulkIndeterminate: boolean;
   onSelect: (id: string) => void;
   onClosePanel: () => void;
   onPageChange: (page: number) => void;
   onPageSizeChange: (pageSize: number) => void;
   onSortChange: (sort: PriceListSort) => void;
+  onToggleBulk: (id: string) => void;
+  onToggleBulkAll: (checked: boolean) => void;
+  onClearBulk: () => void;
   className?: string;
 }
 
@@ -42,11 +50,18 @@ export function PricesListWorkspace({
   rangeStart,
   rangeEnd,
   sort,
+  bulkSelectedIds,
+  bulkSelectedIdSet,
+  isAllBulkSelected,
+  isBulkIndeterminate,
   onSelect,
   onClosePanel,
   onPageChange,
   onPageSizeChange,
   onSortChange,
+  onToggleBulk,
+  onToggleBulkAll,
+  onClearBulk,
   className,
 }: PricesListWorkspaceProps) {
   return (
@@ -60,14 +75,23 @@ export function PricesListWorkspace({
       <GlassSurface className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
         {prices.length > 0 ? (
           <>
+            <PricesListBulkBar
+              selectedIds={bulkSelectedIds}
+              onClear={onClearBulk}
+            />
             <div className={CMS_SCROLL_REGION}>
               <PriceListTable
                 prices={prices}
                 categories={categories}
                 selectedId={selectedId}
                 sort={sort}
+                bulkSelectedIds={bulkSelectedIdSet}
+                isAllBulkSelected={isAllBulkSelected}
+                isBulkIndeterminate={isBulkIndeterminate}
                 onSelect={onSelect}
                 onSortChange={onSortChange}
+                onToggleBulk={onToggleBulk}
+                onToggleBulkAll={onToggleBulkAll}
               />
             </div>
             <CmsListPagination

@@ -23,6 +23,8 @@ export interface Client {
   photos: ClientPhoto[];
   createdAt: string;
   updatedAt: string;
+  /** Set when moved to Trash. */
+  deletedAt?: string | null;
 }
 
 export interface ClientInput {

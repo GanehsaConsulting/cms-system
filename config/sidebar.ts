@@ -79,6 +79,7 @@ const APP_ICON_COLORED_SHELLS = {
   banners: "from-[#BF5AF2] via-[#AF52DE] to-[#8944AB]",
   activities: "from-[#FFD60A] via-[#FFCC00] to-[#FF9500]",
   media: "from-[#5AC8FA] via-[#32ADE6] to-[#007AFF]",
+  trash: "from-[#FF6961] via-[#FF3B30] to-[#D70015]",
   search: "from-[#AEAEB2] via-[#8E8E93] to-[#636366]",
   appearance: "from-[#64D2FF] via-[#32ADE6] to-[#007AFF]",
   notifications: "from-[#FF9F0A] via-[#FF9500] to-[#C93400]",
@@ -126,6 +127,11 @@ const APP_ICON_GLYPHS = {
     colored: "text-white",
     light: "text-[#007AFF]",
     dark: "text-[#5AC8FA]",
+  },
+  trash: {
+    colored: "text-white",
+    light: "text-[#FF3B30]",
+    dark: "text-[#FF6961]",
   },
   search: {
     colored: "text-white",
@@ -202,6 +208,7 @@ export const SIDEBAR_APP_ICON_TONES = {
   banners: getSidebarAppIconTone("banners", "colored"),
   activities: getSidebarAppIconTone("activities", "colored"),
   media: getSidebarAppIconTone("media", "colored"),
+  trash: getSidebarAppIconTone("trash", "colored"),
   search: getSidebarAppIconTone("search", "colored"),
   appearance: getSidebarAppIconTone("appearance", "colored"),
   notifications: getSidebarAppIconTone("notifications", "colored"),

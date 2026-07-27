@@ -1,4 +1,4 @@
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, inArray, isNotNull, isNull } from "drizzle-orm";
 import { assertBrandMatch } from "@/lib/brands/content-scope";
 import { normalizeClient } from "@/lib/clients/normalize";
 import { db } from "@/lib/db/client";
@@ -22,6 +22,7 @@ function rowToClient(row: typeof clients.$inferSelect): Client {
     photos: Array.isArray(row.photos) ? row.photos : [],
     createdAt: toIso(row.createdAt),
     updatedAt: toIso(row.updatedAt),
+    deletedAt: row.deletedAt ? toIso(row.deletedAt) : null,
   });
 }
 
@@ -54,8 +55,18 @@ export async function getClients(brandId: string): Promise<Client[]> {
   const rows = await db
     .select()
     .from(clients)
-    .where(eq(clients.brandId, brandId))
+    .where(and(eq(clients.brandId, brandId), isNull(clients.deletedAt)))
     .orderBy(desc(clients.updatedAt));
+
+  return rows.map(rowToClient);
+}
+
+export async function getTrashedClients(brandId: string): Promise<Client[]> {
+  const rows = await db
+    .select()
+    .from(clients)
+    .where(and(eq(clients.brandId, brandId), isNotNull(clients.deletedAt)))
+    .orderBy(desc(clients.deletedAt));
 
   return rows.map(rowToClient);
 }
@@ -63,11 +74,20 @@ export async function getClients(brandId: string): Promise<Client[]> {
 export async function getClientById(
   brandId: string,
   id: string,
+  options?: { includeDeleted?: boolean },
 ): Promise<Client | null> {
   const rows = await db
     .select()
     .from(clients)
-    .where(eq(clients.id, id))
+    .where(
+      options?.includeDeleted
+        ? and(eq(clients.id, id), eq(clients.brandId, brandId))
+        : and(
+            eq(clients.id, id),
+            eq(clients.brandId, brandId),
+            isNull(clients.deletedAt),
+          ),
+    )
     .limit(1);
 
   const client = rows[0] ? rowToClient(rows[0]) : null;
@@ -123,7 +143,13 @@ export async function updateClient(
       brandId,
       updatedAt: new Date(),
     })
-    .where(and(eq(clients.id, id), eq(clients.brandId, brandId)))
+    .where(
+      and(
+        eq(clients.id, id),
+        eq(clients.brandId, brandId),
+        isNull(clients.deletedAt),
+      ),
+    )
     .returning();
 
   if (!row) {
@@ -133,13 +159,148 @@ export async function updateClient(
   return rowToClient(row);
 }
 
-export async function deleteClient(brandId: string, id: string): Promise<void> {
+/** Soft-delete — moves client to Trash. */
+export async function softDeleteClient(
+  brandId: string,
+  id: string,
+): Promise<void> {
   const current = await getClientById(brandId, id);
   if (!current) {
     throw new Error("Client not found");
   }
 
+  const now = new Date();
+  await db
+    .update(clients)
+    .set({ deletedAt: now, updatedAt: now })
+    .where(
+      and(
+        eq(clients.id, id),
+        eq(clients.brandId, brandId),
+        isNull(clients.deletedAt),
+      ),
+    );
+}
+
+export async function softDeleteClients(
+  brandId: string,
+  ids: string[],
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
+
+  const now = new Date();
+  const rows = await db
+    .update(clients)
+    .set({ deletedAt: now, updatedAt: now })
+    .where(
+      and(
+        eq(clients.brandId, brandId),
+        isNull(clients.deletedAt),
+        inArray(clients.id, ids),
+      ),
+    )
+    .returning({ id: clients.id });
+
+  return rows.length;
+}
+
+export async function restoreClient(
+  brandId: string,
+  id: string,
+): Promise<void> {
+  const current = await getClientById(brandId, id, { includeDeleted: true });
+  if (!current?.deletedAt) {
+    throw new Error("Client not found in Trash");
+  }
+
+  const now = new Date();
+  await db
+    .update(clients)
+    .set({ deletedAt: null, updatedAt: now })
+    .where(
+      and(
+        eq(clients.id, id),
+        eq(clients.brandId, brandId),
+        isNotNull(clients.deletedAt),
+      ),
+    );
+}
+
+/** Permanently remove a trashed client. */
+export async function purgeClient(brandId: string, id: string): Promise<void> {
+  const current = await getClientById(brandId, id, { includeDeleted: true });
+  if (!current?.deletedAt) {
+    throw new Error("Client not found in Trash");
+  }
+
   await db
     .delete(clients)
     .where(and(eq(clients.id, id), eq(clients.brandId, brandId)));
+}
+
+export async function purgeClients(
+  brandId: string,
+  ids: string[],
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
+
+  const rows = await db
+    .delete(clients)
+    .where(
+      and(
+        eq(clients.brandId, brandId),
+        isNotNull(clients.deletedAt),
+        inArray(clients.id, ids),
+      ),
+    )
+    .returning({ id: clients.id });
+
+  return rows.length;
+}
+
+export async function purgeAllTrashedClients(brandId: string): Promise<number> {
+  const rows = await db
+    .delete(clients)
+    .where(and(eq(clients.brandId, brandId), isNotNull(clients.deletedAt)))
+    .returning({ id: clients.id });
+
+  return rows.length;
+}
+
+/** Hard-delete a client row (any state). Prefer softDeleteClient for CMS deletes. */
+export async function deleteClient(brandId: string, id: string): Promise<void> {
+  await db
+    .delete(clients)
+    .where(and(eq(clients.id, id), eq(clients.brandId, brandId)));
+}
+
+export async function setClientsFeatured(
+  brandId: string,
+  ids: string[],
+  featured: boolean,
+): Promise<number> {
+  if (ids.length === 0) {
+    return 0;
+  }
+
+  const rows = await db
+    .update(clients)
+    .set({
+      featured,
+      updatedAt: new Date(),
+    })
+    .where(
+      and(
+        eq(clients.brandId, brandId),
+        isNull(clients.deletedAt),
+        inArray(clients.id, ids),
+      ),
+    )
+    .returning({ id: clients.id });
+
+  return rows.length;
 }

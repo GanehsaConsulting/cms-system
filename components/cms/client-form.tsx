@@ -57,7 +57,7 @@ export function ClientForm({ client }: ClientFormProps) {
     control,
     handleSubmit,
     reset,
-    watch,
+    watch,           
     formState: { errors, isDirty },
   } = form;
 
@@ -155,7 +155,7 @@ export function ClientForm({ client }: ClientFormProps) {
       const notified = await runNotifiedAction(
         () => deleteClientAction(client.id),
         {
-          success: "Client deleted.",
+          success: "Moved to Trash.",
           errorFallback: "Failed to delete client.",
         },
       );

@@ -1,6 +1,7 @@
 "use client";
 
 import { ClientListTableRow } from "@/components/cms/clients/client-list-table-row";
+import { CmsListBulkCheckbox } from "@/components/shared/cms-list-bulk-checkbox";
 import { CmsListTable } from "@/components/shared/cms-list-table";
 import { CmsListTableSortHead } from "@/components/shared/cms-list-table-sort-head";
 import { TableHead } from "@/components/ui/table";
@@ -8,7 +9,10 @@ import {
   CLIENT_TABLE_SORT_MAP,
   type ClientListSort,
 } from "@/config/client-list";
-import { LIST_TABLE_HEAD_CLASS } from "@/config/list-table";
+import {
+  LIST_TABLE_BULK_HEAD_CLASS,
+  LIST_TABLE_HEAD_CLASS,
+} from "@/config/list-table";
 import type { ClientListPreviewMode } from "@/lib/clients/preview";
 import type { Client } from "@/types/client";
 
@@ -17,8 +21,13 @@ interface ClientListTableProps {
   selectedId: string | null;
   sort: ClientListSort;
   previewMode?: ClientListPreviewMode;
+  bulkSelectedIds: Set<string>;
+  isAllBulkSelected: boolean;
+  isBulkIndeterminate: boolean;
   onSelect: (id: string) => void;
   onSortChange: (sort: ClientListSort) => void;
+  onToggleBulk: (id: string) => void;
+  onToggleBulkAll: (checked: boolean) => void;
 }
 
 export function ClientListTable({
@@ -26,13 +35,26 @@ export function ClientListTable({
   selectedId,
   sort,
   previewMode = "auto",
+  bulkSelectedIds,
+  isAllBulkSelected,
+  isBulkIndeterminate,
   onSelect,
   onSortChange,
+  onToggleBulk,
+  onToggleBulkAll,
 }: ClientListTableProps) {
   return (
     <CmsListTable
       header={
         <>
+          <TableHead className={LIST_TABLE_BULK_HEAD_CLASS}>
+            <CmsListBulkCheckbox
+              checked={isAllBulkSelected}
+              indeterminate={isBulkIndeterminate}
+              label="Select all clients on this page"
+              onCheckedChange={onToggleBulkAll}
+            />
+          </TableHead>
           <CmsListTableSortHead
             label="Client"
             column="name"
@@ -67,8 +89,10 @@ export function ClientListTable({
           key={client.id}
           client={client}
           isSelected={selectedId === client.id}
+          isBulkSelected={bulkSelectedIds.has(client.id)}
           previewMode={previewMode}
           onSelect={onSelect}
+          onToggleBulk={onToggleBulk}
         />
       ))}
     </CmsListTable>

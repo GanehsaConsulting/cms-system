@@ -2,7 +2,8 @@ import { SHELL_PADDING } from "@/config/spacing";
 import { cn } from "@/lib/utils";
 
 interface CmsSectionLayoutProps {
-  header: React.ReactNode;
+  /** Pass `null` to omit the padded header wrapper entirely. */
+  header?: React.ReactNode;
   children: React.ReactNode;
   className?: string;
 }
@@ -20,7 +21,9 @@ export function CmsSectionLayout({
     <div
       className={cn("flex min-h-0 flex-1 flex-col overflow-hidden", className)}
     >
-      <div className={cn(SHELL_PADDING, "shrink-0 pb-0")}>{header}</div>
+      {header ? (
+        <div className={cn(SHELL_PADDING, "shrink-0 pb-0")}>{header}</div>
+      ) : null}
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
         {children}
       </div>

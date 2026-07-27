@@ -1,10 +1,14 @@
-import { and, desc, eq, isNotNull, lte, ne, sql } from "drizzle-orm";
+import { and, desc, eq, isNotNull, isNull, lte, ne, sql } from "drizzle-orm";
 import { normalizeArticle } from "@/lib/articles/list";
 import { resolveArticleContentImages } from "@/lib/articles/resolve-content-images";
 import { assertBrandMatch } from "@/lib/brands/content-scope";
 import { resolveImageAsset, resolveImageAssets } from "@/lib/cloudinary/assets";
 import { db } from "@/lib/db/client";
 import { articles, user } from "@/lib/db/schema";
+import {
+  fromTrashUniqueValue,
+  toTrashUniqueValue,
+} from "@/lib/trash/unique-value";
 import type {
   Article,
   ArticleInput,
@@ -44,6 +48,7 @@ function rowToArticle(
     publishedAt: toIso(row.publishedAt),
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
+    deletedAt: row.deletedAt ? toIso(row.deletedAt) : null,
   });
 }
 
@@ -65,6 +70,7 @@ export async function promoteDueScheduledArticles(
         eq(articles.status, "scheduled"),
         isNotNull(articles.publishedAt),
         lte(articles.publishedAt, now),
+        isNull(articles.deletedAt),
       ),
     )
     .returning({ id: articles.id });
@@ -133,8 +139,24 @@ export async function getArticles(brandId: string): Promise<Article[]> {
     })
     .from(articles)
     .leftJoin(user, eq(articles.authorId, user.id))
-    .where(eq(articles.brandId, brandId))
+    .where(and(eq(articles.brandId, brandId), isNull(articles.deletedAt)))
     .orderBy(desc(articles.updatedAt));
+
+  return rows.map(({ article, authorImage }) =>
+    rowToArticle(article, authorImage ?? null),
+  );
+}
+
+export async function getTrashedArticles(brandId: string): Promise<Article[]> {
+  const rows = await db
+    .select({
+      article: articles,
+      authorImage: user.image,
+    })
+    .from(articles)
+    .leftJoin(user, eq(articles.authorId, user.id))
+    .where(and(eq(articles.brandId, brandId), isNotNull(articles.deletedAt)))
+    .orderBy(desc(articles.deletedAt));
 
   return rows.map(({ article, authorImage }) =>
     rowToArticle(article, authorImage ?? null),
@@ -170,7 +192,7 @@ export async function getArticlesList(brandId: string): Promise<Article[]> {
     })
     .from(articles)
     .leftJoin(user, eq(articles.authorId, user.id))
-    .where(eq(articles.brandId, brandId))
+    .where(and(eq(articles.brandId, brandId), isNull(articles.deletedAt)))
     .orderBy(desc(articles.updatedAt));
 
   return rows.map((row) =>
@@ -195,6 +217,7 @@ export async function getArticlesList(brandId: string): Promise<Article[]> {
       publishedAt: toIso(row.publishedAt),
       createdAt: row.createdAt.toISOString(),
       updatedAt: row.updatedAt.toISOString(),
+      deletedAt: null,
     }),
   );
 }
@@ -217,7 +240,7 @@ export async function getArticlesSummary(
     })
     .from(articles)
     .leftJoin(user, eq(articles.authorId, user.id))
-    .where(eq(articles.brandId, brandId))
+    .where(and(eq(articles.brandId, brandId), isNull(articles.deletedAt)))
     .orderBy(desc(articles.updatedAt));
 
   return rows.map((row) => ({
@@ -236,6 +259,7 @@ export async function getArticlesSummary(
 export async function getArticleById(
   brandId: string,
   id: string,
+  options?: { includeDeleted?: boolean },
 ): Promise<Article | null> {
   const rows = await db
     .select({
@@ -244,7 +268,15 @@ export async function getArticleById(
     })
     .from(articles)
     .leftJoin(user, eq(articles.authorId, user.id))
-    .where(and(eq(articles.id, id), eq(articles.brandId, brandId)))
+    .where(
+      options?.includeDeleted
+        ? and(eq(articles.id, id), eq(articles.brandId, brandId))
+        : and(
+            eq(articles.id, id),
+            eq(articles.brandId, brandId),
+            isNull(articles.deletedAt),
+          ),
+    )
     .limit(1);
 
   if (!rows[0]) {
@@ -265,7 +297,13 @@ export async function getArticleBySlug(
     })
     .from(articles)
     .leftJoin(user, eq(articles.authorId, user.id))
-    .where(and(eq(articles.slug, slug), eq(articles.brandId, brandId)))
+    .where(
+      and(
+        eq(articles.slug, slug),
+        eq(articles.brandId, brandId),
+        isNull(articles.deletedAt),
+      ),
+    )
     .limit(1);
 
   if (!rows[0]) {
@@ -337,6 +375,7 @@ export async function updateArticle(
         eq(articles.brandId, brandId),
         eq(articles.slug, input.slug),
         ne(articles.id, id),
+        isNull(articles.deletedAt),
       ),
     )
     .limit(1);
@@ -369,7 +408,13 @@ export async function updateArticle(
       publishedAt: resolved.publishedAt,
       updatedAt: now,
     })
-    .where(and(eq(articles.id, id), eq(articles.brandId, brandId)))
+    .where(
+      and(
+        eq(articles.id, id),
+        eq(articles.brandId, brandId),
+        isNull(articles.deletedAt),
+      ),
+    )
     .returning();
 
   if (!row) {
@@ -379,6 +424,101 @@ export async function updateArticle(
   return rowToArticle(row);
 }
 
+/** Soft-delete — moves article to Trash and frees the slug. */
+export async function softDeleteArticle(
+  brandId: string,
+  id: string,
+): Promise<void> {
+  const current = await getArticleById(brandId, id);
+  if (!current) {
+    throw new Error("Article not found");
+  }
+
+  const now = new Date();
+  await db
+    .update(articles)
+    .set({
+      slug: toTrashUniqueValue(current.slug, id),
+      deletedAt: now,
+      updatedAt: now,
+    })
+    .where(
+      and(
+        eq(articles.id, id),
+        eq(articles.brandId, brandId),
+        isNull(articles.deletedAt),
+      ),
+    );
+}
+
+export async function restoreArticle(
+  brandId: string,
+  id: string,
+): Promise<void> {
+  const current = await getArticleById(brandId, id, { includeDeleted: true });
+  if (!current?.deletedAt) {
+    throw new Error("Article not found in Trash");
+  }
+
+  const restoredSlug = fromTrashUniqueValue(current.slug, id);
+  const slugTaken = await db
+    .select({ id: articles.id })
+    .from(articles)
+    .where(
+      and(
+        eq(articles.brandId, brandId),
+        eq(articles.slug, restoredSlug),
+        ne(articles.id, id),
+        isNull(articles.deletedAt),
+      ),
+    )
+    .limit(1);
+
+  if (slugTaken.length > 0) {
+    throw new Error(
+      "Cannot restore: slug is already in use by another article",
+    );
+  }
+
+  const now = new Date();
+  await db
+    .update(articles)
+    .set({
+      slug: restoredSlug,
+      deletedAt: null,
+      updatedAt: now,
+    })
+    .where(
+      and(
+        eq(articles.id, id),
+        eq(articles.brandId, brandId),
+        isNotNull(articles.deletedAt),
+      ),
+    );
+}
+
+/** Permanently remove a trashed article. */
+export async function purgeArticle(brandId: string, id: string): Promise<void> {
+  const current = await getArticleById(brandId, id, { includeDeleted: true });
+  if (!current?.deletedAt) {
+    throw new Error("Article not found in Trash");
+  }
+
+  await db
+    .delete(articles)
+    .where(and(eq(articles.id, id), eq(articles.brandId, brandId)));
+}
+
+export async function purgeAllTrashedArticles(brandId: string): Promise<number> {
+  const rows = await db
+    .delete(articles)
+    .where(and(eq(articles.brandId, brandId), isNotNull(articles.deletedAt)))
+    .returning({ id: articles.id });
+
+  return rows.length;
+}
+
+/** Hard-delete an article row (any state). Prefer softDeleteArticle for CMS deletes. */
 export async function deleteArticle(
   brandId: string,
   id: string,
@@ -407,6 +547,7 @@ export async function incrementArticleClick(
         eq(articles.brandId, brandId),
         eq(articles.slug, slug),
         eq(articles.status, "published"),
+        isNull(articles.deletedAt),
       ),
     )
     .returning({ clickCount: articles.clickCount });

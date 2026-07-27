@@ -7,8 +7,11 @@ import { requireCmsActiveBrandId } from "@/lib/brands/active-brand";
 import { recordActivityEvent } from "@/lib/activity/record";
 import {
   createPortfolio,
-  deletePortfolio,
   getPortfolioById,
+  setPortfolioFeatured,
+  setPortfolioWorkType,
+  softDeletePortfolio,
+  softDeletePortfolios,
   updatePortfolio,
 } from "@/lib/db/portfolio";
 import { revalidateMediaLibraryCache } from "@/lib/media/cache";
@@ -18,12 +21,18 @@ import {
   portfolioFormToInput,
 } from "@/lib/validations/portfolio";
 import { requireCmsContentAccess } from "@/lib/users/require-content-access";
+import type { PortfolioWorkType } from "@/types/portfolio";
+
+function normalizeIdList(ids: string[]) {
+  return [...new Set(ids.map((id) => id.trim()).filter((id) => id.length > 0))];
+}
 
 function revalidatePortfolioPaths(id?: string) {
   revalidatePath("/");
   revalidatePath("/clients");
   revalidatePath("/clients/clients");
   revalidatePath("/clients/portfolio");
+  revalidatePath("/trash");
   if (id) {
     revalidatePath(`/clients/portfolio/${id}/edit`);
   }
@@ -125,7 +134,7 @@ export async function deletePortfolioAction(id: string) {
 
   try {
     const current = await getPortfolioById(brand.brandId, id);
-    await deletePortfolio(brand.brandId, id);
+    await softDeletePortfolio(brand.brandId, id);
     if (current) {
       await recordActivityEvent({
         brandId: brand.brandId,
@@ -139,6 +148,148 @@ export async function deletePortfolioAction(id: string) {
     revalidatePortfolioPaths();
     redirect("/clients/portfolio");
   } catch (error) {
-    return toActionError(error, "Failed to delete portfolio");
+    return toActionError(error, "Failed to move work to Trash");
+  }
+}
+
+export async function setPortfolioFeaturedAction(
+  ids: string[],
+  featured: boolean,
+) {
+  const access = await requireCmsContentAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
+  const brand = await requireCmsActiveBrandId();
+  if (!brand.ok) {
+    return { success: false as const, error: brand.error };
+  }
+
+  const uniqueIds = normalizeIdList(ids);
+  if (uniqueIds.length === 0) {
+    return { success: false as const, error: "No works selected." };
+  }
+
+  try {
+    const updatedCount = await setPortfolioFeatured(
+      brand.brandId,
+      uniqueIds,
+      featured,
+    );
+    if (updatedCount === 0) {
+      return { success: false as const, error: "No matching works found." };
+    }
+
+    await recordActivityEvent({
+      brandId: brand.brandId,
+      entityType: "portfolio",
+      entityId: uniqueIds[0] ?? "batch",
+      action: "updated",
+      actor: access.user,
+      entityTitle:
+        updatedCount === 1
+          ? featured
+            ? "1 work featured"
+            : "1 work unfeatured"
+          : featured
+            ? `${updatedCount} works featured`
+            : `${updatedCount} works unfeatured`,
+      href: "/clients/portfolio",
+    });
+    revalidatePortfolioPaths();
+    return { success: true as const, updatedCount };
+  } catch (error) {
+    return toActionError(error, "Failed to update works");
+  }
+}
+
+export async function setPortfolioWorkTypeAction(
+  ids: string[],
+  workType: PortfolioWorkType,
+) {
+  const access = await requireCmsContentAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
+  const brand = await requireCmsActiveBrandId();
+  if (!brand.ok) {
+    return { success: false as const, error: brand.error };
+  }
+
+  if (workType !== "social-media" && workType !== "website") {
+    return { success: false as const, error: "Invalid work type." };
+  }
+
+  const uniqueIds = normalizeIdList(ids);
+  if (uniqueIds.length === 0) {
+    return { success: false as const, error: "No works selected." };
+  }
+
+  try {
+    const updatedCount = await setPortfolioWorkType(
+      brand.brandId,
+      uniqueIds,
+      workType,
+    );
+    if (updatedCount === 0) {
+      return { success: false as const, error: "No matching works found." };
+    }
+
+    await recordActivityEvent({
+      brandId: brand.brandId,
+      entityType: "portfolio",
+      entityId: uniqueIds[0] ?? "batch",
+      action: "updated",
+      actor: access.user,
+      entityTitle:
+        updatedCount === 1
+          ? `1 work set to ${workType}`
+          : `${updatedCount} works set to ${workType}`,
+      href: "/clients/portfolio",
+    });
+    revalidatePortfolioPaths();
+    return { success: true as const, updatedCount };
+  } catch (error) {
+    return toActionError(error, "Failed to update works");
+  }
+}
+
+export async function deletePortfoliosAction(ids: string[]) {
+  const access = await requireCmsContentAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
+  const brand = await requireCmsActiveBrandId();
+  if (!brand.ok) {
+    return { success: false as const, error: brand.error };
+  }
+
+  const uniqueIds = normalizeIdList(ids);
+  if (uniqueIds.length === 0) {
+    return { success: false as const, error: "No works selected." };
+  }
+
+  try {
+    const deletedCount = await softDeletePortfolios(brand.brandId, uniqueIds);
+    if (deletedCount === 0) {
+      return { success: false as const, error: "No matching works found." };
+    }
+
+    await recordActivityEvent({
+      brandId: brand.brandId,
+      entityType: "portfolio",
+      entityId: uniqueIds[0] ?? "batch",
+      action: "deleted",
+      actor: access.user,
+      entityTitle: deletedCount === 1 ? "1 work" : `${deletedCount} works`,
+      href: "/trash",
+    });
+    revalidatePortfolioPaths();
+    return { success: true as const, deletedCount };
+  } catch (error) {
+    return toActionError(error, "Failed to move works to Trash");
   }
 }

@@ -1,4 +1,4 @@
-import { and, desc, eq, ne } from "drizzle-orm";
+import { and, desc, eq, isNotNull, isNull, ne } from "drizzle-orm";
 import { slugify } from "@/lib/articles/slug";
 import { isRequiredBannerPlacementKey } from "@/config/banner-placements";
 import { assertBrandMatch } from "@/lib/brands/content-scope";
@@ -6,6 +6,10 @@ import { getBannerImages } from "@/lib/banners/images";
 import { resolveImageAssets } from "@/lib/cloudinary/assets";
 import { db } from "@/lib/db/client";
 import { banners } from "@/lib/db/schema";
+import {
+  fromTrashUniqueValue,
+  toTrashUniqueValue,
+} from "@/lib/trash/unique-value";
 import type { Banner, BannerInput } from "@/types/banner";
 
 const IMAGE_FOLDER = "cms-system/banners";
@@ -25,6 +29,7 @@ function rowToBanner(row: typeof banners.$inferSelect): Banner {
     isActive: row.isActive,
     createdAt: toIso(row.createdAt),
     updatedAt: toIso(row.updatedAt),
+    deletedAt: row.deletedAt ? toIso(row.deletedAt) : null,
   };
 }
 
@@ -46,8 +51,18 @@ export async function getBanners(brandId: string): Promise<Banner[]> {
   const rows = await db
     .select()
     .from(banners)
-    .where(eq(banners.brandId, brandId))
+    .where(and(eq(banners.brandId, brandId), isNull(banners.deletedAt)))
     .orderBy(desc(banners.updatedAt));
+
+  return rows.map(rowToBanner);
+}
+
+export async function getTrashedBanners(brandId: string): Promise<Banner[]> {
+  const rows = await db
+    .select()
+    .from(banners)
+    .where(and(eq(banners.brandId, brandId), isNotNull(banners.deletedAt)))
+    .orderBy(desc(banners.deletedAt));
 
   return rows.map(rowToBanner);
 }
@@ -55,11 +70,20 @@ export async function getBanners(brandId: string): Promise<Banner[]> {
 export async function getBannerById(
   brandId: string,
   id: string,
+  options?: { includeDeleted?: boolean },
 ): Promise<Banner | null> {
   const rows = await db
     .select()
     .from(banners)
-    .where(eq(banners.id, id))
+    .where(
+      options?.includeDeleted
+        ? and(eq(banners.id, id), eq(banners.brandId, brandId))
+        : and(
+            eq(banners.id, id),
+            eq(banners.brandId, brandId),
+            isNull(banners.deletedAt),
+          ),
+    )
     .limit(1);
 
   const banner = rows[0] ? rowToBanner(rows[0]) : null;
@@ -89,7 +113,11 @@ export async function getBannerByKey(
     .select()
     .from(banners)
     .where(
-      and(eq(banners.brandId, brandId), eq(banners.key, normalizedKey)),
+      and(
+        eq(banners.brandId, brandId),
+        eq(banners.key, normalizedKey),
+        isNull(banners.deletedAt),
+      ),
     )
     .limit(1);
 
@@ -123,7 +151,13 @@ export async function createBanner(
   const existing = await db
     .select({ id: banners.id })
     .from(banners)
-    .where(and(eq(banners.brandId, brandId), eq(banners.key, normalized.key)))
+    .where(
+      and(
+        eq(banners.brandId, brandId),
+        eq(banners.key, normalized.key),
+        isNull(banners.deletedAt),
+      ),
+    )
     .limit(1);
 
   if (existing.length > 0) {
@@ -179,6 +213,7 @@ export async function updateBanner(
         eq(banners.brandId, brandId),
         eq(banners.key, normalized.key),
         ne(banners.id, id),
+        isNull(banners.deletedAt),
       ),
     )
     .limit(1);
@@ -195,7 +230,13 @@ export async function updateBanner(
       brandId,
       updatedAt: new Date(),
     })
-    .where(and(eq(banners.id, id), eq(banners.brandId, brandId)))
+    .where(
+      and(
+        eq(banners.id, id),
+        eq(banners.brandId, brandId),
+        isNull(banners.deletedAt),
+      ),
+    )
     .returning();
 
   if (!row) {
@@ -205,7 +246,11 @@ export async function updateBanner(
   return rowToBanner(row);
 }
 
-export async function deleteBanner(brandId: string, id: string): Promise<void> {
+/** Soft-delete — moves banner to Trash and frees the key. */
+export async function softDeleteBanner(
+  brandId: string,
+  id: string,
+): Promise<void> {
   const current = await getBannerById(brandId, id);
   if (!current) {
     throw new Error("Banner not found");
@@ -217,6 +262,92 @@ export async function deleteBanner(brandId: string, id: string): Promise<void> {
     );
   }
 
+  const now = new Date();
+  await db
+    .update(banners)
+    .set({
+      key: toTrashUniqueValue(current.key, id),
+      deletedAt: now,
+      updatedAt: now,
+    })
+    .where(
+      and(
+        eq(banners.id, id),
+        eq(banners.brandId, brandId),
+        isNull(banners.deletedAt),
+      ),
+    );
+}
+
+export async function restoreBanner(
+  brandId: string,
+  id: string,
+): Promise<void> {
+  const current = await getBannerById(brandId, id, { includeDeleted: true });
+  if (!current?.deletedAt) {
+    throw new Error("Banner not found in Trash");
+  }
+
+  const restoredKey = fromTrashUniqueValue(current.key, id);
+  const keyTaken = await db
+    .select({ id: banners.id })
+    .from(banners)
+    .where(
+      and(
+        eq(banners.brandId, brandId),
+        eq(banners.key, restoredKey),
+        ne(banners.id, id),
+        isNull(banners.deletedAt),
+      ),
+    )
+    .limit(1);
+
+  if (keyTaken.length > 0) {
+    throw new Error(
+      "Cannot restore: key is already in use by another banner",
+    );
+  }
+
+  const now = new Date();
+  await db
+    .update(banners)
+    .set({
+      key: restoredKey,
+      deletedAt: null,
+      updatedAt: now,
+    })
+    .where(
+      and(
+        eq(banners.id, id),
+        eq(banners.brandId, brandId),
+        isNotNull(banners.deletedAt),
+      ),
+    );
+}
+
+/** Permanently remove a trashed banner. */
+export async function purgeBanner(brandId: string, id: string): Promise<void> {
+  const current = await getBannerById(brandId, id, { includeDeleted: true });
+  if (!current?.deletedAt) {
+    throw new Error("Banner not found in Trash");
+  }
+
+  await db
+    .delete(banners)
+    .where(and(eq(banners.id, id), eq(banners.brandId, brandId)));
+}
+
+export async function purgeAllTrashedBanners(brandId: string): Promise<number> {
+  const rows = await db
+    .delete(banners)
+    .where(and(eq(banners.brandId, brandId), isNotNull(banners.deletedAt)))
+    .returning({ id: banners.id });
+
+  return rows.length;
+}
+
+/** Hard-delete a banner row (any state). Prefer softDeleteBanner for CMS deletes. */
+export async function deleteBanner(brandId: string, id: string): Promise<void> {
   await db
     .delete(banners)
     .where(and(eq(banners.id, id), eq(banners.brandId, brandId)));

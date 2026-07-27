@@ -1,4 +1,4 @@
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, isNotNull, isNull, sql } from "drizzle-orm";
 import { resolveArticleContentImages } from "@/lib/articles/resolve-content-images";
 import { assertBrandMatch } from "@/lib/brands/content-scope";
 import { resolveImageAssets } from "@/lib/cloudinary/assets";
@@ -39,6 +39,7 @@ function rowToContentActivity(
     clickCount: row.clickCount,
     createdAt: toIso(row.createdAt),
     updatedAt: toIso(row.updatedAt),
+    deletedAt: row.deletedAt ? toIso(row.deletedAt) : null,
   };
 }
 
@@ -79,8 +80,36 @@ export async function getContentActivities(
     })
     .from(contentActivities)
     .leftJoin(user, eq(contentActivities.authorId, user.id))
-    .where(eq(contentActivities.brandId, brandId))
+    .where(
+      and(
+        eq(contentActivities.brandId, brandId),
+        isNull(contentActivities.deletedAt),
+      ),
+    )
     .orderBy(desc(contentActivities.displayAt));
+
+  return rows.map(({ activity, authorImage }) =>
+    rowToContentActivity(activity, authorImage ?? null),
+  );
+}
+
+export async function getTrashedContentActivities(
+  brandId: string,
+): Promise<ContentActivity[]> {
+  const rows = await db
+    .select({
+      activity: contentActivities,
+      authorImage: user.image,
+    })
+    .from(contentActivities)
+    .leftJoin(user, eq(contentActivities.authorId, user.id))
+    .where(
+      and(
+        eq(contentActivities.brandId, brandId),
+        isNotNull(contentActivities.deletedAt),
+      ),
+    )
+    .orderBy(desc(contentActivities.deletedAt));
 
   return rows.map(({ activity, authorImage }) =>
     rowToContentActivity(activity, authorImage ?? null),
@@ -90,6 +119,7 @@ export async function getContentActivities(
 export async function getContentActivityById(
   brandId: string,
   id: string,
+  options?: { includeDeleted?: boolean },
 ): Promise<ContentActivity | null> {
   const [row] = await db
     .select({
@@ -99,7 +129,16 @@ export async function getContentActivityById(
     .from(contentActivities)
     .leftJoin(user, eq(contentActivities.authorId, user.id))
     .where(
-      and(eq(contentActivities.brandId, brandId), eq(contentActivities.id, id)),
+      options?.includeDeleted
+        ? and(
+            eq(contentActivities.brandId, brandId),
+            eq(contentActivities.id, id),
+          )
+        : and(
+            eq(contentActivities.brandId, brandId),
+            eq(contentActivities.id, id),
+            isNull(contentActivities.deletedAt),
+          ),
     )
     .limit(1);
 
@@ -186,7 +225,11 @@ export async function updateContentActivity(
       authorId: options?.authorId ?? current.authorId,
     })
     .where(
-      and(eq(contentActivities.brandId, brandId), eq(contentActivities.id, id)),
+      and(
+        eq(contentActivities.brandId, brandId),
+        eq(contentActivities.id, id),
+        isNull(contentActivities.deletedAt),
+      ),
     )
     .returning();
 
@@ -207,18 +250,107 @@ export async function updateContentActivityStatus(
     .update(contentActivities)
     .set({ status })
     .where(
-      and(eq(contentActivities.brandId, brandId), eq(contentActivities.id, id)),
+      and(
+        eq(contentActivities.brandId, brandId),
+        eq(contentActivities.id, id),
+        isNull(contentActivities.deletedAt),
+      ),
     )
     .returning();
 
   return rowToContentActivity(row, current.authorImage ?? null);
 }
 
-export async function deleteContentActivity(
+/** Soft-delete — moves activity to Trash. */
+export async function softDeleteContentActivity(
   brandId: string,
   id: string,
 ): Promise<void> {
   const current = await getContentActivityById(brandId, id);
+  if (!current) {
+    throw new Error("Activity not found");
+  }
+
+  const now = new Date();
+  await db
+    .update(contentActivities)
+    .set({ deletedAt: now, updatedAt: now })
+    .where(
+      and(
+        eq(contentActivities.brandId, brandId),
+        eq(contentActivities.id, id),
+        isNull(contentActivities.deletedAt),
+      ),
+    );
+}
+
+export async function restoreContentActivity(
+  brandId: string,
+  id: string,
+): Promise<void> {
+  const current = await getContentActivityById(brandId, id, {
+    includeDeleted: true,
+  });
+  if (!current?.deletedAt) {
+    throw new Error("Activity not found in Trash");
+  }
+
+  const now = new Date();
+  await db
+    .update(contentActivities)
+    .set({ deletedAt: null, updatedAt: now })
+    .where(
+      and(
+        eq(contentActivities.brandId, brandId),
+        eq(contentActivities.id, id),
+        isNotNull(contentActivities.deletedAt),
+      ),
+    );
+}
+
+/** Permanently remove a trashed activity. */
+export async function purgeContentActivity(
+  brandId: string,
+  id: string,
+): Promise<void> {
+  const current = await getContentActivityById(brandId, id, {
+    includeDeleted: true,
+  });
+  if (!current?.deletedAt) {
+    throw new Error("Activity not found in Trash");
+  }
+
+  await db
+    .delete(contentActivities)
+    .where(
+      and(eq(contentActivities.brandId, brandId), eq(contentActivities.id, id)),
+    );
+}
+
+export async function purgeAllTrashedContentActivities(
+  brandId: string,
+): Promise<number> {
+  const rows = await db
+    .delete(contentActivities)
+    .where(
+      and(
+        eq(contentActivities.brandId, brandId),
+        isNotNull(contentActivities.deletedAt),
+      ),
+    )
+    .returning({ id: contentActivities.id });
+
+  return rows.length;
+}
+
+/** Hard-delete an activity row (any state). Prefer softDeleteContentActivity for CMS deletes. */
+export async function deleteContentActivity(
+  brandId: string,
+  id: string,
+): Promise<void> {
+  const current = await getContentActivityById(brandId, id, {
+    includeDeleted: true,
+  });
   if (!current) {
     throw new Error("Activity not found");
   }
@@ -244,6 +376,7 @@ export async function incrementContentActivityClick(
         eq(contentActivities.brandId, brandId),
         eq(contentActivities.id, id),
         eq(contentActivities.status, "published"),
+        isNull(contentActivities.deletedAt),
       ),
     )
     .returning({ clickCount: contentActivities.clickCount });

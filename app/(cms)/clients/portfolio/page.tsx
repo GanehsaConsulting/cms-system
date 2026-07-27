@@ -7,18 +7,26 @@ import { getClients } from "@/lib/db/clients";
 import { getPortfolioItems } from "@/lib/db/portfolio";
 import { cn } from "@/lib/utils";
 
+function BodyFrame({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      className={cn(
+        "flex min-h-0 flex-1 flex-col overflow-hidden",
+        SECTION_BODY_PADDING,
+      )}
+    >
+      {children}
+    </div>
+  );
+}
+
 export default function PortfolioPage() {
   return (
     <Suspense
       fallback={
-        <div
-          className={cn(
-            "flex min-h-0 flex-1 flex-col overflow-hidden",
-            SECTION_BODY_PADDING,
-          )}
-        >
+        <BodyFrame>
           <CmsListBodySkeleton />
-        </div>
+        </BodyFrame>
       }
     >
       <PortfolioContent />
@@ -33,5 +41,9 @@ async function PortfolioContent() {
     getClients(brand.id),
   ]);
 
-  return <PortfolioListView items={items} clients={clients} />;
+  return (
+    <BodyFrame>
+      <PortfolioListView items={items} clients={clients} />
+    </BodyFrame>
+  );
 }

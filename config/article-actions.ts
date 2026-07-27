@@ -1,8 +1,8 @@
 export const ARTICLE_ACTION_CONFIRMATIONS = {
   delete: (title: string) => ({
-    title: "Delete article?",
-    description: `Delete "${title}"? This action cannot be undone.`,
-    confirmLabel: "Delete",
+    title: "Move to Trash?",
+    description: `Move "${title}" to Trash? You can restore it later from Trash.`,
+    confirmLabel: "Move to Trash",
     variant: "destructive" as const,
   }),
   publish: {

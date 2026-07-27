@@ -40,7 +40,7 @@ export function BannerRowActionsMenu({
       onConfirm: () => {
         startTransition(async () => {
           const result = await deleteBannerAction(banner.id);
-          if (!notifyFromActionResult(result, "Banner deleted.")) return;
+          if (!notifyFromActionResult(result, "Moved to Trash.")) return;
           router.refresh();
         });
       },

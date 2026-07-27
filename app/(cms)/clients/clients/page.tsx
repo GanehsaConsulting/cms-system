@@ -7,18 +7,26 @@ import { filterClientsForPhotosTab } from "@/lib/clients/content-kinds";
 import { getClients } from "@/lib/db/clients";
 import { cn } from "@/lib/utils";
 
+function BodyFrame({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      className={cn(
+        "flex min-h-0 flex-1 flex-col overflow-hidden",
+        SECTION_BODY_PADDING,
+      )}
+    >
+      {children}
+    </div>
+  );
+}
+
 export default function ClientsListPage() {
   return (
     <Suspense
       fallback={
-        <div
-          className={cn(
-            "flex min-h-0 flex-1 flex-col overflow-hidden",
-            SECTION_BODY_PADDING,
-          )}
-        >
+        <BodyFrame>
           <CmsListBodySkeleton withDetailPanel={false} />
-        </div>
+        </BodyFrame>
       }
     >
       <ClientsListContent />
@@ -32,11 +40,13 @@ async function ClientsListContent() {
   const photoClients = filterClientsForPhotosTab(clients);
 
   return (
-    <ClientsListView
-      clients={photoClients}
-      previewMode="photo"
-      emptyTitle="No client photos yet"
-      emptyDescription="Add gallery photos on a client profile. They appear here for the active brand."
-    />
+    <BodyFrame>
+      <ClientsListView
+        clients={photoClients}
+        previewMode="photo"
+        emptyTitle="No client photos yet"
+        emptyDescription="Add gallery photos on a client profile. They appear here for the active brand."
+      />
+    </BodyFrame>
   );
 }

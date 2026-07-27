@@ -23,6 +23,8 @@ export interface Price {
   features: PriceFeature[];
   createdAt: string;
   updatedAt: string;
+  /** Set when the price plan is in Trash (soft-deleted). */
+  deletedAt?: string | null;
 }
 
 export interface PriceInput {

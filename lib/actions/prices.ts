@@ -6,7 +6,15 @@ import { redirect } from "next/navigation";
 import { requireCmsActiveBrandId } from "@/lib/brands/active-brand";
 import { recordActivityEvent } from "@/lib/activity/record";
 import { getPriceCategoryById } from "@/lib/db/price-categories";
-import { createPrice, deletePrice, getPriceById, updatePrice } from "@/lib/db/prices";
+import {
+  createPrice,
+  getPriceById,
+  setPricesActive,
+  setPricesHighlighted,
+  softDeletePrice,
+  softDeletePrices,
+  updatePrice,
+} from "@/lib/db/prices";
 import { getPriceDisplayText } from "@/lib/prices/normalize";
 import { requireCmsContentAccess } from "@/lib/users/require-content-access";
 import {
@@ -14,6 +22,16 @@ import {
   priceFormSchema,
   priceFormToInput,
 } from "@/lib/validations/price";
+
+function normalizeIdList(ids: string[]) {
+  return [...new Set(ids.map((id) => id.trim()).filter((id) => id.length > 0))];
+}
+
+function revalidatePricePaths() {
+  revalidatePath("/");
+  revalidatePath("/prices");
+  revalidatePath("/trash");
+}
 
 async function assertValidPriceCategory(brandId: string, serviceSlug: string) {
   const category = await getPriceCategoryById(brandId, serviceSlug);
@@ -136,7 +154,7 @@ export async function deletePriceAction(id: string) {
 
   try {
     const current = await getPriceById(brand.brandId, id);
-    await deletePrice(brand.brandId, id);
+    await softDeletePrice(brand.brandId, id);
     if (current) {
       await recordActivityEvent({
         brandId: brand.brandId,
@@ -147,10 +165,151 @@ export async function deletePriceAction(id: string) {
         entityTitle: getPriceDisplayText(current.packageName),
       });
     }
-    revalidatePath("/");
-    revalidatePath("/prices");
+    revalidatePricePaths();
     redirect("/prices");
   } catch (error) {
-    return toActionError(error, "Failed to delete price plan");
+    return toActionError(error, "Failed to move price plan to Trash");
+  }
+}
+
+export async function setPricesHighlightedAction(
+  ids: string[],
+  highlighted: boolean,
+) {
+  const access = await requireCmsContentAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
+  const brand = await requireCmsActiveBrandId();
+  if (!brand.ok) {
+    return { success: false as const, error: brand.error };
+  }
+
+  const uniqueIds = normalizeIdList(ids);
+  if (uniqueIds.length === 0) {
+    return { success: false as const, error: "No price plans selected." };
+  }
+
+  try {
+    const updatedCount = await setPricesHighlighted(
+      brand.brandId,
+      uniqueIds,
+      highlighted,
+    );
+    if (updatedCount === 0) {
+      return { success: false as const, error: "No matching price plans found." };
+    }
+
+    await recordActivityEvent({
+      brandId: brand.brandId,
+      entityType: "price",
+      entityId: uniqueIds[0] ?? "batch",
+      action: "updated",
+      actor: access.user,
+      entityTitle:
+        updatedCount === 1
+          ? highlighted
+            ? "1 price plan highlighted"
+            : "1 price plan unhighlighted"
+          : highlighted
+            ? `${updatedCount} price plans highlighted`
+            : `${updatedCount} price plans unhighlighted`,
+      href: "/prices",
+    });
+    revalidatePath("/");
+    revalidatePath("/prices");
+    return { success: true as const, updatedCount };
+  } catch (error) {
+    return toActionError(error, "Failed to update price plans");
+  }
+}
+
+export async function setPricesActiveAction(ids: string[], isActive: boolean) {
+  const access = await requireCmsContentAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
+  const brand = await requireCmsActiveBrandId();
+  if (!brand.ok) {
+    return { success: false as const, error: brand.error };
+  }
+
+  const uniqueIds = normalizeIdList(ids);
+  if (uniqueIds.length === 0) {
+    return { success: false as const, error: "No price plans selected." };
+  }
+
+  try {
+    const updatedCount = await setPricesActive(
+      brand.brandId,
+      uniqueIds,
+      isActive,
+    );
+    if (updatedCount === 0) {
+      return { success: false as const, error: "No matching price plans found." };
+    }
+
+    await recordActivityEvent({
+      brandId: brand.brandId,
+      entityType: "price",
+      entityId: uniqueIds[0] ?? "batch",
+      action: "updated",
+      actor: access.user,
+      entityTitle:
+        updatedCount === 1
+          ? isActive
+            ? "1 price plan set active"
+            : "1 price plan set inactive"
+          : isActive
+            ? `${updatedCount} price plans set active`
+            : `${updatedCount} price plans set inactive`,
+      href: "/prices",
+    });
+    revalidatePath("/");
+    revalidatePath("/prices");
+    return { success: true as const, updatedCount };
+  } catch (error) {
+    return toActionError(error, "Failed to update price plans");
+  }
+}
+
+export async function deletePricesAction(ids: string[]) {
+  const access = await requireCmsContentAccess();
+  if (!access.ok) {
+    return { success: false as const, error: access.error };
+  }
+
+  const brand = await requireCmsActiveBrandId();
+  if (!brand.ok) {
+    return { success: false as const, error: brand.error };
+  }
+
+  const uniqueIds = normalizeIdList(ids);
+  if (uniqueIds.length === 0) {
+    return { success: false as const, error: "No price plans selected." };
+  }
+
+  try {
+    const deletedCount = await softDeletePrices(brand.brandId, uniqueIds);
+    if (deletedCount === 0) {
+      return { success: false as const, error: "No matching price plans found." };
+    }
+
+    await recordActivityEvent({
+      brandId: brand.brandId,
+      entityType: "price",
+      entityId: uniqueIds[0] ?? "batch",
+      action: "deleted",
+      actor: access.user,
+      entityTitle:
+        deletedCount === 1 ? "1 price plan" : `${deletedCount} price plans`,
+      href: "/trash",
+    });
+    revalidatePricePaths();
+    return { success: true as const, deletedCount };
+  } catch (error) {
+    return toActionError(error, "Failed to move price plans to Trash");
   }
 }

@@ -12,6 +12,7 @@ export const mediaFolders = cmsSchema.table(
     scope: text("scope").notNull().default("shared"),
     brandId: text("brand_id"),
     ownerUserId: text("owner_user_id"),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull(),
@@ -26,6 +27,7 @@ export const mediaFolders = cmsSchema.table(
     index("media_folders_scope_idx").on(table.scope),
     index("media_folders_brand_id_idx").on(table.brandId),
     index("media_folders_owner_user_id_idx").on(table.ownerUserId),
+    index("media_folders_deleted_at_idx").on(table.deletedAt),
   ],
 );
 
@@ -49,6 +51,7 @@ export const mediaFiles = cmsSchema.table(
     uploadedAt: timestamp("uploaded_at", { withTimezone: true })
       .defaultNow()
       .notNull(),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
     updatedAt: timestamp("updated_at", { withTimezone: true })
       .defaultNow()
       .$onUpdate(() => new Date())
@@ -61,5 +64,6 @@ export const mediaFiles = cmsSchema.table(
     index("media_files_scope_idx").on(table.scope),
     index("media_files_brand_id_idx").on(table.brandId),
     index("media_files_owner_user_id_idx").on(table.ownerUserId),
+    index("media_files_deleted_at_idx").on(table.deletedAt),
   ],
 );

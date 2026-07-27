@@ -11,8 +11,8 @@ export function ClientFormDangerZone({
 }: ClientFormDangerZoneProps) {
   return (
     <CmsFormDangerZone
-      description="Deleting a client also removes its testimonials and gallery photos from the CMS."
-      deleteLabel="Delete client"
+      description="Moving a client to Trash also moves its linked portfolio works. You can restore them later from Trash."
+      deleteLabel="Move to Trash"
       isPending={isPending}
       onDelete={onDelete}
     />
