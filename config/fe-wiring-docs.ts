@@ -259,14 +259,20 @@ interface ArticleCategory {
 \`\`\`
 
 ## Click / view tracking
+\`GET .../articles/{slug}?brandId=\` only returns article data. It does **not** increment views.
+
 \`GET .../articles/{slug}/click?brandId=\` — increments \`clickCount\` for **published** articles only.
 
 Fire-and-forget when the user opens an article (detail mount) or clicks a card:
 
 \`\`\`ts
+// Fire-and-forget after article detail opens or card click succeeds.
 await fetch(\`${CMS_PUBLIC_API_BASE}/articles/\${slug}/click?brandId=\${brandId}\`);
 // { data: { slug: string; clickCount: number } }
 \`\`\`
+
+If the FE only fetches \`GET .../articles/{slug}?brandId=\` and never calls \`/click\`,
+the CMS count stays \`0\`.
 
 \`readingTimeMinutes\` is computed server-side from HTML body (excerpt fallback). Do not recompute on the FE unless you need a custom WPM.
 
@@ -536,12 +542,18 @@ interface Portfolio extends PortfolioSummary {
 \`\`\`
 
 ## Portfolio click tracking
+\`GET .../portfolio/{id}?brandId=\` only returns portfolio data. It does **not** increment clicks.
+
 \`GET .../portfolio/{id}/click?brandId=\` — increments \`clickCount\`.
 
 \`\`\`ts
+// Fire-and-forget when the user opens a work detail, card, or CTA.
 await fetch(\`${CMS_PUBLIC_API_BASE}/portfolio/\${id}/click?brandId=\${brandId}\`);
 // { data: { id: string; clickCount: number } }
 \`\`\`
+
+If the FE only fetches \`GET .../portfolio/{id}?brandId=\` and never calls \`/click\`,
+the CMS count stays \`0\`.
 
 ## CMS production checklist (affects data)
 1. JSON stores (\`data/clients.json\`, \`data/portfolio.json\`) must include \`brandId\` on each row
@@ -772,10 +784,14 @@ Feature required: \`activities\` · Only \`status: "published"\` items are retur
 - \`updatedAt-desc\`
 
 ## Click tracking
+\`GET .../activities/{id}?brandId=\` only returns activity data. It does **not** increment clicks.
+
 Call \`GET .../activities/{id}/click?brandId=\` when the user taps the card CTA (Instagram link, promo URL, etc.). Response:
 \`\`\`ts
 { data: { id: string; clickCount: number } }
 \`\`\`
+
+If the FE never calls \`/click\`, the CMS count stays \`0\`.
 
 ## Type
 \`\`\`ts
