@@ -1,6 +1,7 @@
 export { activityEvents, activityReads } from "./activity";
 export { articleCategories, articles } from "./articles";
 export { banners } from "./banners";
+export { brands } from "./brands";
 export { clients } from "./clients";
 export { contentActivities } from "./content-activities";
 export {

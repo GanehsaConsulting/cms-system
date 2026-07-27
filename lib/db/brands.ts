@@ -1,33 +1,28 @@
 import { cache } from "react";
-import { readFile, writeFile } from "node:fs/promises";
-import path from "node:path";
+import { desc, eq } from "drizzle-orm";
 import { slugify } from "@/lib/articles/slug";
 import { normalizeBrand } from "@/lib/brands/normalize";
 import { resolveImageAsset } from "@/lib/cloudinary/assets";
+import { db } from "@/lib/db/client";
+import { brands } from "@/lib/db/schema";
 import type { Brand, BrandInput } from "@/types/brand";
 
-const DATA_PATH = path.join(process.cwd(), "data/brands.json");
-
-async function readBrands(): Promise<Brand[]> {
-  try {
-    const raw = await readFile(DATA_PATH, "utf-8");
-    const brands = JSON.parse(raw) as Brand[];
-    return brands.map(normalizeBrand);
-  } catch (error) {
-    if (
-      error &&
-      typeof error === "object" &&
-      "code" in error &&
-      error.code === "ENOENT"
-    ) {
-      return [];
-    }
-    throw error;
-  }
+function toIso(value: Date): string {
+  return value.toISOString();
 }
 
-async function writeBrands(brands: Brand[]): Promise<void> {
-  await writeFile(DATA_PATH, `${JSON.stringify(brands, null, 2)}\n`, "utf-8");
+function rowToBrand(row: typeof brands.$inferSelect): Brand {
+  return normalizeBrand({
+    id: row.id,
+    name: row.name,
+    slug: row.slug,
+    logo: row.logo,
+    description: row.description,
+    status: row.status,
+    features: Array.isArray(row.features) ? row.features : [],
+    createdAt: toIso(row.createdAt),
+    updatedAt: toIso(row.updatedAt),
+  });
 }
 
 async function normalizeInput(input: BrandInput): Promise<BrandInput> {
@@ -42,20 +37,21 @@ async function normalizeInput(input: BrandInput): Promise<BrandInput> {
 }
 
 export const getBrands = cache(async (): Promise<Brand[]> => {
-  const brands = await readBrands();
-  return brands.sort(
-    (left, right) =>
-      new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime(),
-  );
+  const rows = await db.select().from(brands).orderBy(desc(brands.updatedAt));
+  return rows.map(rowToBrand);
 });
 
 export async function getBrandById(id: string): Promise<Brand | null> {
-  const brands = await getBrands();
-  return brands.find((brand) => brand.id === id) ?? null;
+  const rows = await db
+    .select()
+    .from(brands)
+    .where(eq(brands.id, id))
+    .limit(1);
+
+  return rows[0] ? rowToBrand(rows[0]) : null;
 }
 
 export async function createBrand(input: BrandInput): Promise<Brand> {
-  const brands = await readBrands();
   const normalized = await normalizeInput(input);
   const id = normalized.slug;
 
@@ -63,64 +59,74 @@ export async function createBrand(input: BrandInput): Promise<Brand> {
     throw new Error("Brand slug is invalid");
   }
 
-  if (brands.some((brand) => brand.id === id || brand.slug === normalized.slug)) {
+  const existing = await db
+    .select({ id: brands.id })
+    .from(brands)
+    .where(eq(brands.slug, normalized.slug))
+    .limit(1);
+
+  if (existing.length > 0) {
     throw new Error("A brand with this slug already exists");
   }
 
-  const now = new Date().toISOString();
-  const brand: Brand = {
-    id,
-    ...normalized,
-    createdAt: now,
-    updatedAt: now,
-  };
+  const now = new Date();
+  const [row] = await db
+    .insert(brands)
+    .values({
+      id,
+      ...normalized,
+      createdAt: now,
+      updatedAt: now,
+    })
+    .returning();
 
-  brands.push(brand);
-  await writeBrands(brands);
-  return brand;
+  return rowToBrand(row);
 }
 
 export async function updateBrand(
   id: string,
   input: BrandInput,
 ): Promise<Brand> {
-  const brands = await readBrands();
-  const index = brands.findIndex((brand) => brand.id === id);
-
-  if (index === -1) {
+  const current = await getBrandById(id);
+  if (!current) {
     throw new Error("Brand not found");
   }
 
   const normalized = await normalizeInput(input);
 
-  if (
-    brands.some(
-      (brand, brandIndex) =>
-        brandIndex !== index && brand.slug === normalized.slug,
-    )
-  ) {
+  const slugTaken = await db
+    .select({ id: brands.id })
+    .from(brands)
+    .where(eq(brands.slug, normalized.slug))
+    .limit(1);
+
+  if (slugTaken.length > 0 && slugTaken[0].id !== id) {
     throw new Error("A brand with this slug already exists");
   }
 
-  const updated: Brand = {
-    ...brands[index],
-    ...normalized,
-    id: brands[index].id,
-    updatedAt: new Date().toISOString(),
-  };
+  const [row] = await db
+    .update(brands)
+    .set({
+      ...normalized,
+      updatedAt: new Date(),
+    })
+    .where(eq(brands.id, id))
+    .returning();
 
-  brands[index] = updated;
-  await writeBrands(brands);
-  return updated;
-}
-
-export async function deleteBrand(id: string): Promise<void> {
-  const brands = await readBrands();
-  const next = brands.filter((brand) => brand.id !== id);
-
-  if (next.length === brands.length) {
+  if (!row) {
     throw new Error("Brand not found");
   }
 
-  await writeBrands(next);
+  return rowToBrand(row);
+}
+
+export async function deleteBrand(id: string): Promise<void> {
+  const rows = await db
+    .delete(brands)
+    .where(eq(brands.id, id))
+    .returning({ id: brands.id });
+
+  if (rows.length === 0) {
+    throw new Error("Brand not found");
+  }
 }
