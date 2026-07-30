@@ -17,6 +17,8 @@ export interface Price {
   packageName: LocalizedText;
   price: number;
   strikethroughPrice: number;
+  /** When true, FE should show “Starting from” and hide gimmick/strikethrough. */
+  showStartingFrom: boolean;
   whatsappPhone: string;
   whatsappMessage: LocalizedText;
   isActive: boolean;
@@ -37,6 +39,7 @@ export interface PriceInput {
   packageName: LocalizedText;
   price: number;
   strikethroughPrice: number;
+  showStartingFrom: boolean;
   whatsappPhone: string;
   whatsappMessage: LocalizedText;
   isActive: boolean;

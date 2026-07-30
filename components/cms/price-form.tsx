@@ -26,9 +26,13 @@ import {
   deletePriceAction,
   updatePriceAction,
 } from "@/lib/actions/prices";
-import { runNotifiedAction } from "@/lib/notify/action-toast";
+import { notifyError, runNotifiedAction } from "@/lib/notify/action-toast";
 import { priceToFormInput, createEmptyPriceInput } from "@/lib/prices/defaults";
 import { getPriceFormChangedSections } from "@/lib/prices/form-changes";
+import {
+  getFirstPriceFormError,
+  getPriceFormErrorLocales,
+} from "@/lib/prices/form-errors";
 import { buildWhatsAppUrl } from "@/lib/prices/whatsapp";
 import { isLocaleTabComplete, SITE_LOCALES } from "@/lib/locale";
 import { type PriceFormValues, priceFormSchema } from "@/lib/validations/price";
@@ -37,6 +41,7 @@ import type { PriceCategory } from "@/types/price-category";
 import type { PricePreviewData } from "@/types/price-preview";
 import type { SiteLocale } from "@/types/locale";
 import { cn } from "@/lib/utils";
+import type { FieldErrors } from "react-hook-form";
 
 interface PriceFormProps {
   price?: Price;
@@ -172,7 +177,10 @@ export function PriceForm({ price, categories }: PriceFormProps) {
     return {
       title: packageName || categoryLabel,
       price: watchedValues.price,
-      strikethroughPrice: watchedValues.strikethroughPrice,
+      strikethroughPrice: watchedValues.showStartingFrom
+        ? 0
+        : watchedValues.strikethroughPrice,
+      showStartingFrom: watchedValues.showStartingFrom,
       features: watchedValues.features
         .map((feature) => feature.name[activeLocale].trim())
         .filter(Boolean),
@@ -193,12 +201,25 @@ export function PriceForm({ price, categories }: PriceFormProps) {
     formData.set("service", JSON.stringify(values.service));
     formData.set("packageName", JSON.stringify(values.packageName));
     formData.set("price", String(values.price));
-    formData.set("strikethroughPrice", String(values.strikethroughPrice));
+    formData.set(
+      "strikethroughPrice",
+      String(values.showStartingFrom ? 0 : values.strikethroughPrice),
+    );
+    formData.set("showStartingFrom", String(values.showStartingFrom));
     formData.set("whatsappPhone", values.whatsappPhone);
     formData.set("whatsappMessage", JSON.stringify(values.whatsappMessage));
     formData.set("isActive", String(values.isActive));
     formData.set("features", JSON.stringify(values.features));
     return formData;
+  }
+
+  function onInvalid(formErrors: FieldErrors<PriceFormValues>) {
+    const message =
+      getFirstPriceFormError(formErrors) ??
+      "Please fix the highlighted fields before saving.";
+    setError(message);
+    setSuccess(null);
+    notifyError(message);
   }
 
   function onSubmit(values: PriceFormValues) {
@@ -247,15 +268,8 @@ export function PriceForm({ price, categories }: PriceFormProps) {
     });
   }
 
-  const firstError =
-    errors.serviceSlug?.message ||
-    errors.service?.message ||
-    errors.packageName?.message ||
-    errors.whatsappPhone?.message ||
-    errors.whatsappMessage?.message ||
-    errors.price?.message ||
-    errors.features?.message ||
-    errors.strikethroughPrice?.message;
+  const firstError = getFirstPriceFormError(errors);
+  const errorLocales = getPriceFormErrorLocales(errors);
 
   return (
     <>
@@ -271,15 +285,21 @@ export function PriceForm({ price, categories }: PriceFormProps) {
             }
             isPending={isPending}
             onPreview={() => setPreviewOpen(true)}
-            onSave={() => void handleSubmit(onSubmit)()}
+            onSave={() => void handleSubmit(onSubmit, onInvalid)()}
           />
         }
       >
         <form
-          onSubmit={handleSubmit(onSubmit)}
+          onSubmit={handleSubmit(onSubmit, onInvalid)}
           className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_18rem]"
         >
           <div className={cn("flex flex-col", STACK_GAP)}>
+            {error || firstError ? (
+              <CmsAlert variant="error" message={error ?? firstError} />
+            ) : null}
+
+            {success ? <CmsAlert variant="success" message={success} /> : null}
+
             <SolidSurface className="space-y-4 p-4 md:p-5">
               <PriceFormSectionHeading
                 title="Plan details"
@@ -302,12 +322,14 @@ export function PriceForm({ price, categories }: PriceFormProps) {
               <PriceFormLocaleTabs
                 activeLocale={activeLocale}
                 incompleteLocales={incompleteLocales}
+                errorLocales={errorLocales}
                 onLocaleChange={setActiveLocale}
               />
               <PriceFormLocaleFields
                 control={control}
                 watch={watch}
                 locale={activeLocale}
+                errors={errors}
               />
             </SolidSurface>
           </div>
@@ -338,7 +360,11 @@ export function PriceForm({ price, categories }: PriceFormProps) {
                 description="Amounts in Indonesian Rupiah (IDR)."
                 accent="pricing"
               />
-              <PriceFormPricingFields control={control} watch={watch} />
+              <PriceFormPricingFields
+                control={control}
+                watch={watch}
+                setValue={setValue}
+              />
             </SolidSurface>
 
             {price ? (
@@ -348,22 +374,6 @@ export function PriceForm({ price, categories }: PriceFormProps) {
               />
             ) : null}
           </aside>
-
-          {error || firstError ? (
-            <CmsAlert
-              variant="error"
-              message={error ?? firstError}
-              className="xl:col-span-2"
-            />
-          ) : null}
-
-          {success ? (
-            <CmsAlert
-              variant="success"
-              message={success}
-              className="xl:col-span-2"
-            />
-          ) : null}
         </form>
       </CmsPageShell>
 

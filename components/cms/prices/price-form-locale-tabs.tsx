@@ -13,14 +13,20 @@ import { cn } from "@/lib/utils";
 interface PriceFormLocaleTabsProps {
   activeLocale: SiteLocale;
   incompleteLocales: SiteLocale[];
+  errorLocales?: SiteLocale[];
   onLocaleChange: (locale: SiteLocale) => void;
 }
 
 export function PriceFormLocaleTabs({
   activeLocale,
   incompleteLocales,
+  errorLocales = [],
   onLocaleChange,
 }: PriceFormLocaleTabsProps) {
+  const otherErrorLocales = errorLocales.filter(
+    (locale) => locale !== activeLocale,
+  );
+
   return (
     <div className="space-y-2">
       <p className="font-medium text-chart-1 text-sm">Languages</p>
@@ -32,6 +38,7 @@ export function PriceFormLocaleTabs({
         {SITE_LOCALES.map((locale) => {
           const isActive = activeLocale === locale;
           const isIncomplete = incompleteLocales.includes(locale);
+          const hasError = errorLocales.includes(locale);
 
           return (
             <button
@@ -45,7 +52,9 @@ export function PriceFormLocaleTabs({
                 isActive
                   ? IOS_SEGMENTED_ITEM_ACTIVE
                   : IOS_SEGMENTED_ITEM_INACTIVE,
-                isIncomplete && !isActive && "text-destructive",
+                (isIncomplete || hasError) &&
+                  !isActive &&
+                  "text-destructive",
               )}
             >
               {LOCALE_TAB_LABELS[locale]}
@@ -53,10 +62,20 @@ export function PriceFormLocaleTabs({
           );
         })}
       </nav>
-      <p className="text-muted-foreground text-xs">
-        Service, package name, WhatsApp message, and features are required in
-        all languages. The WhatsApp number is shared.
-      </p>
+      {otherErrorLocales.length > 0 ? (
+        <p className="text-destructive text-xs">
+          Fix validation errors in{" "}
+          {otherErrorLocales
+            .map((locale) => LOCALE_TAB_LABELS[locale])
+            .join(", ")}
+          .
+        </p>
+      ) : (
+        <p className="text-muted-foreground text-xs">
+          Service, package name, WhatsApp message, and features are required in
+          all languages. The WhatsApp number is shared.
+        </p>
+      )}
     </div>
   );
 }

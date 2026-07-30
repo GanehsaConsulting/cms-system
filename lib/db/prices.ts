@@ -33,6 +33,7 @@ function rowToPrice(row: typeof prices.$inferSelect): Price {
     packageName: row.packageName,
     price: row.price,
     strikethroughPrice: row.strikethroughPrice,
+    showStartingFrom: row.showStartingFrom,
     whatsappPhone: row.whatsappPhone,
     whatsappMessage: row.whatsappMessage,
     isActive: row.isActive,
@@ -80,7 +81,10 @@ function normalizeInput(input: PriceInput): PriceInput {
     service,
     packageName,
     price: Math.max(0, Math.trunc(input.price)),
-    strikethroughPrice: Math.max(0, Math.trunc(input.strikethroughPrice)),
+    strikethroughPrice: input.showStartingFrom
+      ? 0
+      : Math.max(0, Math.trunc(input.strikethroughPrice)),
+    showStartingFrom: Boolean(input.showStartingFrom),
     whatsappPhone: input.whatsappPhone.trim(),
     whatsappMessage: trimLocalized(input.whatsappMessage),
     isActive: input.isActive,

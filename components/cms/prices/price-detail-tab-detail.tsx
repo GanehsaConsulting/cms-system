@@ -24,7 +24,7 @@ export function PriceDetailTabDetail({
 }: PriceDetailTabDetailProps) {
   const discount = calculateDiscountPercent(
     price.price,
-    price.strikethroughPrice,
+    price.showStartingFrom ? 0 : price.strikethroughPrice,
   );
   const description = getPriceDisplayText(price.description);
   const whatsappMessage = getPriceDisplayText(price.whatsappMessage);
@@ -48,13 +48,18 @@ export function PriceDetailTabDetail({
       <CmsDetailMetaGroup label="Pricing">
         <CmsDetailMetaRow label="Display">
           <span className="tabular-nums">
+            {price.showStartingFrom ? "Starting from " : ""}
             {formatPriceCurrency(price.price)}
           </span>
         </CmsDetailMetaRow>
         <CmsDetailMetaRow label="Gimmick">
-          <span className="text-muted-foreground tabular-nums line-through">
-            {formatPriceCurrency(price.strikethroughPrice)}
-          </span>
+          {price.showStartingFrom ? (
+            "Off (Starting from)"
+          ) : (
+            <span className="text-muted-foreground tabular-nums line-through">
+              {formatPriceCurrency(price.strikethroughPrice)}
+            </span>
+          )}
         </CmsDetailMetaRow>
         <CmsDetailMetaRow label="Discount" showDivider={false}>
           {discount > 0 ? (

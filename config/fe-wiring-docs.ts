@@ -378,6 +378,7 @@ interface PriceSummary {
   packageName: LocalizedText;
   price: number;
   strikethroughPrice: number;
+  showStartingFrom: boolean;
   whatsappPhone: string;
   isActive: boolean;
   createdAt: string;
@@ -398,6 +399,22 @@ interface PriceCategory {
   updatedAt: string;
 }
 \`\`\`
+
+## Price display modes
+\`showStartingFrom\` and \`strikethroughPrice\` are mutually exclusive in CMS:
+
+- \`showStartingFrom: true\` → CMS forces \`strikethroughPrice: 0\`. Show a “Starting from” label with \`price\`.
+- \`showStartingFrom: false\` + \`strikethroughPrice > 0\` → show gimmick strikethrough / discount.
+
+\`\`\`ts
+if (price.showStartingFrom || price.strikethroughPrice <= 0) {
+  // Starting from Rp.xxx (or plain price)
+} else {
+  // display price + strikethrough gimmick
+}
+\`\`\`
+
+Field is additive — older FE that ignores \`showStartingFrom\` still works if it already hides gimmick when \`strikethroughPrice <= 0\`.
 
 ## WhatsApp CTA
 \`\`\`ts

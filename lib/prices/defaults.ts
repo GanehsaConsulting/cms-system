@@ -18,6 +18,7 @@ export function createEmptyPriceInput(): PriceFormValues {
     packageName: emptyLocalizedText(),
     price: 0,
     strikethroughPrice: 0,
+    showStartingFrom: false,
     whatsappPhone: "",
     whatsappMessage: emptyLocalizedText(),
     isActive: true,
@@ -33,6 +34,7 @@ export function priceToFormInput(price: {
   packageName: PriceFormValues["packageName"];
   price: number;
   strikethroughPrice: number;
+  showStartingFrom?: boolean;
   whatsappPhone: string;
   whatsappMessage: PriceFormValues["whatsappMessage"];
   isActive: boolean;
@@ -45,7 +47,8 @@ export function priceToFormInput(price: {
     service: price.service,
     packageName: price.packageName,
     price: price.price,
-    strikethroughPrice: price.strikethroughPrice,
+    strikethroughPrice: price.showStartingFrom ? 0 : price.strikethroughPrice,
+    showStartingFrom: price.showStartingFrom ?? false,
     whatsappPhone: price.whatsappPhone,
     whatsappMessage: price.whatsappMessage,
     isActive: price.isActive,

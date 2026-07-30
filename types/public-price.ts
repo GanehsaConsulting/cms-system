@@ -12,6 +12,7 @@ export interface PublicPriceSummary {
   packageName: Price["packageName"];
   price: number;
   strikethroughPrice: number;
+  showStartingFrom: boolean;
   whatsappPhone: string;
   isActive: boolean;
   createdAt: string;

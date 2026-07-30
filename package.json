@@ -29,6 +29,7 @@
     "db:migrate:prices": "tsx scripts/migrate-prices-json.ts",
     "db:migrate:clients-works-banners": "tsx scripts/migrate-clients-works-banners-json.ts",
     "db:migrate:brands": "tsx scripts/migrate-brands-json.ts",
+    "db:migrate:price-starting-from": "tsx scripts/apply-price-starting-from.ts",
     "db:migrate:activities": "tsx scripts/migrate-activities-ganesha-dump.ts"
   },
   "dependencies": {

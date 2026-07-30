@@ -495,6 +495,7 @@ async function main() {
       packageName: localize(packageName),
       price: Number.parseInt(row[4] ?? "0", 10) || 0,
       strikethroughPrice: Number.parseInt(row[6] ?? "0", 10) || 0,
+      showStartingFrom: false,
       whatsappPhone: wa.whatsappPhone,
       whatsappMessage: wa.whatsappMessage,
       isActive: true,

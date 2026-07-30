@@ -8,23 +8,47 @@ import {
 } from "@/lib/prices/whatsapp";
 import type { PriceInput } from "@/types/price";
 
-const localizedTextSchema = z.object({
-  id: z.string().trim().max(PRICE_FORM_LIMITS.localizedField),
-  en: z.string().trim().max(PRICE_FORM_LIMITS.localizedField),
-  zh: z.string().trim().max(PRICE_FORM_LIMITS.localizedField),
-});
+function localizedTextSchema(max: number, fieldLabel: string) {
+  const tooLong = `${fieldLabel} must be ${max} characters or fewer`;
+  return z.object({
+    id: z.string().trim().max(max, tooLong),
+    en: z.string().trim().max(max, tooLong),
+    zh: z.string().trim().max(max, tooLong),
+  });
+}
 
-const requiredLocalizedTextSchema = localizedTextSchema.refine(
+const requiredLocalizedTextSchema = localizedTextSchema(
+  PRICE_FORM_LIMITS.localizedField,
+  "This field",
+).refine(
   (value) =>
     value.id.length > 0 && value.en.length > 0 && value.zh.length > 0,
-  "All languages are required",
+  "Fill this in for Indonesian, English, and Chinese",
 );
 
 const whatsappMessageSchema = z
   .object({
-    id: z.string().trim().max(PRICE_FORM_LIMITS.whatsappMessage),
-    en: z.string().trim().max(PRICE_FORM_LIMITS.whatsappMessage),
-    zh: z.string().trim().max(PRICE_FORM_LIMITS.whatsappMessage),
+    id: z
+      .string()
+      .trim()
+      .max(
+        PRICE_FORM_LIMITS.whatsappMessage,
+        `WhatsApp message must be ${PRICE_FORM_LIMITS.whatsappMessage} characters or fewer`,
+      ),
+    en: z
+      .string()
+      .trim()
+      .max(
+        PRICE_FORM_LIMITS.whatsappMessage,
+        `WhatsApp message must be ${PRICE_FORM_LIMITS.whatsappMessage} characters or fewer`,
+      ),
+    zh: z
+      .string()
+      .trim()
+      .max(
+        PRICE_FORM_LIMITS.whatsappMessage,
+        `WhatsApp message must be ${PRICE_FORM_LIMITS.whatsappMessage} characters or fewer`,
+      ),
   })
   .refine(
     (value) =>
@@ -34,21 +58,39 @@ const whatsappMessageSchema = z
 
 const priceFeatureSchema = z.object({
   id: z.string().optional(),
-  name: requiredLocalizedTextSchema,
+  name: localizedTextSchema(
+    PRICE_FORM_LIMITS.localizedField,
+    "Feature",
+  ).refine(
+    (value) =>
+      value.id.length > 0 && value.en.length > 0 && value.zh.length > 0,
+    "Feature text is required in all languages",
+  ),
 });
 
 /** Form fields — slug is derived from package name; category mirrors serviceSlug. */
 export const priceFormSchema = z.object({
-  serviceSlug: z.string().trim().min(1, "Select a price category"),
+  serviceSlug: z.string().trim().min(1, "Select a service name"),
   highlighted: z.boolean(),
-  description: localizedTextSchema,
+  description: localizedTextSchema(
+    PRICE_FORM_LIMITS.description,
+    "Description",
+  ),
   service: requiredLocalizedTextSchema,
-  packageName: requiredLocalizedTextSchema,
+  packageName: localizedTextSchema(
+    PRICE_FORM_LIMITS.localizedField,
+    "Package name",
+  ).refine(
+    (value) =>
+      value.id.length > 0 && value.en.length > 0 && value.zh.length > 0,
+    "Package name is required in all languages",
+  ),
   price: z.number().int().min(1, "Price is required"),
   strikethroughPrice: z
     .number()
     .int()
     .min(0, "Original price must be zero or greater"),
+  showStartingFrom: z.boolean(),
   whatsappPhone: z
     .string()
     .trim()
@@ -80,6 +122,7 @@ export function priceFormToInput(values: PriceFormValues): PriceInput {
   return {
     ...values,
     category: values.serviceSlug,
+    strikethroughPrice: values.showStartingFrom ? 0 : values.strikethroughPrice,
     whatsappPhone: normalizeWhatsAppPhone(values.whatsappPhone),
     slug: slugifyArticleTitle(
       packageNameForSlug(values.packageName),
@@ -137,6 +180,7 @@ export function parsePriceForm(formData: FormData) {
     price: Number.parseInt(String(formData.get("price") ?? "0"), 10) || 0,
     strikethroughPrice:
       Number.parseInt(String(formData.get("strikethroughPrice") ?? "0"), 10) || 0,
+    showStartingFrom: formData.get("showStartingFrom") === "true",
     whatsappPhone: normalizeWhatsAppPhone(
       String(formData.get("whatsappPhone") ?? ""),
     ),

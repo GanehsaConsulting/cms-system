@@ -244,6 +244,7 @@ function toPriceInput(
     packageName: localize(pkg.name),
     price: Math.max(0, Math.trunc(pkg.pricing.fixed)),
     strikethroughPrice: Math.max(0, Math.trunc(pkg.pricing.gimmick)),
+    showStartingFrom: false,
     whatsappPhone: WA_PHONE,
     whatsappMessage: localize(WA_MESSAGE),
     isActive: true,

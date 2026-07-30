@@ -3,6 +3,8 @@ export const PRICE_FORM_LIMITS = {
   serviceSlug: 80,
   category: 80,
   localizedField: 200,
+  /** Longer than package/service labels — seeded plans often exceed 200. */
+  description: 1000,
   whatsappMessage: 500,
   feature: 200,
   minFeatures: 1,

@@ -17,9 +17,9 @@ export function PricePreviewCard({ data, className }: PricePreviewCardProps) {
   const title = data.title.trim() || "Untitled package";
   const discount = calculateDiscountPercent(
     data.price,
-    data.strikethroughPrice,
+    data.showStartingFrom ? 0 : data.strikethroughPrice,
   );
-  const showGimmick = discount > 0;
+  const showGimmick = !data.showStartingFrom && discount > 0;
   const isHighlighted = data.highlighted;
 
   return (
@@ -52,7 +52,7 @@ export function PricePreviewCard({ data, className }: PricePreviewCardProps) {
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <p className="font-medium text-[0.6875rem] text-[#86868b] uppercase tracking-[0.06em] dark:text-[#98989d]">
-                Display price
+                {data.showStartingFrom ? "Starting from" : "Display price"}
               </p>
               <p className="mt-1.5 font-semibold text-[1.75rem] leading-none tracking-tight tabular-nums">
                 {formatPriceDisplayIdr(data.price)}

@@ -41,7 +41,7 @@ export function PriceListTableRow({
   const updated = formatPriceDateParts(price.updatedAt);
   const discount = calculateDiscountPercent(
     price.price,
-    price.strikethroughPrice,
+    price.showStartingFrom ? 0 : price.strikethroughPrice,
   );
   const categoryId = price.serviceSlug || price.category;
   const knownIds = categories.map((category) => category.id);
@@ -77,14 +77,23 @@ export function PriceListTableRow({
         <p className="font-medium text-sm tabular-nums">
           {formatPriceCurrency(price.price)}
         </p>
+        {price.showStartingFrom ? (
+          <p className="text-muted-foreground text-xs">Starting from</p>
+        ) : null}
       </TableCell>
       <TableCell className={LIST_TABLE_CELL_CLASS}>
-        <p className="text-muted-foreground text-sm tabular-nums line-through">
-          {formatPriceCurrency(price.strikethroughPrice)}
-        </p>
-        {discount > 0 ? (
-          <p className="text-muted-foreground text-xs">{discount}% off</p>
-        ) : null}
+        {price.showStartingFrom ? (
+          <p className="text-muted-foreground text-sm">—</p>
+        ) : (
+          <>
+            <p className="text-muted-foreground text-sm tabular-nums line-through">
+              {formatPriceCurrency(price.strikethroughPrice)}
+            </p>
+            {discount > 0 ? (
+              <p className="text-muted-foreground text-xs">{discount}% off</p>
+            ) : null}
+          </>
+        )}
       </TableCell>
       <TableCell className={LIST_TABLE_CELL_CLASS}>
         <PriceStatusBadge isActive={price.isActive} />

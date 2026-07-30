@@ -53,7 +53,8 @@ export function getPriceFormChangedSections(
 
   if (
     baseline.price !== current.price ||
-    baseline.strikethroughPrice !== current.strikethroughPrice
+    baseline.strikethroughPrice !== current.strikethroughPrice ||
+    baseline.showStartingFrom !== current.showStartingFrom
   ) {
     sections.push("Pricing");
   }

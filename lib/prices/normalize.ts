@@ -75,6 +75,7 @@ export function normalizePrice(price: Price): Price {
     packageName: normalizeLocalizedText(price.packageName),
     price: Number(price.price) || 0,
     strikethroughPrice: Number(price.strikethroughPrice) || 0,
+    showStartingFrom: price.showStartingFrom ?? false,
     whatsappPhone: whatsapp.whatsappPhone,
     whatsappMessage: whatsapp.whatsappMessage,
     isActive: price.isActive ?? true,

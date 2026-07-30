@@ -58,7 +58,11 @@ export function PriceFormCategoryField({
               items={toSelectItems(categories)}
               onValueChange={field.onChange}
             >
-              <SelectTrigger id="serviceSlug" className="w-full">
+              <SelectTrigger
+                id="serviceSlug"
+                className="w-full"
+                aria-invalid={fieldState.invalid}
+              >
                 <SelectValue placeholder="Select a service name" />
               </SelectTrigger>
               <SelectContent>

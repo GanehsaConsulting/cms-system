@@ -105,17 +105,25 @@ export function PriceFormWhatsappPhoneField({
       <Controller
         control={control}
         name="whatsappPhone"
-        render={({ field }) => (
-          <Input
-            id="whatsappPhone"
-            inputMode="tel"
-            autoComplete="tel"
-            placeholder="628887127000"
-            value={field.value}
-            onChange={(event) => {
-              field.onChange(normalizeWhatsAppPhone(event.target.value));
-            }}
-          />
+        render={({ field, fieldState }) => (
+          <div className="space-y-1.5">
+            <Input
+              id="whatsappPhone"
+              inputMode="tel"
+              autoComplete="tel"
+              placeholder="628887127000"
+              aria-invalid={fieldState.invalid}
+              value={field.value}
+              onChange={(event) => {
+                field.onChange(normalizeWhatsAppPhone(event.target.value));
+              }}
+            />
+            {fieldState.error ? (
+              <p className="text-destructive text-xs">
+                {fieldState.error.message}
+              </p>
+            ) : null}
+          </div>
         )}
       />
 

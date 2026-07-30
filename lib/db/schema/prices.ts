@@ -46,6 +46,7 @@ export const prices = cmsSchema.table(
     packageName: jsonb("package_name").$type<LocalizedText>().notNull(),
     price: integer("price").notNull().default(0),
     strikethroughPrice: integer("strikethrough_price").notNull().default(0),
+    showStartingFrom: boolean("show_starting_from").notNull().default(false),
     whatsappPhone: text("whatsapp_phone").notNull().default(""),
     whatsappMessage: jsonb("whatsapp_message").$type<LocalizedText>().notNull(),
     isActive: boolean("is_active").notNull().default(true),

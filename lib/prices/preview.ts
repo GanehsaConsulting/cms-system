@@ -11,7 +11,8 @@ export function priceToPreviewData(
   return {
     title: getPriceDisplayText(price.packageName, locale),
     price: price.price,
-    strikethroughPrice: price.strikethroughPrice,
+    strikethroughPrice: price.showStartingFrom ? 0 : price.strikethroughPrice,
+    showStartingFrom: price.showStartingFrom,
     features: price.features
       .map((feature) => getPriceDisplayText(feature.name, locale))
       .filter(Boolean),
